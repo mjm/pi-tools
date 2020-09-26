@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "pi-hole-scraper_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mjm/pi-tools/pi-hole-scraper/cmd/pi-hole-scraper",
+    visibility = ["//visibility:private"],
+    deps = ["//pi-hole-scraper/scraper"],
+)
+
+go_binary(
+    name = "pi-hole-scraper",
+    embed = [":pi-hole-scraper_lib"],
+    visibility = ["//visibility:public"],
+)
