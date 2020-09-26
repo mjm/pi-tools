@@ -19,21 +19,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="85b07379-4724-4342-a938-75d740d3ff3b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/go.imports.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/pi-tools.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BUILD.bazel" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WORKSPACE" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pi-hole-scraper/cmd/pi-hole-scraper/BUILD.bazel" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pi-hole-scraper/cmd/pi-hole-scraper/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pi-hole-scraper/scraper/BUILD.bazel" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pi-hole-scraper/scraper/scraper.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pi-hole-scraper/scraper/stats.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="85b07379-4724-4342-a938-75d740d3ff3b" name="Default Changelist" comment="Add basic PiHole stats scraper">
+      <change afterPath="$PROJECT_DIR$/detect-presense/cmd/detect-presence/main.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tools/build.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tools/deploy.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pi-hole-scraper/cmd/pi-hole-scraper/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/pi-hole-scraper/cmd/pi-hole-scraper/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pi-hole-scraper/cmd/pi-hole-scraper/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/pi-hole-scraper/cmd/pi-hole-scraper/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,8 +35,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Go Application" />
         <option value="Go File" />
+        <option value="Go Application" />
       </list>
     </option>
   </component>
@@ -65,8 +57,10 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
-    <property name="DefaultGoTemplateProperty" value="Go File" />
+    <property name="DefaultGoTemplateProperty" value="Go Application" />
+    <property name="GO_FMT" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="TF_FMT" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="last_opened_file_path" value="$USER_HOME$" />
@@ -110,15 +104,17 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Add basic PiHole stats scraper" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add basic PiHole stats scraper" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
   </component>
   <component name="WindowStateProjectService">
-    <state x="177" y="85" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1601144527823">
+    <state x="177" y="85" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1601145646497">
       <screen x="0" y="25" width="1440" height="805" />
     </state>
-    <state x="177" y="85" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.25.1440.805@0.25.1440.805" timestamp="1601144527823" />
+    <state x="177" y="85" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.25.1440.805@0.25.1440.805" timestamp="1601145646497" />
     <state x="425" y="232" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1601142943060">
       <screen x="0" y="25" width="1440" height="807" />
     </state>
@@ -131,6 +127,10 @@
       <screen x="0" y="25" width="1440" height="805" />
     </state>
     <state x="222" y="62" key="SettingsEditor/0.25.1440.805@0.25.1440.805" timestamp="1601143804988" />
+    <state x="313" y="163" key="Vcs.Push.Dialog.v2" timestamp="1601144910770">
+      <screen x="0" y="25" width="1440" height="805" />
+    </state>
+    <state x="313" y="163" key="Vcs.Push.Dialog.v2/0.25.1440.805@0.25.1440.805" timestamp="1601144910770" />
     <state x="493" y="361" key="com.goide.codeInsight.imports.GoImportConfigurable$AddImportExclusionDialog" timestamp="1601143803411">
       <screen x="0" y="25" width="1440" height="805" />
     </state>

@@ -5,7 +5,11 @@ go_library(
     srcs = ["main.go"],
     importpath = "github.com/mjm/pi-tools/pi-hole-scraper/cmd/pi-hole-scraper",
     visibility = ["//visibility:private"],
-    deps = ["//pi-hole-scraper/scraper"],
+    deps = [
+        "//pi-hole-scraper/scraper",
+        "@com_github_influxdata_influxdb_client_go_v2//:influxdb-client-go",
+        "@com_github_influxdata_influxdb_client_go_v2//api/write",
+    ],
 )
 
 go_binary(
