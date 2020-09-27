@@ -16,3 +16,7 @@ file "$BUILT_PATH"
 
 chmod u+w "$BUILT_PATH"
 scp "$BUILT_PATH" $PI_USER@$PI_HOST:$DEST_PATH
+
+if [[ "$COMMAND_NAME" = "detect-presence" ]]; then
+  ssh $PI_USER@$PI_HOST sudo setcap cap_net_raw+ep "$DEST_PATH"
+fi

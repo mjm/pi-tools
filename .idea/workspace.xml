@@ -19,13 +19,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="85b07379-4724-4342-a938-75d740d3ff3b" name="Default Changelist" comment="Add basic PiHole stats scraper">
-      <change afterPath="$PROJECT_DIR$/detect-presense/cmd/detect-presence/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tools/build.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tools/deploy.sh" afterDir="false" />
+    <list default="true" id="85b07379-4724-4342-a938-75d740d3ff3b" name="Default Changelist" comment="Add presence detector">
+      <change afterPath="$PROJECT_DIR$/detect-presence/cmd/detect-presence/BUILD.bazel" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/detect-presence/cmd/detect-presence/main.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/detect-presence/detector/BUILD.bazel" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/detect-presence/detector/detector.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pi-hole-scraper/cmd/pi-hole-scraper/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/pi-hole-scraper/cmd/pi-hole-scraper/BUILD.bazel" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pi-hole-scraper/cmd/pi-hole-scraper/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/pi-hole-scraper/cmd/pi-hole-scraper/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/deploy.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tools/deploy.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,8 +35,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Go File" />
         <option value="Go Application" />
+        <option value="Go File" />
       </list>
     </option>
   </component>
@@ -57,7 +57,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
-    <property name="DefaultGoTemplateProperty" value="Go Application" />
+    <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="GO_FMT" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="TF_FMT" value="false" />
@@ -105,7 +105,9 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Add basic PiHole stats scraper" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add basic PiHole stats scraper" />
+    <MESSAGE value="Report PiHole stats to InfluxDB" />
+    <MESSAGE value="Add presence detector" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add presence detector" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
