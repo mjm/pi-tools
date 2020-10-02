@@ -1,0 +1,17 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "checker",
+    srcs = [
+        "checker.go",
+        "device.go",
+    ],
+    importpath = "github.com/mjm/pi-tools/detect-presence/checker",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//detect-presence/detector",
+        "@com_github_prometheus_client_golang//prometheus",
+        "@com_github_prometheus_client_golang//prometheus/promauto",
+        "@org_golang_x_sync//errgroup",
+    ],
+)

@@ -19,13 +19,16 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="85b07379-4724-4342-a938-75d740d3ff3b" name="Default Changelist" comment="Add presence detector">
-      <change afterPath="$PROJECT_DIR$/detect-presence/cmd/detect-presence/BUILD.bazel" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/detect-presence/cmd/detect-presence/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/detect-presence/detector/BUILD.bazel" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/detect-presence/detector/detector.go" afterDir="false" />
+    <list default="true" id="85b07379-4724-4342-a938-75d740d3ff3b" name="Default Changelist" comment="Add presence detector service">
+      <change afterPath="$PROJECT_DIR$/detect-presence/checker/BUILD.bazel" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/detect-presence/checker/checker.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/detect-presence/checker/device.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/detect-presence/cmd/detect-presence-srv/BUILD.bazel" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/detect-presence/cmd/detect-presence-srv/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/deploy.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tools/deploy.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WORKSPACE" beforeDir="false" afterPath="$PROJECT_DIR$/WORKSPACE" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,6 +68,11 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="last_opened_file_path" value="$USER_HOME$" />
     <property name="settings.editor.selected.configurable" value="go.autoimport" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/detect-presence/cmd/detect-presence-srv" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
@@ -107,7 +115,8 @@
     <MESSAGE value="Add basic PiHole stats scraper" />
     <MESSAGE value="Report PiHole stats to InfluxDB" />
     <MESSAGE value="Add presence detector" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add presence detector" />
+    <MESSAGE value="Add presence detector service" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add presence detector service" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -121,6 +130,10 @@
       <screen x="0" y="25" width="1440" height="807" />
     </state>
     <state x="425" y="232" key="#com.intellij.fileTypes.FileTypeChooser/0.25.1440.807@0.25.1440.807" timestamp="1601142943060" />
+    <state x="475" y="136" key="#com.intellij.ide.util.MemberChooser" timestamp="1601616213136">
+      <screen x="0" y="25" width="1440" height="807" />
+    </state>
+    <state x="475" y="136" key="#com.intellij.ide.util.MemberChooser/0.25.1440.807@0.25.1440.807" timestamp="1601616213136" />
     <state x="536" y="132" key="RollbackChangesDialog" timestamp="1601144827244">
       <screen x="0" y="25" width="1440" height="805" />
     </state>
@@ -129,10 +142,10 @@
       <screen x="0" y="25" width="1440" height="805" />
     </state>
     <state x="222" y="62" key="SettingsEditor/0.25.1440.805@0.25.1440.805" timestamp="1601143804988" />
-    <state x="313" y="163" key="Vcs.Push.Dialog.v2" timestamp="1601144910770">
+    <state x="313" y="163" key="Vcs.Push.Dialog.v2" timestamp="1601183529261">
       <screen x="0" y="25" width="1440" height="805" />
     </state>
-    <state x="313" y="163" key="Vcs.Push.Dialog.v2/0.25.1440.805@0.25.1440.805" timestamp="1601144910770" />
+    <state x="313" y="163" key="Vcs.Push.Dialog.v2/0.25.1440.805@0.25.1440.805" timestamp="1601183529261" />
     <state x="493" y="361" key="com.goide.codeInsight.imports.GoImportConfigurable$AddImportExclusionDialog" timestamp="1601143803411">
       <screen x="0" y="25" width="1440" height="805" />
     </state>
