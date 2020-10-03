@@ -8,6 +8,7 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//detect-presence/checker",
+        "//detect-presence/presence",
         "@com_github_prometheus_client_golang//prometheus/promhttp",
     ],
 )
@@ -21,8 +22,8 @@ go_binary(
 pkg_tar(
     name = "detect-presence-srv_pkg",
     srcs = [
-        ":detect-presence-srv",
         "detect-presence.service",
+        ":detect-presence-srv",
     ],
     modes = {
         "detect-presence-srv": "0755",

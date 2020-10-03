@@ -20,11 +20,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="85b07379-4724-4342-a938-75d740d3ff3b" name="Default Changelist" comment="Add presence detector service">
+      <change afterPath="$PROJECT_DIR$/detect-presence/presence/BUILD.bazel" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/detect-presence/presence/tracker.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/BUILD.bazel" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WORKSPACE" beforeDir="false" afterPath="$PROJECT_DIR$/WORKSPACE" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/detect-presence/checker/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/detect-presence/checker/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/detect-presence/checker/checker.go" beforeDir="false" afterPath="$PROJECT_DIR$/detect-presence/checker/checker.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/detect-presence/checker/device.go" beforeDir="false" afterPath="$PROJECT_DIR$/detect-presence/presence/device.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/detect-presence/cmd/detect-presence-srv/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/detect-presence/cmd/detect-presence-srv/BUILD.bazel" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/deploy.sh" beforeDir="false" afterPath="$PROJECT_DIR$/tools/deploy.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/detect-presence/cmd/detect-presence-srv/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/detect-presence/cmd/detect-presence-srv/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/detect-presence/detector/detector.go" beforeDir="false" afterPath="$PROJECT_DIR$/detect-presence/detector/detector.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,6 +72,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/detect-presence/presence" />
       <recent name="$PROJECT_DIR$/detect-presence/cmd/detect-presence-srv" />
     </key>
   </component>
@@ -93,7 +99,8 @@
     <MESSAGE value="Add presence detector" />
     <MESSAGE value="Add presence detector service" />
     <MESSAGE value="Add systemd unit file for detect-presence" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add systemd unit file for detect-presence" />
+    <MESSAGE value="Build tarball of deploy package in Bazel and just extract it on the Pi" />
+    <option name="LAST_COMMIT_MESSAGE" value="Build tarball of deploy package in Bazel and just extract it on the Pi" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -119,11 +126,11 @@
       <screen x="0" y="25" width="1440" height="805" />
     </state>
     <state x="222" y="62" key="SettingsEditor/0.25.1440.805@0.25.1440.805" timestamp="1601143804988" />
-    <state x="313" y="163" key="Vcs.Push.Dialog.v2" timestamp="1601683590580">
+    <state x="313" y="163" key="Vcs.Push.Dialog.v2" timestamp="1601684643429">
       <screen x="0" y="25" width="1440" height="807" />
     </state>
     <state x="313" y="163" key="Vcs.Push.Dialog.v2/0.25.1440.805@0.25.1440.805" timestamp="1601183529261" />
-    <state x="313" y="163" key="Vcs.Push.Dialog.v2/0.25.1440.807@0.25.1440.807" timestamp="1601683590580" />
+    <state x="313" y="163" key="Vcs.Push.Dialog.v2/0.25.1440.807@0.25.1440.807" timestamp="1601684643429" />
     <state x="493" y="361" key="com.goide.codeInsight.imports.GoImportConfigurable$AddImportExclusionDialog" timestamp="1601143803411">
       <screen x="0" y="25" width="1440" height="805" />
     </state>

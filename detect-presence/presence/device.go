@@ -1,4 +1,4 @@
-package checker
+package presence
 
 type Device struct {
 	Name string

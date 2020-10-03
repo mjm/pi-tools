@@ -9,14 +9,15 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 
 	"github.com/mjm/pi-tools/detect-presence/detector"
+	"github.com/mjm/pi-tools/detect-presence/presence"
 )
 
 var (
-	deviceTotal = promauto.NewGaugeVec(prometheus.GaugeOpts{
+	bluetoothHealthy = promauto.NewGauge(prometheus.GaugeOpts{
 		Namespace: "presence",
-		Name:      "device_total",
-		Help:      "Indicates which devices are detected to be present at the time.",
-	}, []string{"name", "addr"})
+		Name:      "bluetooth_healthy",
+		Help:      "Indicates if the local Bluetooth device is up and running.",
+	})
 
 	deviceCheckDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Namespace: "presence",
@@ -27,8 +28,10 @@ var (
 )
 
 type Checker struct {
-	Interval time.Duration
-	Devices  []Device
+	Tracker    *presence.Tracker
+	Interval   time.Duration
+	DeviceName string
+	Devices    []presence.Device
 }
 
 func (c *Checker) Run() {
@@ -39,6 +42,17 @@ func (c *Checker) Run() {
 }
 
 func (c *Checker) tick() {
+	// first, check the health of the bluetooth device
+	healthy, err := detector.IsHealthy(context.Background(), c.DeviceName)
+	if err != nil {
+		log.Printf("Failed to check Bluetooth device %q health: %v", c.DeviceName, err)
+	}
+	var healthyVal float64
+	if healthy {
+		healthyVal = 1.0
+	}
+	bluetoothHealthy.Set(healthyVal)
+
 	for _, d := range c.Devices {
 		startTime := time.Now()
 		present, err := detector.DetectDevice(context.Background(), d.Addr)
@@ -47,14 +61,9 @@ func (c *Checker) tick() {
 			continue
 		}
 		duration := time.Now().Sub(startTime)
-
-		var val float64
-		if present {
-			val = 1.0
-		}
-		deviceTotal.WithLabelValues(d.Name, d.Addr).Set(val)
 		deviceCheckDuration.WithLabelValues(d.Name, d.Addr).Observe(duration.Seconds())
 
+		c.Tracker.Set(d, present)
 		log.Printf("Successfully detected device %q", d.Name)
 	}
 }

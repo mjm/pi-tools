@@ -7,8 +7,8 @@ gazelle(name = "gazelle")
 pkg_tar(
     name = "pkg",
     srcs = [
-        "//detect-presence/cmd/detect-presence:detect-presence",
-        "//pi-hole-scraper/cmd/pi-hole-scraper:pi-hole-scraper",
+        "//detect-presence/cmd/detect-presence",
+        "//pi-hole-scraper/cmd/pi-hole-scraper",
     ],
     mode = "0755",
     deps = [
