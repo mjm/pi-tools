@@ -1,4 +1,5 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
 
 go_library(
     name = "detect-presence-srv_lib",
@@ -15,4 +16,17 @@ go_binary(
     name = "detect-presence-srv",
     embed = [":detect-presence-srv_lib"],
     visibility = ["//visibility:public"],
+)
+
+pkg_tar(
+    name = "detect-presence-srv_pkg",
+    srcs = [
+        ":detect-presence-srv",
+        "detect-presence.service",
+    ],
+    modes = {
+        "detect-presence-srv": "0755",
+        "detect-presence.service": "0644",
+    },
+    visibility = ["//:__pkg__"],
 )

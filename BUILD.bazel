@@ -1,4 +1,17 @@
 load("@bazel_gazelle//:def.bzl", "gazelle")
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
 
 # gazelle:prefix github.com/mjm/pi-tools
 gazelle(name = "gazelle")
+
+pkg_tar(
+    name = "pkg",
+    srcs = [
+        "//detect-presence/cmd/detect-presence:detect-presence",
+        "//pi-hole-scraper/cmd/pi-hole-scraper:pi-hole-scraper",
+    ],
+    mode = "0755",
+    deps = [
+        "//detect-presence/cmd/detect-presence-srv:detect-presence-srv_pkg",
+    ],
+)

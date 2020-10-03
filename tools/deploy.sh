@@ -1,22 +1,16 @@
 #!/bin/bash
 
-# Build and copy a binary to the Raspberry Pi
+# Build a tarball of all of the pi-tools and extract it on the Raspberry Pi
 
 PI_USER=pi
 PI_HOST=10.0.0.2
 
-TARGET="$1"
-
-COMMAND_NAME=$(basename "$TARGET")
-BUILT_PATH="bazel-bin$TARGET/${COMMAND_NAME}_/$COMMAND_NAME"
-DEST_PATH="/deploy/pi-tools/$COMMAND_NAME"
+TARGET=":pkg"
+BUILT_PATH="bazel-bin/pkg.tar"
+DEST_PATH="/deploy/pi-tools/pkg.tar"
 
 ./tools/build.sh "$TARGET"
 file "$BUILT_PATH"
 
-chmod u+w "$BUILT_PATH"
 scp "$BUILT_PATH" $PI_USER@$PI_HOST:$DEST_PATH
-
-if [[ "$COMMAND_NAME" = "detect-presence-srv" ]]; then
-  scp detect-presence/cmd/detect-presence-srv/detect-presence.service $PI_USER@$PI_HOST:/deploy/pi-tools/detect-presence.service
-fi
+ssh $PI_USER@$PI_HOST "cd /deploy/pi-tools && tar xvf pkg.tar && rm -rf pkg.tar"
