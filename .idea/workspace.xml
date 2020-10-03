@@ -20,15 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="85b07379-4724-4342-a938-75d740d3ff3b" name="Default Changelist" comment="Add presence detector service">
-      <change afterPath="$PROJECT_DIR$/detect-presence/checker/BUILD.bazel" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/detect-presence/checker/checker.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/detect-presence/checker/device.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/detect-presence/cmd/detect-presence-srv/BUILD.bazel" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/detect-presence/cmd/detect-presence-srv/main.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/detect-presence/cmd/detect-presence-srv/detect-presence.service" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WORKSPACE" beforeDir="false" afterPath="$PROJECT_DIR$/WORKSPACE" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,27 +67,6 @@
       <recent name="$PROJECT_DIR$/detect-presence/cmd/detect-presence-srv" />
     </key>
   </component>
-  <component name="RunManager">
-    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
-      <module name="pi-tools" />
-      <working_directory value="$PROJECT_DIR$" />
-      <go_parameters value="-i" />
-      <kind value="FILE" />
-      <filePath value="$PROJECT_DIR$" />
-      <directory value="$PROJECT_DIR$" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
-      <module name="pi-tools" />
-      <working_directory value="$PROJECT_DIR$" />
-      <go_parameters value="-i" />
-      <framework value="gotest" />
-      <kind value="DIRECTORY" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <method v="2" />
-    </configuration>
-  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
@@ -109,6 +81,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
@@ -126,10 +99,10 @@
       <screen x="0" y="25" width="1440" height="805" />
     </state>
     <state x="177" y="85" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.25.1440.805@0.25.1440.805" timestamp="1601145646497" />
-    <state x="425" y="232" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1601142943060">
+    <state x="425" y="232" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1601683040554">
       <screen x="0" y="25" width="1440" height="807" />
     </state>
-    <state x="425" y="232" key="#com.intellij.fileTypes.FileTypeChooser/0.25.1440.807@0.25.1440.807" timestamp="1601142943060" />
+    <state x="425" y="232" key="#com.intellij.fileTypes.FileTypeChooser/0.25.1440.807@0.25.1440.807" timestamp="1601683040554" />
     <state x="475" y="136" key="#com.intellij.ide.util.MemberChooser" timestamp="1601616213136">
       <screen x="0" y="25" width="1440" height="807" />
     </state>

@@ -1,0 +1,11 @@
+[Unit]
+Description=Home presence detection service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/deploy/pi-tools/detect-presence-srv
+
+[Install]
+WantedBy=multi-user.target
