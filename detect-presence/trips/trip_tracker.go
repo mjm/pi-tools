@@ -75,8 +75,11 @@ func (t *Tracker) OnLeave(_ *presence.Tracker) {
 	t.lastLeft = time.Now()
 	lastLeaveTimestamp.SetToCurrentTime()
 
-	if _, err := t.db.BeginTrip(context.Background(), t.lastLeft); err != nil {
+	newTrip, err := t.db.BeginTrip(context.Background(), t.lastLeft)
+	if err != nil {
 		log.Printf("Error saving new trip to DB: %v", err)
+	} else {
+		t.currentTrip = newTrip
 	}
 }
 
@@ -87,6 +90,13 @@ func (t *Tracker) OnReturn(_ *presence.Tracker) {
 	if !t.lastLeft.IsZero() {
 		tripDuration := t.lastReturned.Sub(t.lastLeft)
 		tripDurationSeconds.Observe(tripDuration.Seconds())
+	}
+
+	if t.currentTrip != nil {
+		if err := t.db.EndTrip(context.Background(), t.currentTrip.ID, t.lastReturned); err != nil {
+			log.Printf("Error completing trip in DB: %v", err)
+		}
+		t.currentTrip = nil
 	}
 }
 
