@@ -1,9 +1,6 @@
 package presence
 
 import (
-	"log"
-	"time"
-
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
@@ -38,15 +35,24 @@ var (
 type Tracker struct {
 	AllowedFailures int
 
-	devices      map[Device]int
-	lastLeft     time.Time
-	lastReturned time.Time
+	devices       map[Device]int
+	onLeaveHooks  []OnLeaveHook
+	onReturnHooks []OnReturnHook
 }
 
 func NewTracker() *Tracker {
+	tripTime := &tripTimeHook{}
 	return &Tracker{
 		AllowedFailures: 1,
 		devices:         map[Device]int{},
+		onLeaveHooks: []OnLeaveHook{
+			loggingHook{},
+			tripTime,
+		},
+		onReturnHooks: []OnReturnHook{
+			loggingHook{},
+			tripTime,
+		},
 	}
 }
 
@@ -83,18 +89,13 @@ func (t *Tracker) Set(d Device, present bool) {
 
 	if !wasPresent && isPresent {
 		// we have returned!
-		log.Printf("Transitioned from away to home")
-		t.lastReturned = time.Now()
-		lastReturnTimestamp.SetToCurrentTime()
-
-		if !t.lastLeft.IsZero() {
-			tripDuration := t.lastReturned.Sub(t.lastLeft)
-			tripDurationSeconds.Observe(tripDuration.Seconds())
+		for _, hook := range t.onReturnHooks {
+			hook.OnReturn(t)
 		}
 	} else if wasPresent && !isPresent {
 		// we have abandoned our home!
-		log.Printf("Transitioned from home to away")
-		t.lastLeft = time.Now()
-		lastLeaveTimestamp.SetToCurrentTime()
+		for _, hook := range t.onLeaveHooks {
+			hook.OnLeave(t)
+		}
 	}
 }
