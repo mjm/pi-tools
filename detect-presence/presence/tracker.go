@@ -11,25 +11,6 @@ var (
 		Name:      "device_total",
 		Help:      "Indicates which devices are detected to be present at the time.",
 	}, []string{"name", "addr"})
-
-	lastLeaveTimestamp = promauto.NewGauge(prometheus.GaugeOpts{
-		Namespace: "presence",
-		Name:      "last_leave_timestamp",
-		Help:      "Tracks the timestamp when we last left the home.",
-	})
-
-	lastReturnTimestamp = promauto.NewGauge(prometheus.GaugeOpts{
-		Namespace: "presence",
-		Name:      "last_return_timestamp",
-		Help:      "Tracks the timestamp when we last returned to the home.",
-	})
-
-	tripDurationSeconds = promauto.NewHistogram(prometheus.HistogramOpts{
-		Namespace: "presence",
-		Name:      "trip_duration_seconds",
-		Help:      "Measures how long trips away from home last",
-		Buckets:   []float64{30, 60, 180, 300, 600, 1800, 3600, 14400, 86400},
-	})
 )
 
 type Tracker struct {
@@ -41,17 +22,14 @@ type Tracker struct {
 }
 
 func NewTracker() *Tracker {
-	tripTime := &tripTimeHook{}
 	return &Tracker{
 		AllowedFailures: 1,
 		devices:         map[Device]int{},
 		onLeaveHooks: []OnLeaveHook{
 			loggingHook{},
-			tripTime,
 		},
 		onReturnHooks: []OnReturnHook{
 			loggingHook{},
-			tripTime,
 		},
 	}
 }

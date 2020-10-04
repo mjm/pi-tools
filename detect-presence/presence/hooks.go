@@ -2,7 +2,6 @@ package presence
 
 import (
 	"log"
-	"time"
 )
 
 type OnLeaveHook interface {
@@ -40,24 +39,4 @@ func (loggingHook) OnLeave(_ *Tracker) {
 
 func (loggingHook) OnReturn(_ *Tracker) {
 	log.Printf("Transitioned from away to home")
-}
-
-type tripTimeHook struct {
-	lastLeft     time.Time
-	lastReturned time.Time
-}
-
-func (h *tripTimeHook) OnLeave(_ *Tracker) {
-	h.lastLeft = time.Now()
-	lastLeaveTimestamp.SetToCurrentTime()
-}
-
-func (h *tripTimeHook) OnReturn(_ *Tracker) {
-	h.lastReturned = time.Now()
-	lastReturnTimestamp.SetToCurrentTime()
-
-	if !h.lastLeft.IsZero() {
-		tripDuration := h.lastReturned.Sub(h.lastLeft)
-		tripDurationSeconds.Observe(tripDuration.Seconds())
-	}
 }

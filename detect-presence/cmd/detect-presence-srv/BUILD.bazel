@@ -8,7 +8,9 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//detect-presence/checker",
+        "//detect-presence/database",
         "//detect-presence/presence",
+        "//detect-presence/trips",
         "@com_github_prometheus_client_golang//prometheus/promhttp",
     ],
 )

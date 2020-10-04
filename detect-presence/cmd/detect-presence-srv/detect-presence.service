@@ -5,7 +5,7 @@ Description=Home presence detection service
 Type=simple
 Restart=always
 RestartSec=1
-ExecStart=/deploy/pi-tools/detect-presence-srv
+ExecStart=/deploy/pi-tools/detect-presence-srv -db /var/lib/detect-presence/presence.db
 
 [Install]
 WantedBy=multi-user.target

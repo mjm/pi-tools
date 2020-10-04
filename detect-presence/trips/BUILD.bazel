@@ -1,15 +1,13 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "presence",
-    srcs = [
-        "device.go",
-        "hooks.go",
-        "tracker.go",
-    ],
-    importpath = "github.com/mjm/pi-tools/detect-presence/presence",
+    name = "trips",
+    srcs = ["trip_tracker.go"],
+    importpath = "github.com/mjm/pi-tools/detect-presence/trips",
     visibility = ["//visibility:public"],
     deps = [
+        "//detect-presence/database",
+        "//detect-presence/presence",
         "@com_github_prometheus_client_golang//prometheus",
         "@com_github_prometheus_client_golang//prometheus/promauto",
     ],
