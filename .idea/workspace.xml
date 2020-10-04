@@ -93,7 +93,8 @@
     <MESSAGE value="Add systemd unit file for detect-presence" />
     <MESSAGE value="Build tarball of deploy package in Bazel and just extract it on the Pi" />
     <MESSAGE value="Add presence tracker to identify when trips begin and end" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add presence tracker to identify when trips begin and end" />
+    <MESSAGE value="Add trip duration metric" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add trip duration metric" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -119,11 +120,11 @@
       <screen x="0" y="25" width="1440" height="805" />
     </state>
     <state x="222" y="62" key="SettingsEditor/0.25.1440.805@0.25.1440.805" timestamp="1601143804988" />
-    <state x="313" y="163" key="Vcs.Push.Dialog.v2" timestamp="1601684643429">
+    <state x="313" y="163" key="Vcs.Push.Dialog.v2" timestamp="1601787030365">
       <screen x="0" y="25" width="1440" height="807" />
     </state>
     <state x="313" y="163" key="Vcs.Push.Dialog.v2/0.25.1440.805@0.25.1440.805" timestamp="1601183529261" />
-    <state x="313" y="163" key="Vcs.Push.Dialog.v2/0.25.1440.807@0.25.1440.807" timestamp="1601684643429" />
+    <state x="313" y="163" key="Vcs.Push.Dialog.v2/0.25.1440.807@0.25.1440.807" timestamp="1601787030365" />
     <state x="493" y="361" key="com.goide.codeInsight.imports.GoImportConfigurable$AddImportExclusionDialog" timestamp="1601143803411">
       <screen x="0" y="25" width="1440" height="805" />
     </state>

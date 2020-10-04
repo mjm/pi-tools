@@ -36,14 +36,17 @@ var (
 )
 
 type Tracker struct {
-	devices      map[Device]bool
+	AllowedFailures int
+
+	devices      map[Device]int
 	lastLeft     time.Time
 	lastReturned time.Time
 }
 
 func NewTracker() *Tracker {
 	return &Tracker{
-		devices: map[Device]bool{},
+		AllowedFailures: 1,
+		devices:         map[Device]int{},
 	}
 }
 
@@ -51,9 +54,9 @@ func (t *Tracker) IsPresent() bool {
 	// assume present by default until we see a device that's missing
 	present := true
 
-	for _, devicePresent := range t.devices {
-		// TODO make this resilient to devices being temporarily unavailable
-		if !devicePresent {
+	for _, missingCount := range t.devices {
+		// a device must be missing at least two pings in a row for us to be considered not present
+		if missingCount > t.AllowedFailures {
 			present = false
 		}
 	}
@@ -70,7 +73,11 @@ func (t *Tracker) Set(d Device, present bool) {
 	}
 	deviceTotal.WithLabelValues(d.Name, d.Addr).Set(val)
 
-	t.devices[d] = present
+	if present {
+		t.devices[d] = 0
+	} else {
+		t.devices[d] += 1
+	}
 
 	isPresent := t.IsPresent()
 
