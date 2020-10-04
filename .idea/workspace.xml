@@ -20,16 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="85b07379-4724-4342-a938-75d740d3ff3b" name="Default Changelist" comment="Add presence detector service">
-      <change afterPath="$PROJECT_DIR$/detect-presence/presence/BUILD.bazel" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/detect-presence/presence/tracker.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/BUILD.bazel" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/detect-presence/checker/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/detect-presence/checker/BUILD.bazel" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/detect-presence/checker/checker.go" beforeDir="false" afterPath="$PROJECT_DIR$/detect-presence/checker/checker.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/detect-presence/checker/device.go" beforeDir="false" afterPath="$PROJECT_DIR$/detect-presence/presence/device.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/detect-presence/cmd/detect-presence-srv/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/detect-presence/cmd/detect-presence-srv/BUILD.bazel" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/detect-presence/cmd/detect-presence-srv/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/detect-presence/cmd/detect-presence-srv/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/detect-presence/detector/detector.go" beforeDir="false" afterPath="$PROJECT_DIR$/detect-presence/detector/detector.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/detect-presence/presence/tracker.go" beforeDir="false" afterPath="$PROJECT_DIR$/detect-presence/presence/tracker.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,7 +92,8 @@
     <MESSAGE value="Add presence detector service" />
     <MESSAGE value="Add systemd unit file for detect-presence" />
     <MESSAGE value="Build tarball of deploy package in Bazel and just extract it on the Pi" />
-    <option name="LAST_COMMIT_MESSAGE" value="Build tarball of deploy package in Bazel and just extract it on the Pi" />
+    <MESSAGE value="Add presence tracker to identify when trips begin and end" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add presence tracker to identify when trips begin and end" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

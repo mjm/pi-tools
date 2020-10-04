@@ -26,6 +26,13 @@ var (
 		Name:      "last_return_timestamp",
 		Help:      "Tracks the timestamp when we last returned to the home.",
 	})
+
+	tripDurationSeconds = promauto.NewHistogram(prometheus.HistogramOpts{
+		Namespace: "presence",
+		Name:      "trip_duration_seconds",
+		Help:      "Measures how long trips away from home last",
+		Buckets:   []float64{30, 60, 180, 300, 600, 1800, 3600, 14400, 86400},
+	})
 )
 
 type Tracker struct {
@@ -72,6 +79,11 @@ func (t *Tracker) Set(d Device, present bool) {
 		log.Printf("Transitioned from away to home")
 		t.lastReturned = time.Now()
 		lastReturnTimestamp.SetToCurrentTime()
+
+		if !t.lastLeft.IsZero() {
+			tripDuration := t.lastReturned.Sub(t.lastLeft)
+			tripDurationSeconds.Observe(tripDuration.Seconds())
+		}
 	} else if wasPresent && !isPresent {
 		// we have abandoned our home!
 		log.Printf("Transitioned from home to away")
