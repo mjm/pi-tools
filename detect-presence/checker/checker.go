@@ -19,11 +19,35 @@ var (
 		Help:      "Indicates if the local Bluetooth device is up and running.",
 	})
 
+	bluetoothCheckTotal = promauto.NewCounter(prometheus.CounterOpts{
+		Namespace: "presence",
+		Name:      "bluetooth_health_check_total",
+		Help:      "Counts how many times we've attempted to check the health of the local Bluetooth device",
+	})
+
+	bluetoothCheckErrorsTotal = promauto.NewCounter(prometheus.CounterOpts{
+		Namespace: "presence",
+		Name:      "bluetooth_health_check_errors_total",
+		Help:      "Counts how many times we've failed to check the health of the local Bluetooth device",
+	})
+
 	deviceCheckDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Namespace: "presence",
 		Name:      "device_check_duration_seconds",
 		Help:      "Measures how long it takes to check the presence of a device",
 		Buckets:   []float64{0.25, 0.5, 1.0, 2.0, 3.0, 5.0, 10.0, 30.0},
+	}, []string{"name", "addr"})
+
+	deviceCheckTotal = promauto.NewCounterVec(prometheus.CounterOpts{
+		Namespace: "presence",
+		Name:      "device_check_total",
+		Help:      "Counts how many times we've attempted to check the presence of a device",
+	}, []string{"name", "addr"})
+
+	deviceCheckErrorsTotal = promauto.NewCounterVec(prometheus.CounterOpts{
+		Namespace: "presence",
+		Name:      "device_check_errors_total",
+		Help:      "Counts how many times we've failed to check the presence of a device",
 	}, []string{"name", "addr"})
 )
 
@@ -44,8 +68,10 @@ func (c *Checker) Run() {
 func (c *Checker) tick() {
 	// first, check the health of the bluetooth device
 	healthy, err := detector.IsHealthy(context.Background(), c.DeviceName)
+	bluetoothCheckTotal.Inc()
 	if err != nil {
 		log.Printf("Failed to check Bluetooth device %q health: %v", c.DeviceName, err)
+		bluetoothCheckErrorsTotal.Inc()
 	}
 	var healthyVal float64
 	if healthy {
@@ -56,11 +82,13 @@ func (c *Checker) tick() {
 	for _, d := range c.Devices {
 		startTime := time.Now()
 		present, err := detector.DetectDevice(context.Background(), d.Addr)
+		duration := time.Now().Sub(startTime)
+		deviceCheckTotal.WithLabelValues(d.Name, d.Addr).Inc()
 		if err != nil {
 			log.Printf("Failed to detect device %q (%s): %v", d.Name, d.Addr, err)
+			deviceCheckErrorsTotal.WithLabelValues(d.Name, d.Addr).Inc()
 			continue
 		}
-		duration := time.Now().Sub(startTime)
 		deviceCheckDuration.WithLabelValues(d.Name, d.Addr).Observe(duration.Seconds())
 
 		c.Tracker.Set(d, present)
