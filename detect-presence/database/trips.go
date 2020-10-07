@@ -90,3 +90,32 @@ func (c *Client) GetLastCompletedTrip(ctx context.Context) (*Trip, error) {
 	trip.ReturnedAt = time.Unix(returnedAtUnix, 0)
 	return trip, nil
 }
+
+func (c *Client) ListTrips(ctx context.Context) ([]*Trip, error) {
+	rows, err := sq.Select("id", "left_at", "returned_at").
+		From("trips").
+		OrderBy("left_at DESC").
+		Limit(30).
+		RunWith(c.db).
+		QueryContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var trips []*Trip
+	for rows.Next() {
+		trip := new(Trip)
+		var leftAtUnix, returnedAtUnix int64
+
+		if err := rows.Scan(&trip.ID, &leftAtUnix, &returnedAtUnix); err != nil {
+			return nil, err
+		}
+
+		trip.LeftAt = time.Unix(leftAtUnix, 0)
+		trip.ReturnedAt = time.Unix(returnedAtUnix, 0)
+
+		trips = append(trips, trip)
+	}
+
+	return trips, nil
+}

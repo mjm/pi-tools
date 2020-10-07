@@ -4,7 +4,6 @@ load("@rules_pkg//:pkg.bzl", "pkg_tar")
 
 pkg_tar(
     name = "next_srcs",
-    strip_prefix = ".",
     srcs = [
         "tsconfig.json",
         "next-env.d.ts",
@@ -15,19 +14,20 @@ pkg_tar(
         "styles/**/*.css",
     ]),
     mode = "0644",
+    strip_prefix = ".",
 )
 
 nodejs_binary(
     name = "next_build",
     data = [
+        "@npm_trips//@types/node",
+        "@npm_trips//@types/react",
         "@npm_trips//minimist",
-        "@npm_trips//next",
         "@npm_trips//ncp",
+        "@npm_trips//next",
         "@npm_trips//rimraf",
         "@npm_trips//tar",
         "@npm_trips//typescript",
-        "@npm_trips//@types/react",
-        "@npm_trips//@types/node",
     ],
     entry_point = ":next-build.js",
 )
@@ -36,7 +36,7 @@ npm_package_bin(
     name = ".next",
     args = [
         "--out_dir=$(@D)",
-        "--files=$(execpaths :next_srcs)"
+        "--files=$(execpaths :next_srcs)",
     ],
     data = [
         ":next_srcs",
@@ -47,7 +47,10 @@ npm_package_bin(
 
 next(
     name = "start",
-    args = ["--node_options=--require=./$(execpath chdir.js)", "start"],
+    args = [
+        "--node_options=--require=./$(execpath chdir.js)",
+        "start",
+    ],
     data = [
         "chdir.js",
         ":.next",

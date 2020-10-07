@@ -16,3 +16,4 @@
 
 /bazel-*
 /.idea/workspace.xml
+/dev.db

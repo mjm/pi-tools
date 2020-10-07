@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+service TripsService {
+    rpc ListTrips(ListTripsRequest) returns (ListTripsResponse);
+}
+
+message ListTripsRequest {
+}
+
+message ListTripsResponse {
+    message Trip {
+        string id = 1;
+        string left_at = 2;
+        string returned_at = 3;
+    }
+
+    repeated Trip trips = 1;
+}

@@ -8,11 +8,15 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"google.golang.org/grpc"
 
 	"github.com/mjm/pi-tools/detect-presence/checker"
 	"github.com/mjm/pi-tools/detect-presence/database"
 	"github.com/mjm/pi-tools/detect-presence/presence"
+	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
+	"github.com/mjm/pi-tools/detect-presence/service/tripsservice"
 	"github.com/mjm/pi-tools/detect-presence/trips"
 )
 
@@ -58,5 +62,26 @@ func main() {
 	go c.Run()
 
 	http.Handle("/metrics", promhttp.Handler())
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *httpPort), nil))
+
+	tripsService := tripsservice.New(db)
+	grpcServer := grpc.NewServer()
+	tripspb.RegisterTripsServiceServer(grpcServer, tripsService)
+	wrappedGrpc := grpcweb.WrapServer(grpcServer, grpcweb.WithOriginFunc(func(origin string) bool {
+		if origin == "http://localhost:3000" {
+			return true
+		}
+		log.Printf("Rejecting unknown origin: %s", origin)
+		return false
+	}))
+
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if wrappedGrpc.IsAcceptableGrpcCorsRequest(r) || wrappedGrpc.IsGrpcWebRequest(r) {
+			wrappedGrpc.ServeHTTP(w, r)
+			return
+		}
+
+		http.DefaultServeMux.ServeHTTP(w, r)
+	})
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *httpPort), handler))
 }

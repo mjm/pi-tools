@@ -1600,4 +1600,32 @@ go_repository(
     version = "v1.4.0",
 )
 
+go_repository(
+    name = "com_github_desertbit_timer",
+    importpath = "github.com/desertbit/timer",
+    sum = "h1:U5y3Y5UE0w7amNe7Z5G/twsBW0KEalRQXZzf8ufSh9I=",
+    version = "v0.0.0-20180107155436-c41aec40b27f",
+)
+
+go_repository(
+    name = "com_github_gorilla_websocket",
+    importpath = "github.com/gorilla/websocket",
+    sum = "h1:+/TMaTYc4QFitKJxsQ7Yye35DkWvkdLcvGKqM+x0Ufc=",
+    version = "v1.4.2",
+)
+
+go_repository(
+    name = "com_github_improbable_eng_grpc_web",
+    importpath = "github.com/improbable-eng/grpc-web",
+    sum = "h1:7XqtaBWaOCH0cVGKHyvhtcuo6fgW32Y10yRKrDHFHOc=",
+    version = "v0.13.0",
+)
+
+go_repository(
+    name = "com_github_rs_cors",
+    importpath = "github.com/rs/cors",
+    sum = "h1:+88SsELBHx5r+hZ8TCkggzSstaWNbDvThkVK8H6f9ik=",
+    version = "v1.7.0",
+)
+
 gazelle_dependencies()
