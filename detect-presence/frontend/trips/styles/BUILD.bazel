@@ -1,0 +1,18 @@
+load("@npm_trips//postcss-cli:index.bzl", "postcss")
+
+postcss(
+    name = "styles",
+    outs = ["app.css"],
+    args = [
+        "$(location styles.css)",
+        "-o",
+        "$(location app.css)",
+    ],
+    data = [
+        "styles.css",
+        "postcss.config.js",
+        "tailwind.config.js",
+        "@npm_trips//:node_modules",
+    ],
+    visibility = ["//detect-presence/frontend/trips:__subpackages__"],
+)

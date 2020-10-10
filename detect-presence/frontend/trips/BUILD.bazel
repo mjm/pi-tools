@@ -32,6 +32,7 @@ http_server(
     data = [
         "bundle.js",
         "index.html",
+        "//detect-presence/frontend/trips/styles",
     ],
     templated_args = ["./detect-presence/frontend/trips"],
 )
