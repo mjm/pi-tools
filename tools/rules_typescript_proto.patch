@@ -1,0 +1,160 @@
+diff --git a/BUILD.bazel b/BUILD.bazel
+index 322ea85..1fbc3a5 100644
+--- a/BUILD.bazel
++++ b/BUILD.bazel
+@@ -1,4 +1,4 @@
+-load("@build_bazel_rules_nodejs//packages/typescript:index.bzl", "ts_config")
++load("@rules_typescript_proto_deps//@bazel/typescript:index.bzl", "ts_config")
+ 
+ package(default_visibility = ["//:__subpackages__"])
+ 
+diff --git a/package.json b/package.json
+index 651a16a..4e61db7 100644
+--- a/package.json
++++ b/package.json
+@@ -4,6 +4,7 @@
+   "repository": "https://github.com/Dig-Doug/rules_typescript_proto",
+   "license": "Apache-2.0",
+   "dependencies": {
++    "@bazel/typescript": "^2.2.1",
+     "google-protobuf": "3.12.2"
+   },
+   "devDependencies": {
+diff --git a/src/BUILD.bazel b/src/BUILD.bazel
+index fe3ee10..2aacfe2 100644
+--- a/src/BUILD.bazel
++++ b/src/BUILD.bazel
+@@ -1,4 +1,4 @@
+-load("@build_bazel_rules_nodejs//packages/typescript:index.bzl", "ts_library")
++load("@rules_typescript_proto_deps//@bazel/typescript:index.bzl", "ts_library")
+ load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+ 
+ nodejs_binary(
+diff --git a/src/change_import_style.ts b/src/change_import_style.ts
+index e8f3a42..71054b7 100644
+--- a/src/change_import_style.ts
++++ b/src/change_import_style.ts
+@@ -88,7 +88,13 @@ function convertToESM(args: any, initialContents: string): string {
+   };
+ 
+   const replaceRequiresWithSubpackageImports = (contents: string) => {
+-    return contents.replace(/var ([\w\d_]+) = require\((['"][\w\d@/_-]+['"])\)\.([\w\d_]+);/g, 'import * as $1 from $2;')
++    // Example:
++    //   Changes: var foo = require("@improbable-eng/grpc-web").bar;
++    //   To:      import {bar as foo} from "@improbable-eng/grpc-web";
++    return contents.replace(/var ([\w\d_]+) = require\((['"][\w\d@/_-]+['"])\)\.([\w\d_]+);/g,
++      (_, varName, moduleIdentifier, propertyName) =>
++       propertyName == varName ? `import { ${varName} } from ${moduleIdentifier}`
++       : `import { ${propertyName} as ${varName} } from ${moduleIdentifier};`);
+   }
+ 
+   const replaceCJSExportsWithECMAExports = (contents: string) => {
+diff --git a/yarn.lock b/yarn.lock
+index bc96249..5e7ea0b 100644
+--- a/yarn.lock
++++ b/yarn.lock
+@@ -25,6 +25,16 @@
+   dependencies:
+     regenerator-runtime "^0.13.2"
+ 
++"@bazel/typescript@^2.2.1":
++  version "2.2.1"
++  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-2.2.1.tgz#46d6dcedd91a7fd0421e9286790aff94ec45bece"
++  integrity sha512-nFdwkJYzKsmu9IzbQ8Wtt6YI7AlTEv5JHWTbMmZB4HBOi7xjhgFKiq3HQRhZ963EVoJ481Kb6M0wtkzARCb3YA==
++  dependencies:
++    protobufjs "6.8.8"
++    semver "5.6.0"
++    source-map-support "0.5.9"
++    tsutils "2.27.2"
++
+ "@bcoe/v8-coverage@^0.2.3":
+   version "0.2.3"
+   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
+@@ -138,7 +148,7 @@
+   resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-3.5.11.tgz#ba8e80639dffbe277f49c708b45373a320d158e2"
+   integrity sha512-fg1rOd/DehQTIJTifGqGVY6q92lDgnLfs7C6t1ccSwQrMyoTGSoH6wWzhJDZb6ezhsdwAX4EIBLe8w5fXWmEng==
+ 
+-"@types/long@^4.0.1":
++"@types/long@^4.0.0", "@types/long@^4.0.1":
+   version "4.0.1"
+   resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.1.tgz#459c65fa1867dafe6a8f322c4c51695663cc55e9"
+   integrity sha512-5tXH6Bx/kNGd3MgffdmP4dy2Z+G4eaXw0SE81Tq3BNadtnMR5/ySMzX4SLEzHJzSmPNn4HIdpQsBvXMUykr58w==
+@@ -153,6 +163,11 @@
+   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.50.tgz#e9b2e85fafc15f2a8aa8fdd41091b983da5fd6ee"
+   integrity sha512-5ImO01Fb8YsEOYpV+aeyGYztcYcjGsBvN4D7G5r1ef2cuQOpymjWNQi5V0rKHE6PC2ru3HkoUr/Br2/8GUA84w==
+ 
++"@types/node@^10.1.0":
++  version "10.17.39"
++  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.17.39.tgz#ce1122758d0608de8303667cebf171f44192629b"
++  integrity sha512-dJLCxrpQmgyxYGcl0Ae9MTsQgI22qHHcGFj/8VKu7McJA5zQpnuGjoksnxbo1JxSjW/Nahnl13W8MYZf01CZHA==
++
+ "@types/node@^13.7.0":
+   version "13.13.17"
+   resolved "https://registry.yarnpkg.com/@types/node/-/node-13.13.17.tgz#fba8bdd9be9a61adbceac654450673c2f520b0f0"
+@@ -1850,6 +1865,25 @@ protobufjs@6.10.1:
+     "@types/node" "^13.7.0"
+     long "^4.0.0"
+ 
++protobufjs@6.8.8:
++  version "6.8.8"
++  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-6.8.8.tgz#c8b4f1282fd7a90e6f5b109ed11c84af82908e7c"
++  integrity sha512-AAmHtD5pXgZfi7GMpllpO3q1Xw1OYldr+dMUlAnffGTAhqkg72WdmSY71uKBF/JuyiKs8psYbtKrhi0ASCD8qw==
++  dependencies:
++    "@protobufjs/aspromise" "^1.1.2"
++    "@protobufjs/base64" "^1.1.2"
++    "@protobufjs/codegen" "^2.0.4"
++    "@protobufjs/eventemitter" "^1.1.0"
++    "@protobufjs/fetch" "^1.1.0"
++    "@protobufjs/float" "^1.0.2"
++    "@protobufjs/inquire" "^1.1.0"
++    "@protobufjs/path" "^1.1.2"
++    "@protobufjs/pool" "^1.1.0"
++    "@protobufjs/utf8" "^1.1.0"
++    "@types/long" "^4.0.0"
++    "@types/node" "^10.1.0"
++    long "^4.0.0"
++
+ qjobs@^1.1.4:
+   version "1.2.0"
+   resolved "https://registry.yarnpkg.com/qjobs/-/qjobs-1.2.0.tgz#c45e9c61800bd087ef88d7e256423bdd49e5d071"
+@@ -2036,6 +2070,11 @@ semver-regex@^2.0.0:
+   resolved "https://registry.yarnpkg.com/semver-regex/-/semver-regex-2.0.0.tgz#a93c2c5844539a770233379107b38c7b4ac9d338"
+   integrity sha512-mUdIBBvdn0PLOeP3TEkMH7HHeUP3GjsXCwKarjv/kGmUFOYg1VqEemKhoQpWMu6X2I8kHeuVdGibLGkVK+/5Qw==
+ 
++semver@5.6.0:
++  version "5.6.0"
++  resolved "https://registry.yarnpkg.com/semver/-/semver-5.6.0.tgz#7e74256fbaa49c75aa7c7a205cc22799cac80004"
++  integrity sha512-RS9R6R35NYgQn++fkDWaOmqGoj4Ek9gGs+DPxNUZKuwE183xjJroKvyo1IzVFeXvUrvmALy6FWD5xrdJT25gMg==
++
+ semver@^6.0.0:
+   version "6.3.0"
+   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
+@@ -2178,6 +2217,14 @@ source-map-support@0.5.19:
+     buffer-from "^1.0.0"
+     source-map "^0.6.0"
+ 
++source-map-support@0.5.9:
++  version "0.5.9"
++  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.9.tgz#41bc953b2534267ea2d605bccfa7bfa3111ced5f"
++  integrity sha512-gR6Rw4MvUlYy83vP0vxoVNzM6t8MUXqNuRsuBmBHQDu1Fh6X015FrLdgoDKcNdkwGubozq0P4N0Q37UyFVr1EA==
++  dependencies:
++    buffer-from "^1.0.0"
++    source-map "^0.6.0"
++
+ source-map-url@^0.4.0:
+   version "0.4.0"
+   resolved "https://registry.yarnpkg.com/source-map-url/-/source-map-url-0.4.0.tgz#3e935d7ddd73631b97659956d55128e87b5084a3"
+@@ -2339,6 +2386,13 @@ tslib@^1.8.1:
+   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
+   integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
+ 
++tsutils@2.27.2:
++  version "2.27.2"
++  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-2.27.2.tgz#60ba88a23d6f785ec4b89c6e8179cac9b431f1c7"
++  integrity sha512-qf6rmT84TFMuxAKez2pIfR8UCai49iQsfB7YWVjV1bKpy/d0PWT5rEOSM6La9PiHZ0k1RRZQiwVdVJfQ3BPHgg==
++  dependencies:
++    tslib "^1.8.1"
++
+ tsutils@3.17.1:
+   version "3.17.1"
+   resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-3.17.1.tgz#ed719917f11ca0dee586272b2ac49e015a2dd759"

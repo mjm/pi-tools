@@ -1,0 +1,4 @@
+detect-presence/frontend/trips/node_modules
+dist
+bazel-out
+

@@ -1,1 +1,0 @@
-process.chdir(__dirname);

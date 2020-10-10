@@ -1,18 +1,17 @@
 import React from 'react'
-import Head from 'next/head'
 import useSWR from 'swr'
 import {fetcher} from "../lib/fetch";
-import {ListTripsResponse} from "../proto/trips_pb";
+import {ListTripsResponse} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
 
-export default function Home() {
+export default function TripsPage() {
     const {data, error} = useSWR<ListTripsResponse.Trip[]>('ListTrips', fetcher)
+
+    if (error) {
+        console.error(error)
+    }
 
     return (
         <div>
-            <Head>
-                <title>Your Trips</title>
-            </Head>
-
             <main>
                 <h1>Your Trips</h1>
                 {error && (

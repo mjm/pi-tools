@@ -1,0 +1,11 @@
+load("@npm_trips//@bazel/typescript:index.bzl", "ts_library")
+
+ts_library(
+    name = "lib",
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//detect-presence/frontend/trips/proto:trips_ts_proto",
+    ],
+    tsconfig = "//detect-presence/frontend/trips:tsconfig.json",
+    visibility = ["//detect-presence/frontend/trips:__subpackages__"],
+)

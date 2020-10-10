@@ -1,0 +1,8 @@
+load("@rules_typescript_proto//:index.bzl", "typescript_proto_library")
+
+typescript_proto_library(
+    name = "trips_ts_proto",
+    proto = "//detect-presence/proto/trips:trips_proto",
+    visibility = ["//detect-presence/frontend/trips:__subpackages__"],
+)
+

@@ -1,5 +1,5 @@
-import {TripsServiceClient} from "../proto/trips_pb_service";
-import {ListTripsRequest} from "../proto/trips_pb";
+import {TripsServiceClient} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb_service";
+import {ListTripsRequest} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
 
 const client = new TripsServiceClient('http://localhost:2120')
 

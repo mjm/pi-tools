@@ -59,6 +59,19 @@ load("@io_bazel_rules_go//extras:embed_data_deps.bzl", "go_embed_data_dependenci
 
 go_embed_data_dependencies()
 
+http_archive(
+    name = "rules_proto",
+    sha256 = "602e7161d9195e50246177e7c55b2f39950a9cf7366f74ed5f22fd45750cd208",
+    strip_prefix = "rules_proto-97d8af4dc474595af3900dd85cb3a29ad28cc313",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_proto/archive/97d8af4dc474595af3900dd85cb3a29ad28cc313.tar.gz",
+        "https://github.com/bazelbuild/rules_proto/archive/97d8af4dc474595af3900dd85cb3a29ad28cc313.tar.gz",
+    ],
+)
+load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
+rules_proto_dependencies()
+rules_proto_toolchains()
+
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
 git_repository(
@@ -1629,3 +1642,20 @@ go_repository(
 )
 
 gazelle_dependencies()
+
+http_archive(
+    name = "rules_typescript_proto",
+    sha256 = "8a62f8eee53db86043cf6c40fc3d3b4b6d4c0cb7e3c0798cd972988cd13e5175",
+    strip_prefix = "rules_typescript_proto-692cbfb909c8972250bc6b378a3c1f14f36b9c54",
+    urls = [
+        "https://github.com/Dig-Doug/rules_typescript_proto/archive/692cbfb909c8972250bc6b378a3c1f14f36b9c54.tar.gz",
+    ],
+    patches = [
+        "//:tools/rules_typescript_proto.patch",
+    ],
+    patch_args = ["-p1"],
+)
+
+load("@rules_typescript_proto//:index.bzl", "rules_typescript_proto_dependencies")
+
+rules_typescript_proto_dependencies()

@@ -1,59 +1,37 @@
-load("@npm_trips//next:index.bzl", "next")
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary", "npm_package_bin")
-load("@rules_pkg//:pkg.bzl", "pkg_tar")
+load("@npm_trips//@bazel/typescript:index.bzl", "ts_library")
+load("@npm_trips//http-server:index.bzl", "http_server")
+load("@npm_trips//@bazel/rollup:index.bzl", "rollup_bundle")
 
-pkg_tar(
-    name = "next_srcs",
-    srcs = [
-        "tsconfig.json",
-        "next-env.d.ts",
-    ] + glob([
-        "pages/**/*.js",
-        "pages/**/*.tsx",
-        "public/**/*",
-        "styles/**/*.css",
-    ]),
-    mode = "0644",
-    strip_prefix = ".",
-)
+exports_files(["tsconfig.json"], visibility = ["//visibility:public"])
 
-nodejs_binary(
-    name = "next_build",
-    data = [
-        "@npm_trips//@types/node",
+ts_library(
+    name = "trips",
+    srcs = ["index.tsx", "types.d.ts"],
+    deps = [
+        "//detect-presence/frontend/trips/components",
         "@npm_trips//@types/react",
-        "@npm_trips//minimist",
-        "@npm_trips//ncp",
-        "@npm_trips//next",
-        "@npm_trips//rimraf",
-        "@npm_trips//tar",
-        "@npm_trips//typescript",
+        "@npm_trips//@types/react-dom",
     ],
-    entry_point = ":next-build.js",
+    tsconfig = "//detect-presence/frontend/trips:tsconfig.json",
 )
 
-npm_package_bin(
-    name = ".next",
-    args = [
-        "--out_dir=$(@D)",
-        "--files=$(execpaths :next_srcs)",
-    ],
-    data = [
-        ":next_srcs",
-    ],
-    output_dir = True,
-    tool = ":next_build",
-)
-
-next(
-    name = "start",
-    args = [
-        "--node_options=--require=./$(execpath chdir.js)",
-        "start",
-    ],
-    data = [
-        "chdir.js",
-        ":.next",
+rollup_bundle(
+    name = "bundle",
+    deps = [
+        ":trips",
         "@npm_trips//:node_modules",
     ],
+    entry_point = "index.tsx",
+    config_file = "rollup.config.js",
+    format = "umd",
+    link_workspace_root = True,
+)
+
+http_server(
+    name = "server",
+    data = [
+        "bundle.js",
+        "index.html",
+    ],
+    templated_args = ["./detect-presence/frontend/trips"],
 )

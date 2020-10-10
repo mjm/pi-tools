@@ -67,7 +67,7 @@ func main() {
 	grpcServer := grpc.NewServer()
 	tripspb.RegisterTripsServiceServer(grpcServer, tripsService)
 	wrappedGrpc := grpcweb.WrapServer(grpcServer, grpcweb.WithOriginFunc(func(origin string) bool {
-		if origin == "http://localhost:3000" {
+		if origin == "http://localhost:8080" {
 			return true
 		}
 		log.Printf("Rejecting unknown origin: %s", origin)
