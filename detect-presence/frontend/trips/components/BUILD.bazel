@@ -6,8 +6,7 @@ ts_library(
     deps = [
         "//detect-presence/frontend/trips/lib",
         "//detect-presence/frontend/trips/proto:trips_ts_proto",
-        "@npm_trips//@types/react",
-        "@npm_trips//swr",
+        "@npm_trips//:node_modules",
     ],
     tsconfig = "//detect-presence/frontend/trips:tsconfig.json",
     visibility = ["//detect-presence/frontend/trips:__subpackages__"],

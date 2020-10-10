@@ -1,11 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import TripsPage from './components/TripsPage';
-
-// import "./styles.css";
+import {App} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/components/App";
 
 ReactDOM.render(
-    <TripsPage />,
+    <App />,
     document.getElementById("root")
 );
