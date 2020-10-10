@@ -1,6 +1,7 @@
 load("@npm_trips//@bazel/typescript:index.bzl", "ts_library")
 load("@npm_trips//http-server:index.bzl", "http_server")
 load("@npm_trips//@bazel/rollup:index.bzl", "rollup_bundle")
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
 
 exports_files(["tsconfig.json"], visibility = ["//visibility:public"])
 
@@ -35,4 +36,21 @@ http_server(
         "//detect-presence/frontend/trips/styles",
     ],
     templated_args = ["./detect-presence/frontend/trips"],
+)
+
+pkg_tar(
+    name = "pkg",
+    srcs = [
+        "bundle.js",
+        "index.html",
+    ],
+    files = {
+        "//detect-presence/frontend/trips/styles": "styles/app.css",
+    },
+    package_dir = "./trips-web",
+    mode = "0644",
+    remap_paths = {
+        "./app.css": "./styles/app.css",
+    },
+    visibility = ["//:__pkg__"],
 )
