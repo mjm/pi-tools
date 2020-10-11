@@ -25,6 +25,18 @@ index f45cfe5..70c0e51 100755
      name = os_name(rctx)
 -    return name == OS_NAMES[2] or name == OS_NAMES[3]
 +    return name == OS_NAMES[2] or name == OS_NAMES[3] or name == OS_NAMES[4]
+diff --git a/internal/node/launcher.sh b/internal/node/launcher.sh
+index e685da7..955d8b9 100755
+--- a/internal/node/launcher.sh
++++ b/internal/node/launcher.sh
+@@ -130,6 +130,7 @@ else
+     *)
+       case "${unameArch}" in
+         aarch64*) readonly node_toolchain="nodejs_linux_arm64/bin/nodejs/bin/node" ;;
++        armv7l*) readonly node_toolchain="nodejs_linux_armv7/bin/nodejs/bin/node" ;;
+         *) readonly node_toolchain="nodejs_linux_amd64/bin/nodejs/bin/node" ;;
+       esac
+       ;;
 diff --git a/internal/node/node_repositories.bzl b/internal/node/node_repositories.bzl
 index 5143ccb..e022297 100755
 --- a/internal/node/node_repositories.bzl
@@ -50,7 +62,7 @@ index c3ca42b..06bbdcd 100755
      "12.13.0-windows_amd64": ("node-v12.13.0-win-x64.zip", "node-v12.13.0-win-x64", "6f920cebeecb4957b4ef0def6d9b04c49d4582864f8d1a207ce8d0665865781a"),
      # 12.13.1
 diff --git a/toolchains/node/BUILD.bazel b/toolchains/node/BUILD.bazel
-index 02a0559..99d2f8a 100755
+index 02a0559..b035159 100755
 --- a/toolchains/node/BUILD.bazel
 +++ b/toolchains/node/BUILD.bazel
 @@ -43,6 +43,14 @@ platform(
@@ -61,7 +73,7 @@ index 02a0559..99d2f8a 100755
 +    name = "linux_armv7",
 +    constraint_values = [
 +        "@bazel_tools//platforms:linux",
-+        "@bazel_tools//platforms:armv7",
++        "@bazel_tools//platforms:arm",
 +    ],
 +)
 +
@@ -92,7 +104,7 @@ index 02a0559..99d2f8a 100755
 +    name = "node_linux_armv7_toolchain",
 +    target_compatible_with = [
 +        "@bazel_tools//platforms:linux",
-+        "@bazel_tools//platforms:arm",
++        "@bazel_tools//platforms:armv7",
 +    ],
 +    toolchain = "@nodejs_linux_armv7_config//:toolchain",
 +    toolchain_type = ":toolchain_type",
