@@ -5,6 +5,7 @@ ts_library(
     srcs = glob(["*.ts"]),
     deps = [
         "//detect-presence/frontend/trips/proto:trips_ts_proto",
+        "@npm_trips//:node_modules",
     ],
     tsconfig = "//detect-presence/frontend/trips:tsconfig.json",
     visibility = ["//detect-presence/frontend/trips:__subpackages__"],

@@ -12,7 +12,8 @@
         "../../../*",
         "../../../bazel-bin/*"
       ]
-    }
+    },
+    "types": ["node"]
   },
   "exclude": [
     "detect-presence/frontend/trips/node_modules"
