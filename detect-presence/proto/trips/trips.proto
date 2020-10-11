@@ -2,6 +2,7 @@ syntax = "proto3";
 
 service TripsService {
     rpc ListTrips(ListTripsRequest) returns (ListTripsResponse);
+    rpc IgnoreTrip(IgnoreTripRequest) returns (IgnoreTripResponse);
 }
 
 message ListTripsRequest {
@@ -15,4 +16,11 @@ message ListTripsResponse {
     }
 
     repeated Trip trips = 1;
+}
+
+message IgnoreTripRequest {
+    string id = 1;
+}
+
+message IgnoreTripResponse {
 }

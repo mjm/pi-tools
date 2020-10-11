@@ -3,29 +3,35 @@ load("@npm_trips//http-server:index.bzl", "http_server")
 load("@npm_trips//@bazel/rollup:index.bzl", "rollup_bundle")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 
-exports_files(["tsconfig.json"], visibility = ["//visibility:public"])
+exports_files(
+    ["tsconfig.json"],
+    visibility = ["//visibility:public"],
+)
 
 ts_library(
     name = "trips",
-    srcs = ["index.tsx", "types.d.ts"],
+    srcs = [
+        "index.tsx",
+        "types.d.ts",
+    ],
+    tsconfig = "//detect-presence/frontend/trips:tsconfig.json",
     deps = [
         "//detect-presence/frontend/trips/components",
         "@npm_trips//@types/react",
         "@npm_trips//@types/react-dom",
     ],
-    tsconfig = "//detect-presence/frontend/trips:tsconfig.json",
 )
 
 rollup_bundle(
     name = "bundle",
+    config_file = "rollup.config.js",
+    entry_point = "index.tsx",
+    format = "umd",
+    link_workspace_root = True,
     deps = [
         ":trips",
         "@npm_trips//:node_modules",
     ],
-    entry_point = "index.tsx",
-    config_file = "rollup.config.js",
-    format = "umd",
-    link_workspace_root = True,
 )
 
 http_server(
@@ -47,8 +53,8 @@ pkg_tar(
     files = {
         "//detect-presence/frontend/trips/styles": "styles/app.css",
     },
-    package_dir = "./trips-web",
     mode = "0644",
+    package_dir = "./trips-web",
     remap_paths = {
         "./app.css": "./styles/app.css",
     },

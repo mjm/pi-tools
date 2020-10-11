@@ -5,4 +5,3 @@ typescript_proto_library(
     proto = "//detect-presence/proto/trips:trips_proto",
     visibility = ["//detect-presence/frontend/trips:__subpackages__"],
 )
-

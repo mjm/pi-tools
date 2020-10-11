@@ -13,7 +13,7 @@ go_library(
         "//detect-presence/proto/trips",
         "//detect-presence/service/tripsservice",
         "//detect-presence/trips",
-        "@com_github_improbable_eng_grpc_web//go/grpcweb:go_default_library",
+        "@com_github_improbable_eng_grpc_web//go/grpcweb",
         "@com_github_prometheus_client_golang//prometheus/promhttp",
         "@org_golang_google_grpc//:go_default_library",
     ],

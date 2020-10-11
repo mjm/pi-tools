@@ -9,8 +9,8 @@ postcss(
         "$(location app.css)",
     ],
     data = [
-        "styles.css",
         "postcss.config.js",
+        "styles.css",
         "tailwind.config.js",
         "@npm_trips//:node_modules",
     ],

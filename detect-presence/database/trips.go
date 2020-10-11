@@ -53,7 +53,10 @@ func (c *Client) GetCurrentTrip(ctx context.Context) (*Trip, error) {
 	var leftAtUnix int64
 	if err := sq.Select("id", "left_at").
 		From("trips").
-		Where(sq.Eq{"returned_at": nil}).
+		Where(sq.Eq{
+			"ignored_at":  nil,
+			"returned_at": nil,
+		}).
 		OrderBy("left_at DESC").
 		Limit(1).
 		RunWith(c.db).
@@ -74,7 +77,10 @@ func (c *Client) GetLastCompletedTrip(ctx context.Context) (*Trip, error) {
 	var leftAtUnix, returnedAtUnix int64
 	if err := sq.Select("id", "left_at", "returned_at").
 		From("trips").
-		Where(sq.NotEq{"returned_at": nil}).
+		Where(sq.And{
+			sq.Eq{"ignored_at": nil},
+			sq.NotEq{"returned_at": nil},
+		}).
 		OrderBy("left_at DESC").
 		Limit(1).
 		RunWith(c.db).
@@ -94,6 +100,7 @@ func (c *Client) GetLastCompletedTrip(ctx context.Context) (*Trip, error) {
 func (c *Client) ListTrips(ctx context.Context) ([]*Trip, error) {
 	rows, err := sq.Select("id", "left_at", "returned_at").
 		From("trips").
+		Where(sq.Eq{"ignored_at": nil}).
 		OrderBy("left_at DESC").
 		Limit(30).
 		RunWith(c.db).
@@ -118,4 +125,16 @@ func (c *Client) ListTrips(ctx context.Context) ([]*Trip, error) {
 	}
 
 	return trips, nil
+}
+
+func (c *Client) IgnoreTrip(ctx context.Context, id string) error {
+	if _, err := sq.Update("trips").
+		Set("ignored_at", time.Now().Unix()).
+		Where(sq.Eq{"id": id}).
+		RunWith(c.db).
+		ExecContext(ctx); err != nil {
+		return fmt.Errorf("ignoring trip: %w", err)
+	}
+
+	return nil
 }

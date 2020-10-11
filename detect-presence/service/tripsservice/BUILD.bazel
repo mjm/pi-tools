@@ -3,6 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "tripsservice",
     srcs = [
+        "ignore_trip.go",
         "list_trips.go",
         "server.go",
     ],
@@ -11,5 +12,7 @@ go_library(
     deps = [
         "//detect-presence/database",
         "//detect-presence/proto/trips",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
     ],
 )

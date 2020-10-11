@@ -1,0 +1,1 @@
+-- do nothing, sqlite3 doesn't support dropping columns.
