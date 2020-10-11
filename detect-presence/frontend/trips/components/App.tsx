@@ -1,10 +1,14 @@
 import React from "react";
-import {BrowserRouter as Router, Link, NavLink, Switch, Route} from "react-router-dom";
+import {BrowserRouter as Router, NavLink, Route, Switch} from "react-router-dom";
 import TripsPage from "com_github_mjm_pi_tools/detect-presence/frontend/trips/components/TripsPage";
+import {Helmet} from "react-helmet";
 
 export function App() {
     return (
         <Router>
+            <Helmet>
+                <title>Presence Dashboard</title>
+            </Helmet>
             <div className="container mx-auto">
                 <nav className="mb-4">
                     <ul className="text-indigo-700">
@@ -17,7 +21,7 @@ export function App() {
                 </nav>
                 <Switch>
                     <Route path="/">
-                        <TripsPage />
+                        <TripsPage/>
                     </Route>
                 </Switch>
             </div>
