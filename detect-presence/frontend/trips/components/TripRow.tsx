@@ -1,6 +1,7 @@
 import React from "react";
 import {ListTripsResponse} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
 import {format, formatDuration, intervalToDuration, parseISO} from "date-fns";
+import {TripRowActions} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/components/TripRowActions";
 
 export function TripRow({trip}: { trip: ListTripsResponse.Trip }) {
     const leftAt = parseISO(trip.getLeftAt());
@@ -13,11 +14,16 @@ export function TripRow({trip}: { trip: ListTripsResponse.Trip }) {
     }
 
     return (
-        <div className="bg-gray-100 border-b border-gray-200 p-3">
-            <span>{format(leftAt, "PPpp")}</span>{" "}
-            {duration && (
-                <>({formatDuration(duration)})</>
-            )}
+        <div className="flex items-baseline bg-gray-100 border-b border-gray-200 p-3">
+            <div className="flex-grow">
+                <span>{format(leftAt, "PPpp")}</span>{" "}
+                {duration && (
+                    <>({formatDuration(duration)})</>
+                )}
+            </div>
+            <div className="flex-none">
+                <TripRowActions trip={trip}/>
+            </div>
         </div>
     );
 }

@@ -1,15 +1,11 @@
-import {TripsServiceClient} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb_service";
 import {ListTripsRequest} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
+import {client} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/lib/trips_client";
 
-const serviceHost = process.env.NODE_ENV === "development"
-    ? "http://localhost:2120"
-    : `${window.location.protocol}//${window.location.host}`;
-
-const client = new TripsServiceClient(serviceHost);
+export const LIST_TRIPS = "ListTrips";
 
 export async function fetcher(method: string, ...args: any[]): Promise<any> {
     switch (method) {
-        case "ListTrips":
+        case LIST_TRIPS:
             const req = new ListTripsRequest();
             return new Promise((resolve, reject) => {
                 client.listTrips(req, (err, res) => {
