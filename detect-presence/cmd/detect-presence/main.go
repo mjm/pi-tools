@@ -52,7 +52,8 @@ func detectAndReport(ctx context.Context, name, addr string) {
 	detectCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
-	present, err := detector.DetectDevice(detectCtx, addr)
+	d := &detector.HCIDetector{DeviceName: "hci0"}
+	present, err := d.DetectDevice(detectCtx, addr)
 	if err != nil {
 		log.Printf("Error detecting device %q: %v", name, err)
 		point := write.NewPoint("device_presence.error", map[string]string{
