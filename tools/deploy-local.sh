@@ -11,3 +11,4 @@ DEST_PATH="/deploy/pi-tools"
 tar -xvf "$BUILT_PATH" -C "$DEST_PATH"
 
 sudo systemctl restart detect-presence
+sudo pkill -HUP prometheus
