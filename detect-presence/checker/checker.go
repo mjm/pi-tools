@@ -53,6 +53,7 @@ var (
 
 type Checker struct {
 	Tracker    *presence.Tracker
+	Detector   detector.Detector
 	Interval   time.Duration
 	DeviceName string
 	Devices    []presence.Device
@@ -67,7 +68,7 @@ func (c *Checker) Run() {
 
 func (c *Checker) tick() {
 	// first, check the health of the bluetooth device
-	healthy, err := detector.IsHealthy(context.Background(), c.DeviceName)
+	healthy, err := c.Detector.IsHealthy(context.Background(), c.DeviceName)
 	bluetoothCheckTotal.Inc()
 	if err != nil {
 		log.Printf("Failed to check Bluetooth device %q health: %v", c.DeviceName, err)
@@ -81,7 +82,7 @@ func (c *Checker) tick() {
 
 	for _, d := range c.Devices {
 		startTime := time.Now()
-		present, err := detector.DetectDevice(context.Background(), d.Addr)
+		present, err := c.Detector.DetectDevice(context.Background(), d.Addr)
 		duration := time.Now().Sub(startTime)
 		deviceCheckTotal.WithLabelValues(d.Name, d.Addr).Inc()
 		if err != nil {

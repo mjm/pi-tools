@@ -14,6 +14,7 @@ import (
 
 	"github.com/mjm/pi-tools/detect-presence/checker"
 	"github.com/mjm/pi-tools/detect-presence/database"
+	"github.com/mjm/pi-tools/detect-presence/detector"
 	"github.com/mjm/pi-tools/detect-presence/presence"
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
 	"github.com/mjm/pi-tools/detect-presence/service/tripsservice"
@@ -54,6 +55,7 @@ func main() {
 
 	c := &checker.Checker{
 		Tracker:    t,
+		Detector:   &detector.HCIDetector{},
 		Interval:   *pingInterval,
 		DeviceName: *deviceName,
 		Devices:    devices,

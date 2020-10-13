@@ -2,7 +2,10 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "detector",
-    srcs = ["detector.go"],
+    srcs = [
+        "detector.go",
+        "hci_detector.go",
+    ],
     importpath = "github.com/mjm/pi-tools/detect-presence/detector",
     visibility = ["//visibility:public"],
 )
