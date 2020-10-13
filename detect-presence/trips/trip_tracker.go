@@ -72,6 +72,11 @@ func NewTracker(db *database.Client) (*Tracker, error) {
 }
 
 func (t *Tracker) OnLeave(_ *presence.Tracker) {
+	if t.currentTrip != nil {
+		log.Printf("Skipping starting new trip because there's already a current trip")
+		return
+	}
+
 	t.lastLeft = time.Now()
 	lastLeaveTimestamp.SetToCurrentTime()
 
