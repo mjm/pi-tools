@@ -1,0 +1,11 @@
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
+
+pkg_tar(
+    name = "pkg",
+    srcs = [
+        "presence_alerts.yml",
+    ],
+    package_dir = "etc/prom_rules",
+    mode = "0644",
+    visibility = ["//prometheus:__pkg__"],
+)

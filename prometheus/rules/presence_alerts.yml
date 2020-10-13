@@ -1,0 +1,10 @@
+groups:
+  - name: presence_alerts
+    rules:
+      - alert: DeviceAwayFromHome
+        expr: presence_device_total < 0.5
+        for: 2m
+        labels:
+          severity: notice
+        annotations:
+          summary: A device is away from home
