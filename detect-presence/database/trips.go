@@ -112,14 +112,17 @@ func (c *Client) ListTrips(ctx context.Context) ([]*Trip, error) {
 	var trips []*Trip
 	for rows.Next() {
 		trip := new(Trip)
-		var leftAtUnix, returnedAtUnix int64
+		var leftAtUnix int64
+		var returnedAtUnix *int64
 
 		if err := rows.Scan(&trip.ID, &leftAtUnix, &returnedAtUnix); err != nil {
 			return nil, err
 		}
 
 		trip.LeftAt = time.Unix(leftAtUnix, 0)
-		trip.ReturnedAt = time.Unix(returnedAtUnix, 0)
+		if returnedAtUnix != nil {
+			trip.ReturnedAt = time.Unix(*returnedAtUnix, 0)
+		}
 
 		trips = append(trips, trip)
 	}
