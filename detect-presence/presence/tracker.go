@@ -23,7 +23,7 @@ type Tracker struct {
 
 func NewTracker() *Tracker {
 	return &Tracker{
-		AllowedFailures: 1,
+		AllowedFailures: 2,
 		devices:         map[Device]int{},
 		onLeaveHooks: []OnLeaveHook{
 			loggingHook{},
