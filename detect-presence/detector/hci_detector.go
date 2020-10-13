@@ -8,10 +8,12 @@ import (
 	"strings"
 )
 
-type HCIDetector struct{}
+type HCIDetector struct {
+	DeviceName string
+}
 
-func (*HCIDetector) IsHealthy(ctx context.Context, deviceName string) (bool, error) {
-	cmd := exec.CommandContext(ctx, "/bin/hciconfig", deviceName)
+func (d *HCIDetector) IsHealthy(ctx context.Context) (bool, error) {
+	cmd := exec.CommandContext(ctx, "/bin/hciconfig", d.DeviceName)
 	outPipe, err := cmd.StdoutPipe()
 	if err != nil {
 		return false, err

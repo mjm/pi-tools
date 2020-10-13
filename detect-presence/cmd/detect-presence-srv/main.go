@@ -24,6 +24,7 @@ import (
 var (
 	httpPort     = flag.Int("http-port", 2120, "HTTP port to listen on for metrics and API requests")
 	pingInterval = flag.Duration("ping-interval", 30*time.Second, "How often to check for nearby devices")
+	deviceFile   = flag.String("device-file", "", "JSON file to check for device presence instead of using Bluetooth")
 	deviceName   = flag.String("device-name", "hci0", "Local Bluetooth device name")
 	dbDSN        = flag.String("db", ":memory:", "Connection string for connecting to SQLite3 database for storing trips")
 )
@@ -53,12 +54,22 @@ func main() {
 	t.OnLeave(tripTracker)
 	t.OnReturn(tripTracker)
 
+	var d detector.Detector
+	if *deviceFile != "" {
+		d = &detector.FileDetector{
+			Path: *deviceFile,
+		}
+	} else {
+		d = &detector.HCIDetector{
+			DeviceName: *deviceName,
+		}
+	}
+
 	c := &checker.Checker{
-		Tracker:    t,
-		Detector:   &detector.HCIDetector{},
-		Interval:   *pingInterval,
-		DeviceName: *deviceName,
-		Devices:    devices,
+		Tracker:  t,
+		Detector: d,
+		Interval: *pingInterval,
+		Devices:  devices,
 	}
 
 	go c.Run()

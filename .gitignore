@@ -17,3 +17,4 @@
 /bazel-*
 /.idea/workspace.xml
 /dev.db
+/dev-devices.json

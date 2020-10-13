@@ -52,11 +52,10 @@ var (
 )
 
 type Checker struct {
-	Tracker    *presence.Tracker
-	Detector   detector.Detector
-	Interval   time.Duration
-	DeviceName string
-	Devices    []presence.Device
+	Tracker  *presence.Tracker
+	Detector detector.Detector
+	Interval time.Duration
+	Devices  []presence.Device
 }
 
 func (c *Checker) Run() {
@@ -68,10 +67,10 @@ func (c *Checker) Run() {
 
 func (c *Checker) tick() {
 	// first, check the health of the bluetooth device
-	healthy, err := c.Detector.IsHealthy(context.Background(), c.DeviceName)
+	healthy, err := c.Detector.IsHealthy(context.Background())
 	bluetoothCheckTotal.Inc()
 	if err != nil {
-		log.Printf("Failed to check Bluetooth device %q health: %v", c.DeviceName, err)
+		log.Printf("Failed to check Bluetooth device health: %v", err)
 		bluetoothCheckErrorsTotal.Inc()
 	}
 	var healthyVal float64
