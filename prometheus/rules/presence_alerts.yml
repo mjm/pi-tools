@@ -3,8 +3,15 @@ groups:
     rules:
       - alert: DeviceAwayFromHome
         expr: presence_device_total < 0.5
-        for: 2m
+        for: 1m
         labels:
           severity: notice
         annotations:
           summary: A device is away from home
+
+      - alert: LongTrip
+        expr: presence:trip_duration_seconds:current > 14400 # 4 hours
+        labels:
+          severity: notice
+        annotations:
+          summary: A device has been away from home for over four hours
