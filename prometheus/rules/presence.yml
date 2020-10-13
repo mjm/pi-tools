@@ -5,4 +5,4 @@ groups:
         expr: (presence_last_return_timestamp - presence_last_leave_timestamp) > 0
 
       - record: presence:trip_duration_seconds:current
-        expr: (presence_last_leave_timestamp - presence_last_return_timestamp) > 0
+        expr: (presence_last_return_timestamp < bool presence_last_leave_timestamp) * (time() - presence_last_leave_timestamp) > 0
