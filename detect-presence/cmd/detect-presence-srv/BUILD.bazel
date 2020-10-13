@@ -32,9 +32,13 @@ pkg_tar(
         "detect-presence.service",
         ":detect-presence-srv",
     ],
+    files = {
+        "presence.caddy": "sites/presence.caddy",
+    },
     modes = {
         "detect-presence-srv": "0755",
         "detect-presence.service": "0644",
+        "sites/presence.caddy": "0644",
     },
     visibility = ["//:__pkg__"],
 )

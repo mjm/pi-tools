@@ -1,0 +1,12 @@
+[Unit]
+Description=Prometheus monitoring framework
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/usr/local/prometheus/prometheus --config.file=/deploy/pi-tools/etc/prometheus.yml
+WorkingDirectory=/usr/local/prometheus
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,3 @@
+prometheus:80 {
+  reverse_proxy localhost:9090
+}

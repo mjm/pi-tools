@@ -1,0 +1,14 @@
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
+
+pkg_tar(
+    name = "pkg",
+    srcs = [
+        "prometheus.service",
+    ],
+    files = {
+        "prometheus.caddy": "sites/prometheus.caddy",
+        "prometheus.yml": "etc/prometheus.yml",
+    },
+    mode = "0644",
+    visibility = ["//:__pkg__"],
+)
