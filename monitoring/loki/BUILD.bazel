@@ -1,0 +1,15 @@
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
+
+pkg_tar(
+    name = "pkg",
+    srcs = [
+        "loki.service",
+        "promtail.service",
+    ],
+    files = {
+        "loki.yml": "etc/loki.yml",
+        "promtail.yml": "etc/promtail.yml",
+    },
+    mode = "0644",
+    visibility = ["//:__pkg__"],
+)

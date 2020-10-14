@@ -1,0 +1,11 @@
+[Unit]
+Description=Loki log aggregator
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/usr/local/loki/loki-linux-arm -config.file=/usr/local/loki/loki-local-config.yaml
+
+[Install]
+WantedBy=multi-user.target

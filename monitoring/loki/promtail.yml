@@ -1,0 +1,38 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://localhost:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: system
+    static_configs:
+      - labels:
+          job: varlogs
+          __path__: /var/log/*log
+      - labels:
+          job: messages
+          __path__: /var/log/messages
+    pipeline_stages:
+      - match:
+          selector: '{filename=~"/var/log/(syslog|messages)"}'
+          pipeline_name: syslog
+          stages:
+            - regex:
+                expression: "^(?s)(?P<time>\\S+?) (?P<host>\\S+?) (?P<app>[A-Za-z\\-_]+?)(?P<pid>\\[\\d+\\])?: (?P<content>.*)$"
+            - replace:
+                source: pid
+                expression: "(\\[)\\d+(\\])"
+                replace: ""
+            - labels:
+                host:
+                app:
+            - timestamp:
+                source: time
+                format: RFC3339Nano
+            - output:
+                source: content

@@ -15,6 +15,7 @@ pkg_tar(
         "//detect-presence/cmd/detect-presence-srv:detect-presence-srv_pkg",
         "//detect-presence/frontend/trips:pkg",
         "//monitoring/alertmanager:pkg",
+        "//monitoring/loki:pkg",
         "//monitoring/prometheus:pkg",
     ],
 )

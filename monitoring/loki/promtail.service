@@ -1,0 +1,11 @@
+[Unit]
+Description=Promtail scraper for Loki
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/usr/local/loki/promtail-linux-arm -config.file=/usr/local/loki/promtail-local-config.yaml
+
+[Install]
+WantedBy=multi-user.target
