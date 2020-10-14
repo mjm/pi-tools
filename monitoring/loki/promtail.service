@@ -5,7 +5,7 @@ Description=Promtail scraper for Loki
 Type=simple
 Restart=always
 RestartSec=1
-ExecStart=/usr/local/loki/promtail-linux-arm -config.file=/usr/local/loki/promtail-local-config.yaml
+ExecStart=/usr/local/loki/promtail-linux-arm -config.file=/deploy/pi-tools/etc/promtail.yml
 
 [Install]
 WantedBy=multi-user.target

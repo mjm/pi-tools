@@ -5,7 +5,7 @@ Description=Loki log aggregator
 Type=simple
 Restart=always
 RestartSec=1
-ExecStart=/usr/local/loki/loki-linux-arm -config.file=/usr/local/loki/loki-local-config.yaml
+ExecStart=/usr/local/loki/loki-linux-arm -config.file=/deploy/pi-tools/etc/loki.yml
 
 [Install]
 WantedBy=multi-user.target
