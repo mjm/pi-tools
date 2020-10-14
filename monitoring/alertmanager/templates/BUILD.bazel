@@ -1,0 +1,11 @@
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
+
+pkg_tar(
+    name = "pkg",
+    srcs = [
+        "pushover.tpl",
+    ],
+    package_dir = "etc/alertmanager/templates",
+    mode = "0644",
+    visibility = ["//monitoring/alertmanager:__pkg__"],
+)
