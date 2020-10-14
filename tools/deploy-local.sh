@@ -12,3 +12,4 @@ tar -xvf "$BUILT_PATH" -C "$DEST_PATH"
 
 sudo systemctl restart detect-presence
 sudo pkill -HUP prometheus
+sudo pkill -HUP alertmanager
