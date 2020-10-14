@@ -5,7 +5,7 @@ Description=Alertmanager for Prometheus
 Type=simple
 Restart=always
 RestartSec=1
-ExecStart=/usr/local/alertmanager/alertmanager
+ExecStart=/usr/local/alertmanager/alertmanager --web.external-url=http://alertmanager/ --cluster.listen-address=
 WorkingDirectory=/usr/local/alertmanager
 
 [Install]

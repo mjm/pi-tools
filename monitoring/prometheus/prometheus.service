@@ -5,7 +5,7 @@ Description=Prometheus monitoring framework
 Type=simple
 Restart=always
 RestartSec=1
-ExecStart=/usr/local/prometheus/prometheus --config.file=/deploy/pi-tools/etc/prometheus.yml
+ExecStart=/usr/local/prometheus/prometheus --config.file=/deploy/pi-tools/etc/prometheus.yml --web.external-url=http://prometheus/
 WorkingDirectory=/usr/local/prometheus
 
 [Install]
