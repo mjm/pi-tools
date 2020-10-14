@@ -6,6 +6,7 @@ go_library(
         "client.go",
         "embed_data_source.go",
         "migrate.go",
+        "tags.go",
         "trips.go",
     ],
     importpath = "github.com/mjm/pi-tools/detect-presence/database",

@@ -9,9 +9,9 @@ pkg_tar(
         "prometheus.caddy": "sites/prometheus.caddy",
         "prometheus.yml": "etc/prometheus.yml",
     },
+    mode = "0644",
+    visibility = ["//:__pkg__"],
     deps = [
         "//monitoring/prometheus/rules:pkg",
     ],
-    mode = "0644",
-    visibility = ["//:__pkg__"],
 )

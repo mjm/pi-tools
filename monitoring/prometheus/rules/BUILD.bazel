@@ -6,7 +6,7 @@ pkg_tar(
         "presence.yml",
         "presence_alerts.yml",
     ],
-    package_dir = "etc/prom_rules",
     mode = "0644",
+    package_dir = "etc/prom_rules",
     visibility = ["//monitoring/prometheus:__pkg__"],
 )

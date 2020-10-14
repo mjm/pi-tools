@@ -8,9 +8,9 @@ pkg_tar(
     files = {
         "alertmanager.caddy": "sites/alertmanager.caddy",
     },
+    mode = "0644",
+    visibility = ["//:__pkg__"],
     deps = [
         "//monitoring/alertmanager/templates:pkg",
     ],
-    mode = "0644",
-    visibility = ["//:__pkg__"],
 )
