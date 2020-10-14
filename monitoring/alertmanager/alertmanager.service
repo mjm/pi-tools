@@ -1,0 +1,12 @@
+[Unit]
+Description=Alertmanager for Prometheus
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/usr/local/alertmanager/alertmanager
+WorkingDirectory=/usr/local/alertmanager
+
+[Install]
+WantedBy=multi-user.target

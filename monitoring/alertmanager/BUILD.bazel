@@ -1,0 +1,13 @@
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
+
+pkg_tar(
+    name = "pkg",
+    srcs = [
+        "alertmanager.service",
+    ],
+    files = {
+        "alertmanager.caddy": "sites/alertmanager.caddy",
+    },
+    mode = "0644",
+    visibility = ["//:__pkg__"],
+)

@@ -8,5 +8,5 @@ pkg_tar(
     ],
     package_dir = "etc/prom_rules",
     mode = "0644",
-    visibility = ["//prometheus:__pkg__"],
+    visibility = ["//monitoring/prometheus:__pkg__"],
 )

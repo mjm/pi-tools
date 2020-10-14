@@ -1,0 +1,3 @@
+alertmanager:80 {
+  reverse_proxy localhost:9093
+}

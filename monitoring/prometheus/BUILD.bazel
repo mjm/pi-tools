@@ -10,7 +10,7 @@ pkg_tar(
         "prometheus.yml": "etc/prometheus.yml",
     },
     deps = [
-        "//prometheus/rules:pkg",
+        "//monitoring/prometheus/rules:pkg",
     ],
     mode = "0644",
     visibility = ["//:__pkg__"],
