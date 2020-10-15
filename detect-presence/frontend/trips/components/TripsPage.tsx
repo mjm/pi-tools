@@ -13,7 +13,7 @@ export default function TripsPage() {
     }
 
     return (
-        <main>
+        <main className="mb-8">
             <Helmet>
                 <title>Your Trips</title>
             </Helmet>

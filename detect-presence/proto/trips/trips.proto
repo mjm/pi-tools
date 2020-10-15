@@ -13,6 +13,7 @@ message ListTripsResponse {
         string id = 1;
         string left_at = 2;
         string returned_at = 3;
+        repeated string tags = 4;
     }
 
     repeated Trip trips = 1;

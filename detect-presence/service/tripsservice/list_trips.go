@@ -26,6 +26,10 @@ func (s *Server) ListTrips(ctx context.Context, req *tripspb.ListTripsRequest) (
 			t.ReturnedAt = trip.ReturnedAt.UTC().Format(time.RFC3339)
 		}
 
+		for _, tag := range trip.Tags {
+			t.Tags = append(t.Tags, string(tag))
+		}
+
 		res.Trips = append(res.Trips, t)
 	}
 

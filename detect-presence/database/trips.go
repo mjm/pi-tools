@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
@@ -15,6 +16,7 @@ type Trip struct {
 	ID         string
 	LeftAt     time.Time
 	ReturnedAt time.Time
+	Tags       []Tag
 }
 
 func (c *Client) BeginTrip(ctx context.Context, leftAt time.Time) (*Trip, error) {
@@ -98,9 +100,11 @@ func (c *Client) GetLastCompletedTrip(ctx context.Context) (*Trip, error) {
 }
 
 func (c *Client) ListTrips(ctx context.Context) ([]*Trip, error) {
-	rows, err := sq.Select("id", "left_at", "returned_at").
+	rows, err := sq.Select("id", "left_at", "returned_at", "group_concat(tag, '|') as tags").
 		From("trips").
+		LeftJoin("trip_taggings ON trips.id = trip_taggings.trip_id").
 		Where(sq.Eq{"ignored_at": nil}).
+		GroupBy("id").
 		OrderBy("left_at DESC").
 		Limit(30).
 		RunWith(c.db).
@@ -114,14 +118,22 @@ func (c *Client) ListTrips(ctx context.Context) ([]*Trip, error) {
 		trip := new(Trip)
 		var leftAtUnix int64
 		var returnedAtUnix *int64
+		var tagsList *string
 
-		if err := rows.Scan(&trip.ID, &leftAtUnix, &returnedAtUnix); err != nil {
+		if err := rows.Scan(&trip.ID, &leftAtUnix, &returnedAtUnix, &tagsList); err != nil {
 			return nil, err
 		}
 
 		trip.LeftAt = time.Unix(leftAtUnix, 0)
 		if returnedAtUnix != nil {
 			trip.ReturnedAt = time.Unix(*returnedAtUnix, 0)
+		}
+
+		if tagsList != nil {
+			tagStrings := strings.Split(*tagsList, "|")
+			for _, tag := range tagStrings {
+				trip.Tags = append(trip.Tags, Tag(tag))
+			}
 		}
 
 		trips = append(trips, trip)
