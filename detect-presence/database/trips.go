@@ -110,36 +110,44 @@ func (c *Client) ListTrips(ctx context.Context) ([]*Trip, error) {
 		RunWith(c.db).
 		QueryContext(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("listing trips: %w", err)
 	}
 
 	var trips []*Trip
 	for rows.Next() {
-		trip := new(Trip)
-		var leftAtUnix int64
-		var returnedAtUnix *int64
-		var tagsList *string
-
-		if err := rows.Scan(&trip.ID, &leftAtUnix, &returnedAtUnix, &tagsList); err != nil {
-			return nil, err
-		}
-
-		trip.LeftAt = time.Unix(leftAtUnix, 0)
-		if returnedAtUnix != nil {
-			trip.ReturnedAt = time.Unix(*returnedAtUnix, 0)
-		}
-
-		if tagsList != nil {
-			tagStrings := strings.Split(*tagsList, "|")
-			for _, tag := range tagStrings {
-				trip.Tags = append(trip.Tags, Tag(tag))
-			}
+		trip, err := scanTrip(rows)
+		if err != nil {
+			return nil, fmt.Errorf("scanning trip row: %w", err)
 		}
 
 		trips = append(trips, trip)
 	}
 
 	return trips, nil
+}
+
+func (c *Client) GetTrip(ctx context.Context, id string) (*Trip, error) {
+	rows, err := sq.Select("id", "left_at", "returned_at", "group_concat(tag, '|') as tags").
+		From("trips").
+		LeftJoin("trip_taggings ON trips.id = trip_taggings.trip_id").
+		Where(sq.Eq{"id": id}).
+		GroupBy("id").
+		RunWith(c.db).
+		QueryContext(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("getting trip: %w", err)
+	}
+
+	if !rows.Next() {
+		return nil, fmt.Errorf("no trip with ID %s", id)
+	}
+
+	trip, err := scanTrip(rows)
+	if err != nil {
+		return nil, fmt.Errorf("scanning trip row: %w", err)
+	}
+
+	return trip, nil
 }
 
 func (c *Client) IgnoreTrip(ctx context.Context, id string) error {
@@ -152,4 +160,29 @@ func (c *Client) IgnoreTrip(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+func scanTrip(rows *sql.Rows) (*Trip, error) {
+	trip := new(Trip)
+	var leftAtUnix int64
+	var returnedAtUnix *int64
+	var tagsList *string
+
+	if err := rows.Scan(&trip.ID, &leftAtUnix, &returnedAtUnix, &tagsList); err != nil {
+		return nil, err
+	}
+
+	trip.LeftAt = time.Unix(leftAtUnix, 0)
+	if returnedAtUnix != nil {
+		trip.ReturnedAt = time.Unix(*returnedAtUnix, 0)
+	}
+
+	if tagsList != nil {
+		tagStrings := strings.Split(*tagsList, "|")
+		for _, tag := range tagStrings {
+			trip.Tags = append(trip.Tags, Tag(tag))
+		}
+	}
+
+	return trip, nil
 }

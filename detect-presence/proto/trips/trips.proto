@@ -2,21 +2,25 @@ syntax = "proto3";
 
 service TripsService {
     rpc ListTrips(ListTripsRequest) returns (ListTripsResponse);
+    rpc GetTrip(GetTripRequest) returns (GetTripResponse);
     rpc IgnoreTrip(IgnoreTripRequest) returns (IgnoreTripResponse);
+
+    rpc TagTrip(TagTripRequest) returns (TagTripResponse);
 }
 
 message ListTripsRequest {
 }
 
 message ListTripsResponse {
-    message Trip {
-        string id = 1;
-        string left_at = 2;
-        string returned_at = 3;
-        repeated string tags = 4;
-    }
-
     repeated Trip trips = 1;
+}
+
+message GetTripRequest {
+    string id = 1;
+}
+
+message GetTripResponse {
+    Trip trip = 1;
 }
 
 message IgnoreTripRequest {
@@ -24,4 +28,19 @@ message IgnoreTripRequest {
 }
 
 message IgnoreTripResponse {
+}
+
+message TagTripRequest {
+    string trip_id = 1;
+    string tag = 2;
+}
+
+message TagTripResponse {
+}
+
+message Trip {
+    string id = 1;
+    string left_at = 2;
+    string returned_at = 3;
+    repeated string tags = 4;
 }

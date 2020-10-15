@@ -17,7 +17,7 @@ func (s *Server) ListTrips(ctx context.Context, req *tripspb.ListTripsRequest) (
 	}
 
 	for _, trip := range trips {
-		t := &tripspb.ListTripsResponse_Trip{
+		t := &tripspb.Trip{
 			Id: trip.ID,
 		}
 

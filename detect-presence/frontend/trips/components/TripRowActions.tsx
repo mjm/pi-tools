@@ -1,14 +1,14 @@
 import React from "react";
-import {ListTripsResponse} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
+import {Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
 import {ignoreTrip} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/lib/mutate";
 
-export function TripRowActions({trip}: { trip: ListTripsResponse.Trip }) {
+export function TripRowActions({trip}: { trip: Trip }) {
     const [isIgnoring, setIgnoring] = React.useState(false);
 
     async function onIgnore() {
         setIgnoring(true);
         try {
-            await ignoreTrip(trip.getId())
+            await ignoreTrip(trip.getId());
         } catch (e) {
             console.error(e);
         } finally {

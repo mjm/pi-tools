@@ -41,7 +41,11 @@ http_server(
         "index.html",
         "//detect-presence/frontend/trips/styles",
     ],
-    templated_args = ["./detect-presence/frontend/trips"],
+    templated_args = [
+        "./detect-presence/frontend/trips",
+        "--proxy",
+        "http://localhost:8080?"
+    ],
 )
 
 pkg_tar(

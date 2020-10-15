@@ -1,7 +1,8 @@
 import React from "react";
 import {BrowserRouter as Router, NavLink, Route, Switch} from "react-router-dom";
-import TripsPage from "com_github_mjm_pi_tools/detect-presence/frontend/trips/components/TripsPage";
 import {Helmet} from "react-helmet";
+import TripsPage from "com_github_mjm_pi_tools/detect-presence/frontend/trips/components/TripsPage";
+import {TripPage} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/components/TripPage";
 
 export function App() {
     return (
@@ -19,7 +20,11 @@ export function App() {
                         </li>
                     </ul>
                 </nav>
+
                 <Switch>
+                    <Route path="/trips/:id">
+                        <TripPage/>
+                    </Route>
                     <Route path="/">
                         <TripsPage/>
                     </Route>

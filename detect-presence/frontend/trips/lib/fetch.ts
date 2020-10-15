@@ -1,10 +1,10 @@
-import {ListTripsRequest, ListTripsResponse} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
+import {ListTripsRequest, Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
 import {client} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/lib/trips_client";
 
 export const LIST_TRIPS = "ListTrips";
 
 const fetchers = {
-    [LIST_TRIPS]: async (): Promise<ListTripsResponse.Trip[]> => {
+    [LIST_TRIPS]: async (): Promise<Trip[]> => {
         const req = new ListTripsRequest();
         return new Promise((resolve, reject) => {
             client.listTrips(req, (err, res) => {
