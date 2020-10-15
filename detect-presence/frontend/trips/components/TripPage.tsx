@@ -17,7 +17,7 @@ export function TripPage() {
     }
 
     return (
-        <main>
+        <main className="p-10">
             <Helmet>
                 <title>Trip Details</title>
             </Helmet>
