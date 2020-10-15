@@ -1,12 +1,13 @@
 import React from "react";
 import useSWR from "swr";
-import {useParams} from "react-router-dom";
+import {useHistory, useParams} from "react-router-dom";
 import {Helmet} from "react-helmet";
 import {format, formatDuration, intervalToDuration, parseISO} from "date-fns";
 import {DescriptionField} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/components/DescriptionField";
 import {Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
 import {fetcher, GET_TRIP} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/lib/fetch";
 import {TripTag} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/components/TripTag";
+import {ignoreTrip} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/lib/mutate";
 
 export function TripPage() {
     const {id} = useParams<{ id: string }>();
@@ -31,21 +32,7 @@ export function TripPage() {
                             </h3>
                         </div>
                         <div className="ml-4 mt-2 flex-shrink-0 flex">
-                            <span className="inline-flex rounded-md shadow-sm">
-                                <button type="button"
-                                        className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-50 active:text-gray-800">
-                                    <svg className="-ml-1 mr-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg"
-                                         viewBox="0 0 20 20"
-                                         fill="currentColor">
-                                        <path fillRule="evenodd"
-                                              d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z"
-                                              clipRule="evenodd"/>
-                                    </svg>
-                                    <span>
-                                        Ignore
-                                    </span>
-                                </button>
-                            </span>
+                            {data && <TripIgnoreButton id={data.getId()}/>}
                         </div>
                     </div>
                 </div>
@@ -87,5 +74,42 @@ export function TripPage() {
                 )}
             </div>
         </main>
+    );
+}
+
+function TripIgnoreButton({id}: { id: string }) {
+    const history = useHistory();
+    const [isIgnoring, setIgnoring] = React.useState(false);
+
+    async function onIgnore() {
+        setIgnoring(true);
+        try {
+            await ignoreTrip(id);
+
+            // return to the trips page upon successful ignore
+            history.push("/");
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIgnoring(false);
+        }
+    }
+
+    return (
+        <span className="inline-flex rounded-md shadow-sm">
+            <button type="button"
+                    disabled={isIgnoring}
+                    onClick={onIgnore}
+                    className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-50 active:text-gray-800">
+                <svg className="-ml-1 mr-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 20 20"
+                     fill="currentColor">
+                    <path fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z"
+                          clipRule="evenodd"/>
+                </svg>
+                <span>Ignore</span>
+            </button>
+        </span>
     );
 }
