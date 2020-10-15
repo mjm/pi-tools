@@ -16,23 +16,26 @@ export function TripRow({trip}: { trip: Trip }) {
     }
 
     return (
-        <div className="flex items-baseline bg-gray-100 border-b border-gray-200 p-3">
-            <div>
-                <Link to={`/trips/${trip.getId()}`}>
-                    <span>{format(leftAt, "PPpp")}</span>{" "}
-                    {duration && (
-                        <>({formatDuration(duration)})</>
-                    )}
+        <tr key={trip.getId()}>
+            <td className="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900">
+                {format(leftAt, "PPpp")}
+            </td>
+            <td className="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
+                {duration ? formatDuration(duration) : "Ongoing"}
+            </td>
+            <td className="px-6 py-4 whitespace-no-wrap">
+                <div className="flex flex-row space-x-3">
+                    {trip.getTagsList().map(tag => (
+                        <TripTag key={tag} tag={tag}/>
+                    ))}
+                </div>
+            </td>
+            <td className="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
+                <Link to={`/trips/${trip.getId()}`}
+                      className="text-indigo-600 hover:text-indigo-900">
+                    Details
                 </Link>
-            </div>
-            <div className="pl-3">
-                {trip.getTagsList().map(tag => (
-                    <TripTag tag={tag} key={tag}/>
-                ))}
-            </div>
-            <div className="flex-none ml-auto">
-                <TripRowActions trip={trip}/>
-            </div>
-        </div>
+            </td>
+        </tr>
     );
 }
