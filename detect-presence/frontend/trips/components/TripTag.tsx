@@ -1,9 +1,10 @@
-import React from 'react';
+import React from "react";
 
-export function TripTag({tag}: {tag: string}) {
+export function TripTag({tag}: { tag: string }) {
     return (
-        <div className="inline-flex py-1 px-2 mx-1 rounded font-bold text-xs bg-gray-400 text-gray-800">
+        <span
+            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium leading-4 bg-blue-100 text-blue-800">
             {tag}
-        </div>
-    )
+        </span>
+    );
 }
