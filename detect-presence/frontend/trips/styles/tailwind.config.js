@@ -13,7 +13,10 @@ module.exports = {
             },
         },
     },
-    variants: {},
+    variants: {
+        display: ['responsive', 'group-hover'],
+        visibility: ['responsive', 'group-hover'],
+    },
     plugins: [
         require('@tailwindcss/ui'),
     ],

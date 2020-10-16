@@ -4,8 +4,7 @@ service TripsService {
     rpc ListTrips(ListTripsRequest) returns (ListTripsResponse);
     rpc GetTrip(GetTripRequest) returns (GetTripResponse);
     rpc IgnoreTrip(IgnoreTripRequest) returns (IgnoreTripResponse);
-
-    rpc TagTrip(TagTripRequest) returns (TagTripResponse);
+    rpc UpdateTripTags(UpdateTripTagsRequest) returns (UpdateTripTagsResponse);
 }
 
 message ListTripsRequest {
@@ -30,12 +29,13 @@ message IgnoreTripRequest {
 message IgnoreTripResponse {
 }
 
-message TagTripRequest {
+message UpdateTripTagsRequest {
     string trip_id = 1;
-    string tag = 2;
+    repeated string tags_to_add = 2;
+    repeated string tags_to_remove = 3;
 }
 
-message TagTripResponse {
+message UpdateTripTagsResponse {
 }
 
 message Trip {

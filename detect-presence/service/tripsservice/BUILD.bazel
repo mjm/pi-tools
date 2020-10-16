@@ -3,11 +3,11 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "tripsservice",
     srcs = [
-        "add_tag.go",
         "get_trip.go",
         "ignore_trip.go",
         "list_trips.go",
         "server.go",
+        "update_trip_tags.go",
     ],
     importpath = "github.com/mjm/pi-tools/detect-presence/service/tripsservice",
     visibility = ["//visibility:public"],
