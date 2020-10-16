@@ -5,14 +5,13 @@ import {Helmet} from "react-helmet";
 import {format, formatDuration, intervalToDuration, parseISO} from "date-fns";
 import {DescriptionField} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/components/DescriptionField";
 import {Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
-import {fetcher, GET_TRIP} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/lib/fetch";
-import {TripTag} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/components/TripTag";
+import {GET_TRIP} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/lib/fetch";
 import {ignoreTrip} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/lib/mutate";
 import {TripTagField} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/components/TripTagField";
 
 export function TripPage() {
     const {id} = useParams<{ id: string }>();
-    const {data, error} = useSWR<Trip>([GET_TRIP, id], fetcher);
+    const {data, error} = useSWR<Trip>([GET_TRIP, id]);
 
     if (error) {
         console.error(error);

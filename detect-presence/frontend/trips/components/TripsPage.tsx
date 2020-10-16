@@ -1,12 +1,12 @@
 import React from "react";
 import useSWR from "swr";
-import {fetcher, LIST_TRIPS} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/lib/fetch";
+import {LIST_TRIPS} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/lib/fetch";
 import {Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
 import {Helmet} from "react-helmet";
 import {TripRow} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/components/TripRow";
 
 export default function TripsPage() {
-    const {data, error} = useSWR<Trip[]>(LIST_TRIPS, fetcher);
+    const {data, error} = useSWR<Trip[]>(LIST_TRIPS);
 
     if (error) {
         console.error(error);
