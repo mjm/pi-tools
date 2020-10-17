@@ -8,9 +8,13 @@ pkg_tar(
     name = "pkg",
     srcs = [
         "//detect-presence/cmd/detect-presence",
+        "//monitoring/node_exporter:node_exporter.service",
         "//pi-hole-scraper/cmd/pi-hole-scraper",
     ],
     mode = "0755",
+    modes = {
+        "node_exporter.service": "0644",
+    },
     deps = [
         "//detect-presence/cmd/detect-presence-srv:detect-presence-srv_pkg",
         "//detect-presence/frontend/trips:pkg",
