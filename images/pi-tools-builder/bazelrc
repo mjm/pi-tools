@@ -1,0 +1,2 @@
+build --disk_cache=/cache/disk-cache
+build --repository_cache=/cache/repository-cache

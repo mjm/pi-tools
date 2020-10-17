@@ -8,32 +8,6 @@ workspace(
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
-    name = "rules_pkg",
-    sha256 = "352c090cc3d3f9a6b4e676cf42a6047c16824959b438895a76c2989c6d7c246a",
-    url = "https://github.com/bazelbuild/rules_pkg/releases/download/0.2.5/rules_pkg-0.2.5.tar.gz",
-)
-
-load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
-
-rules_pkg_dependencies()
-
-http_archive(
-    name = "build_bazel_rules_nodejs",
-    sha256 = "4952ef879704ab4ad6729a29007e7094aef213ea79e9f2e94cbe1c9a753e63ef",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/2.2.0/rules_nodejs-2.2.0.tar.gz"],
-    patches = ["//:tools/rules_nodejs.patch"],
-    patch_args = ["-p1"],
-)
-
-load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
-
-yarn_install(
-    name = "npm_trips",
-    package_json = "//detect-presence/frontend/trips:package.json",
-    yarn_lock = "//detect-presence/frontend/trips:yarn.lock",
-)
-
-http_archive(
     name = "io_bazel_rules_go",
     sha256 = "b725e6497741d7fc2d55fcc29a276627d10e43fa5d0bb692692890ae30d98d00",
     urls = [
@@ -60,6 +34,65 @@ go_register_toolchains()
 load("@io_bazel_rules_go//extras:embed_data_deps.bzl", "go_embed_data_dependencies")
 
 go_embed_data_dependencies()
+
+# Download the rules_docker repository at release v0.14.4
+http_archive(
+    name = "io_bazel_rules_docker",
+    sha256 = "4521794f0fba2e20f3bf15846ab5e01d5332e587e9ce81629c7f96c793bb7036",
+    strip_prefix = "rules_docker-0.14.4",
+    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.14.4/rules_docker-v0.14.4.tar.gz"],
+)
+
+load(
+    "@io_bazel_rules_docker//repositories:repositories.bzl",
+    container_repositories = "repositories",
+)
+container_repositories()
+
+load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
+
+container_deps()
+
+load("@io_bazel_rules_docker//repositories:pip_repositories.bzl", io_bazel_rules_docker_pip_deps = "pip_deps")
+
+io_bazel_rules_docker_pip_deps()
+
+load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
+
+container_pull(
+    name = "ubuntu_bluetooth",
+    registry = "index.docker.io",
+    repository = "mmoriarity/ubuntu-bluetooth",
+    digest = "sha256:c95fcbc19ac85f52c228a4b0d9d2bca05d6c251f9659b314acaa2bda9eee6915",
+    os = "linux",
+    architecture = "arm64",
+)
+
+http_archive(
+    name = "rules_pkg",
+    sha256 = "352c090cc3d3f9a6b4e676cf42a6047c16824959b438895a76c2989c6d7c246a",
+    url = "https://github.com/bazelbuild/rules_pkg/releases/download/0.2.5/rules_pkg-0.2.5.tar.gz",
+)
+
+load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
+
+rules_pkg_dependencies()
+
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    sha256 = "4952ef879704ab4ad6729a29007e7094aef213ea79e9f2e94cbe1c9a753e63ef",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/2.2.0/rules_nodejs-2.2.0.tar.gz"],
+    patches = ["//:tools/rules_nodejs.patch"],
+    patch_args = ["-p1"],
+)
+
+load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
+
+yarn_install(
+    name = "npm_trips",
+    package_json = "//detect-presence/frontend/trips:package.json",
+    yarn_lock = "//detect-presence/frontend/trips:yarn.lock",
+)
 
 http_archive(
     name = "rules_proto",

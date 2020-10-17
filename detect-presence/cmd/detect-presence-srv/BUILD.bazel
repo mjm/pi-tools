@@ -1,5 +1,6 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
 
 go_library(
     name = "detect-presence-srv_lib",
@@ -41,4 +42,21 @@ pkg_tar(
         "sites/presence.caddy": "0644",
     },
     visibility = ["//:__pkg__"],
+)
+
+container_image(
+    name = "image",
+    base = "@ubuntu_bluetooth//image",
+    files = [
+        ":detect-presence-srv",
+    ],
+    mode = "0755",
+)
+
+container_push(
+    name = "image.push",
+    format = "Docker",
+    image = ":image",
+    registry = "index.docker.io",
+    repository = "mmoriarity/detect-presence-srv",
 )
