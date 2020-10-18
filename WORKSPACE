@@ -78,6 +78,15 @@ container_pull(
     architecture = "arm64",
 )
 
+container_pull(
+    name = "alertmanager",
+    registry = "index.docker.io",
+    repository = "prom/alertmanager",
+    digest = "sha256:e690a0f96fcf69c2e1161736d6bb076e22a84841e1ec8ecc87e801c70b942200",
+    os = "linux",
+    architecture = "arm64",
+)
+
 http_archive(
     name = "io_bazel_rules_k8s",
     strip_prefix = "rules_k8s-0.5",

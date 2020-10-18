@@ -1,4 +1,6 @@
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
+load("@k8s_deploy//:defaults.bzl", "k8s_deploy")
 
 pkg_tar(
     name = "pkg",
@@ -13,4 +15,43 @@ pkg_tar(
     deps = [
         "//monitoring/alertmanager/templates:pkg",
     ],
+)
+
+pkg_tar(
+    name = "image_contents",
+    files = {
+        "alertmanager.yml": "etc/alertmanager/alertmanager.yml",
+        "substitute_secrets.sh": "bin/subsitute-secrets",
+    },
+    modes = {
+        "etc/alertmanager/alertmanager.yml": "0666",
+        "bin/substitute-secrets": "0755",
+    },
+    deps = [
+        "//monitoring/alertmanager/templates:pkg",
+    ],
+)
+
+container_image(
+    name = "image",
+    base = "@alertmanager//image",
+    tars = [
+        ":image_contents",
+    ],
+)
+
+container_push(
+    name = "image.push",
+    format = "Docker",
+    image = ":image",
+    registry = "index.docker.io",
+    repository = "mmoriarity/alertmanager",
+)
+
+k8s_deploy(
+    name = "k8s_deploy",
+    template = "deployment.yaml",
+    images = {
+        "index.docker.io/mmoriarity/alertmanager:latest": ":image",
+    },
 )
