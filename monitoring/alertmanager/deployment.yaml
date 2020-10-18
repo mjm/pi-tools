@@ -25,6 +25,9 @@ spec:
           image: index.docker.io/mmoriarity/alertmanager:latest
           command:
             - /bin/substitute-secrets
+          envFrom:
+            - secretRef:
+                name: alertmanager
       containers:
         - name: alertmanager
           image: index.docker.io/mmoriarity/alertmanager:latest
