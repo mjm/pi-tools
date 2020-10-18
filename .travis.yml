@@ -5,7 +5,7 @@ arch: arm64
 
 before_install:
   # Install Bazel
-  - sudo curl https://github.com/bazelbuild/bazel/releases/download/3.6.0/bazel-3.6.0-linux-arm64 -o /usr/local/bin/bazel
+  - sudo curl -L https://github.com/bazelbuild/bazel/releases/download/3.6.0/bazel-3.6.0-linux-arm64 -o /usr/local/bin/bazel
   - sudo chmod +x /usr/local/bin/bazel
 
   # Login to Docker
