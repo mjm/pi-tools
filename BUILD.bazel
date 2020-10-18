@@ -1,5 +1,6 @@
 load("@bazel_gazelle//:def.bzl", "gazelle")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
+load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
 
 # gazelle:prefix github.com/mjm/pi-tools
 gazelle(name = "gazelle")
@@ -21,5 +22,13 @@ pkg_tar(
         "//monitoring/alertmanager:pkg",
         "//monitoring/loki:pkg",
         "//monitoring/prometheus:pkg",
+    ],
+)
+
+k8s_objects(
+    name = "all_k8s",
+    objects = [
+        "//detect-presence/cmd/detect-presence-srv:k8s_deploy",
+        "//monitoring/alertmanager:k8s_deploy",
     ],
 )

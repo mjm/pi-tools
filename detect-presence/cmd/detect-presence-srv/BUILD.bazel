@@ -68,4 +68,5 @@ k8s_deploy(
     images = {
         "index.docker.io/mmoriarity/detect-presence-srv:latest": ":image",
     },
+    visibility = ["//visibility:public"],
 )

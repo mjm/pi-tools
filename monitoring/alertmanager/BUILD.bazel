@@ -54,4 +54,5 @@ k8s_deploy(
     images = {
         "index.docker.io/mmoriarity/alertmanager:latest": ":image",
     },
+    visibility = ["//visibility:public"],
 )

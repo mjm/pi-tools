@@ -1,0 +1,17 @@
+os: linux
+dist: focal
+arch: arm64
+
+before_install:
+  # Install Bazel
+  - sudo wget https://github.com/bazelbuild/bazel/releases/download/3.6.0/bazel-3.6.0-linux-arm64 -O /usr/local/bin/bazel
+  - sudo chmod +x /usr/local/bin/bazel
+
+  # Login to Docker
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+script:
+  # Build and push container images, and output the Kubernetes configs.
+  # TODO tee this to a file and upload it to S3 so it can be easily applied on the Raspberry Pi.
+  - bazel build -c opt all_k8s
+
