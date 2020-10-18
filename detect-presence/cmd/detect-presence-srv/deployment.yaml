@@ -8,8 +8,9 @@ metadata:
 spec:
   replicas: 1
   strategy:
-    maxUnavailable: 1
-    maxSurge: 1
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   selector:
     matchLabels:
       app: detect-presence
