@@ -7,6 +7,9 @@ metadata:
     app: detect-presence
 spec:
   replicas: 1
+  strategy:
+    maxUnavailable: 1
+    maxSurge: 1
   selector:
     matchLabels:
       app: detect-presence
