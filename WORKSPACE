@@ -5,7 +5,7 @@ workspace(
     },
 )
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
 
 http_archive(
     name = "io_bazel_rules_go",
@@ -48,6 +48,16 @@ load(
     container_repositories = "repositories",
 )
 container_repositories()
+
+# Override the container puller for Linux to be the ARM64 version we've built ourselves
+http_file(
+    name = "go_puller_linux",
+    executable = True,
+    sha256 = "6d162257448ed676c553119acbad0227c8553fe52fb71c68ddd6701de3a28038",
+    urls = [
+        "https://pi-tools-resources.s3.us-east-2.amazonaws.com/rules_docker/puller-linux-arm64",
+    ],
+)
 
 load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
 
