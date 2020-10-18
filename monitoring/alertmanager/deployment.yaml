@@ -31,9 +31,6 @@ spec:
       containers:
         - name: alertmanager
           image: index.docker.io/mmoriarity/alertmanager:latest
-          command:
-            - /detect-presence-srv
-            - -db=/data/presence.db
           ports:
             - containerPort: 9093
               hostPort: 9093
