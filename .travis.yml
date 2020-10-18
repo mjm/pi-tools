@@ -1,10 +1,11 @@
+language: minimal
 os: linux
 dist: focal
 arch: arm64
 
 before_install:
   # Install Bazel
-  - sudo wget https://github.com/bazelbuild/bazel/releases/download/3.6.0/bazel-3.6.0-linux-arm64 -O /usr/local/bin/bazel
+  - sudo wget -nv https://github.com/bazelbuild/bazel/releases/download/3.6.0/bazel-3.6.0-linux-arm64 -O /usr/local/bin/bazel
   - sudo chmod +x /usr/local/bin/bazel
 
   # Login to Docker
