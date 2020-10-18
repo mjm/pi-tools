@@ -30,4 +30,6 @@ spec:
               mountPath: /data
       volumes:
         - name: detect-presence-data
-          hostPath: /var/lib/detect-presence
+          hostPath:
+            path: /var/lib/detect-presence
+            type: Directory
