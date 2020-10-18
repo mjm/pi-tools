@@ -21,7 +21,7 @@ pkg_tar(
     name = "image_contents",
     files = {
         "alertmanager.yml": "etc/alertmanager/alertmanager.yml",
-        "substitute_secrets.sh": "bin/subsitute-secrets",
+        "substitute_secrets.sh": "bin/substitute-secrets",
     },
     modes = {
         "etc/alertmanager/alertmanager.yml": "0666",
