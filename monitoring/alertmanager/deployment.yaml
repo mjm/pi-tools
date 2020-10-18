@@ -32,11 +32,21 @@ spec:
         - name: alertmanager
           image: index.docker.io/mmoriarity/alertmanager:latest
           ports:
-            - containerPort: 9093
+            - name: http
+              containerPort: 9093
               hostPort: 9093
           volumeMounts:
             - name: alertmanager-data
               mountPath: /alertmanager
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: http
+            initialDelaySeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: http
       volumes:
         - name: alertmanager-data
           emptyDir: {}
