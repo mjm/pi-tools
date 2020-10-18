@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: detect-presence
+  name: detect-presence-srv
+  labels:
+    app: detect-presence
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: detect-presence
+  template:
+    metadata:
+      labels:
+        app: detect-presence
+    spec:
+      hostNetwork: true
+      containers:
+        - name: detect-presence-srv
+          image: index.docker.io/mmoriarity/detect-presence-srv:latest
+          command:
+            - /detect-presence-srv
+          ports:
+            - containerPort: 2120
+              hostPort: 2120
