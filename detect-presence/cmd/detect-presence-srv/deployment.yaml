@@ -20,6 +20,7 @@ spec:
         app: detect-presence
     spec:
       hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       containers:
         - name: detect-presence-srv
           image: index.docker.io/mmoriarity/detect-presence-srv:latest
