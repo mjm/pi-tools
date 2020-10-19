@@ -13,8 +13,8 @@ before_install:
 
 script:
   # Build and push container images, and output the Kubernetes configs.
-  # TODO tee this to a file and upload it to S3 so it can be easily applied on the Raspberry Pi.
-  - bazel build -c opt all_k8s
+  # TODO upload this to S3 so it can be easily applied on the Raspberry Pi.
+  - bazel run -c opt all_k8s | tee /tmp/all_k8s.yaml
 
 cache:
   directories:
