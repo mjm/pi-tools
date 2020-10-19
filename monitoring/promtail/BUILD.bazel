@@ -18,4 +18,5 @@ k8s_object(
     images = {
         "index.docker.io/mmoriarity/promtail:latest": ":image",
     },
+    visibility = ["//visibility:public"],
 )
