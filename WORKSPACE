@@ -106,6 +106,24 @@ container_pull(
 )
 
 container_pull(
+    name = "loki",
+    registry = "index.docker.io",
+    repository = "grafana/loki",
+    digest = "sha256:6afc0da6995fecf15307762d378242b65cab20d4a35b4a39397d67cad48fb7fb", # 1.6.1
+    os = "linux",
+    architecture = "arm64",
+)
+
+container_pull(
+    name = "promtail",
+    registry = "index.docker.io",
+    repository = "grafana/promtail",
+    digest = "sha256:d0965273b4e7c9dc2430f48e7b31f9eebf3a1d301a24c5d1cf49bdd2a9289dfb", # 1.6.1
+    os = "linux",
+    architecture = "arm64",
+)
+
+container_pull(
     name = "caddy",
     registry = "index.docker.io",
     repository = "caddy",
