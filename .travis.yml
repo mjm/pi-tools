@@ -30,3 +30,5 @@ deploy:
   bucket: pi-tools-builds
   region: us-east-2
   local_dir: /tmp/s3_staging
+  on:
+    all_branches: true
