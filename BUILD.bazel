@@ -32,5 +32,6 @@ k8s_objects(
         "//homebase:k8s",
         "//monitoring/alertmanager:k8s_deploy",
         "//monitoring/node_exporter:k8s_daemon",
+        "//monitoring/prometheus:k8s",
     ],
 )
