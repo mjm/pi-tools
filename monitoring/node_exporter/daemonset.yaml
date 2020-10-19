@@ -42,7 +42,7 @@ spec:
               mountPropagation: HostToContainer
             - name: root
               mountPath: /run/systemd
-              subPath: /run/systemd
+              subPath: run/systemd
               readOnly: true
             - name: sys
               mountPath: /host/sys
