@@ -14,17 +14,19 @@ spec:
       labels:
         app: node-exporter
     spec:
-      hostIPC: true
       hostNetwork: true
       hostPID: true
+      nodeSelector:
+        kubernetes.io/os: linux
       containers:
         - name: node-exporter
           image: index.docker.io/prom/node-exporter@sha256:102e4174764c84236d5dd0df03f48f1f34a49c9b236e549c97f40c5300f5390a
           args:
+            - --path.procfs=/host/proc
+            - --path.sysfs=/host/sys
+            - --path.rootfs=/host/root
             - --collector.processes
             - --collector.systemd
-            - --collector.wifi
-            - --path.rootfs=/host
           ports:
             - name: http
               containerPort: 9100
@@ -35,14 +37,29 @@ spec:
             runAsGroup: 0
           volumeMounts:
             - name: root
-              mountPath: /host
+              mountPath: /host/root
               readOnly: true
+              mountPropagation: HostToContainer
             - name: root
               mountPath: /run/systemd
               subPath: /run/systemd
               readOnly: true
+            - name: sys
+              mountPath: /host/sys
+              readOnly: true
+              mountPropagation: HostToContainer
+            - name: proc
+              mountPath: /host/proc
+              readOnly: true
+              mountPropagation: HostToContainer
       volumes:
         - name: root
           hostPath:
             path: /
             type: Directory
+        - name: sys
+          hostPath:
+            path: /sys
+        - name: proc
+          hostPath:
+            path: /proc
