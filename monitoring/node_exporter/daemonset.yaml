@@ -36,6 +36,11 @@ spec:
           volumeMounts:
             - name: root
               mountPath: /host
+              readOnly: true
+            - name: root
+              mountPath: /run/systemd
+              subPath: /run/systemd
+              readOnly: true
       volumes:
         - name: root
           hostPath:
