@@ -28,6 +28,9 @@ spec:
           envFrom:
             - secretRef:
                 name: alertmanager
+          volumeMounts:
+            - name: alertmanager-config
+              mountPath: /cfg/alertmanager
       containers:
         - name: alertmanager
           image: index.docker.io/mmoriarity/alertmanager:latest
@@ -38,6 +41,10 @@ spec:
           volumeMounts:
             - name: alertmanager-data
               mountPath: /alertmanager
+            - name: alertmanager-config
+              mountPath: /etc/alertmanager/alertmanager.yml
+              subPath: alertmanager.yml
+              readOnly: true
           livenessProbe:
             httpGet:
               path: /-/healthy
@@ -49,4 +56,6 @@ spec:
               port: http
       volumes:
         - name: alertmanager-data
+          emptyDir: {}
+        - name: alertmanager-config
           emptyDir: {}
