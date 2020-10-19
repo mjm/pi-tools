@@ -19,7 +19,7 @@ spec:
       hostPID: true
       containers:
         - name: node-exporter
-          image: index.docker.io/prom/node_exporter@sha256:102e4174764c84236d5dd0df03f48f1f34a49c9b236e549c97f40c5300f5390a
+          image: index.docker.io/prom/node-exporter@sha256:102e4174764c84236d5dd0df03f48f1f34a49c9b236e549c97f40c5300f5390a
           args:
             - --collector.processes
             - --collector.systemd
