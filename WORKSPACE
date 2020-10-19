@@ -79,6 +79,15 @@ container_pull(
 )
 
 container_pull(
+    name = "prometheus",
+    registry = "index.docker.io",
+    repository = "prom/prometheus",
+    digest = "sha256:9fa25ec244e0109fdbeaff89496ac149c0539489f2f2126b9e38cf9837235be4",
+    os = "linux",
+    architecture = "arm64",
+)
+
+container_pull(
     name = "alertmanager",
     registry = "index.docker.io",
     repository = "prom/alertmanager",

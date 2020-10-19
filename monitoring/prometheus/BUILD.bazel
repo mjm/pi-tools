@@ -1,4 +1,5 @@
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
 load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
 load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
 
@@ -18,6 +19,36 @@ pkg_tar(
     ],
 )
 
+pkg_tar(
+    name = "image_contents",
+    files = {
+        "prometheus-k8s.yml": "etc/prometheus/prometheus.yml",
+    },
+    modes = {
+        "etc/prometheus/prometheus.yml": "0644",
+    },
+    deps = [
+        "//monitoring/prometheus/rules:pkg",
+    ],
+)
+
+container_image(
+    name = "image",
+    base = "@prometheus//image",
+    tars = [
+        ":image_contents",
+    ],
+)
+
+k8s_object(
+    name = "k8s_deploy",
+    kind = "deployment",
+    template = "deployment.yaml",
+    images = {
+        "index.docker.io/mmoriarity/prometheus:latest": ":image",
+    },
+)
+
 k8s_object(
     name = "k8s_service",
     kind = "service",
@@ -33,6 +64,7 @@ k8s_object(
 k8s_objects(
     name = "k8s",
     objects = [
+        ":k8s_deploy",
         ":k8s_service",
         ":k8s_ingress",
     ],
