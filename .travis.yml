@@ -12,6 +12,9 @@ before_install:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 script:
+  # Make sure we still get the failure from Bazel even though we pipe it.
+  - set -o pipefail
+
   # Build and push container images, and output the Kubernetes configs.
   - bazel run -c opt all_k8s | tee /tmp/all_k8s.yaml
 
