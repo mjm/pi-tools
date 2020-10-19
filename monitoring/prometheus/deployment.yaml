@@ -39,4 +39,5 @@ spec:
               port: http
       volumes:
         - name: prometheus-data
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: prometheus-data
