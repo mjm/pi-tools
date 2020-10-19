@@ -1,0 +1,5 @@
+exports_files([
+    "k8s_service.yaml.tpl",
+    "rules_nodejs.patch",
+    "rules_typescript_proto.patch",
+])
