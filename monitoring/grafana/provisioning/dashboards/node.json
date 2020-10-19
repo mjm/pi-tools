@@ -13678,8 +13678,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "node",
-          "value": "node"
+          "text": "kubernetes-pods",
+          "value": "kubernetes-pods"
         },
         "datasource": "Prometheus",
         "definition": "",
@@ -13704,8 +13704,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "localhost:9100",
-          "value": "localhost:9100"
+          "text": "10.0.0.2:9100",
+          "value": "10.0.0.2:9100"
         },
         "datasource": "Prometheus",
         "definition": "label_values(node_uname_info{job=\"$job\"}, instance)",
