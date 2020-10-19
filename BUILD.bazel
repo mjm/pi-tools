@@ -34,5 +34,6 @@ k8s_objects(
         "//monitoring/grafana:k8s",
         "//monitoring/node_exporter:k8s_daemon",
         "//monitoring/prometheus:k8s",
+        "//pi-hole:k8s",
     ],
 )

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: pi-hole
+  name: pi-hole
+spec:
+  ports:
+    - port: 80
+      targetPort: 1080
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  namespace: pi-hole
+  name: pi-hole
+subsets:
+  - addresses:
+      - ip: 10.0.0.2
+    ports:
+      - port: 1080

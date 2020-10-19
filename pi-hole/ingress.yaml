@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: pi-hole
+  name: pi-hole
+spec:
+  rules:
+    - host: pi.hole
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: pi-hole
+                port:
+                  number: 80
