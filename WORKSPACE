@@ -87,6 +87,15 @@ container_pull(
     architecture = "arm64",
 )
 
+container_pull(
+    name = "caddy",
+    registry = "index.docker.io",
+    repository = "caddy",
+    digest = "sha256:085d496dad79fa71008de50e50f06591ab871b8f4711510a759b48a560bfe3aa", # 2.2.1-alpine
+    os = "linux",
+    architecture = "arm64",
+)
+
 http_archive(
     name = "io_bazel_rules_k8s",
     strip_prefix = "rules_k8s-0.5",

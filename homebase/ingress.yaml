@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: homebase
+  name: homebase
+spec:
+  rules:
+    - host: homebase
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: homebase-srv
+                port:
+                  number: 80
