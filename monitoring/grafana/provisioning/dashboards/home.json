@@ -187,7 +187,7 @@
       "pluginVersion": "7.2.1",
       "targets": [
         {
-          "expr": "presence_device_total",
+          "expr": "max(presence_device_total) by (name)",
           "instant": false,
           "interval": "",
           "legendFormat": "{{name}}",
