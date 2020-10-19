@@ -30,7 +30,7 @@ k8s_objects(
     objects = [
         "//detect-presence/cmd/detect-presence-srv:k8s",
         "//homebase:k8s",
-        "//monitoring/alertmanager:k8s_deploy",
+        "//monitoring/alertmanager:k8s",
         "//monitoring/grafana:k8s",
         "//monitoring/node_exporter:k8s_daemon",
         "//monitoring/prometheus:k8s",
