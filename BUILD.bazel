@@ -30,5 +30,6 @@ k8s_objects(
     objects = [
         "//detect-presence/cmd/detect-presence-srv:k8s_deploy",
         "//monitoring/alertmanager:k8s_deploy",
+        "//monitoring/node_exporter:k8s_daemon",
     ],
 )

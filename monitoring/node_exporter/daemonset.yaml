@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: monitoring
+  name: node_exporter
+  labels:
+    app: node_exporter
+spec:
+  selector:
+    matchLabels:
+      app: node_exporter
+  template:
+    metadata:
+      labels:
+        app: node_exporter
+    spec:
+      hostIPC: true
+      hostNetwork: true
+      hostPID: true
+      containers:
+        - name: node_exporter
+          image: index.docker.io/prom/node_exporter@sha256:102e4174764c84236d5dd0df03f48f1f34a49c9b236e549c97f40c5300f5390a
+          args:
+            - --collector.processes
+            - --collector.systemd
+            - --collector.wifi
+            - --path.rootfs=/host
+          ports:
+            - name: http
+              containerPort: 9100
+              hostPort: 9100
+          securityContext:
+            privileged: true
+            runAsUser: 0
+            runAsGroup: 0
+          volumeMounts:
+            - name: root
+              mountPath: /host
+      volumes:
+        - name: root
+          hostPath:
+            path: /
+            type: Directory
