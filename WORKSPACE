@@ -97,6 +97,15 @@ container_pull(
 )
 
 container_pull(
+    name = "grafana",
+    registry = "index.docker.io",
+    repository = "grafana/grafana",
+    digest = "sha256:f0817ecbf8dcf33e10cca2245bd25439433c441189bbe1ce935ac61d05f9cc6f", # 7.2.1
+    os = "linux",
+    architecture = "arm64",
+)
+
+container_pull(
     name = "caddy",
     registry = "index.docker.io",
     repository = "caddy",
