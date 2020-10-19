@@ -14,7 +14,7 @@ export function NavigationBar() {
                         </div>
                         <div className="hidden md:block">
                             <div className="ml-10 flex items-baseline space-x-4">
-                                <NavLink to="/">
+                                <NavLink to="/trips">
                                     Your Trips
                                 </NavLink>
                             </div>
