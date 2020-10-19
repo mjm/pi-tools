@@ -2,7 +2,7 @@ import React from "react";
 import {format, formatDuration, intervalToDuration, parseISO} from "date-fns";
 import {Link} from "react-router-dom";
 import {Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
-import {TripTag} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/components/TripTag";
+import {TripTag} from "com_github_mjm_pi_tools/homebase/trips/components/TripTag";
 
 export function TripRow({trip}: { trip: Trip }) {
     const leftAt = parseISO(trip.getLeftAt());

@@ -1,4 +1,4 @@
-load("@npm_trips//postcss-cli:index.bzl", "postcss")
+load("@npm_homebase//postcss-cli:index.bzl", "postcss")
 
 postcss(
     name = "styles",
@@ -12,7 +12,7 @@ postcss(
         "postcss.config.js",
         "styles.css",
         "tailwind.config.js",
-        "@npm_trips//:node_modules",
+        "@npm_homebase//:node_modules",
     ],
-    visibility = ["//detect-presence/frontend/trips:__subpackages__"],
+    visibility = ["//homebase:__pkg__"],
 )

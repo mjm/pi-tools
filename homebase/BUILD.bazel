@@ -1,6 +1,6 @@
-load("@npm_trips//@bazel/typescript:index.bzl", "ts_library")
-load("@npm_trips//http-server:index.bzl", "http_server")
-load("@npm_trips//@bazel/rollup:index.bzl", "rollup_bundle")
+load("@npm_homebase//@bazel/typescript:index.bzl", "ts_library")
+load("@npm_homebase//http-server:index.bzl", "http_server")
+load("@npm_homebase//@bazel/rollup:index.bzl", "rollup_bundle")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 
 exports_files(
@@ -9,16 +9,17 @@ exports_files(
 )
 
 ts_library(
-    name = "trips",
+    name = "homebase",
     srcs = [
+        "App.tsx",
         "index.tsx",
         "types.d.ts",
     ],
-    tsconfig = "//detect-presence/frontend/trips:tsconfig.json",
+    tsconfig = "//homebase:tsconfig.json",
     deps = [
-        "//detect-presence/frontend/trips/components",
-        "@npm_trips//@types/react",
-        "@npm_trips//@types/react-dom",
+        "//homebase/components",
+        "//homebase/trips/components",
+        "@npm_homebase//:node_modules",
     ],
 )
 
@@ -29,8 +30,8 @@ rollup_bundle(
     format = "umd",
     link_workspace_root = True,
     deps = [
-        ":trips",
-        "@npm_trips//:node_modules",
+        ":homebase",
+        "@npm_homebase//:node_modules",
     ],
 )
 
@@ -39,10 +40,10 @@ http_server(
     data = [
         "bundle.js",
         "index.html",
-        "//detect-presence/frontend/trips/styles",
+        "//homebase/styles",
     ],
     templated_args = [
-        "./detect-presence/frontend/trips",
+        "./homebase",
         "--proxy",
         "http://localhost:8080?",
     ],
@@ -55,10 +56,10 @@ pkg_tar(
         "index.html",
     ],
     files = {
-        "//detect-presence/frontend/trips/styles": "styles/app.css",
+        "//homebase/styles": "styles/app.css",
     },
     mode = "0644",
-    package_dir = "./trips-web",
+    package_dir = "./homebase",
     remap_paths = {
         "./app.css": "./styles/app.css",
     },

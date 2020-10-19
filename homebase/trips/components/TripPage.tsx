@@ -1,13 +1,13 @@
 import React from "react";
-import useSWR from "swr";
-import {useHistory, useParams} from "react-router-dom";
 import {Helmet} from "react-helmet";
+import {useHistory, useParams} from "react-router-dom";
+import useSWR from "swr";
 import {format, formatDuration, intervalToDuration, parseISO} from "date-fns";
-import {DescriptionField} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/components/DescriptionField";
+import {DescriptionField} from "com_github_mjm_pi_tools/homebase/components/DescriptionField";
 import {Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
-import {GET_TRIP} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/lib/fetch";
-import {ignoreTrip} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/lib/mutate";
-import {TripTagField} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/components/TripTagField";
+import {GET_TRIP} from "com_github_mjm_pi_tools/homebase/trips/lib/fetch";
+import {ignoreTrip} from "com_github_mjm_pi_tools/homebase/trips/lib/mutate";
+import {TripTagField} from "com_github_mjm_pi_tools/homebase/trips/components/TripTagField";
 
 export function TripPage() {
     const {id} = useParams<{ id: string }>();

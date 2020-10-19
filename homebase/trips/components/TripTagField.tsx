@@ -1,7 +1,7 @@
 import React from "react";
 import {Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
-import {TripTag} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/components/TripTag";
-import {updateTripTags} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/lib/mutate";
+import {TripTag} from "com_github_mjm_pi_tools/homebase/trips/components/TripTag";
+import {updateTripTags} from "com_github_mjm_pi_tools/homebase/trips/lib/mutate";
 
 export function TripTagField({trip}: { trip: Trip }) {
     const [draftTags, setDraftTags] = React.useState<string | null>(null);

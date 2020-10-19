@@ -1,11 +1,11 @@
-import {client} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/lib/trips_client";
+import {mutate} from "swr";
+import {client} from "com_github_mjm_pi_tools/homebase/trips/lib/trips_client";
 import {
     IgnoreTripRequest,
     Trip,
     UpdateTripTagsRequest,
 } from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
-import {mutate} from "swr";
-import {GET_TRIP, LIST_TRIPS} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/lib/fetch";
+import {GET_TRIP, LIST_TRIPS} from "com_github_mjm_pi_tools/homebase/trips/lib/fetch";
 
 export async function ignoreTrip(id: string): Promise<void> {
     const req = new IgnoreTripRequest();

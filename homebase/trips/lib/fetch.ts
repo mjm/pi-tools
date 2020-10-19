@@ -1,5 +1,5 @@
 import {GetTripRequest, ListTripsRequest, Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
-import {client} from "com_github_mjm_pi_tools/detect-presence/frontend/trips/lib/trips_client";
+import {client} from "com_github_mjm_pi_tools/homebase/trips/lib/trips_client";
 
 export const LIST_TRIPS = "ListTrips";
 export const GET_TRIP = "GetTrip";

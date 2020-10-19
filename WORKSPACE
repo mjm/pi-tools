@@ -1,7 +1,7 @@
 workspace(
     name = "com_github_mjm_pi_tools",
     managed_directories = {
-        "@npm_trips": ["detect-presence/frontend/trips/node_modules"],
+        "@npm_homebase": ["homebase/node_modules"],
     },
 )
 
@@ -130,9 +130,9 @@ http_archive(
 load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
 
 yarn_install(
-    name = "npm_trips",
-    package_json = "//detect-presence/frontend/trips:package.json",
-    yarn_lock = "//detect-presence/frontend/trips:yarn.lock",
+    name = "npm_homebase",
+    package_json = "//homebase:package.json",
+    yarn_lock = "//homebase:yarn.lock",
 )
 
 http_archive(

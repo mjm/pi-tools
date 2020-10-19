@@ -9,13 +9,13 @@
     "baseUrl": ".",
     "paths": {
       "com_github_mjm_pi_tools/*": [
-        "../../../*",
-        "../../../bazel-bin/*"
+        "../*",
+        "../bazel-bin/*"
       ]
     },
     "types": ["node"]
   },
   "exclude": [
-    "detect-presence/frontend/trips/node_modules"
+    "homebase/node_modules"
   ]
 }
