@@ -13,9 +13,20 @@ before_install:
 
 script:
   # Build and push container images, and output the Kubernetes configs.
-  # TODO upload this to S3 so it can be easily applied on the Raspberry Pi.
   - bazel run -c opt all_k8s | tee /tmp/all_k8s.yaml
 
 cache:
   directories:
     - $HOME/.cache/bazel
+
+before_deploy:
+  - mkdir -p /tmp/s3_staging/$TRAVIS_COMMIT /tmp/s3_staging/latest
+  - cp /tmp/all_k8s.yaml /tmp/s3_staging/$TRAVIS_COMMIT/all_k8s.yaml
+  - echo "$TRAVIS_COMMIT" > /tmp/s3_staging/latest/$TRAVIS_BRANCH.txt
+
+deploy:
+  edge: true
+  provider: s3
+  bucket: pi-tools-builds
+  region: us-east-2
+  local_dir: /tmp/s3_staging
