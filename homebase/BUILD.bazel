@@ -13,7 +13,6 @@ ts_library(
     srcs = [
         "App.tsx",
         "index.tsx",
-        "types.d.ts",
     ],
     tsconfig = "//homebase:tsconfig.json",
     deps = [
