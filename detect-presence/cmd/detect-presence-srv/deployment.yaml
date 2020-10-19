@@ -27,7 +27,8 @@ spec:
             - /detect-presence-srv
             - -db=/data/presence.db
           ports:
-            - containerPort: 2120
+            - name: http
+              containerPort: 2120
               hostPort: 2120
           volumeMounts:
             - name: detect-presence-data
