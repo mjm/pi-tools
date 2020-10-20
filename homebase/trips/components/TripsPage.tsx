@@ -4,6 +4,7 @@ import useSWR from "swr";
 import {LIST_TRIPS} from "com_github_mjm_pi_tools/homebase/trips/lib/fetch";
 import {Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
 import {TripRow} from "com_github_mjm_pi_tools/homebase/trips/components/TripRow";
+import {PageHeader} from "com_github_mjm_pi_tools/homebase/components/PageHeader";
 
 export function TripsPage() {
     const {data, error} = useSWR<Trip[]>(LIST_TRIPS);
@@ -18,13 +19,9 @@ export function TripsPage() {
                 <title>Your Trips</title>
             </Helmet>
 
-            <header className="bg-white shadow">
-                <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-3xl font-bold leading-tight text-gray-900">
-                        Your trips
-                    </h1>
-                </div>
-            </header>
+            <PageHeader>
+                Your trips
+            </PageHeader>
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 {error && (
                     <p>Error loading trips: {error.toString()}</p>

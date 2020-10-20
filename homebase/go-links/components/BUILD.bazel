@@ -6,6 +6,7 @@ ts_library(
     tsconfig = "//homebase:tsconfig.json",
     visibility = ["//homebase:__subpackages__"],
     deps = [
+        "//homebase/components",
         "@npm_homebase//:node_modules",
     ],
 )
