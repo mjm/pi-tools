@@ -1,29 +1,8 @@
 load("@bazel_gazelle//:def.bzl", "gazelle")
-load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
 
 # gazelle:prefix github.com/mjm/pi-tools
 gazelle(name = "gazelle")
-
-pkg_tar(
-    name = "pkg",
-    srcs = [
-        "//detect-presence/cmd/detect-presence",
-        "//monitoring/node_exporter:node_exporter.service",
-        "//pi-hole-scraper/cmd/pi-hole-scraper",
-    ],
-    mode = "0755",
-    modes = {
-        "node_exporter.service": "0644",
-    },
-    deps = [
-        "//detect-presence/cmd/detect-presence-srv:detect-presence-srv_pkg",
-        "//detect-presence/frontend/trips:pkg",
-        "//monitoring/alertmanager:pkg",
-        "//monitoring/loki:pkg",
-        "//monitoring/prometheus:pkg",
-    ],
-)
 
 k8s_objects(
     name = "all_k8s",

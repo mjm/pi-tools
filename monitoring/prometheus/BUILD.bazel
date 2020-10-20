@@ -5,25 +5,9 @@ load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
 load("//tools:k8s.bzl", "k8s_http_service", "k8s_virtual_host")
 
 pkg_tar(
-    name = "pkg",
-    srcs = [
-        "prometheus.service",
-    ],
-    files = {
-        "prometheus.caddy": "sites/prometheus.caddy",
-        "prometheus.yml": "etc/prometheus.yml",
-    },
-    mode = "0644",
-    visibility = ["//:__pkg__"],
-    deps = [
-        "//monitoring/prometheus/rules:pkg",
-    ],
-)
-
-pkg_tar(
     name = "image_contents",
     files = {
-        "prometheus-k8s.yml": "etc/prometheus/prometheus.yml",
+        "prometheus.yml": "etc/prometheus/prometheus.yml",
     },
     modes = {
         "etc/prometheus/prometheus.yml": "0644",

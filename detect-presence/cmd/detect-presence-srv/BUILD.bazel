@@ -1,7 +1,5 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
-load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image")
-load("@k8s_deploy//:defaults.bzl", "k8s_deploy")
 load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
 load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
 load("//tools:k8s.bzl", "k8s_http_service", "k8s_virtual_host")
@@ -31,23 +29,6 @@ go_binary(
     visibility = ["//visibility:public"],
 )
 
-pkg_tar(
-    name = "detect-presence-srv_pkg",
-    srcs = [
-        "detect-presence.service",
-        ":detect-presence-srv",
-    ],
-    files = {
-        "presence.caddy": "sites/presence.caddy",
-    },
-    modes = {
-        "detect-presence-srv": "0755",
-        "detect-presence.service": "0644",
-        "sites/presence.caddy": "0644",
-    },
-    visibility = ["//:__pkg__"],
-)
-
 container_image(
     name = "image",
     base = "@ubuntu_bluetooth//image",
@@ -57,8 +38,9 @@ container_image(
     mode = "0755",
 )
 
-k8s_deploy(
+k8s_object(
     name = "k8s_deploy",
+    kind = "deployment",
     template = "deployment.yaml",
     images = {
         "index.docker.io/mmoriarity/detect-presence-srv:latest": ":image",
