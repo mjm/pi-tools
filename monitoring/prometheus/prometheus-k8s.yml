@@ -5,13 +5,24 @@ global:
 alerting:
   alertmanagers:
     - kubernetes_sd_configs:
-        - role: service
+        - role: endpoints
           namespaces:
             names:
               - monitoring
-          selectors:
-            - role: service
-              label: app=alertmanager
+        scheme: http
+        path_prefix: /
+        timeout: 10s
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_label_k8s_app]
+            separator: ;
+            regex: monitoring;alertmanager
+            replacement: $1
+            action: keep
+          - source_labels: [__meta_kubernetes_endpoint_port_name]
+            separator: ;
+            regex: http
+            replacement: $1
+            action: keep
 
 rule_files:
   - /etc/prom_rules/*.yml
