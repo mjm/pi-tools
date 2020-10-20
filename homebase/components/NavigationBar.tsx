@@ -17,6 +17,9 @@ export function NavigationBar() {
                                 <NavLink to="/trips">
                                     Your Trips
                                 </NavLink>
+                                <NavLink to="/go">
+                                    Go Links
+                                </NavLink>
                             </div>
                         </div>
                     </div>
@@ -38,8 +41,11 @@ export function NavigationBar() {
 
             <div className="hidden md:hidden">
                 <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                    <MobileNavLink to="/">
+                    <MobileNavLink to="/trips">
                         Your Trips
+                    </MobileNavLink>
+                    <MobileNavLink to="/go">
+                        Go Links
                     </MobileNavLink>
                 </div>
             </div>
