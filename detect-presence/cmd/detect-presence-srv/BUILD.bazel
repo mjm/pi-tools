@@ -4,7 +4,7 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_image")
 load("@k8s_deploy//:defaults.bzl", "k8s_deploy")
 load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
 load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
-load("//tools:k8s.bzl", "k8s_http_service")
+load("//tools:k8s.bzl", "k8s_http_service", "k8s_virtual_host")
 
 go_library(
     name = "detect-presence-srv_lib",
@@ -72,10 +72,11 @@ k8s_http_service(
     app = "detect-presence",
 )
 
-k8s_object(
+k8s_virtual_host(
     name = "k8s_ingress",
-    kind = "ingress",
-    template = "ingress.yaml",
+    namespace = "detect-presence",
+    service_name = "detect-presence-srv",
+    host_name = "detect-presence",
 )
 
 k8s_objects(

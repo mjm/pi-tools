@@ -5,7 +5,7 @@ load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image")
 load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
 load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
-load("//tools:k8s.bzl", "k8s_http_service")
+load("//tools:k8s.bzl", "k8s_http_service", "k8s_virtual_host")
 
 exports_files(
     ["tsconfig.json"],
@@ -96,10 +96,11 @@ k8s_http_service(
     app = "homebase",
 )
 
-k8s_object(
+k8s_virtual_host(
     name = "k8s_ingress",
-    kind = "ingress",
-    template = "ingress.yaml",
+    namespace = "homebase",
+    service_name = "homebase-srv",
+    host_name = "homebase",
 )
 
 k8s_objects(

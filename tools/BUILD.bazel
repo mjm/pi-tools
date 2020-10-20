@@ -1,5 +1,6 @@
 exports_files([
     "k8s_service.yaml.tpl",
+    "k8s_virtual_host.yaml.tpl",
     "rules_nodejs.patch",
     "rules_typescript_proto.patch",
 ])

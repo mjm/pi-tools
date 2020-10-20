@@ -1,17 +1,17 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  namespace: monitoring
-  name: grafana
+  namespace: {NAMESPACE}
+  name: {NAME}
 spec:
   rules:
-    - host: grafana
+    - host: {NAME}
       http:
         paths:
           - path: "/"
             pathType: Prefix
             backend:
               service:
-                name: grafana
+                name: {SERVICE_NAME}
                 port:
-                  number: 80
+                  number: {PORT}
