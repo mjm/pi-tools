@@ -5,6 +5,8 @@ metadata:
   name: detect-presence-srv
   labels:
     app: detect-presence
+  annotations:
+    prometheus.io/scrape: "true"
 spec:
   replicas: 1
   strategy:

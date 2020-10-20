@@ -5,6 +5,8 @@ metadata:
   name: prometheus
   labels:
     app: prometheus
+  annotations:
+    prometheus.io/scrape: "true"
 spec:
   replicas: 1
   strategy:

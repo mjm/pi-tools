@@ -5,6 +5,9 @@ metadata:
   name: homebase-srv
   labels:
     app: homebase
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9090"
 spec:
   replicas: 2
   strategy:

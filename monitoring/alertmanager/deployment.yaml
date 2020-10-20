@@ -5,6 +5,8 @@ metadata:
   name: alertmanager
   labels:
     app: alertmanager
+  annotations:
+    prometheus.io/scrape: "true"
 spec:
   replicas: 1
   strategy:
