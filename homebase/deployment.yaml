@@ -32,3 +32,5 @@ spec:
           ports:
             - name: http
               containerPort: 8080
+            - name: http-metrics
+              containerPort: 9090

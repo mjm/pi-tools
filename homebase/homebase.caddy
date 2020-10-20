@@ -1,12 +1,17 @@
-:8080
-root * /homebase
-file_server
-reverse_proxy /TripsService/* detect-presence-srv.detect-presence:80
+:8080 {
+    root * /homebase
+    file_server
+    reverse_proxy /TripsService/* detect-presence-srv.detect-presence:80
 
-handle_errors {
-  @404 {
-    expression {http.error.status_code} == 404
-  }
-  rewrite @404 /index.html
-  file_server
+    handle_errors {
+      @404 {
+        expression {http.error.status_code} == 404
+      }
+      rewrite @404 /index.html
+      file_server
+    }
+}
+
+:9090 {
+  metrics /metrics
 }
