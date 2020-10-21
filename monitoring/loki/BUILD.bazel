@@ -6,20 +6,20 @@ load("//tools:k8s.bzl", "k8s_http_service")
 container_image(
     name = "image",
     base = "@loki//image",
+    directory = "etc/loki",
     files = [
         "loki.yml",
     ],
-    directory = "etc/loki",
     mode = "0444",
 )
 
 k8s_object(
     name = "k8s_deploy",
-    kind = "deployment",
-    template = "deployment.yaml",
     images = {
         "index.docker.io/mmoriarity/loki:latest": ":image",
     },
+    kind = "deployment",
+    template = "deployment.yaml",
 )
 
 k8s_http_service(

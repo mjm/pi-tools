@@ -29,11 +29,11 @@ container_image(
 
 k8s_object(
     name = "k8s_deploy",
-    kind = "deployment",
-    template = "deployment.yaml",
     images = {
         "index.docker.io/mmoriarity/alertmanager:latest": ":image",
     },
+    kind = "deployment",
+    template = "deployment.yaml",
     visibility = ["//visibility:public"],
 )
 

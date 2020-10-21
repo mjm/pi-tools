@@ -7,15 +7,15 @@ pkg_tar(
         "datasources.yaml": "etc/grafana/provisioning/datasources/datasources.yaml",
     },
     mode = "0444",
+    visibility = ["//monitoring/grafana:__pkg__"],
     deps = [
         ":dashboards_pkg",
     ],
-    visibility = ["//monitoring/grafana:__pkg__"],
 )
 
 pkg_tar(
     name = "dashboards_pkg",
     srcs = glob(["dashboards/**/*.json"]),
-    strip_prefix = ".",
     package_dir = "etc/grafana",
+    strip_prefix = ".",
 )

@@ -83,25 +83,25 @@ container_image(
 
 k8s_object(
     name = "k8s_deploy",
-    kind = "deployment",
-    template = "deployment.yaml",
     images = {
         "index.docker.io/mmoriarity/homebase-srv:latest": ":image",
     },
+    kind = "deployment",
+    template = "deployment.yaml",
 )
 
 k8s_http_service(
     name = "k8s_service",
+    app = "homebase",
     namespace = "homebase",
     service_name = "homebase-srv",
-    app = "homebase",
 )
 
 k8s_virtual_host(
     name = "k8s_ingress",
+    host_name = "homebase",
     namespace = "homebase",
     service_name = "homebase-srv",
-    host_name = "homebase",
 )
 
 k8s_objects(
