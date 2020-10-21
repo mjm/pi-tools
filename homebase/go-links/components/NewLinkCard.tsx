@@ -1,9 +1,10 @@
 import React from "react";
 import {Field, Form, Formik} from "formik";
+import {createLink, CreateLinkParams} from "com_github_mjm_pi_tools/homebase/go-links/lib/mutate";
 
 export function NewLinkCard() {
-    async function onSubmit(values) {
-        console.log(values);
+    async function onSubmit(values: CreateLinkParams) {
+        await createLink(values);
     }
 
     return (

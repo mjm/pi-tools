@@ -1,13 +1,12 @@
 load("@npm_homebase//@bazel/typescript:index.bzl", "ts_library")
 
 ts_library(
-    name = "components",
-    srcs = glob(["*.tsx"]),
+    name = "lib",
+    srcs = glob(["*.ts"]),
     tsconfig = "//homebase:tsconfig.json",
-    visibility = ["//homebase:__subpackages__"],
+    visibility = ["//homebase/go-links:__subpackages__"],
     deps = [
-        "//homebase/components",
-        "//homebase/go-links/lib",
+        "//go-links/proto/links:links_ts_proto",
         "@npm_homebase//:node_modules",
     ],
 )
