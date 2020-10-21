@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "migrate",
+    srcs = ["migrate.go"],
+    importpath = "github.com/mjm/pi-tools/pkg/migrate",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/migrate/embeddata",
+        "@com_github_golang_migrate_migrate_v4//:migrate",
+        "@com_github_golang_migrate_migrate_v4//database/sqlite3",
+    ],
+)

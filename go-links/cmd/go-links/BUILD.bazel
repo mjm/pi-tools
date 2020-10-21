@@ -1,0 +1,14 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "go-links_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mjm/pi-tools/go-links/cmd/go-links",
+    visibility = ["//visibility:private"],
+)
+
+go_binary(
+    name = "go-links",
+    embed = [":go-links_lib"],
+    visibility = ["//visibility:public"],
+)

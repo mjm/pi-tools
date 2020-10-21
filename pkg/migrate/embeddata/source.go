@@ -1,4 +1,4 @@
-package database
+package embeddata
 
 import (
 	"bytes"
@@ -16,7 +16,7 @@ type EmbedDataSource struct {
 }
 
 func (e *EmbedDataSource) Open(_ string) (source.Driver, error) {
-	return nil, fmt.Errorf("unimplemented: use `newEmbeddedMigrationsSource` to create in code")
+	return nil, fmt.Errorf("unimplemented: use `WithFiles` to create in code")
 }
 
 func (e *EmbedDataSource) Close() error {
@@ -66,7 +66,7 @@ func (e *EmbedDataSource) ReadDown(version uint) (r io.ReadCloser, identifier st
 	return nil, "", &os.PathError{Op: fmt.Sprintf("read version %v", version), Path: "", Err: os.ErrNotExist}
 }
 
-func newEmbeddedMigrationsSource(files map[string][]byte) (source.Driver, error) {
+func WithFiles(files map[string][]byte) (source.Driver, error) {
 	src := &EmbedDataSource{
 		data:       files,
 		migrations: source.NewMigrations(),

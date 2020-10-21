@@ -1,4 +1,4 @@
-detect-presence/frontend/trips/node_modules
+homebase/node_modules
 dist
 bazel-out
 

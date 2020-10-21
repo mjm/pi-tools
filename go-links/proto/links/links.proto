@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+service LinksService {
+    rpc CreateLink (CreateLinkRequest) returns (CreateLinkResponse);
+}
+
+message CreateLinkRequest {
+    string short_url = 1;
+    string destination_url = 2;
+    string description = 3;
+}
+
+message CreateLinkResponse {
+    Link link = 1;
+}
+
+message Link {
+    string id = 1;
+    string short_url = 2;
+    string destination_url = 3;
+    string description = 4;
+}

@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "database",
+    srcs = [
+        "client.go",
+        "links.go",
+        "migrate.go",
+    ],
+    importpath = "github.com/mjm/pi-tools/go-links/database",
+    visibility = ["//visibility:public"],
+    deps = ["//pkg/migrate"],
+)
