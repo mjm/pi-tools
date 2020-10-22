@@ -1,0 +1,34 @@
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "pi-hole-ingress-controller_lib",
+    srcs = [
+        "debouncer.go",
+        "main.go",
+    ],
+    importpath = "github.com/mjm/pi-tools/pi-hole/cmd/pi-hole-ingress-controller",
+    visibility = ["//visibility:private"],
+    deps = [
+        "@io_k8s_api//networking/v1:networking",
+        "@io_k8s_apimachinery//pkg/fields",
+        "@io_k8s_client_go//kubernetes",
+        "@io_k8s_client_go//rest",
+        "@io_k8s_client_go//tools/cache",
+    ],
+)
+
+go_binary(
+    name = "pi-hole-ingress-controller",
+    embed = [":pi-hole-ingress-controller_lib"],
+    visibility = ["//visibility:public"],
+)
+
+container_image(
+    name = "image",
+    base = "@pihole//image",
+    files = [
+        ":pi-hole-ingress-controller",
+    ],
+    visibility = ["//visibility:public"],
+)

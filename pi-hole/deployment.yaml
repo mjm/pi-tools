@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: pi-hole
+  name: pi-hole
+  labels:
+    app: pi-hole
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: pi-hole
+  template:
+    metadata:
+      labels:
+        app: pi-hole
+    spec:
+      hostNetwork: true
+      shareProcessNamespace: true
+      containers:
+        - name: pi-hole
+          image: index.docker.io/pihole/pihole@sha256:6e07364aa328f62971379e9d95ac5d7bc3b06221a7f497117507f69630fa562a
+          ports:
+            - name: http
+              containerPort: 1080
+              hostPort: 1080
+            - name: dns
+              containerPort: 53
+              hostPort: 53
+          env:
+            - name: ADMIN_EMAIL
+              value: matt@mattmoriarity.com
+            - name: TZ
+              value: America/Denver
+            - name: CONDITIONAL_FORWARDING
+              value: "true"
+            - name: CONDITIONAL_FORWARDING_IP
+              value: "10.0.0.1"
+            - name: ServerIP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: VIRTUAL_HOST
+              value: pi.hole
+            - name: INTERFACE
+              value: wlan0
+            - name: WEB_PORT
+              value: "1080"
+          volumeMounts:
+            - name: pi-hole-data
+              mountPath: /etc/pihole
+              subPath: pihole
+            - name: pi-hole-data
+              mountPath: /etc/dnsmasq.d
+              subPath: dnsmasq.d
+        - name: ingress-controller
+          image: index.docker.io/mmoriarity/pi-hole-ingress-controller:latest
+          command:
+            - /pi-hole-ingress-controller
+            - "-ip=$(POD_IP)"
+            - "-extra-hostnames=$(NODE_NAME)"
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: pi-hole-data
+              mountPath: /etc/pihole
+              subPath: pihole
+            - name: pi-hole-data
+              mountPath: /etc/dnsmasq.d
+              subPath: dnsmasq.d
+      volumes:
+        - name: pi-hole-data
+          persistentVolumeClaim:
+            claimName: pi-hole-data
