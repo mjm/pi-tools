@@ -1554,8 +1554,8 @@ go_repository(
 go_repository(
     name = "org_golang_google_grpc",
     importpath = "google.golang.org/grpc",
-    sum = "h1:T7P4R73V3SSDPhH7WW7ATbfViLtmamH0DKrP3f9AuDI=",
-    version = "v1.31.0",
+    sum = "h1:zWTV+LMdc3kaiJMSTOFz2UgSBgx8RNQoTGiZu3fR9S0=",
+    version = "v1.32.0",
 )
 
 go_repository(
@@ -2763,6 +2763,27 @@ go_repository(
     importpath = "github.com/segmentio/ksuid",
     sum = "h1:FoResxvleQwYiPAVKe1tMUlEirodZqlqglIuFsdDntY=",
     version = "v1.0.3",
+)
+
+go_repository(
+    name = "io_opentelemetry_go_contrib",
+    importpath = "go.opentelemetry.io/contrib",
+    sum = "h1:q34CFu5REx9Dt2ksESHC/doIjFJkEg1oV3aSwlL5JR0=",
+    version = "v0.13.0",
+)
+
+go_repository(
+    name = "io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc",
+    importpath = "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+    sum = "h1:Ys1lnE8Y6rv3aKc9Ha13n7UM4pMHC0kvLSFtNx+gUfY=",
+    version = "v0.13.0",
+)
+
+go_repository(
+    name = "io_opentelemetry_go_otel_exporters_stdout",
+    importpath = "go.opentelemetry.io/otel/exporters/stdout",
+    sum = "h1:A+XiGIPQbGoJoBOJfKAKnZyiUSjSWvL3XWETUvtom5k=",
+    version = "v0.13.0",
 )
 
 gazelle_dependencies()

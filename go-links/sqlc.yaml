@@ -7,7 +7,7 @@ packages:
     engine: "postgresql"
 overrides:
   - go_type: "github.com/segmentio/ksuid.KSUID"
-    db_type: "uuid"
+    column: "links.id"
 rename:
   short_url: ShortURL
   destination_url: DestinationURL
