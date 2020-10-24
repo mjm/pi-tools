@@ -10,7 +10,6 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/improbable-eng/grpc-web v0.13.0
-	github.com/influxdata/influxdb-client-go/v2 v2.0.1
 	github.com/prometheus/client_golang v1.7.1
 	github.com/rs/cors v1.7.0 // indirect
 	github.com/segmentio/ksuid v1.0.3
