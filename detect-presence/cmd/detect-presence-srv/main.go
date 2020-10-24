@@ -30,7 +30,7 @@ var (
 )
 
 var devices = []presence.Device{
-	{"titan", "C4:98:80:8C:6C:2D"},
+	{"callisto", "A0:FB:C5:D3:4D:46"},
 	{"matt-watch", "F8:6F:C1:0A:E8:8B"},
 }
 
