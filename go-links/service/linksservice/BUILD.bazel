@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "linksservice",
+    srcs = [
+        "create_link.go",
+        "metric.go",
+        "server.go",
+        "trace.go",
+    ],
+    importpath = "github.com/mjm/pi-tools/go-links/service/linksservice",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go-links/database",
+        "//go-links/proto/links",
+        "@io_opentelemetry_go_otel//api/global",
+        "@io_opentelemetry_go_otel//api/metric",
+        "@io_opentelemetry_go_otel//api/trace",
+        "@io_opentelemetry_go_otel//label",
+    ],
+)
