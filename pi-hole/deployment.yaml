@@ -48,6 +48,8 @@ spec:
               value: tailscale0
             - name: WEB_PORT
               value: "1080"
+            - name: DNSMASQ_LISTENING
+              value: all
           volumeMounts:
             - name: pi-hole-data
               mountPath: /etc/pihole
