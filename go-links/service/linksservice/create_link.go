@@ -30,11 +30,6 @@ func (s *Server) CreateLink(ctx context.Context, req *linkspb.CreateLinkRequest)
 	linksCreatedTotal.Add(ctx, 1)
 
 	return &linkspb.CreateLinkResponse{
-		Link: &linkspb.Link{
-			Id:             link.ID,
-			ShortUrl:       link.ShortURL,
-			DestinationUrl: link.DestinationURL,
-			Description:    link.Description,
-		},
+		Link: marshalLinkToProto(link),
 	}, nil
 }
