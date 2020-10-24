@@ -10,6 +10,7 @@ export function App() {
         <Router>
             <Helmet>
                 <title>Homebase</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
             </Helmet>
             <div>
                 <NavigationBar/>
@@ -23,7 +24,7 @@ export function App() {
                         <GoLinkRoutes/>
                     </Route>
                     <Route path="*">
-                        <NoMatch />
+                        <NoMatch/>
                     </Route>
                 </Switch>
             </div>
