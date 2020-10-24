@@ -30,6 +30,7 @@
         "dev": "ibazel run :server"
     },
     "dependencies": {
+        "@headlessui/react": "^0.2.0",
         "@improbable-eng/grpc-web": "^0.13.0",
         "date-fns": "^2.16.1",
         "formik": "^2.2.0",
