@@ -5,8 +5,11 @@ set -euo pipefail
 OS="$(go env GOHOSTOS)"
 ARCH="$(go env GOARCH)"
 
+cd $(git rev-parse --show-toplevel)
+
 echo -e ">>> Compiling the Go proto"
 for label in $(bazel query 'kind(go_proto_library, //...)'); do
+  echo -e ">>> Found go_proto_library ${label}"
 	package="${label%%:*}"
 	package="${package##//}"
 	target="${label##*:}"
@@ -24,6 +27,7 @@ for label in $(bazel query 'kind(go_proto_library, //...)'); do
 		relative_path="../${relative_path}"
 	done
 
+  echo -e ">>> Building ${label}"
 	bazel build "${label}"
 
 	found=0

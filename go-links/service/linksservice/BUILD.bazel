@@ -4,6 +4,7 @@ go_library(
     name = "linksservice",
     srcs = [
         "create_link.go",
+        "list_recent_links.go",
         "metric.go",
         "proto.go",
         "server.go",
