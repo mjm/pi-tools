@@ -3,6 +3,7 @@ package linksservice
 import (
 	"context"
 
+	"github.com/segmentio/ksuid"
 	"go.opentelemetry.io/otel/api/trace"
 	"go.opentelemetry.io/otel/label"
 
@@ -17,7 +18,11 @@ func (s *Server) CreateLink(ctx context.Context, req *linkspb.CreateLinkRequest)
 			label.String("link.destination_url", req.GetDestinationUrl())))
 	defer span.End()
 
+	id := ksuid.New()
+	span.SetAttributes(label.String("link.id", id.String()))
+
 	link, err := s.db.CreateLink(ctx, database.CreateLinkParams{
+		ID:             id,
 		ShortURL:       req.GetShortUrl(),
 		DestinationURL: req.GetDestinationUrl(),
 		Description:    req.GetDescription(),
@@ -26,7 +31,6 @@ func (s *Server) CreateLink(ctx context.Context, req *linkspb.CreateLinkRequest)
 		span.RecordError(ctx, err)
 		return nil, err
 	}
-	span.SetAttributes(label.String("link.id", link.ID))
 	linksCreatedTotal.Add(ctx, 1)
 
 	return &linkspb.CreateLinkResponse{

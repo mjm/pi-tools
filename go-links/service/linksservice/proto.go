@@ -5,9 +5,9 @@ import (
 	linkspb "github.com/mjm/pi-tools/go-links/proto/links"
 )
 
-func marshalLinkToProto(l *database.Link) *linkspb.Link {
+func marshalLinkToProto(l database.Link) *linkspb.Link {
 	return &linkspb.Link{
-		Id:             l.ID,
+		Id:             l.ID.String(),
 		ShortUrl:       l.ShortURL,
 		DestinationUrl: l.DestinationURL,
 		Description:    l.Description,

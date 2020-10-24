@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
+
+	_ "github.com/lib/pq"
 
 	"go.opentelemetry.io/otel/exporters/metric/prometheus"
 
@@ -15,22 +18,24 @@ import (
 
 var (
 	httpPort = flag.Int("http-port", 4240, "HTTP port to listen on for metrics and API requests")
-	dbDSN    = flag.String("db", ":memory:", "Connection string for connecting to SQLite3 database for storing links")
+	dbDSN    = flag.String("db", "dbname=golinks_dev sslmode=disable", "Connection string for connecting to PostgreSQL database for storing links")
 )
 
 func main() {
 	flag.Parse()
+	ctx := context.Background()
 
 	metrics, err := prometheus.InstallNewPipeline(prometheus.Config{})
 	if err != nil {
 		log.Fatalf("Error installing metrics pipeline: %v", err)
 	}
 
-	db, err := database.Open(*dbDSN)
+	sqlDB, err := sql.Open("postgres", *dbDSN)
 	if err != nil {
 		log.Fatalf("Error opening database: %v", err)
 	}
-	if err := db.MigrateIfNeeded(context.Background()); err != nil {
+	db := database.New(sqlDB)
+	if err := db.MigrateIfNeeded(ctx); err != nil {
 		log.Fatalf("Error migrating database: %v", err)
 	}
 

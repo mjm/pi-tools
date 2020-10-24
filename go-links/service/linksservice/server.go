@@ -5,10 +5,10 @@ import (
 )
 
 type Server struct {
-	db *database.Client
+	db *database.Queries
 }
 
-func New(db *database.Client) *Server {
+func New(db *database.Queries) *Server {
 	return &Server{
 		db: db,
 	}

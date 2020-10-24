@@ -2,11 +2,12 @@ package database
 
 import (
 	"context"
+	"database/sql"
 
-	migrations "github.com/mjm/pi-tools/go-links/database/migrate"
-	"github.com/mjm/pi-tools/pkg/migrate"
+	"github.com/mjm/pi-tools/go-links/database/migrate"
+	"github.com/mjm/pi-tools/pkg/migrate/postgres"
 )
 
-func (c *Client) MigrateIfNeeded(_ context.Context) error {
-	return migrate.UpIfNeeded(c.db, migrations.Data)
+func (q *Queries) MigrateIfNeeded(_ context.Context) error {
+	return postgres.UpIfNeeded(q.db.(*sql.DB), migrate.Data)
 }

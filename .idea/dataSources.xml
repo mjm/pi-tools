@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="dev" uuid="bc6123a2-cc15-48e1-90cb-44ca984d39e7">
-      <driver-ref>sqlite.xerial</driver-ref>
+    <data-source source="LOCAL" name="golinks_dev@localhost" uuid="1aeec40a-3a07-4b39-b462-d7b19d9f6728">
+      <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/dev.db</jdbc-url>
-    </data-source>
-    <data-source source="LOCAL" name="test" uuid="d136565b-ed20-453a-b356-f0b32340aa08">
-      <driver-ref>sqlite.xerial</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/test.db</jdbc-url>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/golinks_dev</jdbc-url>
     </data-source>
   </component>
 </project>

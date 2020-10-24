@@ -13,6 +13,7 @@ require (
 	github.com/influxdata/influxdb-client-go/v2 v2.0.1
 	github.com/prometheus/client_golang v1.7.1
 	github.com/rs/cors v1.7.0 // indirect
+	github.com/segmentio/ksuid v1.0.3
 	go.opentelemetry.io/otel v0.13.0
 	go.opentelemetry.io/otel/exporters/metric/prometheus v0.13.0
 	google.golang.org/grpc v1.31.0

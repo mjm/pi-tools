@@ -8,6 +8,7 @@ go_library(
     deps = [
         "//go-links/database",
         "//go-links/service/linksservice",
+        "@com_github_lib_pq//:pq",
         "@io_opentelemetry_go_otel_exporters_metric_prometheus//:prometheus",
     ],
 )

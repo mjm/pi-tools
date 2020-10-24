@@ -1,0 +1,13 @@
+version: "1"
+packages:
+  - name: "database"
+    path: "database"
+    queries: "./database/queries/"
+    schema: "./database/migrate/"
+    engine: "postgresql"
+overrides:
+  - go_type: "github.com/segmentio/ksuid.KSUID"
+    db_type: "uuid"
+rename:
+  short_url: ShortURL
+  destination_url: DestinationURL

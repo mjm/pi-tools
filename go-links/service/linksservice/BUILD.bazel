@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "create_link.go",
         "metric.go",
+        "proto.go",
         "server.go",
         "trace.go",
     ],
@@ -13,6 +14,7 @@ go_library(
     deps = [
         "//go-links/database",
         "//go-links/proto/links",
+        "@com_github_segmentio_ksuid//:ksuid",
         "@io_opentelemetry_go_otel//api/global",
         "@io_opentelemetry_go_otel//api/metric",
         "@io_opentelemetry_go_otel//api/trace",

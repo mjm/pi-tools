@@ -1,17 +1,17 @@
-package migrate
+package postgres
 
 import (
 	"database/sql"
 	"errors"
 
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/sqlite3"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
 
 	"github.com/mjm/pi-tools/pkg/migrate/embeddata"
 )
 
 func UpIfNeeded(db *sql.DB, files map[string][]byte) error {
-	driver, err := sqlite3.WithInstance(db, &sqlite3.Config{})
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
 		return err
 	}
@@ -21,7 +21,7 @@ func UpIfNeeded(db *sql.DB, files map[string][]byte) error {
 		return err
 	}
 
-	m, err := migrate.NewWithInstance("go-embed-data", source, "sqlite3", driver)
+	m, err := migrate.NewWithInstance("go-embed-data", source, "postgres", driver)
 	if err != nil {
 		return err
 	}

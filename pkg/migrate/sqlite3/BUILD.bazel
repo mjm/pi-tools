@@ -11,3 +11,15 @@ go_library(
         "@com_github_golang_migrate_migrate_v4//database/sqlite3",
     ],
 )
+
+go_library(
+    name = "sqlite3",
+    srcs = ["migrate.go"],
+    importpath = "github.com/mjm/pi-tools/pkg/migrate/sqlite3",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/migrate/embeddata",
+        "@com_github_golang_migrate_migrate_v4//:migrate",
+        "@com_github_golang_migrate_migrate_v4//database/sqlite3",
+    ],
+)
