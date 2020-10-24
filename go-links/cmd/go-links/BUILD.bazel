@@ -6,9 +6,8 @@ go_library(
     importpath = "github.com/mjm/pi-tools/go-links/cmd/go-links",
     visibility = ["//visibility:private"],
     deps = [
+        "//go-links/database",
         "//go-links/service/linksservice",
-        "@io_opentelemetry_go_otel//api/global",
-        "@io_opentelemetry_go_otel//api/metric",
         "@io_opentelemetry_go_otel_exporters_metric_prometheus//:prometheus",
     ],
 )

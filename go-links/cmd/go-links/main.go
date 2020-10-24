@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -8,6 +9,7 @@ import (
 
 	"go.opentelemetry.io/otel/exporters/metric/prometheus"
 
+	"github.com/mjm/pi-tools/go-links/database"
 	_ "github.com/mjm/pi-tools/go-links/service/linksservice"
 )
 
@@ -24,13 +26,13 @@ func main() {
 		log.Fatalf("Error installing metrics pipeline: %v", err)
 	}
 
-	//db, err := database.Open(*dbDSN)
-	//if err != nil {
-	//	log.Fatalf("Error opening database: %v", err)
-	//}
-	//if err := db.MigrateIfNeeded(context.Background()); err != nil {
-	//	log.Fatalf("Error migrating database: %v", err)
-	//}
+	db, err := database.Open(*dbDSN)
+	if err != nil {
+		log.Fatalf("Error opening database: %v", err)
+	}
+	if err := db.MigrateIfNeeded(context.Background()); err != nil {
+		log.Fatalf("Error migrating database: %v", err)
+	}
 
 	http.Handle("/metrics", metrics)
 

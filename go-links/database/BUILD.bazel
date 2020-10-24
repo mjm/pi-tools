@@ -10,6 +10,7 @@ go_library(
     importpath = "github.com/mjm/pi-tools/go-links/database",
     visibility = ["//visibility:public"],
     deps = [
+        "//go-links/database/migrate",
         "//pkg/migrate",
         "@com_github_google_uuid//:uuid",
         "@com_github_masterminds_squirrel//:squirrel",
