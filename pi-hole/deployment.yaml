@@ -41,7 +41,9 @@ spec:
             - name: CONDITIONAL_FORWARDING_IP
               value: "10.0.0.1"
             - name: ServerIP
-              value: "100.111.80.85"
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
             - name: VIRTUAL_HOST
               value: pi.hole
             - name: INTERFACE
