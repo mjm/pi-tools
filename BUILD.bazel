@@ -16,5 +16,6 @@ k8s_objects(
         "//monitoring/prometheus:k8s",
         "//monitoring/promtail:k8s",
         "//pi-hole:k8s",
+        "//storage/postgresql:k8s",
     ],
 )
