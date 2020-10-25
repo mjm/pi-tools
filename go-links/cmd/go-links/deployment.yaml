@@ -26,7 +26,8 @@ spec:
           image: index.docker.io/mmoriarity/go-links-srv:latest
           command:
             - /go-links
-            - -db="dbname=golinks user=golinks host=postgresql.storage"
+            - "-db"
+            - dbname=golinks user=golinks host=postgresql.storage sslmode=disable
           env:
             - name: PGPASSWORD
               valueFrom:
