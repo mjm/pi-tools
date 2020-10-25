@@ -11,8 +11,8 @@ export function GoLinksHomePage() {
             </PageHeader>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 sm:grid-cols-2 mt-6 gap-8">
-                    <NewLinkCard/>
-                    <RecentLinksList/>
+                    <div><NewLinkCard/></div>
+                    <div><RecentLinksList/></div>
                 </div>
             </div>
         </main>
