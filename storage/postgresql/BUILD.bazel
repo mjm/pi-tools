@@ -19,4 +19,5 @@ k8s_objects(
         ":k8s_statefulset",
         ":k8s_service",
     ],
+    visibility = ["//visibility:public"],
 )
