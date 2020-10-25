@@ -73,10 +73,10 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
 container_pull(
     name = "distroless_base",
     architecture = "arm64",
-    digest = "sha256:e5768afa5429b85ac75de67efc98a4bf53e4ef0f7388667fb34c89d481d82b00",
+    digest = "sha256:a21a1f3eb18297325d39ff95534a694daad8cab80aa4230f02315ada36754eee",
     os = "linux",
     registry = "gcr.io",
-    repository = "distroless/base-debian10",
+    repository = "distroless/base",
 )
 
 container_pull(
