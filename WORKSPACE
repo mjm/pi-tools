@@ -422,8 +422,8 @@ go_repository(
 go_repository(
     name = "org_golang_x_net",
     importpath = "golang.org/x/net",
-    sum = "h1:zK/HqS5bZxDptfPJNq8v7vJfXtkU7r9TLIoSr1bXaP4=",
-    version = "v0.0.0-20200813134508-3edf25e44fcc",
+    sum = "h1:VvcQYSHwXgi7W+TpUR6A9g6Up98WAHf3f/ulnJ62IyA=",
+    version = "v0.0.0-20200822124328-c89045814202",
 )
 
 go_repository(
@@ -436,8 +436,8 @@ go_repository(
 go_repository(
     name = "org_golang_x_sys",
     importpath = "golang.org/x/sys",
-    sum = "h1:X18bCaipMcoJGm27Nv7zr4XYPKGUy92GtqboKC2Hxaw=",
-    version = "v0.0.0-20200817155316-9781c653f443",
+    sum = "h1:Fqb3ao1hUmOR3GkUOg/Y+BadLwykBIzs5q8Ez2SbHyc=",
+    version = "v0.0.0-20200905004654-be1d3432aa8f",
 )
 
 go_repository(
@@ -450,8 +450,8 @@ go_repository(
 go_repository(
     name = "org_golang_x_tools",
     importpath = "golang.org/x/tools",
-    sum = "h1:a6ryybeZHQf5qnBc6IwRfVnI/75UmdtJo71f0//8Dqo=",
-    version = "v0.0.0-20200818005847-188abfa75333",
+    sum = "h1:xLt+iB5ksWcZVxqc+g9K41ZHy+6MKWfXCDsjSThnsPA=",
+    version = "v0.0.0-20200904185747-39188db58858",
 )
 
 go_repository(
@@ -1409,8 +1409,8 @@ go_repository(
 go_repository(
     name = "com_github_yuin_goldmark",
     importpath = "github.com/yuin/goldmark",
-    sum = "h1:5tjfNdR2ki3yYQ842+eX2sQHeiwpKJ0RnHO4IYOc4V8=",
-    version = "v1.1.32",
+    sum = "h1:ruQGxdhGHe7FWOJPT0mKs5+pD2Xs1Bm/kdGlHO04FmM=",
+    version = "v1.2.1",
 )
 
 go_repository(
@@ -1430,8 +1430,8 @@ go_repository(
 go_repository(
     name = "com_google_cloud_go",
     importpath = "cloud.google.com/go",
-    sum = "h1:xVP3LPvMjGT4J0a55y02Gw5y/dkY/rxGz58sfK1jqIo=",
-    version = "v0.64.0",
+    sum = "h1:Dg9iHVQfrhq82rUNu9ZxUDrJLaxFUe/HlCVaLyRruq8=",
+    version = "v0.65.0",
 )
 
 go_repository(
@@ -1542,8 +1542,8 @@ go_repository(
 go_repository(
     name = "org_golang_google_api",
     importpath = "google.golang.org/api",
-    sum = "h1:yfrXXP61wVuLb0vBcG6qaOoIoqYEzOQS8jum51jkv2w=",
-    version = "v0.30.0",
+    sum = "h1:Le77IccnTqEa8ryp9wIpX5W3zYm7Gf9LhOp9PHcwFts=",
+    version = "v0.32.0",
 )
 
 go_repository(
@@ -1556,8 +1556,8 @@ go_repository(
 go_repository(
     name = "org_golang_google_genproto",
     importpath = "google.golang.org/genproto",
-    sum = "h1:wboULUXGF3c5qdUnKp+6gLAccE6PRpa/czkYvQ4UXv8=",
-    version = "v0.0.0-20200815001618-f69a88009b70",
+    sum = "h1:92D1fum1bJLKSdr11OJ+54YeCMCGYIygTA7R/YZxH5M=",
+    version = "v0.0.0-20200904004341-0bd0a958aa1d",
 )
 
 go_repository(
@@ -1605,8 +1605,8 @@ go_repository(
 go_repository(
     name = "org_golang_x_oauth2",
     importpath = "golang.org/x/oauth2",
-    sum = "h1:TzXSXBo42m9gQenoE3b9BGiEpg5IG2JkU5FkPIawgtw=",
-    version = "v0.0.0-20200107190931-bf48bf16ab8d",
+    sum = "h1:ld7aEMNHoBnnDAX15v1T6z31v8HwR2A9FYOuAhWqkwc=",
+    version = "v0.0.0-20200902213428-5d25da1a8d43",
 )
 
 go_repository(
@@ -2806,6 +2806,20 @@ go_repository(
     name = "io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp",
     importpath = "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp",
     sum = "h1:dnZy1afzxEDrHybTYoJE1bQ3fphNwZF2ipSsynlITP4=",
+    version = "v0.13.0",
+)
+
+go_repository(
+    name = "com_github_apache_thrift",
+    importpath = "github.com/apache/thrift",
+    sum = "h1:5hryIiq9gtn+MiLVn0wP37kb/uTeRZgN08WoCsAhIhI=",
+    version = "v0.13.0",
+)
+
+go_repository(
+    name = "io_opentelemetry_go_otel_exporters_trace_jaeger",
+    importpath = "go.opentelemetry.io/otel/exporters/trace/jaeger",
+    sum = "h1:TjXcUVYbsjl3lYifrWptraZAL0OBmpMxRLm/eJ1GyZU=",
     version = "v0.13.0",
 )
 

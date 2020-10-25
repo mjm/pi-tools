@@ -5,6 +5,9 @@ metadata:
   name: go-links-srv
   labels:
     app: go-links
+  # TODO enable the agent sidecar when we have an arm64 image for it that we can use
+#  annotations:
+#    sidecar.jaegertracing.io/inject: "true"
 spec:
   replicas: 2
   strategy:

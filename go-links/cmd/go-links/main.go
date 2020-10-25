@@ -13,10 +13,9 @@ import (
 	_ "github.com/lib/pq"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/exporters/metric/prometheus"
 	"go.opentelemetry.io/otel/exporters/stdout"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/exporters/trace/jaeger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -36,20 +35,18 @@ func main() {
 	ctx := context.Background()
 
 	if *debug {
-		exp, err := stdout.NewExporter(stdout.WithPrettyPrint())
+		tracePipe, err := stdout.InstallNewPipeline([]stdout.Option{stdout.WithPrettyPrint()}, nil)
 		if err != nil {
-			log.Panicf("failed to initialize stdout exporter %v\n", err)
+			log.Panicf("Error installing stdout tracing pipeline: %v", err)
 		}
-		bsp := sdktrace.NewBatchSpanProcessor(exp)
-		tp := sdktrace.NewTracerProvider(
-			sdktrace.WithConfig(
-				sdktrace.Config{
-					DefaultSampler: sdktrace.AlwaysSample(),
-				},
-			),
-			sdktrace.WithSpanProcessor(bsp),
-		)
-		global.SetTracerProvider(tp)
+		defer tracePipe.Stop()
+	} else {
+		stop, err := jaeger.InstallNewPipeline(jaeger.WithCollectorEndpoint("http://jaeger-collector.monitoring:14268/api/traces"))
+		//stop, err := jaeger.InstallNewPipeline(jaeger.WithAgentEndpoint("localhost:6831"))
+		if err != nil {
+			log.Panicf("Error installing Jaeger tracing pipeline: %v", err)
+		}
+		defer stop()
 	}
 
 	metrics, err := prometheus.InstallNewPipeline(prometheus.Config{})

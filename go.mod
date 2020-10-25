@@ -18,6 +18,7 @@ require (
 	go.opentelemetry.io/otel v0.13.0
 	go.opentelemetry.io/otel/exporters/metric/prometheus v0.13.0
 	go.opentelemetry.io/otel/exporters/stdout v0.13.0 // indirect
+	go.opentelemetry.io/otel/exporters/trace/jaeger v0.13.0 // indirect
 	google.golang.org/grpc v1.32.0
 	google.golang.org/protobuf v1.25.0
 	k8s.io/api v0.19.0
