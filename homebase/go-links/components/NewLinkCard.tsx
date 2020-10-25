@@ -1,10 +1,15 @@
 import React from "react";
-import {Field, Form, Formik} from "formik";
+import {Field, Form, Formik, FormikHelpers} from "formik";
 import {createLink, CreateLinkParams} from "com_github_mjm_pi_tools/homebase/go-links/lib/mutate";
 
 export function NewLinkCard() {
-    async function onSubmit(values: CreateLinkParams) {
-        await createLink(values);
+    async function onSubmit(values: CreateLinkParams, actions: FormikHelpers<CreateLinkParams>) {
+        try {
+            await createLink(values);
+            actions.resetForm();
+        } catch (err) {
+            actions.setStatus({error: err})
+        }
     }
 
     return (
@@ -16,7 +21,7 @@ export function NewLinkCard() {
                     description: "",
                 }}
                 onSubmit={onSubmit}
-            >
+            >{({isSubmitting}) => (
                 <Form>
                     <div className="px-4 py-5 sm:px-6">
                         <h3 className="text-lg leading-6 font-medium text-gray-900">
@@ -72,12 +77,14 @@ export function NewLinkCard() {
                     <div className="px-4 py-5 sm:px-6 text-right">
             <span className="inline-flex rounded-md shadow-sm">
               <button type="submit"
+                      disabled={isSubmitting}
                       className="inline-flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out">
                 Create
               </button>
             </span>
                     </div>
                 </Form>
+            )}
             </Formik>
         </div>
     );
