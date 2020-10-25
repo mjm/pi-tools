@@ -17,6 +17,8 @@ go_library(
         "@com_github_lib_pq//:pq",
         "@io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc//:otelgrpc",
         "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
+        "@io_opentelemetry_go_otel//label",
+        "@io_opentelemetry_go_otel//semconv",
         "@io_opentelemetry_go_otel_exporters_metric_prometheus//:prometheus",
         "@io_opentelemetry_go_otel_exporters_stdout//:stdout",
         "@io_opentelemetry_go_otel_exporters_trace_jaeger//:jaeger",
