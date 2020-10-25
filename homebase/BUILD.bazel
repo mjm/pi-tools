@@ -59,8 +59,8 @@ pkg_tar(
         ":bundle",
     ],
     mode = "0644",
-    strip_prefix = "./bundle",
     package_dir = "./homebase",
+    strip_prefix = "./bundle",
 )
 
 container_image(

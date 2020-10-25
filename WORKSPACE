@@ -268,8 +268,8 @@ go_repository(
 go_repository(
     name = "com_github_ghodss_yaml",
     importpath = "github.com/ghodss/yaml",
-    sum = "h1:wQHKEahhL6wmXdzwWG11gIVCkOv05bNOh+Rxn0yngAk=",
-    version = "v1.0.0",
+    sum = "h1:ZktWZesgun21uEDrwW7iEV1zPCGQldM2atlJZ3TdvVM=",
+    version = "v0.0.0-20150909031657-73d445a93680",
 )
 
 go_repository(
@@ -345,15 +345,15 @@ go_repository(
 go_repository(
     name = "com_github_mattn_go_colorable",
     importpath = "github.com/mattn/go-colorable",
-    sum = "h1:snbPLB8fVfU9iwbbo30TPtbLRzwWu6aJS6Xh4eaaviA=",
-    version = "v0.1.4",
+    sum = "h1:G1f5SKeVxmagw/IyvzvtZE4Gybcc4Tr1tf7I8z0XgOg=",
+    version = "v0.1.1",
 )
 
 go_repository(
     name = "com_github_mattn_go_isatty",
     importpath = "github.com/mattn/go-isatty",
-    sum = "h1:qxFzApOv4WsAL965uUPIsXzAKCZxN2p9UqdhFS4ZW10=",
-    version = "v0.0.10",
+    sum = "h1:UvyT9uN+3r7yLEYSlJsbQGdsaB/a0DlgWP3pql6iwOc=",
+    version = "v0.0.7",
 )
 
 go_repository(
@@ -2792,6 +2792,20 @@ go_repository(
     name = "io_opentelemetry_go_otel_exporters_stdout",
     importpath = "go.opentelemetry.io/otel/exporters/stdout",
     sum = "h1:A+XiGIPQbGoJoBOJfKAKnZyiUSjSWvL3XWETUvtom5k=",
+    version = "v0.13.0",
+)
+
+go_repository(
+    name = "com_github_felixge_httpsnoop",
+    importpath = "github.com/felixge/httpsnoop",
+    sum = "h1:lvB5Jl89CsZtGIWuTcDM1E/vkVs49/Ml7JJe07l8SPQ=",
+    version = "v1.0.1",
+)
+
+go_repository(
+    name = "io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp",
+    importpath = "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp",
+    sum = "h1:dnZy1afzxEDrHybTYoJE1bQ3fphNwZF2ipSsynlITP4=",
     version = "v0.13.0",
 )
 

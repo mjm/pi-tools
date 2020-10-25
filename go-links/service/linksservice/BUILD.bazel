@@ -20,6 +20,8 @@ go_library(
         "@io_opentelemetry_go_otel//api/global",
         "@io_opentelemetry_go_otel//api/metric",
         "@io_opentelemetry_go_otel//api/trace",
+        "@io_opentelemetry_go_otel//codes",
         "@io_opentelemetry_go_otel//label",
+        "@org_golang_google_grpc//status",
     ],
 )

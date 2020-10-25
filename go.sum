@@ -117,6 +117,8 @@ github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.m
 github.com/envoyproxy/go-control-plane v0.9.4/go.mod h1:6rpuAdCZL397s3pYoYcLgu1mIlRU8Am5FuJP05cCM98=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
 github.com/evanphx/json-patch v4.9.0+incompatible/go.mod h1:50XU6AFN0ol/bzJsmQLiYLvXMP4fmwYFNcr97nuDLSk=
+github.com/felixge/httpsnoop v1.0.1 h1:lvB5Jl89CsZtGIWuTcDM1E/vkVs49/Ml7JJe07l8SPQ=
+github.com/felixge/httpsnoop v1.0.1/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4IgpuI1SZQ=
 github.com/fsouza/fake-gcs-server v1.17.0/go.mod h1:D1rTE4YCyHFNa99oyJJ5HyclvN/0uQR+pM/VdlL83bw=
@@ -424,6 +426,9 @@ go.opentelemetry.io/contrib v0.13.0/go.mod h1:HzCu6ebm0ywgNxGaEfs3izyJOMP4rZnzxy
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc v0.11.0 h1:jx+6CPh/uE5xW4uCm5gCb5B36+/c/k58mH+8YQ1glZo=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.13.0 h1:Ys1lnE8Y6rv3aKc9Ha13n7UM4pMHC0kvLSFtNx+gUfY=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.13.0/go.mod h1:ffigAFAlfY9AfFwJocEw88qbbvjAKfvqZg5tLyZv0l0=
+go.opentelemetry.io/contrib/instrumentation/net/http v0.11.0 h1:ufewgDRmtrrdDpPgm7b4/gr4RXLS7KhDttAhyThtYS4=
+go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.13.0 h1:dnZy1afzxEDrHybTYoJE1bQ3fphNwZF2ipSsynlITP4=
+go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.13.0/go.mod h1:SeQm4RTCcZ2/hlMSTuHb7nwIROe5odBtgfKx+7MMqEs=
 go.opentelemetry.io/otel v0.13.0 h1:2isEnyzjjJZq6r2EKMsFj4TxiQiexsM04AVhwbR/oBA=
 go.opentelemetry.io/otel v0.13.0/go.mod h1:dlSNewoRYikTkotEnxdmuBHgzT+k/idJSfDv/FxEnOY=
 go.opentelemetry.io/otel/exporters/metric/prometheus v0.13.0 h1:Jf7AdsEoHKtNTWxXLj/g9XGjsGpdk0otEf0lx00r2Ps=

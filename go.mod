@@ -14,6 +14,7 @@ require (
 	github.com/rs/cors v1.7.0 // indirect
 	github.com/segmentio/ksuid v1.0.3
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.13.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.13.0 // indirect
 	go.opentelemetry.io/otel v0.13.0
 	go.opentelemetry.io/otel/exporters/metric/prometheus v0.13.0
 	go.opentelemetry.io/otel/exporters/stdout v0.13.0 // indirect

@@ -12,6 +12,7 @@ import (
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	_ "github.com/lib/pq"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/exporters/metric/prometheus"
 	"go.opentelemetry.io/otel/exporters/stdout"
@@ -81,7 +82,7 @@ func main() {
 		return false
 	}))
 
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := otelhttp.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if wrappedGrpc.IsAcceptableGrpcCorsRequest(r) || wrappedGrpc.IsGrpcWebRequest(r) {
 			wrappedGrpc.ServeHTTP(w, r)
 			return
@@ -94,9 +95,9 @@ func main() {
 		}
 
 		http.DefaultServeMux.ServeHTTP(w, r)
-	})
+	}), "Server", otelhttp.WithMessageEvents(otelhttp.ReadEvents, otelhttp.WriteEvents))
 
-	http.HandleFunc("/", linksService.HandleShortLink)
+	http.Handle("/", otelhttp.WithRouteTag("HandleShortLink", http.HandlerFunc(linksService.HandleShortLink)))
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *httpPort), handler))
 }
