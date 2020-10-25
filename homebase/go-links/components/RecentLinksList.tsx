@@ -2,6 +2,7 @@ import React from "react";
 import useSWR from "swr";
 import {Link} from "com_github_mjm_pi_tools/go-links/proto/links/links_pb";
 import {LIST_RECENT_LINKS} from "com_github_mjm_pi_tools/homebase/go-links/lib/fetch";
+import {LinkRow} from "com_github_mjm_pi_tools/homebase/go-links/components/LinkRow";
 
 export function RecentLinksList() {
     const {data, error} = useSWR<Link[]>(LIST_RECENT_LINKS);
@@ -15,13 +16,14 @@ export function RecentLinksList() {
                 <h3 className="text-lg leading-6 font-medium text-gray-900">
                     Recently added links
                 </h3>
-                {data && data.map(trip => (
-                    <div key={trip.getId()}>
-                        {trip.getShortUrl()}
-                    </div>
-                ))}
             </div>
-
+            {data && (
+                <ul className="border-b border-gray-200">
+                    {data.map(link => (
+                        <LinkRow key={link.getId()} link={link}/>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 }

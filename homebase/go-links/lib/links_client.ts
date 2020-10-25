@@ -5,3 +5,11 @@ const serviceHost = process.env.NODE_ENV === "development"
     : `${window.location.protocol}//${window.location.host}`;
 
 export const client = new LinksServiceClient(serviceHost);
+
+export function destinationURL(shortURL: string): string {
+    if (process.env.NODE_ENV === "development") {
+        return `${serviceHost}/${shortURL}`;
+    } else {
+        return `http://go/${shortURL}`;
+    }
+}
