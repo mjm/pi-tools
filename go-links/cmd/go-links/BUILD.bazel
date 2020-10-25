@@ -33,7 +33,7 @@ go_binary(
 
 container_image(
     name = "image",
-    base = "@distroless_static//image",
+    base = "@distroless_base//image",
     files = [
         ":go-links",
     ],
