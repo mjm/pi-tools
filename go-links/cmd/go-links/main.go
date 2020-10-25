@@ -96,5 +96,7 @@ func main() {
 		http.DefaultServeMux.ServeHTTP(w, r)
 	})
 
+	http.HandleFunc("/", linksService.HandleShortLink)
+
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *httpPort), handler))
 }
