@@ -33,8 +33,10 @@ rollup_bundle(
     entry_point = "index.tsx",
     format = "umd",
     link_workspace_root = True,
+    output_dir = True,
     deps = [
         ":homebase",
+        "//homebase/styles",
         "@npm_homebase//:node_modules",
     ],
 )
@@ -42,12 +44,10 @@ rollup_bundle(
 http_server(
     name = "server",
     data = [
-        "bundle.js",
-        "index.html",
-        "//homebase/styles",
+        ":bundle",
     ],
     templated_args = [
-        "./homebase",
+        "./homebase/bundle",
         "--proxy",
         "http://localhost:8080?",
     ],
@@ -56,18 +56,11 @@ http_server(
 pkg_tar(
     name = "pkg",
     srcs = [
-        "bundle.js",
-        "index.html",
+        ":bundle",
     ],
-    files = {
-        "//homebase/styles": "styles/app.css",
-    },
     mode = "0644",
+    strip_prefix = "./bundle",
     package_dir = "./homebase",
-    remap_paths = {
-        "./app.css": "./styles/app.css",
-    },
-    visibility = ["//:__pkg__"],
 )
 
 container_image(
