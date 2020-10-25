@@ -8,6 +8,7 @@ k8s_objects(
     name = "all_k8s",
     objects = [
         "//detect-presence/cmd/detect-presence-srv:k8s",
+        "//go-links/cmd/go-links:k8s",
         "//homebase:k8s",
         "//monitoring/alertmanager:k8s",
         "//monitoring/grafana:k8s",

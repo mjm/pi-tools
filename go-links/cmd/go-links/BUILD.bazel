@@ -1,4 +1,8 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
+load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
+load("//tools:k8s.bzl", "k8s_http_service", "k8s_virtual_host")
 
 go_library(
     name = "go-links_lib",
@@ -24,5 +28,47 @@ go_library(
 go_binary(
     name = "go-links",
     embed = [":go-links_lib"],
+    visibility = ["//visibility:public"],
+)
+
+container_image(
+    name = "image",
+    base = "@distroless_static//image",
+    files = [
+        ":go-links",
+    ],
+    mode = "0755",
+)
+
+k8s_object(
+    name = "k8s_deploy",
+    images = {
+        "index.docker.io/mmoriarity/go-links-srv:latest": ":image",
+    },
+    kind = "deployment",
+    template = "deployment.yaml",
+)
+
+k8s_http_service(
+    name = "k8s_service",
+    app = "go-links",
+    namespace = "go-links",
+    service_name = "go-links-srv",
+)
+
+k8s_virtual_host(
+    name = "k8s_ingress",
+    host_name = "go",
+    namespace = "go-links",
+    service_name = "go-links-srv",
+)
+
+k8s_objects(
+    name = "k8s",
+    objects = [
+        ":k8s_deploy",
+        ":k8s_service",
+        ":k8s_ingress",
+    ],
     visibility = ["//visibility:public"],
 )

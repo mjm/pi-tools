@@ -71,6 +71,15 @@ io_bazel_rules_docker_pip_deps()
 load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
 
 container_pull(
+    name = "distroless_static",
+    architecture = "arm64",
+    digest = "sha256:ff12b81f9c845f0411c52081ade199baf943f7eb555170106ea38a5db8d0fd55",
+    os = "linux",
+    registry = "gcr.io",
+    repository = "distroless/static",
+)
+
+container_pull(
     name = "ubuntu_bluetooth",
     architecture = "arm64",
     digest = "sha256:c95fcbc19ac85f52c228a4b0d9d2bca05d6c251f9659b314acaa2bda9eee6915",
