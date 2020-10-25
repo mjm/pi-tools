@@ -1,7 +1,8 @@
 import {client} from "com_github_mjm_pi_tools/homebase/go-links/lib/links_client";
-import {Link, ListRecentLinksRequest} from "com_github_mjm_pi_tools/go-links/proto/links/links_pb";
+import {GetLinkRequest, Link, ListRecentLinksRequest} from "com_github_mjm_pi_tools/go-links/proto/links/links_pb";
 
 export const LIST_RECENT_LINKS = "ListRecentLinks";
+export const GET_LINK = "GetLink";
 
 const fetchers = {
     [LIST_RECENT_LINKS]: async (): Promise<Link[]> => {
@@ -15,6 +16,19 @@ const fetchers = {
                 }
             });
         });
+    },
+    [GET_LINK]: async (id: string): Promise<Link> => {
+        const req = new GetLinkRequest();
+        req.setId(id);
+        return new Promise((resolve, reject) => {
+            client.getLink(req, (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res.getLink());
+                }
+            })
+        })
     },
 } as const;
 

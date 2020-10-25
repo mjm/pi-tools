@@ -42,6 +42,26 @@ func (q *Queries) CreateLink(ctx context.Context, arg CreateLinkParams) (Link, e
 	return i, err
 }
 
+const getLink = `-- name: GetLink :one
+SELECT id, short_url, destination_url, description, created_at, updated_at
+FROM links
+WHERE id = $1
+`
+
+func (q *Queries) GetLink(ctx context.Context, id ksuid.KSUID) (Link, error) {
+	row := q.db.QueryRowContext(ctx, getLink, id)
+	var i Link
+	err := row.Scan(
+		&i.ID,
+		&i.ShortURL,
+		&i.DestinationURL,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getLinkByShortURL = `-- name: GetLinkByShortURL :one
 SELECT id, short_url, destination_url, description, created_at, updated_at
 FROM links

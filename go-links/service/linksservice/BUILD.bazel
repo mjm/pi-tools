@@ -4,6 +4,7 @@ go_library(
     name = "linksservice",
     srcs = [
         "create_link.go",
+        "get_link.go",
         "list_recent_links.go",
         "metric.go",
         "proto.go",
@@ -22,6 +23,7 @@ go_library(
         "@io_opentelemetry_go_otel//api/trace",
         "@io_opentelemetry_go_otel//codes",
         "@io_opentelemetry_go_otel//label",
+        "@org_golang_google_grpc//codes",
         "@org_golang_google_grpc//status",
     ],
 )

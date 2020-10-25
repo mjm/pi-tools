@@ -1,7 +1,7 @@
 import {client} from "com_github_mjm_pi_tools/homebase/go-links/lib/links_client";
 import {CreateLinkRequest, Link} from "com_github_mjm_pi_tools/go-links/proto/links/links_pb";
 import {mutate} from "swr";
-import {LIST_RECENT_LINKS} from "com_github_mjm_pi_tools/homebase/go-links/lib/fetch";
+import {GET_LINK, LIST_RECENT_LINKS} from "com_github_mjm_pi_tools/homebase/go-links/lib/fetch";
 
 export interface CreateLinkParams {
     shortURL: string;
@@ -24,6 +24,7 @@ export async function createLink(params: CreateLinkParams): Promise<void> {
                     mutate(LIST_RECENT_LINKS, (links: Link[]) => {
                         return [res.getLink(), ...links];
                     });
+                    mutate([GET_LINK, res.getLink().getId()], res.getLink());
                 } else {
                     mutate(LIST_RECENT_LINKS);
                 }
@@ -31,4 +32,11 @@ export async function createLink(params: CreateLinkParams): Promise<void> {
             }
         });
     });
+}
+
+export interface UpdateLinkParams {
+    id: string;
+    shortURL: string;
+    destinationURL: string;
+    description: string;
 }

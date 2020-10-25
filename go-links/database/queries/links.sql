@@ -4,6 +4,11 @@ FROM links
 ORDER BY created_at DESC
 LIMIT 30;
 
+-- name: GetLink :one
+SELECT *
+FROM links
+WHERE id = $1;
+
 -- name: GetLinkByShortURL :one
 SELECT *
 FROM links

@@ -2,6 +2,7 @@ syntax = "proto3";
 
 service LinksService {
     rpc ListRecentLinks (ListRecentLinksRequest) returns (ListRecentLinksResponse);
+    rpc GetLink (GetLinkRequest) returns (GetLinkResponse);
     rpc CreateLink (CreateLinkRequest) returns (CreateLinkResponse);
 }
 
@@ -10,6 +11,14 @@ message ListRecentLinksRequest {
 
 message ListRecentLinksResponse {
     repeated Link links = 1;
+}
+
+message GetLinkRequest {
+    string id = 1;
+}
+
+message GetLinkResponse {
+    Link link = 1;
 }
 
 message CreateLinkRequest {
