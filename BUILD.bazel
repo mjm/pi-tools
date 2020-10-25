@@ -13,6 +13,8 @@ k8s_objects(
         "//monitoring/alertmanager:k8s",
         "//monitoring/grafana:k8s",
         "//monitoring/loki:k8s",
+        "//monitoring/jaeger:k8s_operator",
+        "//monitoring/jaeger:k8s",
         "//monitoring/node_exporter:k8s_daemon",
         "//monitoring/prometheus:k8s",
         "//monitoring/promtail:k8s",
