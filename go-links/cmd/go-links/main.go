@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
@@ -16,6 +17,8 @@ import (
 	"go.opentelemetry.io/otel/exporters/metric/prometheus"
 	"go.opentelemetry.io/otel/exporters/stdout"
 	"go.opentelemetry.io/otel/exporters/trace/jaeger"
+	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/semconv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -41,7 +44,14 @@ func main() {
 		}
 		defer tracePipe.Stop()
 	} else {
-		stop, err := jaeger.InstallNewPipeline(jaeger.WithCollectorEndpoint("http://jaeger-collector.monitoring:14268/api/traces"))
+		stop, err := jaeger.InstallNewPipeline(
+			jaeger.WithCollectorEndpoint("http://jaeger-collector.monitoring:14268/api/traces"),
+			jaeger.WithProcess(jaeger.Process{
+				ServiceName: "go-links",
+				Tags: []label.KeyValue{
+					semconv.K8SPodNameKey.String(os.Getenv("POD_NAME")),
+				},
+			}))
 		//stop, err := jaeger.InstallNewPipeline(jaeger.WithAgentEndpoint("localhost:6831"))
 		if err != nil {
 			log.Panicf("Error installing Jaeger tracing pipeline: %v", err)
