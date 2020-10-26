@@ -11,6 +11,7 @@ go_library(
         "redirect.go",
         "server.go",
         "trace.go",
+        "update_link.go",
     ],
     importpath = "github.com/mjm/pi-tools/go-links/service/linksservice",
     visibility = ["//visibility:public"],

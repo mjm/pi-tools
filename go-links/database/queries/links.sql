@@ -19,3 +19,11 @@ INSERT INTO links
     (id, short_url, destination_url, description)
 VALUES ($1, $2, $3, $4)
 RETURNING *;
+
+-- name: UpdateLink :one
+UPDATE links
+SET short_url       = $2,
+    destination_url = $3,
+    description     = $4
+WHERE id = $1
+RETURNING *;

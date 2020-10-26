@@ -1,11 +1,19 @@
 import React from "react";
 import {Link} from "com_github_mjm_pi_tools/go-links/proto/links/links_pb";
 import {Field, Form, Formik, FormikHelpers} from "formik";
-import {UpdateLinkParams} from "com_github_mjm_pi_tools/homebase/go-links/lib/mutate";
+import {updateLink, UpdateLinkParams} from "com_github_mjm_pi_tools/homebase/go-links/lib/mutate";
+import {useHistory} from "react-router-dom";
 
 export function EditLinkForm({link}: { link: Link }) {
-    async function onSubmit(values: UpdateLinkParams, actions: FormikHelpers<UpdateLinkParams>) {
+    const history = useHistory();
 
+    async function onSubmit(values: UpdateLinkParams, actions: FormikHelpers<UpdateLinkParams>) {
+        try {
+            await updateLink(values);
+            history.push("/go");
+        } catch (err) {
+            actions.setStatus({error: err});
+        }
     }
 
     return (

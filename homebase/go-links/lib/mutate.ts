@@ -1,5 +1,5 @@
 import {client} from "com_github_mjm_pi_tools/homebase/go-links/lib/links_client";
-import {CreateLinkRequest, Link} from "com_github_mjm_pi_tools/go-links/proto/links/links_pb";
+import {CreateLinkRequest, Link, UpdateLinkRequest} from "com_github_mjm_pi_tools/go-links/proto/links/links_pb";
 import {mutate} from "swr";
 import {GET_LINK, LIST_RECENT_LINKS} from "com_github_mjm_pi_tools/homebase/go-links/lib/fetch";
 
@@ -39,4 +39,26 @@ export interface UpdateLinkParams {
     shortURL: string;
     destinationURL: string;
     description: string;
+}
+
+export async function updateLink(params: UpdateLinkParams): Promise<void> {
+    const req = new UpdateLinkRequest();
+    req.setId(params.id);
+    req.setShortUrl(params.shortURL);
+    req.setDestinationUrl(params.destinationURL);
+    req.setDescription(params.description);
+
+    return new Promise((resolve, reject) => {
+        client.updateLink(req, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                mutate(LIST_RECENT_LINKS);
+                if (res) {
+                    mutate([GET_LINK, res.getLink().getId()], res.getLink());
+                }
+                resolve();
+            }
+        });
+    });
 }

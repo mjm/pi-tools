@@ -118,3 +118,38 @@ func (q *Queries) ListRecentLinks(ctx context.Context) ([]Link, error) {
 	}
 	return items, nil
 }
+
+const updateLink = `-- name: UpdateLink :one
+UPDATE links
+SET short_url       = $2,
+    destination_url = $3,
+    description     = $4
+WHERE id = $1
+RETURNING id, short_url, destination_url, description, created_at, updated_at
+`
+
+type UpdateLinkParams struct {
+	ID             ksuid.KSUID
+	ShortURL       string
+	DestinationURL string
+	Description    string
+}
+
+func (q *Queries) UpdateLink(ctx context.Context, arg UpdateLinkParams) (Link, error) {
+	row := q.db.QueryRowContext(ctx, updateLink,
+		arg.ID,
+		arg.ShortURL,
+		arg.DestinationURL,
+		arg.Description,
+	)
+	var i Link
+	err := row.Scan(
+		&i.ID,
+		&i.ShortURL,
+		&i.DestinationURL,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
