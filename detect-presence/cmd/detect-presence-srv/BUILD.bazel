@@ -36,6 +36,7 @@ container_image(
         ":detect-presence-srv",
     ],
     mode = "0755",
+    tags = ["no-cache"],
 )
 
 k8s_object(

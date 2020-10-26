@@ -9,6 +9,7 @@ container_image(
     tars = [
         "//monitoring/grafana/provisioning:pkg",
     ],
+    tags = ["no-cache"],
 )
 
 k8s_object(

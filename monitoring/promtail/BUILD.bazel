@@ -9,6 +9,7 @@ container_image(
         "promtail.yml",
     ],
     mode = "0444",
+    tags = ["no-cache"],
 )
 
 k8s_object(

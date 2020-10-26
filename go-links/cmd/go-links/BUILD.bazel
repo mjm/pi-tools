@@ -40,6 +40,7 @@ container_image(
         ":go-links",
     ],
     mode = "0755",
+    tags = ["no-cache"],
 )
 
 k8s_object(

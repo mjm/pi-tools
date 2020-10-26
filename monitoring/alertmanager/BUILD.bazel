@@ -25,6 +25,7 @@ container_image(
     tars = [
         ":image_contents",
     ],
+    tags = ["no-cache"],
 )
 
 k8s_object(

@@ -31,4 +31,5 @@ container_image(
         ":pi-hole-ingress-controller",
     ],
     visibility = ["//visibility:public"],
+    tags = ["no-cache"],
 )
