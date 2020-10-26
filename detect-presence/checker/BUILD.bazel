@@ -2,13 +2,17 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "checker",
-    srcs = ["checker.go"],
+    srcs = [
+        "checker.go",
+        "metrics.go",
+    ],
     importpath = "github.com/mjm/pi-tools/detect-presence/checker",
     visibility = ["//visibility:public"],
     deps = [
         "//detect-presence/detector",
         "//detect-presence/presence",
-        "@com_github_prometheus_client_golang//prometheus",
-        "@com_github_prometheus_client_golang//prometheus/promauto",
+        "@io_opentelemetry_go_otel//api/global",
+        "@io_opentelemetry_go_otel//api/metric",
+        "@io_opentelemetry_go_otel//label",
     ],
 )

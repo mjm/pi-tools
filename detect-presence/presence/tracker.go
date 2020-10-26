@@ -1,16 +1,12 @@
 package presence
 
 import (
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
-)
+	"context"
+	"sync"
 
-var (
-	deviceTotal = promauto.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace: "presence",
-		Name:      "device_total",
-		Help:      "Indicates which devices are detected to be present at the time.",
-	}, []string{"name", "addr"})
+	"go.opentelemetry.io/otel/api/global"
+	"go.opentelemetry.io/otel/api/metric"
+	"go.opentelemetry.io/otel/label"
 )
 
 type Tracker struct {
@@ -19,10 +15,11 @@ type Tracker struct {
 	devices       map[Device]int
 	onLeaveHooks  []OnLeaveHook
 	onReturnHooks []OnReturnHook
+	lock          sync.Mutex
 }
 
 func NewTracker() *Tracker {
-	return &Tracker{
+	t := &Tracker{
 		AllowedFailures: 2,
 		devices:         map[Device]int{},
 		onLeaveHooks: []OnLeaveHook{
@@ -32,6 +29,23 @@ func NewTracker() *Tracker {
 			loggingHook{},
 		},
 	}
+
+	m := metric.Must(global.Meter("github.com/mjm/pi-tools/detect-presence/presence"))
+	m.NewInt64ValueObserver("presence.device.total", func(ctx context.Context, result metric.Int64ObserverResult) {
+		t.lock.Lock()
+		defer t.lock.Unlock()
+
+		for d, n := range t.devices {
+			var val int64
+			if n == 0 {
+				val = 1
+			}
+
+			result.Observe(val, label.String("name", d.Name), label.String("addr", d.Addr))
+		}
+	}, metric.WithDescription("Indicates which devices are detected to be present at the time."))
+
+	return t
 }
 
 func (t *Tracker) IsPresent() bool {
@@ -49,13 +63,8 @@ func (t *Tracker) IsPresent() bool {
 }
 
 func (t *Tracker) Set(d Device, present bool) {
+	t.lock.Lock()
 	wasPresent := t.IsPresent()
-
-	var val float64
-	if present {
-		val = 1.0
-	}
-	deviceTotal.WithLabelValues(d.Name, d.Addr).Set(val)
 
 	if present {
 		t.devices[d] = 0
@@ -64,6 +73,7 @@ func (t *Tracker) Set(d Device, present bool) {
 	}
 
 	isPresent := t.IsPresent()
+	t.lock.Unlock()
 
 	if !wasPresent && isPresent {
 		// we have returned!

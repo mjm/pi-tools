@@ -3,13 +3,9 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
-	"net/http"
 	"time"
 
-	"github.com/improbable-eng/grpc-web/go/grpcweb"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 
 	"github.com/mjm/pi-tools/detect-presence/checker"
@@ -19,10 +15,11 @@ import (
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
 	"github.com/mjm/pi-tools/detect-presence/service/tripsservice"
 	"github.com/mjm/pi-tools/detect-presence/trips"
+	"github.com/mjm/pi-tools/observability"
+	"github.com/mjm/pi-tools/rpc"
 )
 
 var (
-	httpPort     = flag.Int("http-port", 2120, "HTTP port to listen on for metrics and API requests")
 	pingInterval = flag.Duration("ping-interval", 30*time.Second, "How often to check for nearby devices")
 	deviceFile   = flag.String("device-file", "", "JSON file to check for device presence instead of using Bluetooth")
 	deviceName   = flag.String("device-name", "hci0", "Local Bluetooth device name")
@@ -35,7 +32,14 @@ var devices = []presence.Device{
 }
 
 func main() {
+	rpc.SetDefaultHTTPPort(2120)
 	flag.Parse()
+
+	stopObs, err := observability.Start()
+	if err != nil {
+		log.Panicf("Error setting up observability: %v", err)
+	}
+	defer stopObs()
 
 	db, err := database.Open(*dbDSN)
 	if err != nil {
@@ -74,27 +78,11 @@ func main() {
 
 	go c.Run()
 
-	http.Handle("/metrics", promhttp.Handler())
+	//http.Handle("/metrics", promhttp.Handler())
 
 	tripsService := tripsservice.New(db)
-	grpcServer := grpc.NewServer()
-	tripspb.RegisterTripsServiceServer(grpcServer, tripsService)
-	wrappedGrpc := grpcweb.WrapServer(grpcServer, grpcweb.WithOriginFunc(func(origin string) bool {
-		if origin == "http://localhost:8080" || origin == "http://mars.local:8080" {
-			return true
-		}
-		log.Printf("Rejecting unknown origin: %s", origin)
-		return false
-	}))
 
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if wrappedGrpc.IsAcceptableGrpcCorsRequest(r) || wrappedGrpc.IsGrpcWebRequest(r) {
-			wrappedGrpc.ServeHTTP(w, r)
-			return
-		}
-
-		http.DefaultServeMux.ServeHTTP(w, r)
-	})
-
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *httpPort), handler))
+	log.Fatal(rpc.ListenAndServe(rpc.WithRegisteredServices(func(server *grpc.Server) {
+		tripspb.RegisterTripsServiceServer(server, tripsService)
+	})))
 }
