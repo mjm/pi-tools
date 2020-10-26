@@ -30,6 +30,6 @@ container_image(
     files = [
         ":pi-hole-ingress-controller",
     ],
-    visibility = ["//visibility:public"],
     tags = ["no-cache"],
+    visibility = ["//visibility:public"],
 )

@@ -69,10 +69,10 @@ container_image(
     files = [
         "homebase.caddy",
     ],
+    tags = ["no-cache"],
     tars = [
         ":pkg",
     ],
-    tags = ["no-cache"],
 )
 
 k8s_object(

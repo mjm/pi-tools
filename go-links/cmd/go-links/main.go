@@ -14,10 +14,12 @@ import (
 	_ "github.com/lib/pq"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel/api/trace"
 	"go.opentelemetry.io/otel/exporters/metric/prometheus"
 	"go.opentelemetry.io/otel/exporters/stdout"
 	"go.opentelemetry.io/otel/exporters/trace/jaeger"
 	"go.opentelemetry.io/otel/label"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/semconv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -32,6 +34,26 @@ var (
 	dbDSN    = flag.String("db", "dbname=golinks_dev sslmode=disable", "Connection string for connecting to PostgreSQL database for storing links")
 	debug    = flag.Bool("debug", false, "Show debug tracing output in stdout")
 )
+
+type noMetricsSampler struct{}
+
+func (noMetricsSampler) ShouldSample(p sdktrace.SamplingParameters) sdktrace.SamplingResult {
+	if p.Kind != trace.SpanKindServer {
+		return sdktrace.SamplingResult{Decision: sdktrace.RecordAndSample}
+	}
+
+	for _, attr := range p.Attributes {
+		if attr.Key == "http.target" && attr.Value.AsString() == "/metrics" {
+			return sdktrace.SamplingResult{Decision: sdktrace.Drop}
+		}
+	}
+
+	return sdktrace.SamplingResult{Decision: sdktrace.RecordAndSample}
+}
+
+func (noMetricsSampler) Description() string {
+	return "NoMetricsSampler"
+}
 
 func main() {
 	flag.Parse()
@@ -51,6 +73,9 @@ func main() {
 				Tags: []label.KeyValue{
 					semconv.K8SPodNameKey.String(os.Getenv("POD_NAME")),
 				},
+			}),
+			jaeger.WithSDK(&sdktrace.Config{
+				DefaultSampler: noMetricsSampler{},
 			}))
 		//stop, err := jaeger.InstallNewPipeline(jaeger.WithAgentEndpoint("localhost:6831"))
 		if err != nil {

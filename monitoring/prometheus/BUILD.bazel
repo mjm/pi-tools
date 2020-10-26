@@ -20,10 +20,10 @@ pkg_tar(
 container_image(
     name = "image",
     base = "@prometheus//image",
+    tags = ["no-cache"],
     tars = [
         ":image_contents",
     ],
-    tags = ["no-cache"],
 )
 
 k8s_object(

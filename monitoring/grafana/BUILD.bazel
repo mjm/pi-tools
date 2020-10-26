@@ -6,10 +6,10 @@ load("//tools:k8s.bzl", "k8s_http_service", "k8s_virtual_host")
 container_image(
     name = "image",
     base = "@grafana//image",
+    tags = ["no-cache"],
     tars = [
         "//monitoring/grafana/provisioning:pkg",
     ],
-    tags = ["no-cache"],
 )
 
 k8s_object(

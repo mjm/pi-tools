@@ -22,10 +22,10 @@ pkg_tar(
 container_image(
     name = "image",
     base = "@alertmanager//image",
+    tags = ["no-cache"],
     tars = [
         ":image_contents",
     ],
-    tags = ["no-cache"],
 )
 
 k8s_object(
