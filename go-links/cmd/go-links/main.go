@@ -7,19 +7,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	_ "github.com/lib/pq"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-	"go.opentelemetry.io/otel/api/trace"
-	"go.opentelemetry.io/otel/exporters/metric/prometheus"
-	"go.opentelemetry.io/otel/exporters/stdout"
-	"go.opentelemetry.io/otel/exporters/trace/jaeger"
-	"go.opentelemetry.io/otel/label"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/semconv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -27,68 +20,24 @@ import (
 	"github.com/mjm/pi-tools/go-links/database"
 	linkspb "github.com/mjm/pi-tools/go-links/proto/links"
 	"github.com/mjm/pi-tools/go-links/service/linksservice"
+	"github.com/mjm/pi-tools/observability"
 	"github.com/mjm/pi-tools/pkg/instrumentation/otelsql"
 )
 
 var (
 	httpPort = flag.Int("http-port", 4240, "HTTP port to listen on for metrics and API requests")
 	dbDSN    = flag.String("db", "dbname=golinks_dev sslmode=disable", "Connection string for connecting to PostgreSQL database for storing links")
-	debug    = flag.Bool("debug", false, "Show debug tracing output in stdout")
 )
-
-type noMetricsSampler struct{}
-
-func (noMetricsSampler) ShouldSample(p sdktrace.SamplingParameters) sdktrace.SamplingResult {
-	if p.Kind != trace.SpanKindServer {
-		return sdktrace.SamplingResult{Decision: sdktrace.RecordAndSample}
-	}
-
-	for _, attr := range p.Attributes {
-		if attr.Key == "http.target" && attr.Value.AsString() == "/metrics" {
-			return sdktrace.SamplingResult{Decision: sdktrace.Drop}
-		}
-	}
-
-	return sdktrace.SamplingResult{Decision: sdktrace.RecordAndSample}
-}
-
-func (noMetricsSampler) Description() string {
-	return "NoMetricsSampler"
-}
 
 func main() {
 	flag.Parse()
 	ctx := context.Background()
 
-	if *debug {
-		tracePipe, err := stdout.InstallNewPipeline([]stdout.Option{stdout.WithPrettyPrint()}, nil)
-		if err != nil {
-			log.Panicf("Error installing stdout tracing pipeline: %v", err)
-		}
-		defer tracePipe.Stop()
-	} else {
-		stop, err := jaeger.InstallNewPipeline(
-			jaeger.WithCollectorEndpoint("http://jaeger-collector.monitoring:14268/api/traces"),
-			jaeger.WithProcess(jaeger.Process{
-				ServiceName: "go-links",
-				Tags: []label.KeyValue{
-					semconv.K8SPodNameKey.String(os.Getenv("POD_NAME")),
-				},
-			}),
-			jaeger.WithSDK(&sdktrace.Config{
-				DefaultSampler: noMetricsSampler{},
-			}))
-		//stop, err := jaeger.InstallNewPipeline(jaeger.WithAgentEndpoint("localhost:6831"))
-		if err != nil {
-			log.Panicf("Error installing Jaeger tracing pipeline: %v", err)
-		}
-		defer stop()
-	}
-
-	metrics, err := prometheus.InstallNewPipeline(prometheus.Config{})
+	stopObs, err := observability.Start()
 	if err != nil {
-		log.Fatalf("Error installing metrics pipeline: %v", err)
+		log.Panicf("Error setting up observability: %v", err)
 	}
+	defer stopObs()
 
 	sqlDB, err := sql.Open("postgres", *dbDSN)
 	if err != nil {
@@ -105,8 +54,6 @@ func main() {
 	if err := db.MigrateIfNeeded(ctx); err != nil {
 		log.Fatalf("Error migrating database: %v", err)
 	}
-
-	http.Handle("/metrics", metrics)
 
 	linksService := linksservice.New(db)
 	grpcServer := grpc.NewServer(
