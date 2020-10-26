@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"go.opentelemetry.io/otel/api/trace"
+	"go.opentelemetry.io/otel/label"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -11,6 +13,9 @@ import (
 )
 
 func (s *Server) GetTrip(ctx context.Context, req *tripspb.GetTripRequest) (*tripspb.GetTripResponse, error) {
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(label.String("trip.id", req.GetId()))
+
 	if req.GetId() == "" {
 		return nil, status.Error(codes.InvalidArgument, "missing trip ID")
 	}

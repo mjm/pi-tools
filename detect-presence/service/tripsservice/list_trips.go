@@ -2,19 +2,27 @@ package tripsservice
 
 import (
 	"context"
-	"fmt"
 	"time"
+
+	"go.opentelemetry.io/otel/api/trace"
+	"go.opentelemetry.io/otel/label"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
 )
 
 func (s *Server) ListTrips(ctx context.Context, req *tripspb.ListTripsRequest) (*tripspb.ListTripsResponse, error) {
+	span := trace.SpanFromContext(ctx)
+
 	res := &tripspb.ListTripsResponse{}
 
 	trips, err := s.db.ListTrips(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("listing trips: %w", err)
+		return nil, status.Errorf(codes.Internal, "listing trips: %w", err)
 	}
+
+	span.SetAttributes(label.Int("trip.count", len(trips)))
 
 	for _, trip := range trips {
 		t := &tripspb.Trip{

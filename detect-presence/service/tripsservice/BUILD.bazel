@@ -14,6 +14,8 @@ go_library(
     deps = [
         "//detect-presence/database",
         "//detect-presence/proto/trips",
+        "@io_opentelemetry_go_otel//api/trace",
+        "@io_opentelemetry_go_otel//label",
         "@org_golang_google_grpc//codes",
         "@org_golang_google_grpc//status",
     ],
