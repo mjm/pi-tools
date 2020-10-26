@@ -32,7 +32,7 @@ spec:
           args: ["start"]
           env:
             - name: WATCH_NAMESPACE
-              value: ""
+              value: monitoring
             - name: POD_NAME
               valueFrom:
                 fieldRef:
