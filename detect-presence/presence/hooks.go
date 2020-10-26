@@ -1,15 +1,16 @@
 package presence
 
 import (
+	"context"
 	"log"
 )
 
 type OnLeaveHook interface {
-	OnLeave(t *Tracker)
+	OnLeave(ctx context.Context, t *Tracker)
 }
 
 type OnReturnHook interface {
-	OnReturn(t *Tracker)
+	OnReturn(ctx context.Context, t *Tracker)
 }
 
 func (t *Tracker) OnLeave(hook OnLeaveHook) {
@@ -20,23 +21,23 @@ func (t *Tracker) OnReturn(hook OnReturnHook) {
 	t.onReturnHooks = append(t.onReturnHooks, hook)
 }
 
-type OnLeaveFunc func(*Tracker)
-type OnReturnFunc func(*Tracker)
+type OnLeaveFunc func(context.Context, *Tracker)
+type OnReturnFunc func(context.Context, *Tracker)
 
-func (fn OnLeaveFunc) OnLeave(t *Tracker) {
-	fn(t)
+func (fn OnLeaveFunc) OnLeave(ctx context.Context, t *Tracker) {
+	fn(ctx, t)
 }
 
-func (fn OnReturnFunc) OnReturn(t *Tracker) {
-	fn(t)
+func (fn OnReturnFunc) OnReturn(ctx context.Context, t *Tracker) {
+	fn(ctx, t)
 }
 
 type loggingHook struct{}
 
-func (loggingHook) OnLeave(_ *Tracker) {
+func (loggingHook) OnLeave(context.Context, *Tracker) {
 	log.Printf("Transitioned from home to away")
 }
 
-func (loggingHook) OnReturn(_ *Tracker) {
+func (loggingHook) OnReturn(context.Context, *Tracker) {
 	log.Printf("Transitioned from away to home")
 }

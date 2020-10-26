@@ -118,6 +118,6 @@ func (c *Checker) checkDevice(ctx context.Context, d presence.Device) bool {
 	c.metrics.DeviceCheckDuration.Record(ctx, duration.Seconds(), labels...)
 
 	span.SetAttributes(label.Bool("device.present", present))
-	c.Tracker.Set(d, present)
+	c.Tracker.Set(ctx, d, present)
 	return present
 }

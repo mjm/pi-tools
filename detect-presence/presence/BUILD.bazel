@@ -12,6 +12,7 @@ go_library(
     deps = [
         "@io_opentelemetry_go_otel//api/global",
         "@io_opentelemetry_go_otel//api/metric",
+        "@io_opentelemetry_go_otel//api/trace",
         "@io_opentelemetry_go_otel//label",
     ],
 )

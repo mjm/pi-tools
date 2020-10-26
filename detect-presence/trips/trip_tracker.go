@@ -2,16 +2,22 @@ package trips
 
 import (
 	"context"
-	"log"
 	"sync"
 	"time"
 
 	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/api/metric"
+	"go.opentelemetry.io/otel/api/trace"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/label"
 
 	"github.com/mjm/pi-tools/detect-presence/database"
 	"github.com/mjm/pi-tools/detect-presence/presence"
 )
+
+const instrumentationName = "github.com/mjm/pi-tools/detect-presence/trips"
+
+var tracer = global.Tracer(instrumentationName)
 
 type Tracker struct {
 	db                  *database.Client
@@ -50,7 +56,7 @@ func NewTracker(db *database.Client) (*Tracker, error) {
 		}
 	}
 
-	m := metric.Must(global.Meter("github.com/mjm/pi-tools/detect-presence/trips"))
+	m := metric.Must(global.Meter(instrumentationName))
 	t.tripDurationSeconds = m.NewFloat64ValueRecorder("presence.trip.duration.seconds",
 		metric.WithDescription("Measures how long trips away from home last"))
 
@@ -71,9 +77,12 @@ func NewTracker(db *database.Client) (*Tracker, error) {
 	return t, nil
 }
 
-func (t *Tracker) OnLeave(_ *presence.Tracker) {
+func (t *Tracker) OnLeave(ctx context.Context, _ *presence.Tracker) {
+	ctx, span := tracer.Start(ctx, "trips.Tracker.OnLeave",
+		trace.WithAttributes(label.Bool("trip.in_progress", t.currentTrip != nil)))
+	defer span.End()
+
 	if t.currentTrip != nil {
-		log.Printf("Skipping starting new trip because there's already a current trip")
 		return
 	}
 
@@ -81,29 +90,40 @@ func (t *Tracker) OnLeave(_ *presence.Tracker) {
 	defer t.lock.Unlock()
 
 	t.lastLeft = time.Now()
+	span.SetAttributes(label.String("trip.left_at", t.lastLeft.UTC().Format(time.RFC3339)))
 
-	newTrip, err := t.db.BeginTrip(context.Background(), t.lastLeft)
+	newTrip, err := t.db.BeginTrip(ctx, t.lastLeft)
 	if err != nil {
-		log.Printf("Error saving new trip to DB: %v", err)
+		span.SetStatus(codes.Error, err.Error())
 	} else {
 		t.currentTrip = newTrip
+		span.SetAttributes(label.String("trip.id", t.currentTrip.ID))
 	}
 }
 
-func (t *Tracker) OnReturn(_ *presence.Tracker) {
+func (t *Tracker) OnReturn(ctx context.Context, _ *presence.Tracker) {
+	ctx, span := tracer.Start(ctx, "trips.Tracker.OnLeave",
+		trace.WithAttributes(label.Bool("trip.in_progress", t.currentTrip != nil)))
+	defer span.End()
+
 	t.lock.Lock()
 	defer t.lock.Unlock()
 
 	t.lastReturned = time.Now()
+	span.SetAttributes(
+		label.String("trip.returned_at", t.lastReturned.UTC().Format(time.RFC3339)),
+		label.String("trip.left_at", t.lastLeft.UTC().Format(time.RFC3339)))
 
 	if !t.lastLeft.IsZero() {
 		tripDuration := t.lastReturned.Sub(t.lastLeft)
-		t.tripDurationSeconds.Record(context.Background(), tripDuration.Seconds())
+		span.SetAttributes(label.Float64("trip.duration_secs", tripDuration.Seconds()))
+		t.tripDurationSeconds.Record(ctx, tripDuration.Seconds())
 	}
 
 	if t.currentTrip != nil {
-		if err := t.db.EndTrip(context.Background(), t.currentTrip.ID, t.lastReturned); err != nil {
-			log.Printf("Error completing trip in DB: %v", err)
+		span.SetAttributes(label.String("trip.id", t.currentTrip.ID))
+		if err := t.db.EndTrip(ctx, t.currentTrip.ID, t.lastReturned); err != nil {
+			span.SetStatus(codes.Error, err.Error())
 		}
 		t.currentTrip = nil
 	}
