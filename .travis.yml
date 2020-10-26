@@ -1,7 +1,8 @@
 language: minimal
 os: linux
 dist: focal
-arch: arm64
+arch: arm64-graviton2
+group: edge
 
 before_install:
   # Install Bazel
@@ -20,7 +21,7 @@ script:
 
 cache:
   directories:
-    - $HOME/.cache/bazel
+    - $HOME/.cache/bazel/disk-cache
 
 before_deploy:
   - mkdir -p /tmp/s3_staging/$TRAVIS_COMMIT /tmp/s3_staging/latest
