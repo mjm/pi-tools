@@ -2,17 +2,22 @@ package checker
 
 import (
 	"context"
-	"log"
 	"sync"
 	"time"
 
 	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/api/metric"
+	"go.opentelemetry.io/otel/api/trace"
+	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/label"
 
 	"github.com/mjm/pi-tools/detect-presence/detector"
 	"github.com/mjm/pi-tools/detect-presence/presence"
 )
+
+const instrumentationName = "github.com/mjm/pi-tools/detect-presence/checker"
+
+var tracer = global.Tracer(instrumentationName)
 
 type Checker struct {
 	Tracker  *presence.Tracker
@@ -26,7 +31,7 @@ type Checker struct {
 }
 
 func (c *Checker) Run() {
-	meter := global.Meter("github.com/mjm/pi-tools/detect-presence/checker")
+	meter := global.Meter(instrumentationName)
 	c.metrics = newMetrics(meter)
 	metric.Must(meter).NewInt64ValueObserver("presence.bluetooth.healthy", func(ctx context.Context, result metric.Int64ObserverResult) {
 		c.lock.Lock()
@@ -39,46 +44,80 @@ func (c *Checker) Run() {
 		result.Observe(val)
 	}, metric.WithDescription("Indicates if the local Bluetooth device is up and running."))
 
-	c.tick()
+	ctx := context.Background()
+	c.tick(ctx)
+
 	for range time.Tick(c.Interval) {
-		c.tick()
+		c.tick(ctx)
 	}
 }
 
-func (c *Checker) tick() {
-	ctx := context.Background()
+func (c *Checker) tick(ctx context.Context) {
+	ctx, span := tracer.Start(ctx, "Checker.tick")
+	defer span.End()
 
-	// first, check the health of the bluetooth device
+	healthy := c.checkBluetoothHealth(ctx)
+	span.SetAttributes(label.Bool("bluetooth.healthy", healthy))
+
+	var presentDeviceCount, missingDeviceCount int
+	for _, d := range c.Devices {
+		if c.checkDevice(ctx, d) {
+			presentDeviceCount++
+		} else {
+			missingDeviceCount++
+		}
+	}
+
+	span.SetAttributes(
+		label.Int("device.present_count", presentDeviceCount),
+		label.Int("device.missing_count", missingDeviceCount),
+		label.Int("device.count", presentDeviceCount+missingDeviceCount))
+}
+
+func (c *Checker) checkBluetoothHealth(ctx context.Context) bool {
+	ctx, span := tracer.Start(ctx, "Checker.checkBluetoothHealth")
+	defer span.End()
+
 	healthy, err := c.Detector.IsHealthy(ctx)
 	c.metrics.BluetoothCheckTotal.Add(ctx, 1)
 	if err != nil {
-		log.Printf("Failed to check Bluetooth device health: %v", err)
+		span.SetStatus(codes.Error, err.Error())
 		c.metrics.BluetoothCheckErrorsTotal.Add(ctx, 1)
 	}
 
+	span.SetAttributes(label.Bool("bluetooth.healthy", healthy))
 	c.lock.Lock()
 	c.isHealthy = healthy
 	c.lock.Unlock()
 
-	for _, d := range c.Devices {
-		startTime := time.Now()
-		present, err := c.Detector.DetectDevice(context.Background(), d.Addr)
-		duration := time.Now().Sub(startTime)
+	return healthy
+}
 
-		labels := []label.KeyValue{
-			label.String("name", d.Name),
-			label.String("addr", d.Addr),
-		}
+func (c *Checker) checkDevice(ctx context.Context, d presence.Device) bool {
+	ctx, span := tracer.Start(ctx, "Checker.checkDevice",
+		trace.WithAttributes(
+			label.String("device.name", d.Name),
+			label.String("device.addr", d.Addr)))
+	defer span.End()
 
-		c.metrics.DeviceCheckTotal.Add(ctx, 1, labels...)
-		if err != nil {
-			log.Printf("Failed to detect device %q (%s): %v", d.Name, d.Addr, err)
-			c.metrics.DeviceCheckErrorsTotal.Add(ctx, 1, labels...)
-			continue
-		}
-		c.metrics.DeviceCheckDuration.Record(ctx, duration.Seconds(), labels...)
+	startTime := time.Now()
+	present, err := c.Detector.DetectDevice(ctx, d.Addr)
+	duration := time.Now().Sub(startTime)
 
-		c.Tracker.Set(d, present)
-		log.Printf("Successfully detected device %q", d.Name)
+	labels := []label.KeyValue{
+		label.String("name", d.Name),
+		label.String("addr", d.Addr),
 	}
+
+	c.metrics.DeviceCheckTotal.Add(ctx, 1, labels...)
+	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		c.metrics.DeviceCheckErrorsTotal.Add(ctx, 1, labels...)
+		return false
+	}
+	c.metrics.DeviceCheckDuration.Record(ctx, duration.Seconds(), labels...)
+
+	span.SetAttributes(label.Bool("device.present", present))
+	c.Tracker.Set(d, present)
+	return present
 }
