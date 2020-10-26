@@ -15,7 +15,7 @@ import (
 	"github.com/mjm/pi-tools/debug"
 )
 
-func Start() (func(), error) {
+func Start(svcname string) (func(), error) {
 	var err error
 	var stopTracing func()
 
@@ -29,7 +29,7 @@ func Start() (func(), error) {
 		stopTracing, err = jaeger.InstallNewPipeline(
 			jaeger.WithCollectorEndpoint("http://jaeger-collector.monitoring:14268/api/traces"),
 			jaeger.WithProcess(jaeger.Process{
-				ServiceName: "go-links",
+				ServiceName: svcname,
 				Tags: []label.KeyValue{
 					semconv.K8SPodNameKey.String(os.Getenv("POD_NAME")),
 				},

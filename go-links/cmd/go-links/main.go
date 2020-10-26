@@ -30,7 +30,7 @@ func main() {
 
 	ctx := context.Background()
 
-	stopObs, err := observability.Start()
+	stopObs, err := observability.Start("go-links")
 	if err != nil {
 		log.Panicf("Error setting up observability: %v", err)
 	}

@@ -35,7 +35,7 @@ func main() {
 	rpc.SetDefaultHTTPPort(2120)
 	flag.Parse()
 
-	stopObs, err := observability.Start()
+	stopObs, err := observability.Start("detect-presence-srv")
 	if err != nil {
 		log.Panicf("Error setting up observability: %v", err)
 	}
