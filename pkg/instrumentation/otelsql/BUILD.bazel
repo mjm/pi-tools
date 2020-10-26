@@ -1,0 +1,18 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "otelsql",
+    srcs = [
+        "attributes.go",
+        "sql.go",
+    ],
+    importpath = "github.com/mjm/pi-tools/pkg/instrumentation/otelsql",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@io_opentelemetry_go_otel//api/global",
+        "@io_opentelemetry_go_otel//api/trace",
+        "@io_opentelemetry_go_otel//codes",
+        "@io_opentelemetry_go_otel//label",
+        "@io_opentelemetry_go_otel//semconv",
+    ],
+)

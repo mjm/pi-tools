@@ -27,6 +27,7 @@ import (
 	"github.com/mjm/pi-tools/go-links/database"
 	linkspb "github.com/mjm/pi-tools/go-links/proto/links"
 	"github.com/mjm/pi-tools/go-links/service/linksservice"
+	"github.com/mjm/pi-tools/pkg/instrumentation/otelsql"
 )
 
 var (
@@ -93,7 +94,14 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error opening database: %v", err)
 	}
-	db := database.New(sqlDB)
+
+	db := database.New(otelsql.NewDBWithTracing(sqlDB,
+		otelsql.WithAttributes(
+			semconv.DBSystemPostgres,
+			// assuming this is safe to include since it was on the command-line.
+			// passwords should come from a file or environment variable.
+			semconv.DBConnectionStringKey.String(*dbDSN))))
+
 	if err := db.MigrateIfNeeded(ctx); err != nil {
 		log.Fatalf("Error migrating database: %v", err)
 	}

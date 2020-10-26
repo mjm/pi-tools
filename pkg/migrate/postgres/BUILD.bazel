@@ -6,6 +6,7 @@ go_library(
     importpath = "github.com/mjm/pi-tools/pkg/migrate/postgres",
     visibility = ["//visibility:public"],
     deps = [
+        "//pkg/instrumentation/otelsql",
         "//pkg/migrate/embeddata",
         "@com_github_golang_migrate_migrate_v4//:migrate",
         "@com_github_golang_migrate_migrate_v4//database/postgres",

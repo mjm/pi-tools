@@ -13,6 +13,7 @@ go_library(
         "//go-links/database",
         "//go-links/proto/links",
         "//go-links/service/linksservice",
+        "//pkg/instrumentation/otelsql",
         "@com_github_improbable_eng_grpc_web//go/grpcweb",
         "@com_github_lib_pq//:pq",
         "@io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc//:otelgrpc",
