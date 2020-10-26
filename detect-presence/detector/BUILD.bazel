@@ -9,4 +9,10 @@ go_library(
     ],
     importpath = "github.com/mjm/pi-tools/detect-presence/detector",
     visibility = ["//visibility:public"],
+    deps = [
+        "@io_opentelemetry_go_otel//api/global",
+        "@io_opentelemetry_go_otel//api/trace",
+        "@io_opentelemetry_go_otel//codes",
+        "@io_opentelemetry_go_otel//label",
+    ],
 )
