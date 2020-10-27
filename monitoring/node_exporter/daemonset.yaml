@@ -29,6 +29,12 @@ spec:
             - --path.rootfs=/host/root
             - --collector.processes
             - --collector.systemd
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "30M"
+            limits:
+              memory: "50M"
           ports:
             - name: http
               containerPort: 9100

@@ -24,6 +24,12 @@ spec:
       containers:
         - name: prometheus
           image: index.docker.io/mmoriarity/prometheus:latest
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "750M"
+            limits:
+              memory: "1250M"
           ports:
             - name: http
               containerPort: 9090

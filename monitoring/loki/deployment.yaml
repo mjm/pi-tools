@@ -26,6 +26,12 @@ spec:
           name: loki
           args:
             - "-config.file=/etc/loki/loki.yml"
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "75M"
+            limits:
+              memory: "150M"
           ports:
             - containerPort: 3100
               name: http

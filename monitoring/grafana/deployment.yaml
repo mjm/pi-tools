@@ -24,6 +24,12 @@ spec:
       containers:
         - image: index.docker.io/mmoriarity/grafana:latest
           name: grafana
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "75M"
+            limits:
+              memory: "150M"
           ports:
             - containerPort: 3000
               name: http
