@@ -1,6 +1,6 @@
 global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
+  scrape_interval: 30s
+  evaluation_interval: 30s
 
 alerting:
   alertmanagers:
@@ -55,6 +55,7 @@ scrape_configs:
         target_label: kubernetes_pod_name
 
   - job_name: 'kubernetes-apiservers'
+    scrape_interval: 1m
     kubernetes_sd_configs:
       - role: endpoints
     scheme: https
@@ -67,6 +68,7 @@ scrape_configs:
         regex: default;kubernetes;https
 
   - job_name: 'kubernetes-nodes'
+    scrape_interval: 1m
     scheme: https
     tls_config:
       ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
@@ -80,6 +82,7 @@ scrape_configs:
         regex: __meta_kubernetes_node_label_(.+)
 
   - job_name: 'kubernetes-cadvisor'
+    scrape_interval: 1m
     scheme: https
     metrics_path: /metrics/cadvisor
     tls_config:
