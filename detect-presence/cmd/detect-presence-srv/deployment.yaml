@@ -21,6 +21,7 @@ spec:
       annotations:
         prometheus.io/scrape: "true"
     spec:
+      # this is what lets us talk to the bluetooth device
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       containers:
@@ -28,8 +29,14 @@ spec:
           image: index.docker.io/mmoriarity/detect-presence-srv:latest
           command:
             - /detect-presence-srv
-            - -db=/data/presence.db
+            - "-db"
+            - dbname=presence user=presence host=postgresql.storage sslmode=disable
           env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: detect-presence
+                  key: db-password
             - name: POD_NAME
               valueFrom:
                 fieldRef:
@@ -44,11 +51,3 @@ spec:
             - name: http
               containerPort: 2120
               hostPort: 2120
-          volumeMounts:
-            - name: detect-presence-data
-              mountPath: /data
-      volumes:
-        - name: detect-presence-data
-          hostPath:
-            path: /var/lib/detect-presence
-            type: Directory

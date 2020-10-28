@@ -18,7 +18,9 @@ go_library(
         "//detect-presence/service/tripsservice",
         "//detect-presence/trips",
         "//observability",
+        "//pkg/instrumentation/otelsql",
         "//rpc",
+        "@io_opentelemetry_go_otel//semconv",
         "@org_golang_google_grpc//:go_default_library",
     ],
 )

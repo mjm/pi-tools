@@ -3,6 +3,7 @@ package tripsservice
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/api/trace"
 	"go.opentelemetry.io/otel/label"
 	"google.golang.org/grpc/codes"
@@ -15,11 +16,16 @@ func (s *Server) IgnoreTrip(ctx context.Context, req *tripspb.IgnoreTripRequest)
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(label.String("trip.id", req.GetId()))
 
-	if req.Id == "" {
+	if req.GetId() == "" {
 		return nil, status.Error(codes.InvalidArgument, "missing ID for trip to ignore")
 	}
 
-	if err := s.db.IgnoreTrip(ctx, req.Id); err != nil {
+	tripID, err := uuid.Parse(req.GetId())
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid UUID for trip ID: %s", err)
+	}
+
+	if err := s.q.IgnoreTrip(ctx, tripID); err != nil {
 		return nil, err
 	}
 

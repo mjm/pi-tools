@@ -3,6 +3,7 @@ package tripsservice
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/api/trace"
 	"go.opentelemetry.io/otel/label"
 	"google.golang.org/grpc/codes"
@@ -23,15 +24,26 @@ func (s *Server) UpdateTripTags(ctx context.Context, req *tripspb.UpdateTripTags
 		return nil, status.Error(codes.InvalidArgument, "missing ID for trip to tag")
 	}
 
-	var tagsToAdd, tagsToRemove []database.Tag
-	for _, tag := range req.GetTagsToAdd() {
-		tagsToAdd = append(tagsToAdd, database.Tag(tag))
-	}
-	for _, tag := range req.GetTagsToRemove() {
-		tagsToRemove = append(tagsToRemove, database.Tag(tag))
+	tripID, err := uuid.Parse(req.GetTripId())
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid UUID for trip ID: %s", err)
 	}
 
-	if err := s.db.UpdateTripTags(ctx, req.GetTripId(), tagsToAdd, tagsToRemove); err != nil {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "starting transaction: %s", err)
+	}
+	defer tx.Rollback()
+
+	if err := s.q.UpdateTripTags(ctx, database.UpdateTripTagsParams{
+		TripID:       tripID,
+		TagsToAdd:    req.GetTagsToAdd(),
+		TagsToRemove: req.GetTagsToRemove(),
+	}); err != nil {
+		return nil, status.Errorf(codes.Internal, "updating trip tags: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
 		return nil, status.Errorf(codes.Internal, "updating trip tags: %w", err)
 	}
 

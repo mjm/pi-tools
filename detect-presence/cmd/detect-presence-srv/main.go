@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"flag"
 	"log"
 	"time"
 
+	"go.opentelemetry.io/otel/semconv"
 	"google.golang.org/grpc"
 
 	"github.com/mjm/pi-tools/detect-presence/checker"
@@ -16,6 +18,7 @@ import (
 	"github.com/mjm/pi-tools/detect-presence/service/tripsservice"
 	"github.com/mjm/pi-tools/detect-presence/trips"
 	"github.com/mjm/pi-tools/observability"
+	"github.com/mjm/pi-tools/pkg/instrumentation/otelsql"
 	"github.com/mjm/pi-tools/rpc"
 )
 
@@ -23,7 +26,7 @@ var (
 	pingInterval = flag.Duration("ping-interval", 30*time.Second, "How often to check for nearby devices")
 	deviceFile   = flag.String("device-file", "", "JSON file to check for device presence instead of using Bluetooth")
 	deviceName   = flag.String("device-name", "hci0", "Local Bluetooth device name")
-	dbDSN        = flag.String("db", ":memory:", "Connection string for connecting to SQLite3 database for storing trips")
+	dbDSN        = flag.String("db", "dbname=presence_dev sslmode=disable", "Connection string for connecting to PostgreSQL database for storing trips")
 )
 
 var devices = []presence.Device{
@@ -41,11 +44,18 @@ func main() {
 	}
 	defer stopObs()
 
-	db, err := database.Open(*dbDSN)
+	sqlDB, err := sql.Open("postgres", *dbDSN)
 	if err != nil {
 		log.Fatalf("Error opening database: %v", err)
 	}
-	if err := db.MigrateIfNeeded(context.Background()); err != nil {
+	db := otelsql.NewDBWithTracing(sqlDB,
+		otelsql.WithAttributes(
+			semconv.DBSystemPostgres,
+			// assuming this is safe to include since it was on the command-line.
+			// passwords should come from a file or environment variable.
+			semconv.DBConnectionStringKey.String(*dbDSN)))
+
+	if err := database.New(db).MigrateIfNeeded(context.Background()); err != nil {
 		log.Fatalf("Error migrating database: %v", err)
 	}
 
@@ -77,8 +87,6 @@ func main() {
 	}
 
 	go c.Run()
-
-	//http.Handle("/metrics", promhttp.Handler())
 
 	tripsService := tripsservice.New(db)
 

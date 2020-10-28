@@ -2,9 +2,12 @@ package trips
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/api/metric"
 	"go.opentelemetry.io/otel/api/trace"
@@ -13,6 +16,7 @@ import (
 
 	"github.com/mjm/pi-tools/detect-presence/database"
 	"github.com/mjm/pi-tools/detect-presence/presence"
+	"github.com/mjm/pi-tools/pkg/instrumentation/otelsql"
 )
 
 const instrumentationName = "github.com/mjm/pi-tools/detect-presence/trips"
@@ -20,7 +24,7 @@ const instrumentationName = "github.com/mjm/pi-tools/detect-presence/trips"
 var tracer = global.Tracer(instrumentationName)
 
 type Tracker struct {
-	db                  *database.Client
+	db                  *database.Queries
 	currentTrip         *database.Trip
 	lastLeft            time.Time
 	lastReturned        time.Time
@@ -28,29 +32,40 @@ type Tracker struct {
 	lock                sync.Mutex
 }
 
-func NewTracker(db *database.Client) (*Tracker, error) {
+func NewTracker(db *otelsql.DB) (*Tracker, error) {
 	ctx := context.Background()
-	lastCompletedTrip, err := db.GetLastCompletedTrip(ctx)
+	q := database.New(db)
+
+	var missingLastCompleted, missingCurrent bool
+	lastCompletedTrip, err := q.GetLastCompletedTrip(ctx)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			missingLastCompleted = true
+		} else {
+			return nil, err
+		}
 	}
 
-	currentTrip, err := db.GetCurrentTrip(ctx)
+	currentTrip, err := q.GetCurrentTrip(ctx)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			missingCurrent = true
+		} else {
+			return nil, err
+		}
 	}
 
 	t := &Tracker{
-		db:          db,
-		currentTrip: currentTrip,
+		db: q,
 	}
 
 	// re-populate state and metrics to pick up where a previous process left off
-	if currentTrip != nil {
+	if !missingCurrent {
+		t.currentTrip = &currentTrip
 		t.lastLeft = currentTrip.LeftAt
 	}
-	if lastCompletedTrip != nil {
-		t.lastReturned = lastCompletedTrip.ReturnedAt
+	if !missingLastCompleted {
+		t.lastReturned = lastCompletedTrip.ReturnedAt.Time
 		if t.lastLeft.IsZero() {
 			t.lastLeft = lastCompletedTrip.LeftAt
 		}
@@ -92,12 +107,17 @@ func (t *Tracker) OnLeave(ctx context.Context, _ *presence.Tracker) {
 	t.lastLeft = time.Now()
 	span.SetAttributes(label.String("trip.left_at", t.lastLeft.UTC().Format(time.RFC3339)))
 
-	newTrip, err := t.db.BeginTrip(ctx, t.lastLeft)
+	id := uuid.New()
+	span.SetAttributes(label.String("trip.id", id.String()))
+
+	newTrip, err := t.db.BeginTrip(ctx, database.BeginTripParams{
+		ID:     id,
+		LeftAt: t.lastLeft,
+	})
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 	} else {
-		t.currentTrip = newTrip
-		span.SetAttributes(label.String("trip.id", t.currentTrip.ID))
+		t.currentTrip = &newTrip
 	}
 }
 
@@ -121,10 +141,17 @@ func (t *Tracker) OnReturn(ctx context.Context, _ *presence.Tracker) {
 	}
 
 	if t.currentTrip != nil {
-		span.SetAttributes(label.String("trip.id", t.currentTrip.ID))
-		if err := t.db.EndTrip(ctx, t.currentTrip.ID, t.lastReturned); err != nil {
+		span.SetAttributes(label.String("trip.id", t.currentTrip.ID.String()))
+		if err := t.db.EndTrip(ctx, database.EndTripParams{
+			ID: t.currentTrip.ID,
+			ReturnedAt: sql.NullTime{
+				Time:  t.lastReturned,
+				Valid: true,
+			},
+		}); err != nil {
 			span.SetStatus(codes.Error, err.Error())
 		}
+
 		t.currentTrip = nil
 	}
 }

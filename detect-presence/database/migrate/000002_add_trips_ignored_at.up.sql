@@ -1,1 +1,1 @@
-ALTER TABLE trips ADD COLUMN ignored_at integer;
+ALTER TABLE trips ADD COLUMN IF NOT EXISTS ignored_at timestamp;

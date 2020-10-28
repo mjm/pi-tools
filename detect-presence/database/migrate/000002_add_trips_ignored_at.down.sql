@@ -1,1 +1,1 @@
--- do nothing, sqlite3 doesn't support dropping columns.
+ALTER TABLE IF EXISTS trips DROP COLUMN IF EXISTS ignored_at;

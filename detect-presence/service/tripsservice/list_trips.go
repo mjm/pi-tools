@@ -17,7 +17,7 @@ func (s *Server) ListTrips(ctx context.Context, req *tripspb.ListTripsRequest) (
 
 	res := &tripspb.ListTripsResponse{}
 
-	trips, err := s.db.ListTrips(ctx)
+	trips, err := s.q.ListTrips(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "listing trips: %w", err)
 	}
@@ -26,16 +26,13 @@ func (s *Server) ListTrips(ctx context.Context, req *tripspb.ListTripsRequest) (
 
 	for _, trip := range trips {
 		t := &tripspb.Trip{
-			Id: trip.ID,
+			Id:     trip.ID.String(),
+			LeftAt: trip.LeftAt.UTC().Format(time.RFC3339),
+			Tags:   trip.Tags,
 		}
 
-		t.LeftAt = trip.LeftAt.UTC().Format(time.RFC3339)
-		if !trip.ReturnedAt.IsZero() {
-			t.ReturnedAt = trip.ReturnedAt.UTC().Format(time.RFC3339)
-		}
-
-		for _, tag := range trip.Tags {
-			t.Tags = append(t.Tags, string(tag))
+		if trip.ReturnedAt.Valid {
+			t.ReturnedAt = trip.ReturnedAt.Time.UTC().Format(time.RFC3339)
 		}
 
 		res.Trips = append(res.Trips, t)

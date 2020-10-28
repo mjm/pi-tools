@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/api/trace"
 	"go.opentelemetry.io/otel/label"
 	"google.golang.org/grpc/codes"
@@ -20,22 +21,24 @@ func (s *Server) GetTrip(ctx context.Context, req *tripspb.GetTripRequest) (*tri
 		return nil, status.Error(codes.InvalidArgument, "missing trip ID")
 	}
 
-	trip, err := s.db.GetTrip(ctx, req.GetId())
+	tripID, err := uuid.Parse(req.GetId())
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid UUID for trip ID: %s", err)
+	}
+
+	trip, err := s.q.GetTrip(ctx, tripID)
 	if err != nil {
 		return nil, err
 	}
 
 	t := &tripspb.Trip{
-		Id: trip.ID,
+		Id:     trip.ID.String(),
+		LeftAt: trip.LeftAt.UTC().Format(time.RFC3339),
+		Tags:   trip.Tags,
 	}
 
-	t.LeftAt = trip.LeftAt.UTC().Format(time.RFC3339)
-	if !trip.ReturnedAt.IsZero() {
-		t.ReturnedAt = trip.ReturnedAt.UTC().Format(time.RFC3339)
-	}
-
-	for _, tag := range trip.Tags {
-		t.Tags = append(t.Tags, string(tag))
+	if trip.ReturnedAt.Valid {
+		t.ReturnedAt = trip.ReturnedAt.Time.UTC().Format(time.RFC3339)
 	}
 
 	return &tripspb.GetTripResponse{

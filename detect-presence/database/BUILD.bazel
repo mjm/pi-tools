@@ -3,17 +3,19 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "database",
     srcs = [
-        "client.go",
+        "db.go",
         "migrate.go",
+        "models.go",
         "tags.go",
-        "trips.go",
+        "tags.sql.go",
+        "trips.sql.go",
     ],
     importpath = "github.com/mjm/pi-tools/detect-presence/database",
     visibility = ["//visibility:public"],
     deps = [
         "//detect-presence/database/migrate",
-        "//pkg/migrate/sqlite3",
+        "//pkg/migrate/postgres",
         "@com_github_google_uuid//:uuid",
-        "@com_github_masterminds_squirrel//:squirrel",
+        "@com_github_lib_pq//:pq",
     ],
 )
