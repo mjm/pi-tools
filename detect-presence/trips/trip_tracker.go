@@ -16,7 +16,7 @@ import (
 
 	"github.com/mjm/pi-tools/detect-presence/database"
 	"github.com/mjm/pi-tools/detect-presence/presence"
-	"github.com/mjm/pi-tools/pkg/instrumentation/otelsql"
+	"github.com/mjm/pi-tools/storage"
 )
 
 const instrumentationName = "github.com/mjm/pi-tools/detect-presence/trips"
@@ -32,7 +32,7 @@ type Tracker struct {
 	lock                sync.Mutex
 }
 
-func NewTracker(db *otelsql.DB) (*Tracker, error) {
+func NewTracker(db storage.DB) (*Tracker, error) {
 	ctx := context.Background()
 	q := database.New(db)
 

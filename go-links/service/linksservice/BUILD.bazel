@@ -18,6 +18,7 @@ go_library(
     deps = [
         "//go-links/database",
         "//go-links/proto/links",
+        "//storage",
         "@com_github_segmentio_ksuid//:ksuid",
         "@io_opentelemetry_go_otel//api/global",
         "@io_opentelemetry_go_otel//api/metric",

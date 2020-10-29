@@ -11,16 +11,15 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//detect-presence/checker",
-        "//detect-presence/database",
+        "//detect-presence/database/migrate",
         "//detect-presence/detector",
         "//detect-presence/presence",
         "//detect-presence/proto/trips",
         "//detect-presence/service/tripsservice",
         "//detect-presence/trips",
         "//observability",
-        "//pkg/instrumentation/otelsql",
         "//rpc",
-        "@io_opentelemetry_go_otel//semconv",
+        "//storage",
         "@org_golang_google_grpc//:go_default_library",
     ],
 )

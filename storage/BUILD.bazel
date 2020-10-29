@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "storage",
+    srcs = ["db.go"],
+    importpath = "github.com/mjm/pi-tools/storage",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/instrumentation/otelsql",
+        "//pkg/migrate/postgres",
+        "@io_opentelemetry_go_otel//semconv",
+    ],
+)

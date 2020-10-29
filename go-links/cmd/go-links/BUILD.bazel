@@ -10,15 +10,14 @@ go_library(
     importpath = "github.com/mjm/pi-tools/go-links/cmd/go-links",
     visibility = ["//visibility:private"],
     deps = [
-        "//go-links/database",
+        "//go-links/database/migrate",
         "//go-links/proto/links",
         "//go-links/service/linksservice",
         "//observability",
-        "//pkg/instrumentation/otelsql",
         "//rpc",
+        "//storage",
         "@com_github_lib_pq//:pq",
         "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
-        "@io_opentelemetry_go_otel//semconv",
         "@org_golang_google_grpc//:go_default_library",
     ],
 )

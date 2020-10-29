@@ -5,14 +5,9 @@ go_library(
     srcs = [
         "db.go",
         "links.sql.go",
-        "migrate.go",
         "models.go",
     ],
     importpath = "github.com/mjm/pi-tools/go-links/database",
     visibility = ["//visibility:public"],
-    deps = [
-        "//go-links/database/migrate",
-        "//pkg/migrate/postgres",
-        "@com_github_segmentio_ksuid//:ksuid",
-    ],
+    deps = ["@com_github_segmentio_ksuid//:ksuid"],
 )

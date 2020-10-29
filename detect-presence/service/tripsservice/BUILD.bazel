@@ -14,7 +14,7 @@ go_library(
     deps = [
         "//detect-presence/database",
         "//detect-presence/proto/trips",
-        "//pkg/instrumentation/otelsql",
+        "//storage",
         "@com_github_google_uuid//:uuid",
         "@io_opentelemetry_go_otel//api/trace",
         "@io_opentelemetry_go_otel//label",
