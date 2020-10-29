@@ -9,8 +9,8 @@
     "baseUrl": ".",
     "paths": {
       "com_github_mjm_pi_tools/*": [
-        "../*",
-        "../bazel-bin/*"
+        "../bazel-bin/*",
+        "../*"
       ]
     },
     "types": ["node"]
