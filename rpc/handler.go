@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -22,13 +23,20 @@ func SetDefaultHTTPPort(port int) {
 	httpPort = flag.Int("http-port", port, "HTTP port to listen on for metrics and API requests")
 }
 
-func ListenAndServe(opts ...Option) error {
+func ListenAndServe(opts ...Option) {
 	if httpPort == nil {
-		return fmt.Errorf("no default HTTP port configured")
+		log.Panicf("no default HTTP port configured")
 	}
 
 	h := NewHandler(opts...)
-	return http.ListenAndServe(fmt.Sprintf(":%d", *httpPort), h)
+	addr := fmt.Sprintf(":%d", *httpPort)
+
+	log.Printf("Listening on %s", addr)
+	if err := http.ListenAndServe(addr, h); err != nil {
+		if !errors.Is(err, http.ErrServerClosed) {
+			log.Panicf("error listening to HTTP: %v", err)
+		}
+	}
 }
 
 func NewHandler(opts ...Option) http.Handler {

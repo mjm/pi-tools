@@ -51,5 +51,8 @@ func Start(svcname string) (func(), error) {
 	}
 	http.Handle("/metrics", metrics)
 
-	return stopTracing, nil
+	return func() {
+		log.Printf("Shutting down observability...")
+		stopTracing()
+	}, nil
 }

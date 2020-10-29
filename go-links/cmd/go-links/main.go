@@ -13,6 +13,7 @@ import (
 	linkspb "github.com/mjm/pi-tools/go-links/proto/links"
 	"github.com/mjm/pi-tools/go-links/service/linksservice"
 	"github.com/mjm/pi-tools/observability"
+	"github.com/mjm/pi-tools/pkg/signal"
 	"github.com/mjm/pi-tools/rpc"
 	"github.com/mjm/pi-tools/storage"
 )
@@ -36,7 +37,9 @@ func main() {
 	linksService := linksservice.New(db)
 	http.Handle("/", otelhttp.WithRouteTag("HandleShortLink", http.HandlerFunc(linksService.HandleShortLink)))
 
-	log.Fatal(rpc.ListenAndServe(rpc.WithRegisteredServices(func(server *grpc.Server) {
+	go rpc.ListenAndServe(rpc.WithRegisteredServices(func(server *grpc.Server) {
 		linkspb.RegisterLinksServiceServer(server, linksService)
-	})))
+	}))
+
+	signal.Wait()
 }

@@ -18,6 +18,7 @@ go_library(
         "//detect-presence/service/tripsservice",
         "//detect-presence/trips",
         "//observability",
+        "//pkg/signal",
         "//rpc",
         "//storage",
         "@org_golang_google_grpc//:go_default_library",

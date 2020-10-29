@@ -15,6 +15,7 @@ import (
 	"github.com/mjm/pi-tools/detect-presence/service/tripsservice"
 	"github.com/mjm/pi-tools/detect-presence/trips"
 	"github.com/mjm/pi-tools/observability"
+	"github.com/mjm/pi-tools/pkg/signal"
 	"github.com/mjm/pi-tools/rpc"
 	"github.com/mjm/pi-tools/storage"
 )
@@ -72,12 +73,12 @@ func main() {
 		Interval: *pingInterval,
 		Devices:  devices,
 	}
-
 	go c.Run()
 
 	tripsService := tripsservice.New(db)
-
-	log.Fatal(rpc.ListenAndServe(rpc.WithRegisteredServices(func(server *grpc.Server) {
+	go rpc.ListenAndServe(rpc.WithRegisteredServices(func(server *grpc.Server) {
 		tripspb.RegisterTripsServiceServer(server, tripsService)
-	})))
+	}))
+
+	signal.Wait()
 }
