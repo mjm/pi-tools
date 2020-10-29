@@ -6,20 +6,13 @@ import {
     UpdateTripTagsRequest,
 } from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
 import {GET_TRIP, LIST_TRIPS} from "com_github_mjm_pi_tools/homebase/trips/lib/fetch";
+import {promisify} from "com_github_mjm_pi_tools/homebase/lib/promisify";
 
 export async function ignoreTrip(id: string): Promise<void> {
     const req = new IgnoreTripRequest();
     req.setId(id);
-    return new Promise((resolve, reject) => {
-        client.ignoreTrip(req, err => {
-            if (err) {
-                reject(err);
-            } else {
-                mutate(LIST_TRIPS);
-                resolve();
-            }
-        });
-    });
+    await promisify(client, "ignoreTrip")(req);
+    await mutate(LIST_TRIPS);
 }
 
 export async function updateTripTags(id: string, oldTags: string[], newTags: string[]): Promise<void> {
@@ -34,20 +27,14 @@ export async function updateTripTags(id: string, oldTags: string[], newTags: str
     req.setTagsToAddList(tagsToAdd);
     req.setTagsToRemoveList(tagsToRemove);
 
-    return new Promise((resolve, reject) => {
-        client.updateTripTags(req, err => {
-            if (err) {
-                reject(err);
-            } else {
-                mutate(LIST_TRIPS);
-                mutate([GET_TRIP, id], (trip: Trip) => {
-                    const newTrip = trip.cloneMessage();
-                    newTrip.setTagsList(newTags);
-                    return newTrip;
-                });
+    await promisify(client, "updateTripTags")(req);
 
-                resolve();
-            }
-        });
-    });
+    await Promise.all([
+        mutate(LIST_TRIPS),
+        mutate([GET_TRIP, id], (trip: Trip) => {
+            const newTrip = trip.cloneMessage();
+            newTrip.setTagsList(newTags);
+            return newTrip;
+        }),
+    ]);
 }
