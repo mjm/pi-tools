@@ -7,28 +7,14 @@ export const GET_LINK = "GetLink";
 const fetchers = {
     [LIST_RECENT_LINKS]: async (): Promise<Link[]> => {
         const req = new ListRecentLinksRequest();
-        return new Promise((resolve, reject) => {
-            client.listRecentLinks(req, (err, res) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(res.getLinksList());
-                }
-            });
-        });
+        const res = await client.listRecentLinks(req);
+        return res.getLinksList();
     },
     [GET_LINK]: async (id: string): Promise<Link> => {
         const req = new GetLinkRequest();
         req.setId(id);
-        return new Promise((resolve, reject) => {
-            client.getLink(req, (err, res) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(res.getLink());
-                }
-            })
-        })
+        const res = await client.getLink(req);
+        return res.getLink();
     },
 } as const;
 

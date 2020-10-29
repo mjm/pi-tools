@@ -15,23 +15,14 @@ export async function createLink(params: CreateLinkParams): Promise<void> {
     req.setDestinationUrl(params.destinationURL);
     req.setDescription(params.description);
 
-    return new Promise((resolve, reject) => {
-        client.createLink(req, (err, res) => {
-            if (err) {
-                reject(err);
-            } else {
-                if (res) {
-                    mutate(LIST_RECENT_LINKS, (links: Link[]) => {
-                        return [res.getLink(), ...links];
-                    });
-                    mutate([GET_LINK, res.getLink().getId()], res.getLink());
-                } else {
-                    mutate(LIST_RECENT_LINKS);
-                }
-                resolve();
-            }
-        });
-    });
+    const res = await client.createLink(req);
+
+    await Promise.all([
+        mutate(LIST_RECENT_LINKS, (links: Link[]) => {
+            return [res.getLink(), ...links];
+        }),
+        mutate([GET_LINK, res.getLink().getId()], res.getLink()),
+    ]);
 }
 
 export interface UpdateLinkParams {
@@ -48,17 +39,9 @@ export async function updateLink(params: UpdateLinkParams): Promise<void> {
     req.setDestinationUrl(params.destinationURL);
     req.setDescription(params.description);
 
-    return new Promise((resolve, reject) => {
-        client.updateLink(req, (err, res) => {
-            if (err) {
-                reject(err);
-            } else {
-                mutate(LIST_RECENT_LINKS);
-                if (res) {
-                    mutate([GET_LINK, res.getLink().getId()], res.getLink());
-                }
-                resolve();
-            }
-        });
-    });
+    const res = await client.updateLink(req);
+    await Promise.all([
+        mutate(LIST_RECENT_LINKS),
+        mutate([GET_LINK, res.getLink().getId()], res.getLink()),
+    ]);
 }
