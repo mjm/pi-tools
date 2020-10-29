@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "get_trip.go",
         "ignore_trip.go",
+        "list_tags.go",
         "list_trips.go",
         "server.go",
         "update_trip_tags.go",

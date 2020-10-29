@@ -5,6 +5,7 @@ import {LIST_TRIPS} from "com_github_mjm_pi_tools/homebase/trips/lib/fetch";
 import {Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
 import {TripRow} from "com_github_mjm_pi_tools/homebase/trips/components/TripRow";
 import {PageHeader} from "com_github_mjm_pi_tools/homebase/components/PageHeader";
+import {TagFilters} from "com_github_mjm_pi_tools/homebase/trips/components/TagFilters";
 
 export function TripsPage() {
     const {data, error} = useSWR<Trip[]>(LIST_TRIPS);
@@ -33,6 +34,11 @@ export function TripsPage() {
                                 <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
                                     <table className="min-w-full divide-y divide-gray-200">
                                         <thead>
+                                        <tr>
+                                            <td colSpan={4} className="px-6 py-3 bg-gray-50 text-xs leading-4 text-gray-500 border-b border-gray-200">
+                                                <TagFilters/>
+                                            </td>
+                                        </tr>
                                         <tr>
                                             <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                                                 Left at

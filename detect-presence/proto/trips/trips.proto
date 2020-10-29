@@ -1,10 +1,12 @@
 syntax = "proto3";
 
 service TripsService {
-    rpc ListTrips(ListTripsRequest) returns (ListTripsResponse);
-    rpc GetTrip(GetTripRequest) returns (GetTripResponse);
-    rpc IgnoreTrip(IgnoreTripRequest) returns (IgnoreTripResponse);
-    rpc UpdateTripTags(UpdateTripTagsRequest) returns (UpdateTripTagsResponse);
+    rpc ListTrips (ListTripsRequest) returns (ListTripsResponse);
+    rpc GetTrip (GetTripRequest) returns (GetTripResponse);
+    rpc IgnoreTrip (IgnoreTripRequest) returns (IgnoreTripResponse);
+    rpc UpdateTripTags (UpdateTripTagsRequest) returns (UpdateTripTagsResponse);
+
+    rpc ListTags (ListTagsRequest) returns (ListTagsResponse);
 }
 
 message ListTripsRequest {
@@ -38,9 +40,22 @@ message UpdateTripTagsRequest {
 message UpdateTripTagsResponse {
 }
 
+message ListTagsRequest {
+    int32 limit = 1;
+}
+
+message ListTagsResponse {
+    repeated Tag tags = 1;
+}
+
 message Trip {
     string id = 1;
     string left_at = 2;
     string returned_at = 3;
     repeated string tags = 4;
+}
+
+message Tag {
+    string name = 1;
+    int64 trip_count = 2;
 }

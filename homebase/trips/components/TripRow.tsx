@@ -25,7 +25,9 @@ export function TripRow({trip}: { trip: Trip }) {
             <td className="px-6 py-4 whitespace-no-wrap">
                 <div className="flex flex-row space-x-3">
                     {trip.getTagsList().map(tag => (
-                        <TripTag key={tag} tag={tag}/>
+                        <TripTag key={tag}>
+                            {tag}
+                        </TripTag>
                     ))}
                 </div>
             </td>

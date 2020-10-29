@@ -41,7 +41,9 @@ export function TripTagField({trip}: { trip: Trip }) {
                 <span>No tags</span>
             ) : (
                 trip.getTagsList().map(tag => (
-                    <TripTag tag={tag} key={tag}/>
+                    <TripTag key={tag}>
+                        {tag}
+                    </TripTag>
                 ))
             )}
             <span className="invisible group-hover:visible inline-flex rounded-md shadow-sm">
