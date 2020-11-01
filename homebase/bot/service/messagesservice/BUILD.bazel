@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "send_trip_completed_message.go",
         "server.go",
+        "watch_updates.go",
     ],
     importpath = "github.com/mjm/pi-tools/homebase/bot/service/messagesservice",
     visibility = ["//visibility:public"],
