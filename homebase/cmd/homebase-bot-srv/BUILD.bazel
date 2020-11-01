@@ -6,10 +6,15 @@ go_library(
     importpath = "github.com/mjm/pi-tools/homebase/cmd/homebase-bot-srv",
     visibility = ["//visibility:private"],
     deps = [
+        "//detect-presence/proto/trips",
+        "//homebase/bot/proto/messages",
+        "//homebase/bot/service/messagesservice",
         "//homebase/bot/telegram",
         "//observability",
         "//pkg/signal",
+        "//rpc",
         "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
+        "@org_golang_google_grpc//:go_default_library",
     ],
 )
 

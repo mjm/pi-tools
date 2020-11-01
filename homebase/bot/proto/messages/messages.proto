@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+service MessagesService {
+    rpc SendTripCompletedMessage (SendTripCompletedMessageRequest) returns (SendTripCompletedMessageResponse);
+}
+
+message SendTripCompletedMessageRequest {
+    string trip_id = 1;
+    string left_at = 2;
+    string returned_at = 3;
+}
+
+message SendTripCompletedMessageResponse {
+}

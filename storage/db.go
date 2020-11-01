@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	"log"
 
 	"go.opentelemetry.io/otel/semconv"
 
@@ -46,4 +47,12 @@ func OpenDB(migrations map[string][]byte) (DB, error) {
 	}
 
 	return db, nil
+}
+
+func MustOpenDB(migrations map[string][]byte) DB {
+	db, err := OpenDB(migrations)
+	if err != nil {
+		log.Panicf("Error setting up storage: %v", err)
+	}
+	return db
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"time"
@@ -14,6 +15,7 @@ import (
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
 	"github.com/mjm/pi-tools/detect-presence/service/tripsservice"
 	"github.com/mjm/pi-tools/detect-presence/trips"
+	messagespb "github.com/mjm/pi-tools/homebase/bot/proto/messages"
 	"github.com/mjm/pi-tools/observability"
 	"github.com/mjm/pi-tools/pkg/signal"
 	"github.com/mjm/pi-tools/rpc"
@@ -24,6 +26,7 @@ var (
 	pingInterval = flag.Duration("ping-interval", 30*time.Second, "How often to check for nearby devices")
 	deviceFile   = flag.String("device-file", "", "JSON file to check for device presence instead of using Bluetooth")
 	deviceName   = flag.String("device-name", "hci0", "Local Bluetooth device name")
+	messagesURL  = flag.String("messages-url", "localhost:6361", "URL for messages service to use to send chat messages")
 )
 
 var devices = []presence.Device{
@@ -33,21 +36,21 @@ var devices = []presence.Device{
 
 func main() {
 	rpc.SetDefaultHTTPPort(2120)
+	rpc.SetDefaultGRPCPort(2121)
 	storage.SetDefaultDBName("presence_dev")
 	flag.Parse()
 
-	stopObs, err := observability.Start("detect-presence-srv")
-	if err != nil {
-		log.Panicf("Error setting up observability: %v", err)
-	}
+	stopObs := observability.MustStart("detect-presence-srv")
 	defer stopObs()
 
-	db, err := storage.OpenDB(migrate.Data)
-	if err != nil {
-		log.Panicf("Error setting up storage: %v", err)
-	}
+	db := storage.MustOpenDB(migrate.Data)
 
-	tripTracker, err := trips.NewTracker(db)
+	messagesConn := rpc.MustDial(context.Background(), *messagesURL)
+	defer messagesConn.Close()
+
+	messages := messagespb.NewMessagesServiceClient(messagesConn)
+
+	tripTracker, err := trips.NewTracker(db, messages)
 	if err != nil {
 		log.Panicf("Error setting up trip tracker: %v", err)
 	}

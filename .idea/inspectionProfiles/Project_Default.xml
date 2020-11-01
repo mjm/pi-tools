@@ -15,6 +15,7 @@
         <method importPath="math/rand" receiver="*Rand" name="Read" />
         <method importPath="io" receiver="ReadCloser" name="Close" />
         <method importPath="database/sql" receiver="*Tx" name="Rollback" />
+        <method importPath="google.golang.org/grpc" receiver="*ClientConn" name="Close" />
       </methods>
     </inspection_tool>
     <inspection_tool class="SqlNoDataSourceInspection" enabled="false" level="WARNING" enabled_by_default="false" />

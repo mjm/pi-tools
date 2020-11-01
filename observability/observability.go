@@ -56,3 +56,11 @@ func Start(svcname string) (func(), error) {
 		stopTracing()
 	}, nil
 }
+
+func MustStart(svcname string) func() {
+	stop, err := Start(svcname)
+	if err != nil {
+		log.Panicf("Error setting up observability: %v", err)
+	}
+	return stop
+}

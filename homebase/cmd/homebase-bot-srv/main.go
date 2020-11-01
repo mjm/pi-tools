@@ -9,22 +9,30 @@ import (
 	"os"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"google.golang.org/grpc"
 
+	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
+	messagespb "github.com/mjm/pi-tools/homebase/bot/proto/messages"
+	"github.com/mjm/pi-tools/homebase/bot/service/messagesservice"
 	"github.com/mjm/pi-tools/homebase/bot/telegram"
 	"github.com/mjm/pi-tools/observability"
 	"github.com/mjm/pi-tools/pkg/signal"
+	"github.com/mjm/pi-tools/rpc"
+)
+
+var (
+	tripsURL = flag.String("trips-url", "localhost:2121", "URL for trips service to lookup and update trip information")
 )
 
 func main() {
+	rpc.SetDefaultHTTPPort(6360)
+	rpc.SetDefaultGRPCPort(6361)
 	flag.Parse()
 
-	stopObs, err := observability.Start("homebase-bot-srv")
-	if err != nil {
-		log.Panicf("Error setting up observability: %v", err)
-	}
+	stopObs := observability.MustStart("homebase-bot-srv")
 	defer stopObs()
 
-	c, err := telegram.New(telegram.Config{
+	t, err := telegram.New(telegram.Config{
 		Token: os.Getenv("TELEGRAM_TOKEN"),
 		HTTPClient: &http.Client{
 			Transport: otelhttp.NewTransport(http.DefaultTransport),
@@ -34,11 +42,18 @@ func main() {
 		log.Panicf("Error creating Telegram client: %v", err)
 	}
 
+	tripsConn := rpc.MustDial(context.Background(), *tripsURL)
+	defer tripsConn.Close()
+
+	trips := tripspb.NewTripsServiceClient(tripsConn)
+
+	messagesService := messagesservice.New(t, trips)
+
 	ch := make(chan telegram.UpdateOrError, 10)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	c.WatchUpdates(ctx, ch, telegram.GetUpdatesRequest{
+	t.WatchUpdates(ctx, ch, telegram.GetUpdatesRequest{
 		Timeout: 30,
 	})
 
@@ -50,7 +65,7 @@ func main() {
 				update := updateOrErr.Update
 				if update.Message != nil {
 					log.Printf("Received message: %#v", update.Message)
-					_, err := c.SendMessage(ctx, telegram.SendMessageRequest{
+					_, err := t.SendMessage(ctx, telegram.SendMessageRequest{
 						ChatID:           update.Message.Chat.ID,
 						Text:             fmt.Sprintf("Received message: %s", update.Message.Text),
 						ReplyToMessageID: update.Message.MessageID,
@@ -74,7 +89,7 @@ func main() {
 					}
 				} else if update.CallbackQuery != nil {
 					log.Printf("Got callback data %s", update.CallbackQuery.Data)
-					if err := c.AnswerCallbackQuery(ctx, telegram.AnswerCallbackQueryRequest{
+					if err := t.AnswerCallbackQuery(ctx, telegram.AnswerCallbackQueryRequest{
 						CallbackQueryID: update.CallbackQuery.ID,
 						Text:            "Got the message!",
 					}); err != nil {
@@ -86,6 +101,10 @@ func main() {
 			}
 		}
 	}()
+
+	go rpc.ListenAndServe(rpc.WithRegisteredServices(func(s *grpc.Server) {
+		messagespb.RegisterMessagesServiceServer(s, messagesService)
+	}))
 
 	signal.Wait()
 }

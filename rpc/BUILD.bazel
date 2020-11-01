@@ -2,7 +2,10 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "rpc",
-    srcs = ["handler.go"],
+    srcs = [
+        "dial.go",
+        "handler.go",
+    ],
     importpath = "github.com/mjm/pi-tools/rpc",
     visibility = ["//visibility:public"],
     deps = [

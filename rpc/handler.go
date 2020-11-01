@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"strings"
 
@@ -17,10 +18,17 @@ import (
 	"github.com/mjm/pi-tools/debug"
 )
 
-var httpPort *int
+var (
+	httpPort *int
+	grpcPort *int
+)
 
 func SetDefaultHTTPPort(port int) {
 	httpPort = flag.Int("http-port", port, "HTTP port to listen on for metrics and API requests")
+}
+
+func SetDefaultGRPCPort(port int) {
+	grpcPort = flag.Int("grpc-port", port, "gRPC port to listen on for non-grpc-web API requests")
 }
 
 func ListenAndServe(opts ...Option) {
@@ -28,18 +36,35 @@ func ListenAndServe(opts ...Option) {
 		log.Panicf("no default HTTP port configured")
 	}
 
-	h := NewHandler(opts...)
+	h, g := newHandler(opts...)
 	addr := fmt.Sprintf(":%d", *httpPort)
 
-	log.Printf("Listening on %s", addr)
-	if err := http.ListenAndServe(addr, h); err != nil {
-		if !errors.Is(err, http.ErrServerClosed) {
-			log.Panicf("error listening to HTTP: %v", err)
+	go func() {
+		log.Printf("Listening on %s for HTTP", addr)
+		if err := http.ListenAndServe(addr, h); err != nil {
+			if !errors.Is(err, http.ErrServerClosed) {
+				log.Panicf("error listening to HTTP: %v", err)
+			}
 		}
+	}()
+
+	if grpcPort != nil {
+		go func() {
+			grpcAddr := fmt.Sprintf(":%d", *grpcPort)
+			lis, err := net.Listen("tcp", grpcAddr)
+			if err != nil {
+				log.Panicf("error listening to gRPC: %v", err)
+			}
+
+			log.Printf("Listening on %s for gRPC", grpcAddr)
+			if err := g.Serve(lis); err != nil {
+				log.Panicf("error serving gRPC: %v", err)
+			}
+		}()
 	}
 }
 
-func NewHandler(opts ...Option) http.Handler {
+func newHandler(opts ...Option) (http.Handler, *grpc.Server) {
 	cfg := &config{}
 	for _, opt := range opts {
 		opt(cfg)
@@ -64,16 +89,21 @@ func NewHandler(opts ...Option) http.Handler {
 
 	handler := otelhttp.NewHandler(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			log.Printf("Handling request")
 			if wrappedGrpc.IsAcceptableGrpcCorsRequest(r) || wrappedGrpc.IsGrpcWebRequest(r) {
+				log.Printf("it's grpc-web")
 				wrappedGrpc.ServeHTTP(w, r)
 				return
 			}
 
+			log.Print(r.URL)
 			if strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
+				log.Printf("it's normal grpc")
 				grpcServer.ServeHTTP(w, r)
 				return
 			}
 
+			log.Printf("it's not grpc")
 			http.DefaultServeMux.ServeHTTP(w, r)
 		}),
 		"Server",
@@ -82,7 +112,7 @@ func NewHandler(opts ...Option) http.Handler {
 			return r.URL.Path != "/metrics"
 		}))
 
-	return handler
+	return handler, grpcServer
 }
 
 type Option func(*config)

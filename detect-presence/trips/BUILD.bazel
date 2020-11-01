@@ -8,6 +8,8 @@ go_library(
     deps = [
         "//detect-presence/database",
         "//detect-presence/presence",
+        "//homebase/bot/proto/messages",
+        "//pkg/spanerr",
         "//storage",
         "@com_github_google_uuid//:uuid",
         "@io_opentelemetry_go_otel//api/global",

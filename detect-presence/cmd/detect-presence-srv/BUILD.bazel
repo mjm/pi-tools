@@ -17,6 +17,7 @@ go_library(
         "//detect-presence/proto/trips",
         "//detect-presence/service/tripsservice",
         "//detect-presence/trips",
+        "//homebase/bot/proto/messages",
         "//observability",
         "//pkg/signal",
         "//rpc",

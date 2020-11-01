@@ -16,6 +16,8 @@ import (
 
 	"github.com/mjm/pi-tools/detect-presence/database"
 	"github.com/mjm/pi-tools/detect-presence/presence"
+	messagespb "github.com/mjm/pi-tools/homebase/bot/proto/messages"
+	"github.com/mjm/pi-tools/pkg/spanerr"
 	"github.com/mjm/pi-tools/storage"
 )
 
@@ -25,6 +27,7 @@ var tracer = global.Tracer(instrumentationName)
 
 type Tracker struct {
 	db                  *database.Queries
+	messages            messagespb.MessagesServiceClient
 	currentTrip         *database.Trip
 	lastLeft            time.Time
 	lastReturned        time.Time
@@ -32,7 +35,7 @@ type Tracker struct {
 	lock                sync.Mutex
 }
 
-func NewTracker(db storage.DB) (*Tracker, error) {
+func NewTracker(db storage.DB, messages messagespb.MessagesServiceClient) (*Tracker, error) {
 	ctx := context.Background()
 	q := database.New(db)
 
@@ -56,7 +59,8 @@ func NewTracker(db storage.DB) (*Tracker, error) {
 	}
 
 	t := &Tracker{
-		db: q,
+		db:       q,
+		messages: messages,
 	}
 
 	// re-populate state and metrics to pick up where a previous process left off
@@ -152,6 +156,22 @@ func (t *Tracker) OnReturn(ctx context.Context, _ *presence.Tracker) {
 			span.SetStatus(codes.Error, err.Error())
 		}
 
+		t.sendChatMessage(ctx)
+
 		t.currentTrip = nil
+	}
+}
+
+func (t *Tracker) sendChatMessage(ctx context.Context) {
+	ctx, span := tracer.Start(ctx, "trips.Tracker.sendChatMessage")
+	defer span.End()
+
+	req := &messagespb.SendTripCompletedMessageRequest{
+		TripId:     t.currentTrip.ID.String(),
+		LeftAt:     t.lastLeft.Format(time.RFC3339),
+		ReturnedAt: t.lastReturned.Format(time.RFC3339),
+	}
+	if _, err := t.messages.SendTripCompletedMessage(ctx, req); err != nil {
+		spanerr.RecordError(ctx, err)
 	}
 }
