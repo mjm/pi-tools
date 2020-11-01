@@ -31,6 +31,8 @@ spec:
             - /detect-presence-srv
             - "-db"
             - dbname=presence user=presence host=postgresql.storage sslmode=disable
+            - "-messages-url"
+            - homebase-bot-srv-grpc.homebase:80
           env:
             - name: PGPASSWORD
               valueFrom:
@@ -51,3 +53,6 @@ spec:
             - name: http
               containerPort: 2120
               hostPort: 2120
+            - name: grpc
+              containerPort: 2121
+              hostPort: 2121

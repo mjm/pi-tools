@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: homebase
+  name: homebase-bot-srv
+  labels:
+    app: homebase-bot
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: homebase-bot
+  template:
+    metadata:
+      labels:
+        app: homebase-bot
+      annotations:
+        prometheus.io/scrape: "true"
+    spec:
+      containers:
+        - name: homebase-bot-srv
+          image: index.docker.io/mmoriarity/homebase-bot-srv:latest
+          command:
+            - /homebase-bot-srv
+            - "-trips-url"
+            - detect-presence-srv-grpc.detect-presence:80
+          env:
+            - name: TELEGRAM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: homebase-bot-srv
+                  key: telegram-token
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "30M"
+            limits:
+              memory: "50M"
+          ports:
+            - name: http
+              containerPort: 6360
+            - name: grpc
+              containerPort: 6361

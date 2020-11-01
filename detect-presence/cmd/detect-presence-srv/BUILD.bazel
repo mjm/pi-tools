@@ -52,10 +52,18 @@ k8s_object(
 )
 
 k8s_http_service(
-    name = "k8s_service",
+    name = "k8s_http_service",
     app = "detect-presence",
     namespace = "detect-presence",
     service_name = "detect-presence-srv",
+)
+
+k8s_http_service(
+    name = "k8s_grpc_service",
+    app = "detect-presence",
+    namespace = "detect-presence",
+    service_name = "detect-presence-srv-grpc",
+    target_port = "grpc",
 )
 
 k8s_virtual_host(
