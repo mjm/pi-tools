@@ -41,9 +41,7 @@ spec:
             - name: CONDITIONAL_FORWARDING_IP
               value: "10.0.0.1"
             - name: ServerIP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
+              value: "100.111.80.85"
             - name: VIRTUAL_HOST
               value: pi.hole
             - name: INTERFACE
@@ -63,13 +61,9 @@ spec:
           image: index.docker.io/mmoriarity/pi-hole-ingress-controller:latest
           command:
             - /pi-hole-ingress-controller
-            - "-ip=$(POD_IP)"
+            - "-ip=100.111.80.85"
             - "-extra-hostnames=$(NODE_NAME)"
           env:
-            - name: POD_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
             - name: NODE_NAME
               valueFrom:
                 fieldRef:
