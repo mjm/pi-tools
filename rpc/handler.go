@@ -89,21 +89,16 @@ func newHandler(opts ...Option) (http.Handler, *grpc.Server) {
 
 	handler := otelhttp.NewHandler(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			log.Printf("Handling request")
 			if wrappedGrpc.IsAcceptableGrpcCorsRequest(r) || wrappedGrpc.IsGrpcWebRequest(r) {
-				log.Printf("it's grpc-web")
 				wrappedGrpc.ServeHTTP(w, r)
 				return
 			}
 
-			log.Print(r.URL)
 			if strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
-				log.Printf("it's normal grpc")
 				grpcServer.ServeHTTP(w, r)
 				return
 			}
 
-			log.Printf("it's not grpc")
 			http.DefaultServeMux.ServeHTTP(w, r)
 		}),
 		"Server",
