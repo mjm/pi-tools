@@ -26,6 +26,8 @@ spec:
           image: index.docker.io/mmoriarity/homebase-bot-srv:latest
           command:
             - /homebase-bot-srv
+            - "-db"
+            - dbname=homebase_bot user=homebase_bot host=postgresql.storage sslmode=disable
             - "-trips-url"
             - detect-presence-srv-grpc.detect-presence:80
           env:
@@ -34,6 +36,11 @@ spec:
                 secretKeyRef:
                   name: homebase-bot-srv
                   key: telegram-token
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: homebase-bot-srv
+                  key: db-password
             - name: POD_NAME
               valueFrom:
                 fieldRef:

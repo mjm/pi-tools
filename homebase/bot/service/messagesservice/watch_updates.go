@@ -2,9 +2,18 @@ package messagesservice
 
 import (
 	"context"
+	"database/sql"
+	"errors"
+	"fmt"
 	"log"
+	"strings"
 
+	"go.opentelemetry.io/otel/api/trace"
+	"go.opentelemetry.io/otel/label"
+
+	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
 	"github.com/mjm/pi-tools/homebase/bot/telegram"
+	"github.com/mjm/pi-tools/pkg/spanerr"
 )
 
 func (s *Server) WatchUpdates(ctx context.Context) {
@@ -30,12 +39,60 @@ func (s *Server) WatchUpdates(ctx context.Context) {
 }
 
 func (s *Server) handleCallbackQuery(ctx context.Context, cbq *telegram.CallbackQuery) error {
-	log.Printf("Got callback data %s", cbq.Data)
+	ctx, span := tracer.Start(ctx, "MessagesService.handleCallbackQuery",
+		trace.WithAttributes(
+			label.Int("telegram.message_id", cbq.Message.MessageID),
+			label.String("telegram.callback_query.data", cbq.Data)))
+	defer span.End()
+
+	if strings.HasPrefix(cbq.Data, "TAG_TRIP#") {
+		tagName := cbq.Data[9:]
+		span.SetAttributes(label.String("tag.name", tagName))
+
+		tripID, err := s.q.GetTripForMessage(ctx, int64(cbq.Message.MessageID))
+		if err != nil {
+			span.RecordError(ctx, err)
+			var text string
+			if errors.Is(err, sql.ErrNoRows) {
+				text = "Sorry, I couldn't find the trip that goes with that message."
+			} else {
+				text = fmt.Sprintf("Sorry, something unexpected happened: %s", err)
+			}
+
+			if err := s.t.AnswerCallbackQuery(ctx, telegram.AnswerCallbackQueryRequest{
+				CallbackQueryID: cbq.ID,
+				Text:            text,
+			}); err != nil {
+				return err
+			}
+
+			return err
+		}
+
+		_, err = s.trips.UpdateTripTags(ctx, &tripspb.UpdateTripTagsRequest{
+			TripId:    tripID.String(),
+			TagsToAdd: []string{tagName},
+		})
+		if err != nil {
+			// TODO respond to user
+			span.RecordError(ctx, err)
+			return err
+		}
+
+		if err := s.t.AnswerCallbackQuery(ctx, telegram.AnswerCallbackQueryRequest{
+			CallbackQueryID: cbq.ID,
+			Text:            fmt.Sprintf("Done! I added the %q tag to that trip.", tagName),
+		}); err != nil {
+			return spanerr.RecordError(ctx, err)
+		}
+		return nil
+	}
+
 	if err := s.t.AnswerCallbackQuery(ctx, telegram.AnswerCallbackQueryRequest{
 		CallbackQueryID: cbq.ID,
-		Text:            "Got the message!",
+		Text:            "Sorry, I don't know what to do with this.",
 	}); err != nil {
-		return err
+		return spanerr.RecordError(ctx, err)
 	}
 	return nil
 }

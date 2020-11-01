@@ -13,5 +13,11 @@
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://localhost:5432/presence_dev</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="homebase_bot_dev@localhost" uuid="a45a9628-f012-4c26-ab66-fb212ae53245">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/homebase_bot_dev</jdbc-url>
+    </data-source>
   </component>
 </project>

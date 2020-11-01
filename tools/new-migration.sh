@@ -10,6 +10,9 @@ detect-presence)
 go-links)
   migration_dir=go-links/database/migrate
   ;;
+homebase-bot)
+  migration_dir=homebase/bot/database/migrate
+  ;;
 *)
   echo "new-migration.sh: unknown service name $service" >&2
   exit 1

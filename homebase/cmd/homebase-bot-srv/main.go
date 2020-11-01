@@ -11,12 +11,14 @@ import (
 	"google.golang.org/grpc"
 
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
+	"github.com/mjm/pi-tools/homebase/bot/database/migrate"
 	messagespb "github.com/mjm/pi-tools/homebase/bot/proto/messages"
 	"github.com/mjm/pi-tools/homebase/bot/service/messagesservice"
 	"github.com/mjm/pi-tools/homebase/bot/telegram"
 	"github.com/mjm/pi-tools/observability"
 	"github.com/mjm/pi-tools/pkg/signal"
 	"github.com/mjm/pi-tools/rpc"
+	"github.com/mjm/pi-tools/storage"
 )
 
 var (
@@ -25,12 +27,15 @@ var (
 )
 
 func main() {
+	storage.SetDefaultDBName("homebase_bot_dev")
 	rpc.SetDefaultHTTPPort(6360)
 	rpc.SetDefaultGRPCPort(6361)
 	flag.Parse()
 
 	stopObs := observability.MustStart("homebase-bot-srv")
 	defer stopObs()
+
+	db := storage.MustOpenDB(migrate.Data)
 
 	t, err := telegram.New(telegram.Config{
 		Token: os.Getenv("TELEGRAM_TOKEN"),
@@ -47,7 +52,7 @@ func main() {
 
 	trips := tripspb.NewTripsServiceClient(tripsConn)
 
-	messagesService := messagesservice.New(t, trips, *chatID)
+	messagesService := messagesservice.New(db, t, trips, *chatID)
 
 	watchCtx, cancel := context.WithCancel(context.Background())
 	defer cancel()
