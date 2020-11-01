@@ -9,6 +9,7 @@ go_library(
         "//homebase/bot/telegram",
         "//observability",
         "//pkg/signal",
+        "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
     ],
 )
 

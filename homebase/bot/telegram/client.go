@@ -113,3 +113,8 @@ type Error struct {
 func (e Error) Error() string {
 	return e.Description
 }
+
+type VoidResponse struct {
+	OK          bool   `json:"ok"`
+	Description string `json:"description"`
+}
