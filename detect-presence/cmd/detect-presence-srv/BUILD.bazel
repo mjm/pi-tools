@@ -77,7 +77,8 @@ k8s_objects(
     name = "k8s",
     objects = [
         ":k8s_deploy",
-        ":k8s_service",
+        ":k8s_http_service",
+        ":k8s_grpc_service",
         ":k8s_ingress",
     ],
     visibility = ["//visibility:public"],
