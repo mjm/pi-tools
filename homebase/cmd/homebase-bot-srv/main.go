@@ -21,6 +21,7 @@ import (
 
 var (
 	tripsURL = flag.String("trips-url", "localhost:2121", "URL for trips service to lookup and update trip information")
+	chatID   = flag.Int("chat-id", 223272201, "Chat ID to send messages to")
 )
 
 func main() {
@@ -46,7 +47,7 @@ func main() {
 
 	trips := tripspb.NewTripsServiceClient(tripsConn)
 
-	messagesService := messagesservice.New(t, trips)
+	messagesService := messagesservice.New(t, trips, *chatID)
 
 	watchCtx, cancel := context.WithCancel(context.Background())
 	defer cancel()

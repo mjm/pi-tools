@@ -51,7 +51,7 @@ func (s *Server) SendTripCompletedMessage(ctx context.Context, req *messagespb.S
 
 	text := fmt.Sprintf("You just returned from a trip that lasted **%s**\\. Do you want to add any tags to the trip?", duration)
 	_, err = s.t.SendMessage(ctx, telegram.SendMessageRequest{
-		ChatID:    223272201, // TODO parameterize this somehow
+		ChatID:    s.chatID,
 		Text:      text,
 		ParseMode: telegram.MarkdownV2Mode,
 		ReplyMarkup: &telegram.ReplyMarkup{

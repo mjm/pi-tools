@@ -6,13 +6,15 @@ import (
 )
 
 type Server struct {
-	t     *telegram.Client
-	trips tripspb.TripsServiceClient
+	t      *telegram.Client
+	trips  tripspb.TripsServiceClient
+	chatID int
 }
 
-func New(t *telegram.Client, trips tripspb.TripsServiceClient) *Server {
+func New(t *telegram.Client, trips tripspb.TripsServiceClient, chatID int) *Server {
 	return &Server{
-		t:     t,
-		trips: trips,
+		t:      t,
+		trips:  trips,
+		chatID: chatID,
 	}
 }
