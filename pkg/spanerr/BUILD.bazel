@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "spanerr",
+    srcs = ["spanerr.go"],
+    importpath = "github.com/mjm/pi-tools/pkg/spanerr",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@io_opentelemetry_go_otel//api/trace",
+        "@io_opentelemetry_go_otel//codes",
+    ],
+)

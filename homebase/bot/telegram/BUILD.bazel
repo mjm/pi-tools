@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "telegram",
+    srcs = [
+        "chat.go",
+        "client.go",
+        "message.go",
+        "trace.go",
+        "update.go",
+        "user.go",
+    ],
+    importpath = "github.com/mjm/pi-tools/homebase/bot/telegram",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/spanerr",
+        "@io_opentelemetry_go_otel//api/global",
+        "@io_opentelemetry_go_otel//api/trace",
+        "@io_opentelemetry_go_otel//label",
+    ],
+)
