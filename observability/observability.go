@@ -9,7 +9,6 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/exporters/metric/prometheus"
-	"go.opentelemetry.io/otel/exporters/stdout"
 	"go.opentelemetry.io/otel/exporters/trace/jaeger"
 	"go.opentelemetry.io/otel/label"
 	"go.opentelemetry.io/otel/propagators"
@@ -22,30 +21,27 @@ func Start(svcname string) (func(), error) {
 	var err error
 	var stopTracing func()
 
+	var endpoint jaeger.EndpointOption
 	if debug.IsEnabled() {
-		tracePipe, err := stdout.InstallNewPipeline([]stdout.Option{stdout.WithPrettyPrint()}, nil)
-		if err != nil {
-			log.Panicf("Error installing stdout tracing pipeline: %v", err)
-		}
-		stopTracing = tracePipe.Stop
+		endpoint = jaeger.WithAgentEndpoint("localhost:6831")
 	} else {
-		stopTracing, err = jaeger.InstallNewPipeline(
-			jaeger.WithCollectorEndpoint("http://jaeger-collector.monitoring:14268/api/traces"),
-			jaeger.WithProcess(jaeger.Process{
-				ServiceName: svcname,
-				Tags: []label.KeyValue{
-					semconv.K8SPodNameKey.String(os.Getenv("POD_NAME")),
-				},
-			}))
-
-		// TODO re-enable this once there's a jaeger agent Docker image for ARM64
-		//stopTracing, err = jaeger.InstallNewPipeline(jaeger.WithAgentEndpoint("localhost:6831"))
-
-		if err != nil {
-			return nil, fmt.Errorf("installing jaeger tracing pipeline: %w", err)
-		}
+		endpoint = jaeger.WithCollectorEndpoint("http://jaeger-collector.monitoring:14268/api/traces")
 	}
-	global.SetTextMapPropagator(otel.NewCompositeTextMapPropagator(propagators.TraceContext{}, propagators.Baggage{}))
+	stopTracing, err = jaeger.InstallNewPipeline(
+		endpoint,
+		jaeger.WithProcess(jaeger.Process{
+			ServiceName: svcname,
+			Tags: []label.KeyValue{
+				semconv.K8SPodNameKey.String(os.Getenv("POD_NAME")),
+			},
+		}))
+
+	if err != nil {
+		return nil, fmt.Errorf("installing jaeger tracing pipeline: %w", err)
+	}
+
+	global.SetTextMapPropagator(
+		otel.NewCompositeTextMapPropagator(propagators.TraceContext{}, propagators.Baggage{}))
 
 	// this comes after because we want the prometheus meter provider even when debugging
 	metrics, err := prometheus.InstallNewPipeline(prometheus.Config{})
