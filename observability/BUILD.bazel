@@ -13,7 +13,6 @@ go_library(
         "@io_opentelemetry_go_otel//propagators",
         "@io_opentelemetry_go_otel//semconv",
         "@io_opentelemetry_go_otel_exporters_metric_prometheus//:prometheus",
-        "@io_opentelemetry_go_otel_exporters_stdout//:stdout",
         "@io_opentelemetry_go_otel_exporters_trace_jaeger//:jaeger",
     ],
 )

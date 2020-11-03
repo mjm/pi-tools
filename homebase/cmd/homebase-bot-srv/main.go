@@ -54,6 +54,10 @@ func main() {
 
 	messagesService := messagesservice.New(db, t, trips, *chatID)
 
+	if err := messagesService.RegisterCommands(context.Background()); err != nil {
+		log.Panicf("Error registering bot commands: %v", err)
+	}
+
 	watchCtx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
