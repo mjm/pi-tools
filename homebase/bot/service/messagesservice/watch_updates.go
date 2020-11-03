@@ -56,6 +56,16 @@ func (s *Server) handleMessage(ctx context.Context, msg *telegram.Message) error
 				// TODO respond to the user with the error
 				return err
 			}
+		} else if strings.HasPrefix(msg.Text, "/tag") {
+			if err := s.handleTagCommand(ctx, msg); err != nil {
+				// TODO respond to the user with the error
+				return err
+			}
+		} else if strings.HasPrefix(msg.Text, "/untag") {
+			if err := s.handleUntagCommand(ctx, msg); err != nil {
+				// TODO respond to the user with the error
+				return err
+			}
 		}
 	}
 
@@ -122,7 +132,8 @@ func (s *Server) handleCallbackQuery(ctx context.Context, cbq *telegram.Callback
 }
 
 func (s *Server) handleIgnoreCommand(ctx context.Context, msg *telegram.Message) error {
-	ctx, span := tracer.Start(ctx, "MessagesService.handleIgnoreCommand")
+	ctx, span := tracer.Start(ctx, "MessagesService.handleIgnoreCommand",
+		trace.WithAttributes(label.String("telegram.message.text", msg.Text)))
 	defer span.End()
 
 	resp, err := s.trips.GetLastCompletedTrip(ctx, &tripspb.GetLastCompletedTripRequest{})
@@ -148,4 +159,83 @@ func (s *Server) handleIgnoreCommand(ctx context.Context, msg *telegram.Message)
 	}
 
 	return nil
+}
+
+func (s *Server) handleTagCommand(ctx context.Context, msg *telegram.Message) error {
+	ctx, span := tracer.Start(ctx, "MessagesService.handleTagCommand",
+		trace.WithAttributes(label.String("telegram.message.text", msg.Text)))
+	defer span.End()
+
+	resp, err := s.trips.GetLastCompletedTrip(ctx, &tripspb.GetLastCompletedTripRequest{})
+	if err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+
+	if _, err := s.trips.UpdateTripTags(ctx, &tripspb.UpdateTripTagsRequest{
+		TripId:    resp.GetTrip().GetId(),
+		TagsToAdd: parseTagList(strings.TrimPrefix(msg.Text, "/tag")),
+	}); err != nil {
+		return err
+	}
+
+	returnedAt, err := time.Parse(time.RFC3339, resp.GetTrip().GetReturnedAt())
+	if err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+
+	if _, err := s.t.SendMessage(ctx, telegram.SendMessageRequest{
+		ChatID:           msg.Chat.ID,
+		Text:             fmt.Sprintf("Done! Your trip from %s ago has been tagged.", time.Now().Sub(returnedAt)),
+		ReplyToMessageID: msg.MessageID,
+	}); err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+
+	return nil
+}
+
+func (s *Server) handleUntagCommand(ctx context.Context, msg *telegram.Message) error {
+	ctx, span := tracer.Start(ctx, "MessagesService.handleUntagCommand",
+		trace.WithAttributes(label.String("telegram.message.text", msg.Text)))
+	defer span.End()
+
+	resp, err := s.trips.GetLastCompletedTrip(ctx, &tripspb.GetLastCompletedTripRequest{})
+	if err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+
+	if _, err := s.trips.UpdateTripTags(ctx, &tripspb.UpdateTripTagsRequest{
+		TripId:       resp.GetTrip().GetId(),
+		TagsToRemove: parseTagList(strings.TrimPrefix(msg.Text, "/untag")),
+	}); err != nil {
+		return err
+	}
+
+	returnedAt, err := time.Parse(time.RFC3339, resp.GetTrip().GetReturnedAt())
+	if err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+
+	if _, err := s.t.SendMessage(ctx, telegram.SendMessageRequest{
+		ChatID:           msg.Chat.ID,
+		Text:             fmt.Sprintf("Done! Your trip from %s ago has been untagged.", time.Now().Sub(returnedAt)),
+		ReplyToMessageID: msg.MessageID,
+	}); err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+
+	return nil
+}
+
+func parseTagList(s string) []string {
+	tagList := strings.Split(strings.TrimSpace(s), ",")
+
+	var tags []string
+	for _, tag := range tagList {
+		tag = strings.TrimSpace(tag)
+		if tag != "" {
+			tags = append(tags, tag)
+		}
+	}
+	return tags
 }
