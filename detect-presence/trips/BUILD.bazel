@@ -38,5 +38,6 @@ go_test(
         "@com_github_jonboulle_clockwork//:clockwork",
         "@com_github_stretchr_testify//assert",
         "@com_zombiezen_go_postgrestest//:postgrestest",
+        "@org_golang_google_grpc//:go_default_library",
     ],
 )

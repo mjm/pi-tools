@@ -62,6 +62,7 @@ func NewTracker(db storage.DB, messages messagespb.MessagesServiceClient) (*Trac
 
 	t := &Tracker{
 		db:       q,
+		clock:    clockwork.NewRealClock(),
 		messages: messages,
 	}
 
@@ -110,7 +111,7 @@ func (t *Tracker) OnLeave(ctx context.Context, _ *presence.Tracker) {
 	t.lock.Lock()
 	defer t.lock.Unlock()
 
-	t.lastLeft = time.Now()
+	t.lastLeft = t.clock.Now()
 	span.SetAttributes(label.String("trip.left_at", t.lastLeft.UTC().Format(time.RFC3339)))
 
 	id := uuid.New()
@@ -135,7 +136,7 @@ func (t *Tracker) OnReturn(ctx context.Context, _ *presence.Tracker) {
 	t.lock.Lock()
 	defer t.lock.Unlock()
 
-	t.lastReturned = time.Now()
+	t.lastReturned = t.clock.Now()
 	span.SetAttributes(
 		label.String("trip.returned_at", t.lastReturned.UTC().Format(time.RFC3339)),
 		label.String("trip.left_at", t.lastLeft.UTC().Format(time.RFC3339)))
