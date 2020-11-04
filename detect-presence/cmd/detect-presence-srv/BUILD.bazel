@@ -47,7 +47,6 @@ k8s_object(
     images = {
         "index.docker.io/mmoriarity/detect-presence-srv:latest": ":image",
     },
-    kind = "deployment",
     template = "deployment.yaml",
 )
 
@@ -82,4 +81,5 @@ k8s_objects(
         ":k8s_ingress",
     ],
     visibility = ["//visibility:public"],
+    tags = ["manual"],
 )
