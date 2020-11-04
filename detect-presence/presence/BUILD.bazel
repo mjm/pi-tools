@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "presence",
@@ -15,4 +15,11 @@ go_library(
         "@io_opentelemetry_go_otel//api/trace",
         "@io_opentelemetry_go_otel//label",
     ],
+)
+
+go_test(
+    name = "presence_test",
+    srcs = ["tracker_test.go"],
+    embed = [":presence"],
+    deps = ["@com_github_stretchr_testify//assert"],
 )

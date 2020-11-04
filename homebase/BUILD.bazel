@@ -106,6 +106,6 @@ k8s_objects(
         ":k8s_ingress",
         "//homebase/cmd/homebase-bot-srv:k8s",
     ],
-    visibility = ["//visibility:public"],
     tags = ["manual"],
+    visibility = ["//visibility:public"],
 )

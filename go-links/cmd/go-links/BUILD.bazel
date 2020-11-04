@@ -69,6 +69,6 @@ k8s_objects(
         ":k8s_service",
         ":k8s_ingress",
     ],
-    visibility = ["//visibility:public"],
     tags = ["manual"],
+    visibility = ["//visibility:public"],
 )

@@ -35,6 +35,6 @@ k8s_objects(
         ":k8s_deploy",
         ":k8s_service",
     ],
-    visibility = ["//visibility:public"],
     tags = ["manual"],
+    visibility = ["//visibility:public"],
 )

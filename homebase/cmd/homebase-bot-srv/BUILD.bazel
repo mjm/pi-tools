@@ -71,6 +71,6 @@ k8s_objects(
         ":k8s_http_service",
         ":k8s_grpc_service",
     ],
-    visibility = ["//visibility:public"],
     tags = ["manual"],
+    visibility = ["//visibility:public"],
 )
