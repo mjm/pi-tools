@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "checker",
@@ -11,10 +11,23 @@ go_library(
     deps = [
         "//detect-presence/detector",
         "//detect-presence/presence",
+        "@com_github_jonboulle_clockwork//:clockwork",
         "@io_opentelemetry_go_otel//api/global",
         "@io_opentelemetry_go_otel//api/metric",
         "@io_opentelemetry_go_otel//api/trace",
         "@io_opentelemetry_go_otel//codes",
         "@io_opentelemetry_go_otel//label",
+    ],
+)
+
+go_test(
+    name = "checker_test",
+    srcs = ["checker_test.go"],
+    embed = [":checker"],
+    deps = [
+        "//detect-presence/detector",
+        "//detect-presence/presence",
+        "@com_github_jonboulle_clockwork//:clockwork",
+        "@com_github_stretchr_testify//assert",
     ],
 )

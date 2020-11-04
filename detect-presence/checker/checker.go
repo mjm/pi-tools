@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/jonboulle/clockwork"
 	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/api/metric"
 	"go.opentelemetry.io/otel/api/trace"
@@ -25,12 +26,17 @@ type Checker struct {
 	Interval time.Duration
 	Devices  []presence.Device
 
+	clock     clockwork.Clock
 	metrics   metrics
 	isHealthy bool
 	lock      sync.Mutex
 }
 
-func (c *Checker) Run() {
+func (c *Checker) Run(ctx context.Context, tickCh chan<- struct{}) {
+	if c.clock == nil {
+		c.clock = clockwork.NewRealClock()
+	}
+
 	meter := global.Meter(instrumentationName)
 	c.metrics = newMetrics(meter)
 	metric.Must(meter).NewInt64ValueObserver("presence.bluetooth.healthy", func(ctx context.Context, result metric.Int64ObserverResult) {
@@ -44,11 +50,24 @@ func (c *Checker) Run() {
 		result.Observe(val)
 	}, metric.WithDescription("Indicates if the local Bluetooth device is up and running."))
 
-	ctx := context.Background()
 	c.tick(ctx)
+	if tickCh != nil {
+		tickCh <- struct{}{}
+	}
 
-	for range time.Tick(c.Interval) {
-		c.tick(ctx)
+	ticker := c.clock.NewTicker(c.Interval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.Chan():
+			c.tick(ctx)
+			if tickCh != nil {
+				tickCh <- struct{}{}
+			}
+		}
 	}
 }
 

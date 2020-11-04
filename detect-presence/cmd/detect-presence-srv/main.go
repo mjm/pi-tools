@@ -76,7 +76,7 @@ func main() {
 		Interval: *pingInterval,
 		Devices:  devices,
 	}
-	go c.Run()
+	go c.Run(context.Background(), nil)
 
 	tripsService := tripsservice.New(db)
 	go rpc.ListenAndServe(rpc.WithRegisteredServices(func(server *grpc.Server) {
