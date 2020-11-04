@@ -27,6 +27,7 @@ k8s_objects(
         ":k8s_operator_deploy",
     ],
     visibility = ["//visibility:public"],
+    tags = ["manual"],
 )
 
 k8s_object(

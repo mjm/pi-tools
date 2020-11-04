@@ -44,4 +44,5 @@ k8s_objects(
         ":k8s_exporter_deploy",
     ],
     visibility = ["//visibility:public"],
+    tags = ["manual"],
 )

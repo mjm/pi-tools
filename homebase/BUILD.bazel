@@ -107,4 +107,5 @@ k8s_objects(
         "//homebase/cmd/homebase-bot-srv:k8s",
     ],
     visibility = ["//visibility:public"],
+    tags = ["manual"],
 )

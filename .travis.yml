@@ -17,6 +17,9 @@ script:
   # Make sure we still get the failure from Bazel even though we pipe it.
   - set -o pipefail
 
+  # Run tests
+  - bazel test --config=ci //...
+
   # Build and push container images, and output the Kubernetes configs.
   - bazel run --config=ci all_k8s > /tmp/all_k8s.yaml
 
