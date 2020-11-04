@@ -9,7 +9,7 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/improbable-eng/grpc-web v0.13.0
-	github.com/jonboulle/clockwork v0.2.2 // indirect
+	github.com/jonboulle/clockwork v0.2.2
 	github.com/lib/pq v1.8.0
 	github.com/rs/cors v1.7.0 // indirect
 	github.com/segmentio/ksuid v1.0.3
