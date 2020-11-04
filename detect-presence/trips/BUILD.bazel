@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "trips",
@@ -17,5 +17,25 @@ go_library(
         "@io_opentelemetry_go_otel//api/trace",
         "@io_opentelemetry_go_otel//codes",
         "@io_opentelemetry_go_otel//label",
+    ],
+)
+
+go_test(
+    name = "trips_test",
+    srcs = [
+        "main_test.go",
+        "messages_test.go",
+        "trip_tracker_test.go",
+    ],
+    embed = [":trips"],
+    deps = [
+        "//detect-presence/database",
+        "//detect-presence/database/migrate",
+        "//homebase/bot/proto/messages",
+        "//pkg/migrate/postgres",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_jonboulle_clockwork//:clockwork",
+        "@com_github_stretchr_testify//assert",
+        "@com_zombiezen_go_postgrestest//:postgrestest",
     ],
 )

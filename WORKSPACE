@@ -1220,8 +1220,8 @@ go_repository(
 go_repository(
     name = "com_github_lib_pq",
     importpath = "github.com/lib/pq",
-    sum = "h1:/qkRGz8zljWiDcFvgpwUpwIAPu3r07TDvs3Rws+o/pU=",
-    version = "v1.3.0",
+    sum = "h1:9xohqzkUwzR4Ga4ivdTcawVS89YSDVxXMa3xJX3cGzg=",
+    version = "v1.8.0",
 )
 
 go_repository(
@@ -2391,8 +2391,8 @@ go_repository(
 go_repository(
     name = "com_github_jonboulle_clockwork",
     importpath = "github.com/jonboulle/clockwork",
-    sum = "h1:VKV+ZcuP6l3yW9doeqz6ziZGgcynBVQO+obU0+0hcPo=",
-    version = "v0.1.0",
+    sum = "h1:UOGuzwb1PwsrDAObMuhUnj0p5ULPj8V/xJ7Kx9qUBdQ=",
+    version = "v0.2.2",
 )
 
 go_repository(
@@ -2821,6 +2821,13 @@ go_repository(
     importpath = "go.opentelemetry.io/otel/exporters/trace/jaeger",
     sum = "h1:TjXcUVYbsjl3lYifrWptraZAL0OBmpMxRLm/eJ1GyZU=",
     version = "v0.13.0",
+)
+
+go_repository(
+    name = "com_zombiezen_go_postgrestest",
+    importpath = "zombiezen.com/go/postgrestest",
+    sum = "h1:4QKJsCXlbdlRI6AVmqDx+Xn3sqEnZ8TY3nex4MTM5+Q=",
+    version = "v1.0.0",
 )
 
 gazelle_dependencies()
