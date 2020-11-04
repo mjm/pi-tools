@@ -122,3 +122,51 @@ func TestNewTracker(t *testing.T) {
 		assert.Equal(t, returnedAt, tt.lastReturned.UTC())
 	})
 }
+
+func TestTracker_OnLeave(t *testing.T) {
+	ctx := context.Background()
+	clock := clockwork.NewFakeClock()
+
+	t.Run("starts a new trip", func(t *testing.T) {
+		db, err := dbSrv.NewDatabase(ctx)
+		assert.NoError(t, err)
+		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
+		q := database.New(db)
+
+		tt, err := NewTracker(db, &fakeMessagesClient{})
+		assert.NoError(t, err)
+		tt.clock = clock
+
+		tt.OnLeave(ctx, nil)
+
+		trip, err := q.GetCurrentTrip(ctx)
+		assert.NoError(t, err)
+		assert.NotNil(t, tt.currentTrip)
+		assert.Equal(t, trip, *tt.currentTrip)
+	})
+
+	t.Run("does not start a trip if one is already in-progress", func(t *testing.T) {
+		db, err := dbSrv.NewDatabase(ctx)
+		assert.NoError(t, err)
+		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
+
+		q := database.New(db)
+
+		leftAt := clock.Now()
+		trip, err := q.BeginTrip(ctx, database.BeginTripParams{
+			ID:     uuid.New(),
+			LeftAt: leftAt,
+		})
+		assert.NoError(t, err)
+
+		tt, err := NewTracker(db, &fakeMessagesClient{})
+		assert.NoError(t, err)
+
+		tt.OnLeave(ctx, nil)
+		assert.Equal(t, trip, *tt.currentTrip)
+
+		trips, err := q.ListTrips(ctx)
+		assert.NoError(t, err)
+		assert.Len(t, trips, 1)
+	})
+}

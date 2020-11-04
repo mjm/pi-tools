@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jonboulle/clockwork"
 	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/api/metric"
 	"go.opentelemetry.io/otel/api/trace"
@@ -28,6 +29,7 @@ var tracer = global.Tracer(instrumentationName)
 type Tracker struct {
 	db                  *database.Queries
 	messages            messagespb.MessagesServiceClient
+	clock               clockwork.Clock
 	currentTrip         *database.Trip
 	lastLeft            time.Time
 	lastReturned        time.Time
