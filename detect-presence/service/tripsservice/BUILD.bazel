@@ -28,6 +28,7 @@ go_library(
 go_test(
     name = "tripsservice_test",
     srcs = [
+        "ignore_trip_test.go",
         "list_trips_test.go",
         "main_test.go",
     ],

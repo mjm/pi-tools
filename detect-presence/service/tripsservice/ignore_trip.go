@@ -25,8 +25,12 @@ func (s *Server) IgnoreTrip(ctx context.Context, req *tripspb.IgnoreTripRequest)
 		return nil, status.Errorf(codes.InvalidArgument, "invalid UUID for trip ID: %s", err)
 	}
 
-	if err := s.q.IgnoreTrip(ctx, tripID); err != nil {
+	n, err := s.q.IgnoreTrip(ctx, tripID)
+	if err != nil {
 		return nil, err
+	}
+	if n == 0 {
+		return nil, status.Errorf(codes.NotFound, "no trip found with ID %s", tripID)
 	}
 
 	return &tripspb.IgnoreTripResponse{}, nil

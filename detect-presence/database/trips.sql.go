@@ -122,15 +122,18 @@ func (q *Queries) GetTrip(ctx context.Context, id uuid.UUID) (GetTripRow, error)
 	return i, err
 }
 
-const ignoreTrip = `-- name: IgnoreTrip :exec
+const ignoreTrip = `-- name: IgnoreTrip :execrows
 UPDATE trips
 SET ignored_at = CURRENT_TIMESTAMP
 WHERE id = $1
 `
 
-func (q *Queries) IgnoreTrip(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, ignoreTrip, id)
-	return err
+func (q *Queries) IgnoreTrip(ctx context.Context, id uuid.UUID) (int64, error) {
+	result, err := q.db.ExecContext(ctx, ignoreTrip, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const listTrips = `-- name: ListTrips :many

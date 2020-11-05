@@ -42,7 +42,7 @@ SET returned_at = $2
 WHERE id = $1
 AND returned_at IS NULL;
 
--- name: IgnoreTrip :exec
+-- name: IgnoreTrip :execrows
 UPDATE trips
 SET ignored_at = CURRENT_TIMESTAMP
 WHERE id = $1;
