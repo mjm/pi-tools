@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "linksservice",
@@ -27,5 +27,24 @@ go_library(
         "@io_opentelemetry_go_otel//label",
         "@org_golang_google_grpc//codes",
         "@org_golang_google_grpc//status",
+    ],
+)
+
+go_test(
+    name = "linksservice_test",
+    srcs = [
+        "create_link_test.go",
+        "get_link_test.go",
+        "main_test.go",
+    ],
+    embed = [":linksservice"],
+    deps = [
+        "//go-links/database",
+        "//go-links/database/migrate",
+        "//go-links/proto/links",
+        "//pkg/migrate/postgres",
+        "@com_github_segmentio_ksuid//:ksuid",
+        "@com_github_stretchr_testify//assert",
+        "@com_zombiezen_go_postgrestest//:postgrestest",
     ],
 )
