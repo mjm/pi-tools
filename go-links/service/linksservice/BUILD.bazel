@@ -36,6 +36,7 @@ go_test(
         "create_link_test.go",
         "get_link_test.go",
         "main_test.go",
+        "redirect_test.go",
     ],
     embed = [":linksservice"],
     deps = [
