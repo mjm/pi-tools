@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "rpc",
@@ -15,5 +15,19 @@ go_library(
         "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
         "@org_golang_google_grpc//:go_default_library",
         "@org_golang_google_grpc//reflection",
+    ],
+)
+
+go_test(
+    name = "rpc_test",
+    srcs = [
+        "dial_test.go",
+        "handler_test.go",
+    ],
+    embed = [":rpc"],
+    deps = [
+        "//detect-presence/proto/trips",
+        "//pkg/signal",
+        "@org_golang_google_grpc//:go_default_library",
     ],
 )
