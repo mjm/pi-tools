@@ -2811,6 +2811,11 @@ go_repository(
 
 go_repository(
     name = "com_github_apache_thrift",
+    build_extra_args = [
+        "-exclude=test",
+        "-exclude=tutorial",
+        "-exclude=lib/go/test",
+    ],
     importpath = "github.com/apache/thrift",
     sum = "h1:5hryIiq9gtn+MiLVn0wP37kb/uTeRZgN08WoCsAhIhI=",
     version = "v0.13.0",
