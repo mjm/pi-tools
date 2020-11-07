@@ -25,14 +25,21 @@ func (s *Server) WatchUpdates(ctx context.Context) {
 
 	for updateOrErr := range ch {
 		if updateOrErr.Err != nil {
+			s.metrics.TelegramUpdateErrorsTotal.Add(ctx, 1)
 			log.Printf("Error getting updates: %v", updateOrErr.Err)
 		} else {
 			update := updateOrErr.Update
 			if update.CallbackQuery != nil {
+				s.metrics.TelegramUpdateTotal.Add(ctx, 1,
+					label.String("update_type", "callback_query"))
+
 				if err := s.handleCallbackQuery(ctx, update.CallbackQuery); err != nil {
 					log.Printf("Error answering callback query: %v", err)
 				}
 			} else if update.Message != nil {
+				s.metrics.TelegramUpdateTotal.Add(ctx, 1,
+					label.String("update_type", "message"))
+
 				if err := s.handleMessage(ctx, update.Message); err != nil {
 					log.Printf("Error responding to message: %v", err)
 				}

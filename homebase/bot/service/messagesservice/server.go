@@ -1,6 +1,8 @@
 package messagesservice
 
 import (
+	"go.opentelemetry.io/otel/api/global"
+
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
 	"github.com/mjm/pi-tools/homebase/bot/database"
 	"github.com/mjm/pi-tools/homebase/bot/telegram"
@@ -13,14 +15,18 @@ type Server struct {
 	t      *telegram.Client
 	trips  tripspb.TripsServiceClient
 	chatID int
+
+	metrics metrics
 }
 
 func New(db storage.DB, t *telegram.Client, trips tripspb.TripsServiceClient, chatID int) *Server {
+	meter := global.Meter(instrumentationName)
 	return &Server{
-		db:     db,
-		q:      database.New(db),
-		t:      t,
-		trips:  trips,
-		chatID: chatID,
+		db:      db,
+		q:       database.New(db),
+		t:       t,
+		trips:   trips,
+		chatID:  chatID,
+		metrics: newMetrics(meter),
 	}
 }
