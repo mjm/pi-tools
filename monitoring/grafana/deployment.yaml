@@ -24,6 +24,23 @@ spec:
       containers:
         - image: index.docker.io/mmoriarity/grafana:latest
           name: grafana
+          env:
+            - name: GF_USERS_ALLOW_SIGN_UP
+              value: "false"
+            - name: GF_USERS_AUTO_ASSIGN_ORG
+              value: "true"
+            - name: GF_USERS_AUTO_ASSIGN_ORG_ROLE
+              value: "admin"
+            - name: GF_AUTH_PROXY_ENABLED
+              value: "true"
+            - name: GF_AUTH_PROXY_HEADER_NAME
+              value: "X-Auth-Request-User"
+            - name: GF_AUTH_PROXY_AUTO_SIGN_UP
+              value: "true"
+            - name: GF_AUTH_PROXY_HEADERS
+              value: "Email:X-Auth-Request-Email"
+            - name: GF_AUTH_PROXY_ENABLE_LOGIN_TOKEN
+              value: "false"
           resources:
             requests:
               cpu: "100m"
