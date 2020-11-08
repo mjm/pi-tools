@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: auth
+  name: oauth2-proxy
+  labels:
+    app: oauth2-proxy
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: oauth2-proxy
+  template:
+    metadata:
+      labels:
+        app: oauth2-proxy
+    spec:
+      containers:
+        - args:
+            - --provider=github
+            - --email-domain=*
+            - --github-user=mjm
+            - --upstream=file:///dev/null
+            - --http-address=0.0.0.0:4180
+            - --cookie-secure=false
+            - --redirect-url=http://homebase/oauth2/callback
+          env:
+            - name: OAUTH2_PROXY_CLIENT_ID
+              value: 18da98312638f7ea59f2
+            - name: OAUTH2_PROXY_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-proxy
+                  key: oauth2-proxy-client-secret
+            - name: OAUTH2_PROXY_COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-proxy
+                  key: oauth2-proxy-cookie-secret
+          image: quay.io/oauth2-proxy/oauth2-proxy@sha256:cf9c36686ae737ffcfe0f91e8ec60988695a0fa83748a96e079c3a0cf0a985fc
+          name: oauth2-proxy
+          ports:
+            - containerPort: 4180
+              protocol: TCP
+              name: http
