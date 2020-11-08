@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -o pipefail
-set -xe
+set -e
 
 org=mjm
 repo=pi-tools
