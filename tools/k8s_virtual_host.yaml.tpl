@@ -5,10 +5,10 @@ metadata:
   name: {NAME}
   annotations:
     nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.auth.svc.cluster.local/oauth2/auth"
-    nginx.ingress.kubernetes.io/auth-signin: "http://homebase/oauth2/start?rd=$escaped_request_uri"
+    nginx.ingress.kubernetes.io/auth-signin: "http://homebase.homelab/oauth2/start?rd=$escaped_request_uri"
 spec:
   rules:
-    - host: {NAME}
+    - host: {NAME}.homelab
       http:
         paths:
           - path: "/"

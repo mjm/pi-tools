@@ -5,7 +5,7 @@ metadata:
   name: oauth2-proxy
 spec:
   rules:
-    - host: homebase
+    - host: homebase.homelab
       http:
         paths:
           - path: "/oauth2"
