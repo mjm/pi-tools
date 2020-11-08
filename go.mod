@@ -13,8 +13,10 @@ require (
 	github.com/lib/pq v1.8.0
 	github.com/rs/cors v1.7.0 // indirect
 	github.com/segmentio/ksuid v1.0.3
+	github.com/stretchr/testify v1.6.1
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.13.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.13.0
+	go.opentelemetry.io/contrib/instrumentation/runtime v0.13.0
 	go.opentelemetry.io/otel v0.13.0
 	go.opentelemetry.io/otel/exporters/metric/prometheus v0.13.0
 	go.opentelemetry.io/otel/exporters/trace/jaeger v0.13.0
@@ -23,5 +25,5 @@ require (
 	k8s.io/api v0.19.0
 	k8s.io/apimachinery v0.19.0
 	k8s.io/client-go v0.19.0
-	zombiezen.com/go/postgrestest v1.0.0 // indirect
+	zombiezen.com/go/postgrestest v1.0.0
 )

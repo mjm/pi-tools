@@ -2835,6 +2835,13 @@ go_repository(
     version = "v1.0.0",
 )
 
+go_repository(
+    name = "io_opentelemetry_go_contrib_instrumentation_runtime",
+    importpath = "go.opentelemetry.io/contrib/instrumentation/runtime",
+    sum = "h1:U5EXyt+Dq46yQ93Bf8h5+u/8Aal6H/BUDnBip1kzx2k=",
+    version = "v0.13.0",
+)
+
 gazelle_dependencies()
 
 http_archive(

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/exporters/metric/prometheus"
@@ -52,6 +53,11 @@ func Start(svcname string) (func(), error) {
 		return nil, fmt.Errorf("installing metrics pipeline: %w", err)
 	}
 	http.Handle("/metrics", metrics)
+
+	if err := runtime.Start(); err != nil {
+		stopTracing()
+		return nil, fmt.Errorf("starting observing runtime metrics: %w", err)
+	}
 
 	return func() {
 		log.Printf("Shutting down observability...")
