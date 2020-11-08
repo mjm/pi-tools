@@ -8,6 +8,7 @@ go_library(
         "chat.go",
         "client.go",
         "message.go",
+        "metrics.go",
         "trace.go",
         "update.go",
         "user.go",
@@ -17,7 +18,9 @@ go_library(
     deps = [
         "//pkg/spanerr",
         "@io_opentelemetry_go_otel//api/global",
+        "@io_opentelemetry_go_otel//api/metric",
         "@io_opentelemetry_go_otel//api/trace",
         "@io_opentelemetry_go_otel//label",
+        "@io_opentelemetry_go_otel//semconv",
     ],
 )

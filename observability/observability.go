@@ -44,7 +44,9 @@ func Start(svcname string) (func(), error) {
 		otel.NewCompositeTextMapPropagator(propagators.TraceContext{}, propagators.Baggage{}))
 
 	// this comes after because we want the prometheus meter provider even when debugging
-	metrics, err := prometheus.InstallNewPipeline(prometheus.Config{})
+	metrics, err := prometheus.InstallNewPipeline(prometheus.Config{
+		DefaultHistogramBoundaries: []float64{0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50},
+	})
 	if err != nil {
 		stopTracing()
 		return nil, fmt.Errorf("installing metrics pipeline: %w", err)

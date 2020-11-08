@@ -7,9 +7,12 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"time"
 
+	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/api/trace"
 	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/semconv"
 
 	"github.com/mjm/pi-tools/pkg/spanerr"
 )
@@ -23,6 +26,7 @@ type Config struct {
 type Client struct {
 	cfg     Config
 	baseURL *url.URL
+	metrics metrics
 }
 
 func New(cfg Config) (*Client, error) {
@@ -43,9 +47,11 @@ func New(cfg Config) (*Client, error) {
 		cfg.HTTPClient = http.DefaultClient
 	}
 
+	meter := global.Meter(instrumentationName)
 	return &Client{
 		cfg:     cfg,
 		baseURL: baseURL,
+		metrics: newMetrics(meter),
 	}, nil
 }
 
@@ -75,13 +81,17 @@ func (c *Client) perform(ctx context.Context, action string, params interface{},
 
 	r, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), bytes.NewReader(body))
 	if err != nil {
+		c.measureRequest(ctx, action, err, 0, 0)
 		return spanerr.RecordError(ctx, fmt.Errorf("creating request: %w", err))
 	}
 
 	r.Header.Set("Content-Type", "application/json")
 
+	startTime := time.Now()
 	res, err := c.cfg.HTTPClient.Do(r)
+	duration := time.Now().Sub(startTime)
 	if err != nil {
+		c.measureRequest(ctx, action, err, 0, duration)
 		return spanerr.RecordError(ctx, fmt.Errorf("performing request: %w", err))
 	}
 	defer res.Body.Close()
@@ -91,17 +101,36 @@ func (c *Client) perform(ctx context.Context, action string, params interface{},
 	if res.StatusCode != http.StatusOK {
 		var resErr Error
 		if err := json.NewDecoder(res.Body).Decode(&resErr); err != nil {
+			c.measureRequest(ctx, action, err, res.StatusCode, duration)
 			return spanerr.RecordError(ctx, fmt.Errorf("decoding error response: %w", err))
 		}
 
+		c.measureRequest(ctx, action, err, res.StatusCode, duration)
 		return spanerr.RecordError(ctx, resErr)
 	}
 
 	if err := json.NewDecoder(res.Body).Decode(resp); err != nil {
+		c.measureRequest(ctx, action, err, res.StatusCode, duration)
 		return spanerr.RecordError(ctx, fmt.Errorf("decoding response: %w", err))
 	}
 
+	c.measureRequest(ctx, action, nil, res.StatusCode, duration)
 	return nil
+}
+
+func (c *Client) measureRequest(ctx context.Context, action string, err error, status int, duration time.Duration) {
+	if err != nil || status > 299 {
+		c.metrics.RequestErrorsTotal.Add(ctx, 1,
+			label.String("action", action),
+			semconv.HTTPStatusCodeKey.Int(status))
+	}
+	c.metrics.RequestTotal.Add(ctx, 1,
+		label.String("action", action),
+		semconv.HTTPStatusCodeKey.Int(status))
+	if duration != 0 {
+		c.metrics.RequestDurationSeconds.Record(ctx, duration.Seconds(),
+			label.String("action", action))
+	}
 }
 
 type Error struct {
