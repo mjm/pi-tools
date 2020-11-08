@@ -1,0 +1,26 @@
+name: Kubernetes
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    name: "Build and test"
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache Bazel outputs
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/bazel/disk-cache
+          key: bazel-${{ github.sha }}
+          restore-keys: |
+            bazel-
+      - name: Install Bazel
+        run: |
+          sudo curl -L https://github.com/bazelbuild/bazel/releases/download/3.6.0/bazel-3.6.0-linux-arm64 -o /usr/local/bin/bazel
+          sudo chmod +x /usr/local/bin/bazel
+      # TODO login to Docker
+      - name: Run tests
+        run: bazel test --config=ci --build_tests_only //...
