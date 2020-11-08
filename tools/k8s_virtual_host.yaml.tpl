@@ -19,3 +19,23 @@ spec:
                 name: {SERVICE_NAME}
                 port:
                   number: {PORT}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: {NAMESPACE}
+  name: {NAME}-redirect
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: "http://{NAME}.homelab/$1"
+spec:
+  rules:
+    - host: {NAME}
+      http:
+        paths:
+            - path: "/(.*)"
+              pathType: Prefix
+              backend:
+                service:
+                  name: {SERVICE_NAME}
+                  port:
+                    number: {PORT}
