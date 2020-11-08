@@ -25,4 +25,6 @@ k8s_objects(
         ":k8s_http_service",
         ":k8s_ingress",
     ],
+    tags = ["manual"],
+    visibility = ["//visibility:public"],
 )
