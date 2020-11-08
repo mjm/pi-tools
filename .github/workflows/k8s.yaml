@@ -31,10 +31,15 @@ jobs:
       - name: Run tests
         run: bazel test --config=ci --build_tests_only //...
       - name: Build and generate Kubernetes manifests
-        run: bazel run --config=ci --platforms @io_bazel_rules_go//go/toolchain:linux_arm64 //:all_k8s > /tmp/all_k8s.yaml
+        run: bazel run --config=ci --platforms @io_bazel_rules_go//go/toolchain:linux_arm64 //:k8s > /tmp/k8s.yaml
+      - name: Build and generate Kubernetes CRD manifests
+        run: bazel run --config=ci --platforms @io_bazel_rules_go//go/toolchain:linux_arm64 //:k8s_crds > /tmp/k8s_crds.yaml
 
       - name: Store Kubernetes manifests
         uses: actions/upload-artifact@v2
         with:
           name: all_k8s
-          path: /tmp/all_k8s.yaml
+          path: |
+            /tmp/k8s.yaml
+            /tmp/k8s_crds.yaml
+          if-no-files-found: error

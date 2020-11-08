@@ -11,6 +11,7 @@ k8s_object(
     name = "k8s_operator_crd",
     kind = "customresourcedefinition",
     template = "crd.yaml",
+    visibility = ["//visibility:public"],
 )
 
 k8s_object(
@@ -22,7 +23,6 @@ k8s_object(
 k8s_objects(
     name = "k8s_operator",
     objects = [
-        ":k8s_operator_crd",
         ":k8s_operator_account",
         ":k8s_operator_deploy",
     ],
