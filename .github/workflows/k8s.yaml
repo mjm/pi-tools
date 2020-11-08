@@ -19,7 +19,7 @@ jobs:
             bazel-
       - name: Install Bazel
         run: |
-          sudo curl -L https://github.com/bazelbuild/bazel/releases/download/3.6.0/bazel-3.6.0-linux-arm64 -o /usr/local/bin/bazel
+          sudo curl -L https://github.com/bazelbuild/bazel/releases/download/3.6.0/bazel-3.6.0-linux-amd64 -o /usr/local/bin/bazel
           sudo chmod +x /usr/local/bin/bazel
       # TODO login to Docker
       - name: Run tests
