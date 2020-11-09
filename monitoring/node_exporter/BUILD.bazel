@@ -1,7 +1,7 @@
 load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
 
 k8s_object(
-    name = "k8s_daemon",
+    name = "k8s",
     kind = "daemonset",
     template = "daemonset.yaml",
     visibility = ["//visibility:public"],
