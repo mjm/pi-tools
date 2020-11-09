@@ -45,6 +45,15 @@ spec:
               readOnly: true
             - name: run
               mountPath: /run/promtail
+            - name: var-journal
+              mountPath: /var/log/journal
+              readOnly: true
+            - name: run-journal
+              mountPath: /run/log/journal
+              readOnly: true
+            - name: machine-id
+              mountPath: /etc/machine-id
+              readOnly: true
       volumes:
         - name: pods
           hostPath:
@@ -52,3 +61,12 @@ spec:
         - name: run
           hostPath:
             path: /run/promtail
+        - name: var-journal
+          hostPath:
+            path: /var/log/journal
+        - name: run-journal
+          hostPath:
+            path: /run/log/journal
+        - name: machine-id
+          hostPath:
+            path: /etc/machine-id
