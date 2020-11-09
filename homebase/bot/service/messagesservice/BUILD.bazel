@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "commands.go",
         "metrics.go",
+        "send_trip_began_message.go",
         "send_trip_completed_message.go",
         "server.go",
         "trace.go",

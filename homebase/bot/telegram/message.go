@@ -27,6 +27,19 @@ type SendMessageRequest struct {
 	ReplyMarkup           *ReplyMarkup `json:"reply_markup,omitempty"`
 }
 
+type EditMessageTextRequest struct {
+	ChatID      int          `json:"chat_id"`
+	MessageID   int          `json:"message_id"`
+	Text        string       `json:"text"`
+	ParseMode   ParseMode    `json:"parse_mode,omitempty"`
+	ReplyMarkup *ReplyMarkup `json:"reply_markup,omitempty"`
+}
+
+type DeleteMessageRequest struct {
+	ChatID    int `json:"chat_id"`
+	MessageID int `json:"message_id"`
+}
+
 type ParseMode string
 
 const (
@@ -71,4 +84,39 @@ func (c *Client) SendMessage(ctx context.Context, req SendMessageRequest) (*Mess
 	span.SetAttributes(
 		label.Int("telegram.response.message_id", msg.MessageID))
 	return &msg, nil
+}
+
+func (c *Client) EditMessageText(ctx context.Context, req EditMessageTextRequest) (*Message, error) {
+	ctx, span := tracer.Start(ctx, "telegram.EditMessageText",
+		trace.WithAttributes(
+			label.Int("telegram.request.param.chat_id", req.ChatID),
+			label.Int("telegram.request.param.message_id", req.MessageID),
+			label.Int("telegram.request.param.text.length", len(req.Text)),
+			label.String("telegram.request.param.parse_mode", string(req.ParseMode))))
+	defer span.End()
+
+	var resp SendMessageResponse
+	if err := c.perform(ctx, "editMessageText", req, &resp); err != nil {
+		return nil, spanerr.RecordError(ctx, err)
+	}
+
+	msg := resp.Result
+	span.SetAttributes(
+		label.Int("telegram.response.message_id", msg.MessageID))
+	return &msg, nil
+}
+
+func (c *Client) DeleteMessage(ctx context.Context, req DeleteMessageRequest) error {
+	ctx, span := tracer.Start(ctx, "telegram.DeleteMessage",
+		trace.WithAttributes(
+			label.Int("telegram.request.param.chat_id", req.ChatID),
+			label.Int("telegram.request.param.message_id", req.MessageID)))
+	defer span.End()
+
+	var resp VoidResponse
+	if err := c.perform(ctx, "deleteMessage", req, &resp); err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+
+	return nil
 }

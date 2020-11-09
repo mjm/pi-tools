@@ -123,9 +123,11 @@ func (t *Tracker) OnLeave(ctx context.Context, _ *presence.Tracker) {
 	})
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
-	} else {
-		t.currentTrip = &newTrip
+		return
 	}
+
+	t.currentTrip = &newTrip
+	t.sendLeaveChatMessage(ctx)
 }
 
 func (t *Tracker) OnReturn(ctx context.Context, _ *presence.Tracker) {
@@ -159,14 +161,27 @@ func (t *Tracker) OnReturn(ctx context.Context, _ *presence.Tracker) {
 			span.SetStatus(codes.Error, err.Error())
 		}
 
-		t.sendChatMessage(ctx)
+		t.sendReturnChatMessage(ctx)
 
 		t.currentTrip = nil
 	}
 }
 
-func (t *Tracker) sendChatMessage(ctx context.Context) {
-	ctx, span := tracer.Start(ctx, "trips.Tracker.sendChatMessage")
+func (t *Tracker) sendLeaveChatMessage(ctx context.Context) {
+	ctx, span := tracer.Start(ctx, "trips.Tracker.sendLeaveChatMessage")
+	defer span.End()
+
+	req := &messagespb.SendTripBeganMessageRequest{
+		TripId: t.currentTrip.ID.String(),
+		LeftAt: t.lastLeft.Format(time.RFC3339),
+	}
+	if _, err := t.messages.SendTripBeganMessage(ctx, req); err != nil {
+		spanerr.RecordError(ctx, err)
+	}
+}
+
+func (t *Tracker) sendReturnChatMessage(ctx context.Context) {
+	ctx, span := tracer.Start(ctx, "trips.Tracker.sendReturnChatMessage")
 	defer span.End()
 
 	req := &messagespb.SendTripCompletedMessageRequest{
