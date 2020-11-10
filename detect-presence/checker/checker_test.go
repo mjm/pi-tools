@@ -22,6 +22,11 @@ var (
 		Name: "dev2",
 		Addr: "ff:ee:dd:cc:bb:aa",
 	}
+	canary = presence.Device{
+		Name:   "canary",
+		Addr:   "bb:cc:dd:ee:ff:aa",
+		Canary: true,
+	}
 )
 
 func TestChecker_Run(t *testing.T) {
@@ -114,6 +119,43 @@ func TestChecker_Run(t *testing.T) {
 
 		d.SetDevicePresence(dev2.Addr, true)
 		assert.False(t, tracker.IsPresent())
+		tick()
+		assert.True(t, tracker.IsPresent())
+	})
+
+	t.Run("does not set presence when canary is missing", func(t *testing.T) {
+		d := detector.NewMemoryDetector(canary.Addr, dev1.Addr)
+		tracker := presence.NewTracker()
+		c := &Checker{
+			Tracker:  tracker,
+			Detector: d,
+			Interval: 30 * time.Second,
+			Devices:  []presence.Device{canary, dev1},
+			clock:    clock,
+		}
+
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		tickCh := make(chan struct{})
+		go c.Run(ctx, tickCh)
+
+		tick := func() {
+			clock.Advance(30 * time.Second)
+			<-tickCh
+		}
+
+		<-tickCh
+		assert.True(t, tracker.IsPresent())
+
+		d.SetDevicePresence(canary.Addr, false)
+		tick()
+		tick()
+		tick()
+		assert.True(t, tracker.IsPresent())
+
+		d.SetDevicePresence(dev1.Addr, false)
+		tick()
+		tick()
 		tick()
 		assert.True(t, tracker.IsPresent())
 	})

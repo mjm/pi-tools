@@ -30,8 +30,9 @@ var (
 )
 
 var devices = []presence.Device{
-	{"callisto", "A0:FB:C5:D3:4D:46"},
-	{"matt-watch", "F8:6F:C1:0A:E8:8B"},
+	{Name: "canary", Addr: "20:7D:74:20:C7:FD", Canary: true},
+	{Name: "callisto", Addr: "A0:FB:C5:D3:4D:46"},
+	{Name: "matt-watch", Addr: "F8:6F:C1:0A:E8:8B"},
 }
 
 func main() {
