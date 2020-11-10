@@ -4,8 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
-	"time"
 
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/api/trace"
@@ -13,7 +11,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
 	"github.com/mjm/pi-tools/homebase/bot/database"
 	messagespb "github.com/mjm/pi-tools/homebase/bot/proto/messages"
 	"github.com/mjm/pi-tools/homebase/bot/telegram"
@@ -30,39 +27,11 @@ func (s *Server) SendTripCompletedMessage(ctx context.Context, req *messagespb.S
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid UUID for trip ID: %s", err)
 	}
-	leftAt, err := time.Parse(time.RFC3339, req.GetLeftAt())
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid left at timestamp: %s", err)
-	}
-	returnedAt, err := time.Parse(time.RFC3339, req.GetReturnedAt())
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid returned at timestamp: %s", err)
-	}
-	duration := returnedAt.Sub(leftAt)
-	span.SetAttributes(label.Stringer("trip.duration", duration))
 
-	// fetch the most popular three tags for trips and offer them as inline-reply options
-	tagsResp, err := s.trips.ListTags(ctx, &tripspb.ListTagsRequest{
-		Limit: 3,
-	})
+	text, replyMarkup, err := s.buildTripMessage(ctx, tripID)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "fetching popular tags: %v", err)
+		return nil, err
 	}
-
-	var buttonRow []telegram.InlineKeyboardButton
-	for _, tag := range tagsResp.GetTags() {
-		buttonRow = append(buttonRow, telegram.InlineKeyboardButton{
-			Text:         tag.GetName(),
-			CallbackData: fmt.Sprintf("TAG_TRIP#%s", tag.GetName()),
-		})
-	}
-	replyMarkup := &telegram.ReplyMarkup{
-		InlineKeyboard: [][]telegram.InlineKeyboardButton{
-			buttonRow,
-		},
-	}
-	text := fmt.Sprintf("You just returned from a trip that lasted **%s**\\. Do you want to add any tags to the trip?", duration)
-
 	msg, err := s.t.SendMessage(ctx, telegram.SendMessageRequest{
 		ChatID:      s.chatID,
 		Text:        text,

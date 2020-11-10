@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/api/trace"
 	"go.opentelemetry.io/otel/label"
 
@@ -90,23 +91,8 @@ func (s *Server) handleCallbackQuery(ctx context.Context, cbq *telegram.Callback
 		tagName := cbq.Data[9:]
 		span.SetAttributes(label.String("tag.name", tagName))
 
-		tripID, err := s.q.GetTripForMessage(ctx, int64(cbq.Message.MessageID))
+		tripID, err := s.getCallbackQueryTrip(ctx, cbq)
 		if err != nil {
-			span.RecordError(ctx, err)
-			var text string
-			if errors.Is(err, sql.ErrNoRows) {
-				text = "Sorry, I couldn't find the trip that goes with that message."
-			} else {
-				text = fmt.Sprintf("Sorry, something unexpected happened: %s", err)
-			}
-
-			if err := s.t.AnswerCallbackQuery(ctx, telegram.AnswerCallbackQueryRequest{
-				CallbackQueryID: cbq.ID,
-				Text:            text,
-			}); err != nil {
-				return err
-			}
-
 			return err
 		}
 
@@ -126,7 +112,38 @@ func (s *Server) handleCallbackQuery(ctx context.Context, cbq *telegram.Callback
 		}); err != nil {
 			return spanerr.RecordError(ctx, err)
 		}
+
+		text, replyMarkup, err := s.buildTripMessage(ctx, tripID)
+		if err != nil {
+			return spanerr.RecordError(ctx, err)
+		}
+
+		if _, err := s.t.EditMessageText(ctx, telegram.EditMessageTextRequest{
+			ChatID:      s.chatID,
+			MessageID:   cbq.Message.MessageID,
+			ParseMode:   telegram.MarkdownV2Mode,
+			Text:        text,
+			ReplyMarkup: replyMarkup,
+		}); err != nil {
+			return spanerr.RecordError(ctx, err)
+		}
 		return nil
+	} else if cbq.Data == "IGNORE" {
+		tripID, err := s.getCallbackQueryTrip(ctx, cbq)
+		if err != nil {
+			return err
+		}
+
+		_, err = s.trips.IgnoreTrip(ctx, &tripspb.IgnoreTripRequest{
+			Id: tripID.String(),
+		})
+
+		if err := s.t.AnswerCallbackQuery(ctx, telegram.AnswerCallbackQueryRequest{
+			CallbackQueryID: cbq.ID,
+			Text:            "Done! I've ignored that trip.",
+		}); err != nil {
+			return spanerr.RecordError(ctx, err)
+		}
 	}
 
 	if err := s.t.AnswerCallbackQuery(ctx, telegram.AnswerCallbackQueryRequest{
@@ -136,6 +153,32 @@ func (s *Server) handleCallbackQuery(ctx context.Context, cbq *telegram.Callback
 		return spanerr.RecordError(ctx, err)
 	}
 	return nil
+}
+
+func (s *Server) getCallbackQueryTrip(ctx context.Context, cbq *telegram.CallbackQuery) (uuid.UUID, error) {
+	span := trace.SpanFromContext(ctx)
+
+	tripID, err := s.q.GetTripForMessage(ctx, int64(cbq.Message.MessageID))
+	if err != nil {
+		span.RecordError(ctx, err)
+		var text string
+		if errors.Is(err, sql.ErrNoRows) {
+			text = "Sorry, I couldn't find the trip that goes with that message."
+		} else {
+			text = fmt.Sprintf("Sorry, something unexpected happened: %s", err)
+		}
+
+		if err := s.t.AnswerCallbackQuery(ctx, telegram.AnswerCallbackQueryRequest{
+			CallbackQueryID: cbq.ID,
+			Text:            text,
+		}); err != nil {
+			return uuid.UUID{}, err
+		}
+
+		return uuid.UUID{}, err
+	}
+
+	return tripID, nil
 }
 
 func (s *Server) handleIgnoreCommand(ctx context.Context, msg *telegram.Message) error {
