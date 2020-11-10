@@ -9,6 +9,18 @@ groups:
 #        annotations:
 #          summary: A device is away from home
 
+      - alert: CanaryMissing
+        expr: presence_canary_missing > 0.5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: A canary device cannot be found
+          description: >
+            Canary devices should always be present, so this probably means that Bluetooth on the Raspberry Pi
+            is in a bad state. You should probably reboot it. Other devices are not being checked while the canary is
+            missing.
+
       - alert: LongTrip
         expr: presence:trip_duration_seconds:current > 14400 # 4 hours
         labels:
