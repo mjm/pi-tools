@@ -1,3 +1,4 @@
+---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -6,3 +7,12 @@ provisioner: fuseim.pri/ifs
 parameters:
   archiveOnDelete: "true"
   pathPattern: "${.PVC.namespace}/${.PVC.annotations.nfs.io/storage-path}"
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: managed-nfs-storage-by-name
+provisioner: fuseim.pri/ifs
+parameters:
+  archiveOnDelete: "true"
+  pathPattern: "${.PVC.namespace}/${.PVC.name}"

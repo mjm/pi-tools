@@ -29,7 +29,7 @@ spec:
             - name: secrets
               mountPath: /var/secrets
               readOnly: true
-            - name: postgresql-data
+            - name: postgresql-data-nfs
               mountPath: /var/lib/postgresql/data
       volumes:
         - name: secrets
@@ -37,8 +37,9 @@ spec:
             secretName: postgresql
   volumeClaimTemplates:
     - metadata:
-        name: postgresql-data
+        name: postgresql-data-nfs
       spec:
+        storageClassName: managed-nfs-storage-by-name
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
