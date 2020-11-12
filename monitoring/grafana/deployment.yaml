@@ -56,4 +56,4 @@ spec:
       volumes:
         - name: grafana-data
           persistentVolumeClaim:
-            claimName: grafana-data
+            claimName: grafana-data-nfs
