@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: storage
+  name: nfs-client-provisioner
+  labels:
+    app: nfs-client-provisioner
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nfs-client-provisioner
+  template:
+    metadata:
+      labels:
+        app: nfs-client-provisioner
+    spec:
+      containers:
+        - name: nfs-client-provisioner
+          image: index.docker.io/mmoriarity/nfs-client-provisioner:latest
+          command:
+            - /nfs-subdir-external-provisioner
+          volumeMounts:
+            - name: nfs-client-root
+              mountPath: /persistentvolumes
+          env:
+            - name: PROVISIONER_NAME
+              value: fuseim.pri/ifs
+            - name: NFS_SERVER
+              value: 10.0.0.2
+            - name: NFS_PATH
+              value: /srv/nfs/kubernetes
+      volumes:
+        - name: nfs-client-root
+          nfs:
+            server: 10.0.0.2
+            path: /srv/nfs/kubernetes

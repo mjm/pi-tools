@@ -21,6 +21,7 @@ k8s_objects(
         "//monitoring/promtail:k8s",
         "//pi-hole:k8s",
         "//security/cert-manager:k8s",
+        "//storage/nfs/cmd/nfs-subdir-external-provisioner:k8s",
         "//storage/postgresql:k8s",
     ],
     tags = ["manual"],
