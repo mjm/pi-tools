@@ -31,8 +31,22 @@ k8s_objects(
 )
 
 k8s_object(
-    name = "k8s",
+    name = "k8s_jaeger",
     kind = "jaeger",
     template = "jaeger.yaml",
+)
+
+k8s_object(
+    name = "k8s_redirect",
+    template = "redirect.yaml",
+)
+
+k8s_objects(
+    name = "k8s",
+    objects = [
+        ":k8s_jaeger",
+        ":k8s_redirect",
+    ],
+    tags = ["manual"],
     visibility = ["//visibility:public"],
 )
