@@ -49,6 +49,7 @@ k8s_objects(
     objects = [
         ":k8s_deploy",
         ":k8s_storage",
+        ":k8s_dashboards",
         ":k8s_service",
         ":k8s_ingress",
     ],
