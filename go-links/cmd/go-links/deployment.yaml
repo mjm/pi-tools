@@ -50,3 +50,4 @@ spec:
           ports:
             - name: http
               containerPort: 4240
+              protocol: TCP

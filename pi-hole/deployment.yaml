@@ -28,9 +28,11 @@ spec:
             - name: http
               containerPort: 1080
               hostPort: 1080
+              protocol: TCP
             - name: dns
               containerPort: 53
               hostPort: 53
+              protocol: TCP
           env:
             - name: ADMIN_EMAIL
               value: matt@mattmoriarity.com

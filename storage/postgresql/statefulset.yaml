@@ -22,6 +22,7 @@ spec:
           ports:
             - name: postgresql
               containerPort: 5432
+              protocol: TCP
           env:
             - name: POSTGRES_PASSWORD_FILE
               value: /var/secrets/pg-password

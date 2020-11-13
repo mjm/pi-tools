@@ -54,5 +54,7 @@ spec:
           ports:
             - name: http
               containerPort: 6360
+              protocol: TCP
             - name: grpc
               containerPort: 6361
+              protocol: TCP

@@ -27,8 +27,10 @@ spec:
           ports:
             - containerPort: 8383
               name: http-metrics
+              protocol: TCP
             - containerPort: 8686
               name: cr-metrics
+              protocol: TCP
           args: ["start"]
           env:
             - name: WATCH_NAMESPACE

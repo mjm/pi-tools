@@ -9,3 +9,4 @@ spec:
   ports:
     - port: 80
       targetPort: 1080
+      protocol: TCP

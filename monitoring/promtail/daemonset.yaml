@@ -35,6 +35,7 @@ spec:
           ports:
             - name: http
               containerPort: 3101
+              protocol: TCP
           securityContext:
             readOnlyRootFilesystem: true
             runAsUser: 0

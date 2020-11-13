@@ -53,6 +53,8 @@ spec:
             - name: http
               containerPort: 2120
               hostPort: 2120
+              protocol: TCP
             - name: grpc
               containerPort: 2121
               hostPort: 2121
+              protocol: TCP

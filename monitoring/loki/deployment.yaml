@@ -35,6 +35,7 @@ spec:
           ports:
             - containerPort: 3100
               name: http
+              protocol: TCP
           volumeMounts:
             - name: loki-data
               mountPath: /data

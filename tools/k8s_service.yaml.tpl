@@ -12,3 +12,4 @@ spec:
     - name: http
       port: 80
       targetPort: {TARGET_PORT}
+      protocol: TCP

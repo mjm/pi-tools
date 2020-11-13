@@ -21,6 +21,6 @@ cd "$(mktemp -d)" || exit 1
 curl -sL "$archive_url" -u "$creds" -o archive.zip
 unzip archive.zip
 
-/snap/bin/microk8s kubectl apply -f "$file_to_apply.yaml"
+/snap/bin/microk8s kubectl apply --server-side -f "$file_to_apply.yaml"
 
 rm *.yaml archive.zip
