@@ -8,14 +8,26 @@ pkg_tar(
     },
     mode = "0444",
     visibility = ["//monitoring/grafana:__pkg__"],
-    deps = [
-        ":dashboards_pkg",
-    ],
 )
 
-pkg_tar(
-    name = "dashboards_pkg",
+genrule(
+    name = "dashboards_configmap",
     srcs = glob(["dashboards/**/*.json"]),
-    package_dir = "etc/grafana",
-    strip_prefix = ".",
+    outs = ["dashboards_configmap.yaml"],
+    cmd = """
+cat <<EOF >$@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    namespace: monitoring
+    name: provisioned-dashboards
+data:
+EOF
+
+for file in $(SRCS); do
+    serialized=$$(python3 -c 'import json, sys; print(json.dumps(json.dumps(json.loads(sys.stdin.read()))))' < $$file)
+    echo "    $$(basename $$file): $$serialized" >>$@
+done
+""",
+    visibility = ["//monitoring/grafana:__pkg__"],
 )

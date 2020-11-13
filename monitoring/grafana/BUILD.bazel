@@ -22,6 +22,11 @@ k8s_object(
 )
 
 k8s_object(
+    name = "k8s_dashboards",
+    template = "//monitoring/grafana/provisioning:dashboards_configmap",
+)
+
+k8s_object(
     name = "k8s_storage",
     kind = "persistentvolumeclaim",
     template = "storage.yaml",

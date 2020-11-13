@@ -3,7 +3,7 @@ apiVersion: 1
 providers:
   - name: dashboards
     type: file
-    updateIntervalSeconds: 3600
+    updateIntervalSeconds: 600
     options:
       path: /etc/grafana/dashboards
       foldersFromFilesStructure: true
