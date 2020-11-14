@@ -37,6 +37,8 @@ spec:
         - name: alertmanager
           image: index.docker.io/mmoriarity/alertmanager:latest
           args:
+            - --config.file=/etc/alertmanager/alertmanager.yml
+            - --storage.path=/alertmanager
             - --web.external-url=https://alertmanager.homelab/
           resources:
             requests:
