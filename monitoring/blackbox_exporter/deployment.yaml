@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: monitoring
+  name: blackbox-exporter
+  labels:
+    app: blackbox-exporter
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: blackbox-exporter
+  template:
+    metadata:
+      labels:
+        app: blackbox-exporter
+    spec:
+      containers:
+        - name: blackbox-exporter
+          image: index.docker.io/mmoriarity/blackbox-exporter:latest
+          args:
+            - --config.file=/etc/blackbox.yml
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "30M"
+            limits:
+              memory: "50M"
+          ports:
+            - name: http
+              containerPort: 9115
+              protocol: TCP

@@ -1,0 +1,36 @@
+groups:
+  - name: dns_alerts
+    rules:
+      - alert: ExternalDNSFailing
+        expr: probe_success{probe_type="dns",instance!="10.0.0.2"} < 0.5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: External DNS queries are failing
+          description: >
+            One or more external (non-PiHole) DNS servers are unable to look up Google's home page.
+            This might mean your internet is down, though I'm not sure how you're getting this alert
+            in that case.
+
+      - alert: DNSFailingExternalSite
+        expr: (min(probe_success{probe_type="dns",instance!="10.0.0.2"}) > 0.5) and (min(probe_success{probe_type="dns",probe_scope="public",instance="10.0.0.2"}) < 0.5)
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: PiHole DNS queries for external sites are failing
+          description: >
+            The PiHole is unable to look up Google's home page, but external DNS is able to look it up
+            without issue. Something is probably wrong with PiHole's configuration.
+
+      - alert: DNSFailingInternalSite
+        expr: probe_success{probe_type="dns",probe_scope="private"} < 0.5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: PiHole DNS queries for internal sites are failing
+          description: >
+            The PiHole is unable to look up the address for Homebase, or it's not giving the expected
+            Tailscale IP address.

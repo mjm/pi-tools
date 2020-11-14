@@ -97,6 +97,15 @@ container_pull(
 )
 
 container_pull(
+    name = "blackbox_exporter",
+    architecture = "arm64",
+    digest = "sha256:7c3e8d34768f2db17dce800b0b602196871928977f205bbb8ab44e95a8821be5", # v0.18.0
+    os = "linux",
+    registry = "index.docker.io",
+    repository = "prom/blackbox-exporter",
+)
+
+container_pull(
     name = "grafana",
     architecture = "arm64",
     digest = "sha256:f0817ecbf8dcf33e10cca2245bd25439433c441189bbe1ce935ac61d05f9cc6f",  # 7.2.1

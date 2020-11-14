@@ -1,0 +1,46 @@
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
+load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
+load("//tools:k8s.bzl", "k8s_http_service")
+
+pkg_tar(
+    name = "image_contents",
+    files = {
+        "blackbox.yml": "etc/blackbox.yml",
+    },
+    mode = "0666",
+)
+
+container_image(
+    name = "image",
+    base = "@blackbox_exporter//image",
+    tags = ["no-cache"],
+    tars = [
+        ":image_contents",
+    ],
+)
+
+k8s_object(
+    name = "k8s_deploy",
+    images = {
+        "index.docker.io/mmoriarity/blackbox-exporter:latest": ":image",
+    },
+    template = "deployment.yaml",
+)
+
+k8s_http_service(
+    name = "k8s_service",
+    namespace = "monitoring",
+    service_name = "blackbox-exporter",
+)
+
+k8s_objects(
+    name = "k8s",
+    objects = [
+        ":k8s_deploy",
+        ":k8s_service",
+    ],
+    tags = ["manual"],
+    visibility = ["//visibility:public"],
+)
