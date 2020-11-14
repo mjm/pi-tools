@@ -24,6 +24,8 @@ spec:
       containers:
         - name: prometheus
           image: index.docker.io/mmoriarity/prometheus:latest
+          args:
+            - --web.external-url=https://prometheus.homelab/
           resources:
             requests:
               cpu: "200m"

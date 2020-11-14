@@ -36,6 +36,8 @@ spec:
       containers:
         - name: alertmanager
           image: index.docker.io/mmoriarity/alertmanager:latest
+          args:
+            - --web.external-url=https://alertmanager.homelab/
           resources:
             requests:
               cpu: "50m"
