@@ -20,6 +20,7 @@ spec:
         app: detect-presence
       annotations:
         prometheus.io/scrape: "true"
+        prometheus.io/port: "2120"
     spec:
       # this is what lets us talk to the bluetooth device
       hostNetwork: true

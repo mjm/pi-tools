@@ -20,6 +20,7 @@ spec:
         app: homebase-bot
       annotations:
         prometheus.io/scrape: "true"
+        prometheus.io/port: "6360"
     spec:
       containers:
         - name: homebase-bot-srv
