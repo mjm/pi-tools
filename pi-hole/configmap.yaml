@@ -5,7 +5,9 @@ metadata:
   name: ingress-controller-config
 data:
   dns-template.tpl: |
-    {{ .Node.IP }} {{ .Node.Name }}
+    {{ range .Nodes -}}
+    {{ .IP }} {{ .Name }}
+    {{ end -}}
     {{ range .Ingresses -}}
     {{ $.Node.IP }} {{ .Hostname }}
-    {{ end }}
+    {{ end -}}

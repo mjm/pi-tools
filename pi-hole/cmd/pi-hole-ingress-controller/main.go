@@ -11,11 +11,10 @@ import (
 	"text/template"
 	"time"
 
+	v1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/client-go/kubernetes"
-	v1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 )
@@ -47,9 +46,7 @@ func main() {
 	updateDebouncer := &debouncer{
 		after: 3 * time.Second,
 	}
-
-	watchlist := cache.NewListWatchFromClient(clientset.NetworkingV1().RESTClient(), "ingresses", "", fields.Everything())
-	store, controller := cache.NewInformer(watchlist, &networkingv1.Ingress{}, 0, cache.ResourceEventHandlerFuncs{
+	handlers := cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			updateDebouncer.tick()
 		},
@@ -59,47 +56,70 @@ func main() {
 		UpdateFunc: func(oldObj, newObj interface{}) {
 			updateDebouncer.tick()
 		},
-	})
+	}
 
-	ctx := context.Background()
+	watchIngresses := cache.NewListWatchFromClient(clientset.NetworkingV1().RESTClient(), "ingresses", "", fields.Everything())
+	ingressStore, ingressController := cache.NewInformer(watchIngresses, &networkingv1.Ingress{}, 0, handlers)
+
+	watchNodes := cache.NewListWatchFromClient(clientset.CoreV1().RESTClient(), "nodes", "", fields.Everything())
+	nodeStore, nodeController := cache.NewInformer(watchNodes, &v1.Node{}, 0, handlers)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	updateDebouncer.f = func() {
-		updateDNSRecords(ctx, clientset.CoreV1(), store)
+		updateDNSRecords(ingressStore, nodeStore)
 	}
 
-	stop := make(chan struct{})
-	defer close(stop)
-	go controller.Run(stop)
-	for {
-		time.Sleep(time.Second)
-	}
+	go ingressController.Run(ctx.Done())
+	go nodeController.Run(ctx.Done())
+	select {}
 }
 
 type TemplateInput struct {
-	Node struct {
-		Name string
-		IP   string
-	}
+	Node      Node
+	Nodes     []Node
 	Ingresses []Ingress
+}
+
+type Node struct {
+	Name string
+	IP   string
 }
 
 type Ingress struct {
 	Hostname string
 }
 
-func updateDNSRecords(ctx context.Context, v1client v1.CoreV1Interface, store cache.Store) {
-	node, err := v1client.Nodes().Get(ctx, *nodeName, metav1.GetOptions{})
+func updateDNSRecords(ingressStore cache.Store, nodeStore cache.Store) {
+	nodeObj, exists, err := nodeStore.GetByKey(*nodeName)
 	if err != nil {
-		log.Panicf("Could not load node details: %v", err)
+		log.Panicf("Could not lookup node in node cache: %v", err)
+		return
 	}
+	if !exists {
+		log.Printf("Node not found with key %q. Node keys available: %v", *nodeName, nodeStore.ListKeys())
+		return
+	}
+	node := nodeObj.(*v1.Node)
 
-	records := store.List()
-	log.Printf("Updating custom DNS records, found %d ingresses", len(records))
+	ingresses := ingressStore.List()
+	nodes := nodeStore.List()
+	log.Printf("Updating custom DNS records, found %d ingresses, %d nodes", len(ingresses), len(nodes))
 
 	var input TemplateInput
 	input.Node.Name = node.GetName()
 	input.Node.IP = node.GetAnnotations()["tailscale.com/ip"]
 
-	for _, record := range records {
+	for _, record := range nodes {
+		n := record.(*v1.Node)
+		input.Nodes = append(input.Nodes, Node{
+			Name: n.GetName(),
+			IP:   n.GetAnnotations()["tailscale.com/ip"],
+		})
+	}
+
+	for _, record := range ingresses {
 		ingress := record.(*networkingv1.Ingress)
 		for _, rule := range ingress.Spec.Rules {
 			if rule.Host != "" && !strings.Contains(rule.Host, "*.") {
