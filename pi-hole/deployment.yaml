@@ -10,7 +10,7 @@ spec:
   strategy:
     rollingUpdate:
       maxUnavailable: 1
-      maxSurge: 1
+      maxSurge: 0
   selector:
     matchLabels:
       app: pi-hole
@@ -66,8 +66,8 @@ spec:
           image: index.docker.io/mmoriarity/pi-hole-ingress-controller:latest
           command:
             - /pi-hole-ingress-controller
-            - "-ip=100.111.80.85"
-            - "-extra-hostnames=$(NODE_NAME)"
+            - -node-name
+            - $(NODE_NAME)
           env:
             - name: NODE_NAME
               valueFrom:
@@ -80,7 +80,12 @@ spec:
             - name: pi-hole-data
               mountPath: /etc/dnsmasq.d
               subPath: dnsmasq.d
+            - name: ingress-controller-config
+              mountPath: /cfg
       volumes:
         - name: pi-hole-data
           persistentVolumeClaim:
             claimName: pi-hole-data-nfs
+        - name: ingress-controller-config
+          configMap:
+            name: ingress-controller-config

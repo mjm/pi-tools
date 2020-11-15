@@ -1,28 +1,42 @@
 package main
 
 import (
+	"context"
 	"flag"
-	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
+	"text/template"
 	"time"
 
 	networkingv1 "k8s.io/api/networking/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/client-go/kubernetes"
+	v1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 )
 
 var (
-	ip             = flag.String("ip", "", "IP address to use for generated A records")
-	extraHostnames = flag.String("extra-hostnames", "", "Comma-separated list of additional hostnames to include in the DNS records")
+	nodeName = flag.String("node-name", "",
+		"Name of the Kubernetes node the controller is running on")
+	dnsTemplatePath = flag.String("dns-template-path", "/cfg/dns-template.tpl",
+		"The template to use to generate the custom DNS records file")
+)
+
+var (
+	dnsTemplate     *template.Template
+	dnsTemplateName string
 )
 
 func main() {
 	flag.Parse()
+
+	dnsTemplate = template.Must(template.ParseFiles(*dnsTemplatePath))
+	dnsTemplateName = filepath.Base(*dnsTemplatePath)
 
 	cfg, err := rest.InClusterConfig()
 	if err != nil {
@@ -47,8 +61,9 @@ func main() {
 		},
 	})
 
+	ctx := context.Background()
 	updateDebouncer.f = func() {
-		updateDNSRecords(store)
+		updateDNSRecords(ctx, clientset.CoreV1(), store)
 	}
 
 	stop := make(chan struct{})
@@ -59,32 +74,51 @@ func main() {
 	}
 }
 
-func updateDNSRecords(store cache.Store) {
+type TemplateInput struct {
+	Node struct {
+		Name string
+		IP   string
+	}
+	Ingresses []Ingress
+}
+
+type Ingress struct {
+	Hostname string
+}
+
+func updateDNSRecords(ctx context.Context, v1client v1.CoreV1Interface, store cache.Store) {
+	node, err := v1client.Nodes().Get(ctx, *nodeName, metav1.GetOptions{})
+	if err != nil {
+		log.Panicf("Could not load node details: %v", err)
+	}
+
 	records := store.List()
 	log.Printf("Updating custom DNS records, found %d ingresses", len(records))
 
-	var dnsEntries []string
-
-	if len(*extraHostnames) > 0 {
-		for _, host := range strings.Split(*extraHostnames, ",") {
-			dnsEntries = append(dnsEntries, fmt.Sprintf("%s %s", *ip, host))
-		}
-	}
+	var input TemplateInput
+	input.Node.Name = node.GetName()
+	input.Node.IP = node.GetAnnotations()["tailscale.com/ip"]
 
 	for _, record := range records {
 		ingress := record.(*networkingv1.Ingress)
 		for _, rule := range ingress.Spec.Rules {
 			if rule.Host != "" && !strings.Contains(rule.Host, "*.") {
-				dnsEntries = append(dnsEntries, fmt.Sprintf("%s %s", *ip, rule.Host))
+				input.Ingresses = append(input.Ingresses, Ingress{Hostname: rule.Host})
 			}
 		}
 	}
 
-	log.Printf("Produced %d DNS records", len(dnsEntries))
+	log.Printf("Produced %d DNS records from ingress rules", len(input.Ingresses))
 
-	allEntriesStr := strings.Join(dnsEntries, "\n") + "\n"
-	if err := ioutil.WriteFile("/etc/pihole/custom.list", []byte(allEntriesStr), 0666); err != nil {
-		log.Printf("Error writing new DNS entries: %v", err)
+	f, err := os.OpenFile("/etc/pihole/custom.list", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
+	if err != nil {
+		log.Printf("Error opening custom DNS entries file: %v", err)
+		return
+	}
+	defer f.Close()
+
+	if err := dnsTemplate.ExecuteTemplate(f, dnsTemplateName, input); err != nil {
+		log.Printf("Error writing custom DNS entries: %v", err)
 		return
 	}
 

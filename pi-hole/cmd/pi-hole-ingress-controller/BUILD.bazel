@@ -11,8 +11,10 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "@io_k8s_api//networking/v1:networking",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
         "@io_k8s_apimachinery//pkg/fields",
         "@io_k8s_client_go//kubernetes",
+        "@io_k8s_client_go//kubernetes/typed/core/v1:core",
         "@io_k8s_client_go//rest",
         "@io_k8s_client_go//tools/cache",
     ],
