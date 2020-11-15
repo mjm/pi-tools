@@ -6,10 +6,10 @@ metadata:
   labels:
     app: homebase-bot
 spec:
-  replicas: 1
+  replicas: 2
   strategy:
     rollingUpdate:
-      maxUnavailable: 1
+      maxUnavailable: 0
       maxSurge: 1
   selector:
     matchLabels:
@@ -31,6 +31,10 @@ spec:
             - dbname=homebase_bot user=homebase_bot host=postgresql.storage sslmode=disable
             - "-trips-url"
             - detect-presence-srv-grpc.detect-presence:80
+            - -namespace
+            - $(POD_NAMESPACE)
+            - -instance-id
+            - $(POD_NAME)
           env:
             - name: TELEGRAM_TOKEN
               valueFrom:
@@ -46,6 +50,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           resources:
             requests:
               cpu: "50m"

@@ -36,10 +36,10 @@ container_image(
 
 k8s_object(
     name = "k8s_deploy",
-    template = "deployment.yaml",
     images = {
         "index.docker.io/mmoriarity/nfs-client-provisioner:latest": ":image",
     },
+    template = "deployment.yaml",
 )
 
 k8s_object(

@@ -6,9 +6,15 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"google.golang.org/grpc"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/leaderelection"
+	"k8s.io/client-go/tools/leaderelection/resourcelock"
 
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
 	"github.com/mjm/pi-tools/homebase/bot/database/migrate"
@@ -22,8 +28,10 @@ import (
 )
 
 var (
-	tripsURL = flag.String("trips-url", "localhost:2121", "URL for trips service to lookup and update trip information")
-	chatID   = flag.Int("chat-id", 223272201, "Chat ID to send messages to")
+	tripsURL   = flag.String("trips-url", "localhost:2121", "URL for trips service to lookup and update trip information")
+	chatID     = flag.Int("chat-id", 223272201, "Chat ID to send messages to")
+	namespace  = flag.String("namespace", "", "Kubernetes namespace to use for leader election")
+	instanceID = flag.String("instance-id", "", "Name of this instance of the service to use for leader election")
 )
 
 func main() {
@@ -54,14 +62,64 @@ func main() {
 
 	messagesService := messagesservice.New(db, t, trips, *chatID)
 
-	if err := messagesService.RegisterCommands(context.Background()); err != nil {
-		log.Panicf("Error registering bot commands: %v", err)
-	}
-
-	watchCtx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go messagesService.WatchUpdates(watchCtx)
+	if *instanceID == "" {
+		if err := messagesService.RegisterCommands(ctx); err != nil {
+			log.Panicf("Error registering bot commands: %v", err)
+		}
+
+		go messagesService.WatchUpdates(ctx)
+	} else {
+		cfg, err := rest.InClusterConfig()
+		if err != nil {
+			log.Panicf("Error creating in-cluster Kubernetes config: %v", err)
+		}
+		clientset := kubernetes.NewForConfigOrDie(cfg)
+		lock := &resourcelock.LeaseLock{
+			LeaseMeta: metav1.ObjectMeta{
+				Namespace: *namespace,
+				Name:      "homebase-bot-srv-leader",
+			},
+			Client: clientset.CoordinationV1(),
+			LockConfig: resourcelock.ResourceLockConfig{
+				Identity: *instanceID,
+			},
+		}
+
+		var cancelWatch func()
+		leaderelection.RunOrDie(ctx, leaderelection.LeaderElectionConfig{
+			Lock:            lock,
+			ReleaseOnCancel: true,
+			LeaseDuration:   15 * time.Second,
+			RenewDeadline:   10 * time.Second,
+			RetryPeriod:     2 * time.Second,
+			Callbacks: leaderelection.LeaderCallbacks{
+				OnStartedLeading: func(ctx context.Context) {
+					log.Printf("Started leading")
+					if err := messagesService.RegisterCommands(ctx); err != nil {
+						log.Printf("Error registering bot commands: %v", err)
+					}
+
+					var watchCtx context.Context
+					watchCtx, cancelWatch = context.WithCancel(ctx)
+
+					messagesService.WatchUpdates(watchCtx)
+				},
+				OnStoppedLeading: func() {
+					log.Printf("Stopped leading")
+					cancelWatch()
+				},
+				OnNewLeader: func(identity string) {
+					if identity == *instanceID {
+						return
+					}
+					log.Printf("New leader: %s", identity)
+				},
+			},
+		})
+	}
 
 	go rpc.ListenAndServe(rpc.WithRegisteredServices(func(s *grpc.Server) {
 		messagespb.RegisterMessagesServiceServer(s, messagesService)
