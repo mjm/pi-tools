@@ -24,6 +24,7 @@ spec:
     spec:
       # this is what lets us talk to the bluetooth device
       hostNetwork: true
+      nodeName: raspberrypi
       dnsPolicy: ClusterFirstWithHostNet
       containers:
         - name: detect-presence-srv

@@ -19,6 +19,7 @@ spec:
       labels:
         app: pi-hole
     spec:
+      nodeName: raspberrypi
       hostNetwork: true
       shareProcessNamespace: true
       containers:
