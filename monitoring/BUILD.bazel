@@ -9,6 +9,7 @@ k8s_objects(
         "//monitoring/loki:k8s",
         "//monitoring/jaeger:k8s_operator",
         "//monitoring/jaeger:k8s",
+        "//monitoring/kubernetes-dashboard:k8s",
         "//monitoring/node_exporter:k8s",
         "//monitoring/prometheus:k8s",
         "//monitoring/promtail:k8s",
