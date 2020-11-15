@@ -89,7 +89,7 @@ func main() {
 		}
 
 		var cancelWatch func()
-		leaderelection.RunOrDie(ctx, leaderelection.LeaderElectionConfig{
+		go leaderelection.RunOrDie(ctx, leaderelection.LeaderElectionConfig{
 			Lock:            lock,
 			ReleaseOnCancel: true,
 			LeaseDuration:   15 * time.Second,
