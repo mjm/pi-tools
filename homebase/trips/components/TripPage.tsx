@@ -8,6 +8,7 @@ import {Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb
 import {GET_TRIP} from "com_github_mjm_pi_tools/homebase/trips/lib/fetch";
 import {ignoreTrip} from "com_github_mjm_pi_tools/homebase/trips/lib/mutate";
 import {TripTagField} from "com_github_mjm_pi_tools/homebase/trips/components/TripTagField";
+import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
 
 export function TripPage() {
     const {id} = useParams<{ id: string }>();
@@ -37,7 +38,9 @@ export function TripPage() {
                     </div>
                 </div>
                 {error && (
-                    <div>{error.toString()}</div>
+                    <Alert severity="error" rounded={false} title="Couldn't load this trip">
+                        {error.toString()}
+                    </Alert>
                 )}
                 {data && (
                     <div>

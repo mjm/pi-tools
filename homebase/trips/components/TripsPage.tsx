@@ -6,6 +6,7 @@ import {Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb
 import {TripRow} from "com_github_mjm_pi_tools/homebase/trips/components/TripRow";
 import {PageHeader} from "com_github_mjm_pi_tools/homebase/components/PageHeader";
 import {TagFilters} from "com_github_mjm_pi_tools/homebase/trips/components/TagFilters";
+import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
 
 export function TripsPage() {
     const {data, error} = useSWR<Trip[]>(LIST_TRIPS);
@@ -25,7 +26,9 @@ export function TripsPage() {
             </PageHeader>
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 {error && (
-                    <p>Error loading trips: {error.toString()}</p>
+                    <Alert severity="error" title="Couldn't load your trips">
+                        {error.toString()}
+                    </Alert>
                 )}
                 {data && (
                     <div className="flex flex-col">

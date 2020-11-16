@@ -1,14 +1,16 @@
 import React from "react";
 import {Field, Form, Formik, FormikHelpers} from "formik";
 import {createLink, CreateLinkParams} from "com_github_mjm_pi_tools/homebase/go-links/lib/mutate";
+import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
 
 export function NewLinkCard() {
     async function onSubmit(values: CreateLinkParams, actions: FormikHelpers<CreateLinkParams>) {
+        actions.setStatus(null);
         try {
             await createLink(values);
             actions.resetForm();
         } catch (err) {
-            actions.setStatus({error: err})
+            actions.setStatus({error: err});
         }
     }
 
@@ -21,13 +23,18 @@ export function NewLinkCard() {
                     description: "",
                 }}
                 onSubmit={onSubmit}
-            >{({isSubmitting}) => (
+            >{({status, isSubmitting}) => (
                 <Form>
                     <div className="px-4 py-5 sm:px-6">
                         <h3 className="text-lg leading-6 font-medium text-gray-900">
                             Add a new link
                         </h3>
                     </div>
+                    {status && status.error && (
+                        <Alert title="Couldn't create new link" severity="error" rounded={false}>
+                            {status.error.toString()}
+                        </Alert>
+                    )}
                     <div className="bg-gray-50 px-4 py-5 sm:p-6">
                         <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                             <div className="sm:col-span-4">

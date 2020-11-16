@@ -3,11 +3,13 @@ import {Link} from "com_github_mjm_pi_tools/go-links/proto/links/links_pb";
 import {Field, Form, Formik, FormikHelpers} from "formik";
 import {updateLink, UpdateLinkParams} from "com_github_mjm_pi_tools/homebase/go-links/lib/mutate";
 import {useHistory} from "react-router-dom";
+import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
 
 export function EditLinkForm({link}: { link: Link }) {
     const history = useHistory();
 
     async function onSubmit(values: UpdateLinkParams, actions: FormikHelpers<UpdateLinkParams>) {
+        actions.setStatus(null);
         try {
             await updateLink(values);
             history.push("/go");
@@ -25,8 +27,13 @@ export function EditLinkForm({link}: { link: Link }) {
                 description: link.getDescription(),
             }}
             onSubmit={onSubmit}
-        >{({isSubmitting}) => (
+        >{({status, isSubmitting}) => (
             <Form>
+                {status && status.error && (
+                    <Alert title="Couldn't save link changes" severity="error" rounded={false}>
+                        {status.error.toString()}
+                    </Alert>
+                )}
                 <div className="bg-gray-50 px-4 py-5 sm:p-6">
                     <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                         <div className="sm:col-span-4">

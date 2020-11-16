@@ -5,6 +5,7 @@ import {Link} from "com_github_mjm_pi_tools/go-links/proto/links/links_pb";
 import {GET_LINK} from "com_github_mjm_pi_tools/homebase/go-links/lib/fetch";
 import {Helmet} from "react-helmet";
 import {EditLinkForm} from "com_github_mjm_pi_tools/homebase/go-links/components/EditLinkForm";
+import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
 
 export function GoLinkDetailPage() {
     const {id} = useParams<{ id: string }>();
@@ -33,7 +34,9 @@ export function GoLinkDetailPage() {
                     </div>
                 </div>
                 {error && (
-                    <div>{error.toString()}</div>
+                    <Alert title="Couldn't load link details" severity="error" rounded={false}>
+                        {error.toString()}
+                    </Alert>
                 )}
                 {data && (
                     <EditLinkForm link={data}/>
