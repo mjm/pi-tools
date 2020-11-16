@@ -88,7 +88,7 @@ spec:
                   mountPath: /grafana-data
           containers:
             - name: tarsnap
-              image: index.docker.io/mmoriarity/tarsnap@sha256:2530922477aebcaf2320d1f2f761dcc681e6615d8bc732c86346290c29c05a5f
+              image: index.docker.io/mmoriarity/tarsnap@sha256:4deeb35783541c160a09cb7a58489a7bf57bb456f4efab83e0cbd663a60bbf50
               command:
                 - tarsnap
                 - -c
