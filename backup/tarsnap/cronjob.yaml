@@ -84,8 +84,23 @@ spec:
               volumeMounts:
                 - name: backup
                   mountPath: /backup
-                - name: grafana-data
+                - name: nfs-data
                   mountPath: /grafana-data
+                  subPath: monitoring/grafana-data
+            - name: prepare-prometheus
+              image: index.docker.io/mmoriarity/prometheus-backup:latest
+              command:
+                - /prometheus-backup
+                - -prometheus-url
+                - http://prometheus.monitoring
+                - -prometheus-data-path
+                - /prometheus-data
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                - name: nfs-data
+                  mountPath: /prometheus-data
+                  subPath: monitoring/prometheus-data
           containers:
             - name: tarsnap
               image: index.docker.io/mmoriarity/tarsnap@sha256:4deeb35783541c160a09cb7a58489a7bf57bb456f4efab83e0cbd663a60bbf50
@@ -123,9 +138,9 @@ spec:
             - name: tarsnap-cache
               hostPath:
                 path: /var/lib/tarsnap/cache
-            - name: grafana-data
+            - name: nfs-data
               hostPath:
-                path: /srv/nfs/kubernetes/monitoring/grafana-data
+                path: /srv/nfs/kubernetes
             - name: postgresql-secrets
               secret:
                 secretName: postgresql

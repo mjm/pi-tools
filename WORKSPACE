@@ -79,6 +79,15 @@ container_pull(
 )
 
 container_pull(
+    name = "rsync",
+    architecture = "arm64",
+    digest = "sha256:0bde8d3a682256c105ad2345bfa0e55e9c457225f4866b3cfaf6f4259c0c89d9",
+    os = "linux",
+    registry = "index.docker.io",
+    repository = "mmoriarity/rsync",
+)
+
+container_pull(
     name = "prometheus",
     architecture = "arm64",
     digest = "sha256:9fa25ec244e0109fdbeaff89496ac149c0539489f2f2126b9e38cf9837235be4",
