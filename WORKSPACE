@@ -88,6 +88,15 @@ container_pull(
 )
 
 container_pull(
+    name = "kubectl",
+    architecture = "arm64",
+    digest = "sha256:508d34eaafc48dda8b372aa44ce598104899f065603261ade3abcd7f4234b43a",
+    os = "linux",
+    registry = "index.docker.io",
+    repository = "jitesoft/kubectl",
+)
+
+container_pull(
     name = "prometheus",
     architecture = "arm64",
     digest = "sha256:9fa25ec244e0109fdbeaff89496ac149c0539489f2f2126b9e38cf9837235be4",

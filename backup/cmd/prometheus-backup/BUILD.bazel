@@ -18,7 +18,7 @@ container_image(
     name = "image",
     base = "@rsync//image",
     files = [
-        ":prometheus-backup"
+        ":prometheus-backup",
     ],
     mode = "0755",
     tags = ["no-cache"],

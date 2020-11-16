@@ -1,0 +1,26 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  namespace: deploy
+  name: autodeploy
+spec:
+  concurrencyPolicy: Forbid
+  schedule: "*/15 * * * *"
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 3600
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: autodeploy
+              image: index.docker.io/mmoriarity/autodeployer:latest
+              command:
+                - /autodeployer
+              volumeMounts:
+                - name: deploy-secrets
+                  mountPath: /var/secrets
+          volumes:
+            - name: deploy-secrets
+              secret:
+                secretName: deploy
