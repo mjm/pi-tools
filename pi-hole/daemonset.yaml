@@ -1,16 +1,11 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   namespace: pi-hole
   name: pi-hole
   labels:
     app: pi-hole
 spec:
-  replicas: 1
-  strategy:
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 0
   selector:
     matchLabels:
       app: pi-hole
@@ -19,7 +14,6 @@ spec:
       labels:
         app: pi-hole
     spec:
-      nodeName: raspberrypi
       hostNetwork: true
       shareProcessNamespace: true
       containers:
@@ -84,8 +78,8 @@ spec:
               mountPath: /cfg
       volumes:
         - name: pi-hole-data
-          persistentVolumeClaim:
-            claimName: pi-hole-data-nfs
+          hostPath:
+            path: /var/lib/pihole
         - name: ingress-controller-config
           configMap:
             name: ingress-controller-config
