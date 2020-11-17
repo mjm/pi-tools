@@ -70,7 +70,7 @@ func TestServer_IgnoreTrip(t *testing.T) {
 		assert.Equal(t, &tripspb.IgnoreTripResponse{}, res)
 
 		// check that the trip was actually ignored by listing trips and it not being included
-		trips, err := q.ListTrips(ctx)
+		trips, err := q.ListTrips(ctx, 30)
 		assert.NoError(t, err)
 		assert.Empty(t, trips)
 	})

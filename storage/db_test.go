@@ -18,7 +18,7 @@ func ExampleMustOpenDB() {
 	q := database.New(db)
 
 	ctx := context.Background()
-	trips, err := q.ListTrips(ctx)
+	trips, err := q.ListTrips(ctx, 30)
 	if err != nil {
 		log.Fatal(err)
 	}

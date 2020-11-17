@@ -168,7 +168,7 @@ func TestTracker_OnLeave(t *testing.T) {
 		assert.Equal(t, trip, *tt.currentTrip)
 		assert.Equal(t, leftAt, tt.lastLeft.UTC())
 
-		trips, err := q.ListTrips(ctx)
+		trips, err := q.ListTrips(ctx, 30)
 		assert.NoError(t, err)
 		assert.Len(t, trips, 1)
 	})
