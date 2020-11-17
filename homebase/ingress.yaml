@@ -1,0 +1,71 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: homebase
+  name: homebase
+  annotations:
+    nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.auth.svc.cluster.local/oauth2/auth"
+    nginx.ingress.kubernetes.io/auth-response-headers: "X-Auth-Request-User,X-Auth-Request-Email"
+    nginx.ingress.kubernetes.io/auth-signin: "http://homebase.homelab/oauth2/start?rd=$escaped_request_uri"
+    cert-manager.io/cluster-issuer: ca-issuer
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+spec:
+  rules:
+    - host: homebase.homelab
+      http:
+        paths:
+          - path: "/api/v1"
+            pathType: Prefix
+            backend:
+              service:
+                name: prometheus-proxy
+                port:
+                  number: 80
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: homebase-srv
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - homebase.homelab
+      secretName: homebase-cert
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: homebase
+  name: homebase-redirect
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: "http://homebase.homelab/$1"
+    cert-manager.io/cluster-issuer: ca-issuer
+spec:
+  rules:
+    - host: homebase
+      http:
+        paths:
+          - path: "/(.*)"
+            pathType: Prefix
+            backend:
+              service:
+                name: homebase-srv
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - homebase
+      secretName: homebase-redirect-cert
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus-proxy
+  namespace: homebase
+spec:
+  type: ExternalName
+  externalName: prometheus.monitoring.svc.cluster.local
+  ports:
+    - port: 80
+      protocol: TCP

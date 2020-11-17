@@ -8,6 +8,7 @@ ts_library(
     deps = [
         "//detect-presence/proto/trips:trips_ts_proto",
         "//homebase/components",
+        "//homebase/homepage/lib",
         "//homebase/trips/lib",
         "@npm_homebase//:node_modules",
     ],

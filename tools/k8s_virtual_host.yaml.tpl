@@ -8,7 +8,6 @@ metadata:
     nginx.ingress.kubernetes.io/auth-response-headers: "X-Auth-Request-User,X-Auth-Request-Email"
     nginx.ingress.kubernetes.io/auth-signin: "http://homebase.homelab/oauth2/start?rd=$escaped_request_uri"
     cert-manager.io/cluster-issuer: ca-issuer
-    nginx.ingress.kubernetes.io/enable-cors: "true"
 spec:
   rules:
     - host: {NAME}.homelab

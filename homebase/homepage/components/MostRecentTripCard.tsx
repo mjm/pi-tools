@@ -62,7 +62,7 @@ export function MostRecentTripCard() {
                 <div className="text-sm leading-5">
                     <Link to="/trips"
                           className="font-medium text-indigo-600 hover:text-indigo-900 transition ease-in-out duration-150">
-                        View all
+                        View recent trips
                     </Link>
                 </div>
             </div>

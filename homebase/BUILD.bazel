@@ -92,11 +92,9 @@ k8s_http_service(
     service_name = "homebase-srv",
 )
 
-k8s_virtual_host(
+k8s_object(
     name = "k8s_ingress",
-    host_name = "homebase",
-    namespace = "homebase",
-    service_name = "homebase-srv",
+    template = "ingress.yaml",
 )
 
 k8s_objects(
