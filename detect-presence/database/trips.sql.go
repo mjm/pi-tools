@@ -143,7 +143,7 @@ FROM trips
 WHERE ignored_at IS NULL
 GROUP BY id, left_at
 ORDER BY left_at DESC
-LIMIT 30
+LIMIT $1
 `
 
 type ListTripsRow struct {
@@ -153,8 +153,8 @@ type ListTripsRow struct {
 	Tags       []string
 }
 
-func (q *Queries) ListTrips(ctx context.Context) ([]ListTripsRow, error) {
-	rows, err := q.db.QueryContext(ctx, listTrips)
+func (q *Queries) ListTrips(ctx context.Context, limit int32) ([]ListTripsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listTrips, limit)
 	if err != nil {
 		return nil, err
 	}

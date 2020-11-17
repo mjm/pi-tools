@@ -7,6 +7,7 @@ import {
 import {client} from "com_github_mjm_pi_tools/homebase/trips/lib/trips_client";
 
 export const LIST_TRIPS = "ListTrips";
+export const GET_MOST_RECENT_TRIP = "GetMostRecentTrip";
 export const GET_TRIP = "GetTrip";
 export const LIST_TAGS = "ListTags";
 
@@ -15,6 +16,16 @@ const fetchers = {
         const req = new ListTripsRequest();
         const res = await client.listTrips(req);
         return res.getTripsList();
+    },
+    [GET_MOST_RECENT_TRIP]: async (): Promise<Trip | null> => {
+        const req = new ListTripsRequest();
+        req.setLimit(1);
+        const res = await client.listTrips(req);
+        const trips = res.getTripsList();
+        if (trips.length === 0) {
+            return null;
+        }
+        return trips[0];
     },
     [GET_TRIP]: async (id: string): Promise<Trip> => {
         const req = new GetTripRequest();

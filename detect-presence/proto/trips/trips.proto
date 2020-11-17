@@ -11,6 +11,7 @@ service TripsService {
 }
 
 message ListTripsRequest {
+    int32 limit = 1;
 }
 
 message ListTripsResponse {

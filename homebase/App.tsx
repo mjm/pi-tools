@@ -4,6 +4,7 @@ import {Helmet} from "react-helmet";
 import {NavigationBar} from "com_github_mjm_pi_tools/homebase/components/NavigationBar";
 import {TripRoutes} from "com_github_mjm_pi_tools/homebase/trips/components/TripRoutes";
 import {GoLinkRoutes} from "com_github_mjm_pi_tools/homebase/go-links/components/GoLinkRoutes";
+import {HomePage} from "com_github_mjm_pi_tools/homebase/homepage/components/HomePage";
 
 export function App() {
     return (
@@ -17,7 +18,9 @@ export function App() {
                 <NavigationBar/>
 
                 <Switch>
-                    <Redirect exact from="/" to="/trips"/>
+                    <Route exact path="/">
+                        <HomePage />
+                    </Route>
                     <Route path="/trips">
                         <TripRoutes/>
                     </Route>

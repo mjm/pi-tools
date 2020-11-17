@@ -5,7 +5,7 @@ FROM trips
 WHERE ignored_at IS NULL
 GROUP BY id, left_at
 ORDER BY left_at DESC
-LIMIT 30;
+LIMIT $1;
 
 -- name: GetTrip :one
 SELECT id, left_at, returned_at, array_remove(array_agg(DISTINCT tag ORDER BY tag), NULL)::text[] as tags

@@ -17,7 +17,13 @@ func (s *Server) ListTrips(ctx context.Context, req *tripspb.ListTripsRequest) (
 
 	res := &tripspb.ListTripsResponse{}
 
-	trips, err := s.q.ListTrips(ctx)
+	var limit int32 = 30
+	if req.GetLimit() > 0 && req.GetLimit() < 100 {
+		limit = req.GetLimit()
+	}
+
+	span.SetAttributes(label.Int32("limit", limit))
+	trips, err := s.q.ListTrips(ctx, limit)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "listing trips: %w", err)
 	}

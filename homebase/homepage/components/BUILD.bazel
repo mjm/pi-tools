@@ -1,16 +1,14 @@
 load("@npm_homebase//@bazel/typescript:index.bzl", "ts_library")
 
 ts_library(
-    name = "lib",
-    srcs = glob(["*.ts"]),
+    name = "components",
+    srcs = glob(["*.tsx"]),
     tsconfig = "//homebase:tsconfig.json",
-    visibility = [
-        "//homebase/homepage:__subpackages__",
-        "//homebase/trips:__subpackages__",
-    ],
+    visibility = ["//homebase:__subpackages__"],
     deps = [
         "//detect-presence/proto/trips:trips_ts_proto",
-        "//homebase/lib",
+        "//homebase/components",
+        "//homebase/trips/lib",
         "@npm_homebase//:node_modules",
     ],
 )
