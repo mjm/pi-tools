@@ -82,7 +82,7 @@ function TripIgnoreButton({id}: { id: string }) {
             await ignoreTrip(id);
 
             // return to the trips page upon successful ignore
-            history.push("/");
+            history.push("/trips");
         } catch (e) {
             console.error(e);
         } finally {
