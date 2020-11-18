@@ -1,5 +1,4 @@
 load("@npm_homebase//@bazel/typescript:index.bzl", "ts_library")
-load("@npm_homebase//http-server:index.bzl", "http_server")
 load("@npm_homebase//@bazel/rollup:index.bzl", "rollup_bundle")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image")
@@ -42,16 +41,21 @@ rollup_bundle(
     ],
 )
 
-http_server(
-    name = "server",
+sh_library(
+    name = "server_lib",
     data = [
         ":bundle",
+        "homebase-dev.caddy",
     ],
-    templated_args = [
-        "./homebase/bundle",
-        "--proxy",
-        "http://localhost:8080?",
+)
+
+sh_binary(
+    name = "server",
+    srcs = ["caddy-dev.sh"],
+    data = [
+        ":server_lib",
     ],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
 )
 
 pkg_tar(
