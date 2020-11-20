@@ -88,7 +88,6 @@ func main() {
 			},
 		}
 
-		var cancelWatch func()
 		go leaderelection.RunOrDie(ctx, leaderelection.LeaderElectionConfig{
 			Lock:            lock,
 			ReleaseOnCancel: true,
@@ -102,14 +101,10 @@ func main() {
 						log.Printf("Error registering bot commands: %v", err)
 					}
 
-					var watchCtx context.Context
-					watchCtx, cancelWatch = context.WithCancel(ctx)
-
-					messagesService.WatchUpdates(watchCtx)
+					messagesService.WatchUpdates(ctx)
 				},
 				OnStoppedLeading: func() {
-					log.Printf("Stopped leading")
-					cancelWatch()
+					log.Fatalf("Stopped leading")
 				},
 				OnNewLeader: func(identity string) {
 					if identity == *instanceID {
