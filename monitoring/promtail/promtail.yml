@@ -35,6 +35,9 @@ scrape_configs:
       - source_labels:
           - __meta_kubernetes_pod_node_name
         target_label: __host__
+      - source_labels:
+          - __meta_kubernetes_pod_node_name
+        target_label: hostname
       - action: drop
         regex: ''
         source_labels:
@@ -82,6 +85,9 @@ scrape_configs:
       - source_labels:
           - __meta_kubernetes_pod_node_name
         target_label: __host__
+      - source_labels:
+          - __meta_kubernetes_pod_node_name
+        target_label: hostname
       - action: drop
         regex: ''
         source_labels:
@@ -135,6 +141,9 @@ scrape_configs:
       - source_labels:
           - __meta_kubernetes_pod_node_name
         target_label: __host__
+      - source_labels:
+          - __meta_kubernetes_pod_node_name
+        target_label: hostname
       - action: drop
         regex: ''
         source_labels:
@@ -190,6 +199,9 @@ scrape_configs:
       - source_labels:
           - __meta_kubernetes_pod_node_name
         target_label: __host__
+      - source_labels:
+          - __meta_kubernetes_pod_node_name
+        target_label: hostname
       - action: drop
         regex: ''
         source_labels:
@@ -238,6 +250,9 @@ scrape_configs:
       - source_labels:
           - __meta_kubernetes_pod_node_name
         target_label: __host__
+      - source_labels:
+          - __meta_kubernetes_pod_node_name
+        target_label: hostname
       - action: drop
         regex: ''
         source_labels:
