@@ -51,3 +51,7 @@ spec:
             - name: http
               containerPort: 4240
               protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
