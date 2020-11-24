@@ -12,7 +12,7 @@ import (
 func (s *Server) ListRecentLinks(ctx context.Context, req *linkspb.ListRecentLinksRequest) (*linkspb.ListRecentLinksResponse, error) {
 	span := trace.SpanFromContext(ctx)
 
-	links, err := s.db.ListRecentLinks(ctx)
+	links, err := s.db.ListRecentLinks(ctx, 30)
 	if err != nil {
 		return nil, err
 	}

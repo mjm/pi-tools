@@ -86,11 +86,11 @@ const listRecentLinks = `-- name: ListRecentLinks :many
 SELECT id, short_url, destination_url, description, created_at, updated_at
 FROM links
 ORDER BY created_at DESC
-LIMIT 30
+LIMIT $1
 `
 
-func (q *Queries) ListRecentLinks(ctx context.Context) ([]Link, error) {
-	rows, err := q.db.QueryContext(ctx, listRecentLinks)
+func (q *Queries) ListRecentLinks(ctx context.Context, limit int32) ([]Link, error) {
+	rows, err := q.db.QueryContext(ctx, listRecentLinks, limit)
 	if err != nil {
 		return nil, err
 	}

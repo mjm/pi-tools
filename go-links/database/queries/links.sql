@@ -2,7 +2,7 @@
 SELECT *
 FROM links
 ORDER BY created_at DESC
-LIMIT 30;
+LIMIT $1;
 
 -- name: GetLink :one
 SELECT *
