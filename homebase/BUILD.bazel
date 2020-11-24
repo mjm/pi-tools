@@ -44,8 +44,8 @@ rollup_bundle(
 sh_library(
     name = "server_lib",
     data = [
-        ":bundle",
         "homebase-dev.caddy",
+        ":bundle",
     ],
 )
 

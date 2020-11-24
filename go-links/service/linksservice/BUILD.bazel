@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "create_link.go",
         "get_link.go",
+        "health.go",
         "list_recent_links.go",
         "metric.go",
         "proto.go",
