@@ -72,6 +72,11 @@ k8s_virtual_host(
     service_name = "detect-presence-srv",
 )
 
+k8s_object(
+    name = "k8s_grpc_ingress",
+    template = "grpc-ingress.yaml",
+)
+
 k8s_objects(
     name = "k8s",
     objects = [
@@ -79,6 +84,7 @@ k8s_objects(
         ":k8s_http_service",
         ":k8s_grpc_service",
         ":k8s_ingress",
+        ":k8s_grpc_ingress",
     ],
     tags = ["manual"],
     visibility = ["//visibility:public"],

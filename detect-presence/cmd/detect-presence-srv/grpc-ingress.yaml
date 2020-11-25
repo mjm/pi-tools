@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: detect-presence
+  name: detect-presence-grpc
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+    cert-manager.io/cluster-issuer: ca-issuer
+spec:
+  rules:
+    - host: detect-presence-grpc.homelab
+      http:
+        paths:
+            - path: "/"
+              pathType: Prefix
+              backend:
+                service:
+                  name: detect-presence-srv-grpc
+                  port:
+                    number: 80
+  tls:
+    - hosts:
+        - detect-presence-grpc.homelab
+      secretName: detect-presence-grpc-cert
