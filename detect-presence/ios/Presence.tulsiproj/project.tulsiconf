@@ -1,0 +1,12 @@
+{
+  "configDefaults" : {
+    "optionSet" : {
+
+    }
+  },
+  "packages" : [
+    "detect-presence/ios"
+  ],
+  "projectName" : "pi-tools",
+  "workspaceRoot" : "../../.."
+}
