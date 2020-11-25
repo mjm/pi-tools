@@ -1,18 +1,27 @@
 import CoreLocation
+import detect_presence_proto_trips_trips_proto
+import detect_presence_proto_trips_trips_swift_proto_grpc_client
 
 private let beaconIdentifier = "home-beacons"
 
 class BeaconObserver: NSObject, CLLocationManagerDelegate, ObservableObject {
     var locationManager: CLLocationManager
+    var tripsClient: TripsServiceService
 
     @Published private(set) var status: CLRegionState = .unknown
     @Published private(set) var statusChangedTime: Date?
 
     init(locationManager: CLLocationManager = CLLocationManager()) {
         self.locationManager = locationManager
+        self.tripsClient = TripsServiceServiceClient(address: "https://detect-presence-grpc.homelab")
         super.init()
 
         self.locationManager.delegate = self
+
+        try! self.tripsClient.listTrips(ListTripsRequest()) { response, result in
+            NSLog("Response: \(response)")
+            NSLog("Result: \(result)")
+        }
     }
 
     func startObserving() {

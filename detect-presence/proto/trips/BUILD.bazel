@@ -2,6 +2,7 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
 load("@rules_typescript_proto//:index.bzl", "typescript_proto_library")
+load("@build_bazel_rules_swift//swift:swift.bzl", "swift_grpc_library", "swift_proto_library")
 
 proto_library(
     name = "trips_proto",
@@ -26,6 +27,20 @@ go_library(
 
 typescript_proto_library(
     name = "trips_ts_proto",
-    proto = "//detect-presence/proto/trips:trips_proto",
+    proto = ":trips_proto",
+    visibility = ["//visibility:public"],
+)
+
+swift_proto_library(
+    name = "trips_swift_proto",
+    deps = [":trips_proto"],
+    visibility = ["//visibility:public"],
+)
+
+swift_grpc_library(
+    name = "trips_swift_proto_grpc_client",
+    deps = [":trips_swift_proto"],
+    flavor = "client",
+    srcs = [":trips_proto"],
     visibility = ["//visibility:public"],
 )
