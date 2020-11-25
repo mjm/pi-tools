@@ -7,6 +7,7 @@
       <excludeFolder url="file://$MODULE_DIR$/bazel-out" />
       <excludeFolder url="file://$MODULE_DIR$/bazel-pi-tools" />
       <excludeFolder url="file://$MODULE_DIR$/bazel-testlogs" />
+      <excludeFolder url="file://$MODULE_DIR$/detect-presence/ios/pi-tools.xcodeproj/.tulsi" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -16,8 +16,14 @@ var (
 	device           = flag.String("device", "hci0", "Bluetooth device name to use to advertise")
 	proximityUUIDStr = flag.String("proximity-uuid", "", "Proximity UUID to advertise for iBeacon")
 	major            = flag.Uint("major", 0, "Major value to advertise for iBeacon")
-	minor            = flag.Uint("minor", 0, "Minor value to advertise for iBeacon")
+	nodeName         = flag.String("node-name", "", "Node name where process is running, used to generate minor value to advertise")
 )
+
+var minorValuesByNode = map[string]uint{
+	"raspberrypi":  0,
+	"raspberrypi2": 1,
+	"raspberrypi3": 2,
+}
 
 func main() {
 	flag.Parse()
@@ -31,12 +37,18 @@ func main() {
 		log.Panicf("failed to parse proximity UUID: %v", err)
 	}
 
+	minor, ok := minorValuesByNode[*nodeName]
+	if !ok {
+		log.Panicf("unknown node name %q", *nodeName)
+	}
+	log.Printf("planning to advertise as:\n  uuid: %s\n  major: %d\n  minor: %d", proximityUUID.String(), *major, minor)
+
 	var idBytes []string
 	for _, b := range proximityUUID {
 		idBytes = append(idBytes, hex.EncodeToString([]byte{b}))
 	}
 	idBytes = append(idBytes, fmt.Sprintf("%02x", *major>>8), fmt.Sprintf("%02x", *major&0xFF))
-	idBytes = append(idBytes, fmt.Sprintf("%02x", *minor>>8), fmt.Sprintf("%02x", *minor&0xFF))
+	idBytes = append(idBytes, fmt.Sprintf("%02x", minor>>8), fmt.Sprintf("%02x", minor&0xFF))
 
 	log.Printf("enabling bluetooth advertising mode")
 	if err := exec.Command("hciconfig", *device, "leadv", "3").Run(); err != nil {
@@ -55,7 +67,7 @@ func main() {
 	log.Printf("setting advertising data")
 	args := []string{
 		"-i", *device, "cmd", "0x08", "0x0008",
-		"1E", "02", "01", "06", "1A", "FF", "4C", "00", "02", "16", "15",
+		"1E", "02", "01", "06", "1A", "FF", "4C", "00", "02", "15",
 	}
 	args = append(args, idBytes...)
 	args = append(args, "C8", "00")
@@ -63,6 +75,7 @@ func main() {
 	if err != nil {
 		log.Panicf("failed to set advertising data: %v\n%s", err, out)
 	}
+	log.Printf("%s", out)
 
 	signal.Wait()
 }

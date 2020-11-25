@@ -41,6 +41,13 @@ spec:
             - /beacon-srv
             - -proximity-uuid
             - 7298c12b-f658-445f-b1f2-5d6d582f0fb0
+            - -node-name
+            - $(NODE_NAME)
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
           resources:
             requests:
               cpu: "50m"
