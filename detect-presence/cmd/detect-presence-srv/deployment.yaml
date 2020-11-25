@@ -24,8 +24,9 @@ spec:
     spec:
       # this is what lets us talk to the bluetooth device
       hostNetwork: true
-      nodeName: raspberrypi
       dnsPolicy: ClusterFirstWithHostNet
+      nodeSelector:
+        kubernetes.io/hostname: raspberrypi
       containers:
         - name: detect-presence-srv
           image: index.docker.io/mmoriarity/detect-presence-srv:latest
