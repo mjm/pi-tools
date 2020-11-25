@@ -6,6 +6,7 @@ service TripsService {
     rpc GetLastCompletedTrip (GetLastCompletedTripRequest) returns (GetLastCompletedTripResponse);
     rpc IgnoreTrip (IgnoreTripRequest) returns (IgnoreTripResponse);
     rpc UpdateTripTags (UpdateTripTagsRequest) returns (UpdateTripTagsResponse);
+    rpc RecordTrips (RecordTripsRequest) returns (RecordTripsResponse);
 
     rpc ListTags (ListTagsRequest) returns (ListTagsResponse);
 }
@@ -47,6 +48,13 @@ message UpdateTripTagsRequest {
 }
 
 message UpdateTripTagsResponse {
+}
+
+message RecordTripsRequest {
+    repeated Trip trips = 1;
+}
+
+message RecordTripsResponse {
 }
 
 message ListTagsRequest {

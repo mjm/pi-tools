@@ -35,7 +35,8 @@ func (s *Server) UpdateTripTags(ctx context.Context, req *tripspb.UpdateTripTags
 	}
 	defer tx.Rollback()
 
-	if err := s.q.UpdateTripTags(ctx, database.UpdateTripTagsParams{
+	q := s.q.WithTx(tx)
+	if err := q.UpdateTripTags(ctx, database.UpdateTripTagsParams{
 		TripID:       tripID,
 		TagsToAdd:    req.GetTagsToAdd(),
 		TagsToRemove: req.GetTagsToRemove(),

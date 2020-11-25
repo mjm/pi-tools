@@ -42,6 +42,11 @@ SET returned_at = $2
 WHERE id = $1
 AND returned_at IS NULL;
 
+-- name: RecordTrip :one
+INSERT INTO trips (id, left_at, returned_at)
+VALUES ($1, $2, $3)
+RETURNING *;
+
 -- name: IgnoreTrip :execrows
 UPDATE trips
 SET ignored_at = CURRENT_TIMESTAMP

@@ -180,3 +180,27 @@ func (q *Queries) ListTrips(ctx context.Context, limit int32) ([]ListTripsRow, e
 	}
 	return items, nil
 }
+
+const recordTrip = `-- name: RecordTrip :one
+INSERT INTO trips (id, left_at, returned_at)
+VALUES ($1, $2, $3)
+RETURNING id, left_at, returned_at, ignored_at
+`
+
+type RecordTripParams struct {
+	ID         uuid.UUID
+	LeftAt     time.Time
+	ReturnedAt sql.NullTime
+}
+
+func (q *Queries) RecordTrip(ctx context.Context, arg RecordTripParams) (Trip, error) {
+	row := q.db.QueryRowContext(ctx, recordTrip, arg.ID, arg.LeftAt, arg.ReturnedAt)
+	var i Trip
+	err := row.Scan(
+		&i.ID,
+		&i.LeftAt,
+		&i.ReturnedAt,
+		&i.IgnoredAt,
+	)
+	return i, err
+}

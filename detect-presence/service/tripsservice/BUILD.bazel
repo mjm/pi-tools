@@ -8,6 +8,7 @@ go_library(
         "ignore_trip.go",
         "list_tags.go",
         "list_trips.go",
+        "record_trip.go",
         "server.go",
         "update_trip_tags.go",
     ],

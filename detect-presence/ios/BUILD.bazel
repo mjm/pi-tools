@@ -3,15 +3,15 @@ load("@build_bazel_rules_swift//swift:swift.bzl", "swift_library")
 
 swift_library(
     name = "app-lib",
-    deps = [
-        "//detect-presence/proto/trips:trips_swift_proto",
-        "//detect-presence/proto/trips:trips_swift_proto_grpc_client",
-    ],
     srcs = [
         "Sources/App.swift",
         "Sources/BeaconObserver.swift",
         "Sources/ContentView.swift",
         "Sources/TripRecorder.swift",
+    ],
+    deps = [
+        "//detect-presence/proto/trips:trips_swift_proto",
+        "//detect-presence/proto/trips:trips_swift_proto_grpc_client",
     ],
 )
 

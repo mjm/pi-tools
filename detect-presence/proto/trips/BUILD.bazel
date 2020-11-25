@@ -33,14 +33,14 @@ typescript_proto_library(
 
 swift_proto_library(
     name = "trips_swift_proto",
-    deps = [":trips_proto"],
     visibility = ["//visibility:public"],
+    deps = [":trips_proto"],
 )
 
 swift_grpc_library(
     name = "trips_swift_proto_grpc_client",
-    deps = [":trips_swift_proto"],
-    flavor = "client",
     srcs = [":trips_proto"],
+    flavor = "client",
     visibility = ["//visibility:public"],
+    deps = [":trips_swift_proto"],
 )
