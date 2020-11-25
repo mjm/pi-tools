@@ -10,6 +10,7 @@ class TripRecorder {
     private var currentTrip: Trip?
 
     init() {
+//        client = TripsServiceServiceClient(address: "100.117.39.47:2121", secure: false)
         client = TripsServiceServiceClient(address: "detect-presence-grpc.homelab", certificates: homelabCA)
     }
 
@@ -35,7 +36,17 @@ class TripRecorder {
         trip.returnedAt = dateFormatter.string(from: Date())
         NSLog("ending trip \(trip)")
 
-        // TODO make gRPC request to record the trip
+        do {
+            try client.recordTrips(.with { $0.trips = [trip] }) { _, result in
+                if result.success {
+                    NSLog("successfully recorded trip")
+                } else {
+                    NSLog("failed to record trip: \(result)")
+                }
+            }
+        } catch {
+            NSLog("error trying to record trips: \(error)")
+        }
     }
 }
 
