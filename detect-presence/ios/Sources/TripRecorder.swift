@@ -40,9 +40,9 @@ class TripRecorder {
             try client.recordTrips(request) { _, result in
                 if result.success {
                     NSLog("successfully recorded trip")
-                    self.eventsSubject.send(.recorded(trips))
-//                    self.state.queuedTrips.removeAll()
-//                    self.saveState()
+                    DispatchQueue.main.sync {
+                        self.eventsSubject.send(.recorded(trips))
+                    }
                 } else {
                     NSLog("failed to record trip: \(result)")
                 }

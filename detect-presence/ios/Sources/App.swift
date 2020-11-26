@@ -8,11 +8,18 @@ private let tripRecorder = TripRecorder(events: tripsController.eventsPublisher(
 @main
 struct PresenceApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @StateObject var model = AppModel(
+        beaconObserver: beaconObserver,
+        tripsController: tripsController,
+        tripRecorder: tripRecorder
+    )
 
     var body: some Scene {
         WindowGroup {
-            ContentView(tripsController: tripsController)
-                .environmentObject(beaconObserver)
+            NavigationView {
+                ContentView(model: model)
+                    .environmentObject(beaconObserver)
+            }
         }
     }
 }

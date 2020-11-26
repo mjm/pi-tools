@@ -7,7 +7,9 @@ class TripsController {
         case tripEnded([Trip])
     }
 
-    private var state = State()
+    @Published var currentTrip: Trip?
+
+    @Published private var state = State()
     private let eventsSubject = PassthroughSubject<Event, Never>()
     private var cancellables = Set<AnyCancellable>()
 
@@ -24,6 +26,8 @@ class TripsController {
                 self.beginTrip()
             }
         }.store(in: &cancellables)
+
+        $state.map(\.currentTrip).assign(to: &$currentTrip)
     }
 
     func eventsPublisher() -> AnyPublisher<Event, Never> {

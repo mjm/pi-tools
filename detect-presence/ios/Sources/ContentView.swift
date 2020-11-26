@@ -1,31 +1,32 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var beaconObserver: BeaconObserver
-    let tripsController: TripsController
+    @ObservedObject var model: AppModel
 
     var body: some View {
-        VStack(spacing: 8) {
-            switch beaconObserver.status {
-            case .unknown:
-                Text("Not sure if you're home")
-            case .inside:
-                Text("Looks like you're home!")
-            case .outside:
-                Text("Looks like you're away from home!")
+        List {
+            Section {
+                Button("Simulate Begin Trip") {
+                    model.beginTrip()
+                }
+
+                Button("Simulate End Trip") {
+                    model.endTrip()
+                }
+
+                if let trip = model.currentTrip {
+                    Text("Current trip started ") + Text(trip.leftAt, style: .relative) + Text(" ago")
+                } else {
+                    Text("Not currently on a trip")
+                }
             }
 
-            if let changedTime = beaconObserver.statusChangedTime {
-                Text("Transitioned ") + Text(changedTime, style: .relative) + Text(" ago")
-            }
-
-            Button("Simulate Begin Trip") {
-                tripsController.beginTrip()
-            }
-
-            Button("Simulate End Trip") {
-                tripsController.endTrip()
+            Section(header: Text("All Events")) {
+                ForEach(model.allEvents) { event in
+                    Text(event.description)
+                }
             }
         }
+        .navigationTitle("Presence")
     }
 }

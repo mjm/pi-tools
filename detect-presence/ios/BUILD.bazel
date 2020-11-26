@@ -5,6 +5,7 @@ swift_library(
     name = "app-lib",
     srcs = [
         "Sources/App.swift",
+        "Sources/AppModel.swift",
         "Sources/BeaconObserver.swift",
         "Sources/ContentView.swift",
         "Sources/State.swift",
