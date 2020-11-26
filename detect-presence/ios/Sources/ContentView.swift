@@ -6,12 +6,16 @@ struct ContentView: View {
     var body: some View {
         List {
             Section {
-                Button("Simulate Begin Trip") {
+                Button {
                     model.beginTrip()
+                } label: {
+                    Label("Simulate Begin Trip", systemImage: "play.fill")
                 }
 
-                Button("Simulate End Trip") {
+                Button {
                     model.endTrip()
+                } label: {
+                    Label("Simulate End Trip", systemImage: "stop.fill")
                 }
 
                 if let trip = model.currentTrip {
