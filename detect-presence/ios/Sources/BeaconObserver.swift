@@ -1,24 +1,33 @@
 import CoreLocation
+import Combine
 
 private let beaconIdentifier = "home-beacons"
 
 class BeaconObserver: NSObject, CLLocationManagerDelegate, ObservableObject {
+    enum Event {
+        case entered
+        case exited
+    }
+
     let locationManager: CLLocationManager
-    let tripRecorder: TripRecorder
 
     @Published private(set) var status: CLRegionState = .unknown
     @Published private(set) var statusChangedTime: Date?
 
-    init(locationManager: CLLocationManager = CLLocationManager(),
-         tripRecorder: TripRecorder = TripRecorder()) {
+    private let eventsSubject = PassthroughSubject<Event, Never>()
+
+    init(locationManager: CLLocationManager = CLLocationManager()) {
         self.locationManager = locationManager
-        self.tripRecorder = tripRecorder
         super.init()
 
         self.locationManager.delegate = self
     }
 
-    func startObserving() {
+    func eventsPublisher() -> AnyPublisher<Event, Never> {
+        eventsSubject.eraseToAnyPublisher()
+    }
+
+    private func startObserving() {
         guard CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self) else {
             NSLog("Monitoring is not available. :(")
             return
@@ -61,12 +70,12 @@ class BeaconObserver: NSObject, CLLocationManagerDelegate, ObservableObject {
 
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         NSLog("Entered region: \(region)")
-        tripRecorder.endTrip()
+        eventsSubject.send(.entered)
     }
 
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         NSLog("Exited region: \(region)")
-        tripRecorder.beginTrip()
+        eventsSubject.send(.exited)
     }
 
     func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {

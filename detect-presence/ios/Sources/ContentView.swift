@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var beaconObserver: BeaconObserver
-    let tripRecorder: TripRecorder
+    let tripsController: TripsController
 
     var body: some View {
         VStack(spacing: 8) {
@@ -20,11 +20,11 @@ struct ContentView: View {
             }
 
             Button("Simulate Begin Trip") {
-                tripRecorder.beginTrip()
+                tripsController.beginTrip()
             }
 
             Button("Simulate End Trip") {
-                tripRecorder.endTrip()
+                tripsController.endTrip()
             }
         }
     }

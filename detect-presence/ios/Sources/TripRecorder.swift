@@ -1,77 +1,48 @@
 import Foundation
+import Combine
 import detect_presence_proto_trips_trips_proto
 import detect_presence_proto_trips_trips_swift_proto_grpc_client
 
-private let dateFormatter = ISO8601DateFormatter()
-
 class TripRecorder {
-    private let client: TripsServiceService
-    private var state = State()
+    enum Event {
+        case recorded([Trip])
+    }
 
-    init() {
+    private let client: TripsServiceService
+    private let eventsSubject = PassthroughSubject<Event, Never>()
+    private var cancellables = Set<AnyCancellable>()
+
+    init<P: Publisher>(events: P) where P.Output == TripsController.Event, P.Failure == Never {
         client = TripsServiceServiceClient(address: "100.117.39.47:2121", secure: false)
 //        client = TripsServiceServiceClient(address: "detect-presence-grpc.homelab", certificates: homelabCA)
-        restoreState()
+
+        events.sink { [weak self] event in
+            guard let self = self else { return }
+
+            switch event {
+            case .tripBegan(let trip):
+                NSLog("starting trip \(trip)")
+            case .tripEnded(let queuedTrips):
+                self.recordTrips(queuedTrips)
+            }
+        }.store(in: &cancellables)
     }
 
-    private func restoreState() {
-        do {
-            let stateFileURL = try savedStateURL()
-            let savedStateData = try Data(contentsOf: stateFileURL)
-            state = try PropertyListDecoder().decode(State.self, from: savedStateData)
-            NSLog("Restored state: \(state)")
-        } catch {
-            NSLog("Could not restore state: \(error.localizedDescription)")
-        }
+    func eventsPublisher() -> AnyPublisher<Event, Never> {
+        eventsSubject.eraseToAnyPublisher()
     }
 
-    private func saveState() {
-        do {
-            let stateFileURL = try savedStateURL()
-            let stateData = try PropertyListEncoder().encode(state)
-            try stateData.write(to: stateFileURL, options: .atomicWrite)
-        } catch {
-            NSLog("Could not save state: \(error.localizedDescription)")
-        }
-    }
-
-    private func savedStateURL() throws -> URL {
-        let url = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-        return url.appendingPathComponent("SavedState.plist")
-    }
-
-    func beginTrip() {
-        guard state.currentTrip == nil else {
-            NSLog("Already have a current trip, so not beginning a new one.")
-            return
-        }
-
-        state.currentTrip = Trip()
-        NSLog("starting trip \(state.currentTrip!)")
-        saveState()
-    }
-
-    func endTrip() {
-        guard var trip = state.currentTrip else {
-            NSLog("No trip in progress, nothing to end.")
-            return
-        }
-
-        trip.returnedAt = Date()
-        state.queuedTrips.append(trip)
-        state.currentTrip = nil
-        saveState()
-
-        NSLog("ending trip \(trip)")
+    func recordTrips(_ trips: [Trip]) {
         do {
             let request = RecordTripsRequest.with {
-                $0.trips = state.queuedTrips.map(\.asProto)
+                $0.trips = trips.map(\.asProto)
             }
             try client.recordTrips(request) { _, result in
                 if result.success {
                     NSLog("successfully recorded trip")
-                    self.state.queuedTrips.removeAll()
-                    self.saveState()
+                    self.eventsSubject.send(.recorded(trips))
+//                    self.state.queuedTrips.removeAll()
+//                    self.saveState()
                 } else {
                     NSLog("failed to record trip: \(result)")
                 }

@@ -9,6 +9,7 @@ swift_library(
         "Sources/ContentView.swift",
         "Sources/State.swift",
         "Sources/TripRecorder.swift",
+        "Sources/TripsController.swift",
     ],
     deps = [
         "//detect-presence/proto/trips:trips_swift_proto",
