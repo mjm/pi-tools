@@ -6,40 +6,72 @@ private let dateFormatter = ISO8601DateFormatter()
 
 class TripRecorder {
     private let client: TripsServiceService
-
-    private var currentTrip: Trip?
+    private var state = State()
 
     init() {
-//        client = TripsServiceServiceClient(address: "100.117.39.47:2121", secure: false)
-        client = TripsServiceServiceClient(address: "detect-presence-grpc.homelab", certificates: homelabCA)
+        client = TripsServiceServiceClient(address: "100.117.39.47:2121", secure: false)
+//        client = TripsServiceServiceClient(address: "detect-presence-grpc.homelab", certificates: homelabCA)
+        restoreState()
+    }
+
+    private func restoreState() {
+        do {
+            let stateFileURL = try savedStateURL()
+            let savedStateData = try Data(contentsOf: stateFileURL)
+            state = try PropertyListDecoder().decode(State.self, from: savedStateData)
+            NSLog("Restored state: \(state)")
+        } catch {
+            NSLog("Could not restore state: \(error.localizedDescription)")
+        }
+    }
+
+    private func saveState() {
+        do {
+            let stateFileURL = try savedStateURL()
+            let stateData = try PropertyListEncoder().encode(state)
+            try stateData.write(to: stateFileURL, options: .atomicWrite)
+        } catch {
+            NSLog("Could not save state: \(error.localizedDescription)")
+        }
+    }
+
+    private func savedStateURL() throws -> URL {
+        let url = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        return url.appendingPathComponent("SavedState.plist")
     }
 
     func beginTrip() {
-        guard currentTrip == nil else {
+        guard state.currentTrip == nil else {
             NSLog("Already have a current trip, so not beginning a new one.")
             return
         }
 
-        currentTrip = .with {
-            $0.id = UUID().uuidString
-            $0.leftAt = dateFormatter.string(from: Date())
-        }
-        NSLog("starting trip \(currentTrip!)")
+        state.currentTrip = Trip()
+        NSLog("starting trip \(state.currentTrip!)")
+        saveState()
     }
 
     func endTrip() {
-        guard var trip = currentTrip else {
+        guard var trip = state.currentTrip else {
             NSLog("No trip in progress, nothing to end.")
             return
         }
 
-        trip.returnedAt = dateFormatter.string(from: Date())
-        NSLog("ending trip \(trip)")
+        trip.returnedAt = Date()
+        state.queuedTrips.append(trip)
+        state.currentTrip = nil
+        saveState()
 
+        NSLog("ending trip \(trip)")
         do {
-            try client.recordTrips(.with { $0.trips = [trip] }) { _, result in
+            let request = RecordTripsRequest.with {
+                $0.trips = state.queuedTrips.map(\.asProto)
+            }
+            try client.recordTrips(request) { _, result in
                 if result.success {
                     NSLog("successfully recorded trip")
+                    self.state.queuedTrips.removeAll()
+                    self.saveState()
                 } else {
                     NSLog("failed to record trip: \(result)")
                 }

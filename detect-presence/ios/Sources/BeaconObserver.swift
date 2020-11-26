@@ -9,9 +9,10 @@ class BeaconObserver: NSObject, CLLocationManagerDelegate, ObservableObject {
     @Published private(set) var status: CLRegionState = .unknown
     @Published private(set) var statusChangedTime: Date?
 
-    init(locationManager: CLLocationManager = CLLocationManager()) {
+    init(locationManager: CLLocationManager = CLLocationManager(),
+         tripRecorder: TripRecorder = TripRecorder()) {
         self.locationManager = locationManager
-        self.tripRecorder = TripRecorder()
+        self.tripRecorder = tripRecorder
         super.init()
 
         self.locationManager.delegate = self

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var beaconObserver: BeaconObserver
+    let tripRecorder: TripRecorder
 
     var body: some View {
         VStack(spacing: 8) {
@@ -17,12 +18,14 @@ struct ContentView: View {
             if let changedTime = beaconObserver.statusChangedTime {
                 Text("Transitioned ") + Text(changedTime, style: .relative) + Text(" ago")
             }
-        }
-    }
-}
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+            Button("Simulate Begin Trip") {
+                tripRecorder.beginTrip()
+            }
+
+            Button("Simulate End Trip") {
+                tripRecorder.endTrip()
+            }
+        }
     }
 }
