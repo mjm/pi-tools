@@ -1,6 +1,8 @@
 build --incompatible_strict_action_env
 run --incompatible_strict_action_env
 
+test --build_tests_only
+
 build:ci -c opt
 build:ci --repository_cache=/tmp/repo-cache
 build:ci --disk_cache=~/.cache/bazel/disk-cache
