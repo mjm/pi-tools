@@ -7,24 +7,34 @@ struct ContentView: View {
     var body: some View {
         List {
             Section {
-                Button {
-                    model.beginTrip()
-                } label: {
-                    Label("Simulate Begin Trip", systemImage: "play.fill")
-                }
-
-                Button {
-                    model.endTrip()
-                } label: {
-                    Label("Simulate End Trip", systemImage: "stop.fill")
-                }
-
                 Toggle("Record to development server", isOn: $recordToDevServer)
+
+                if recordToDevServer {
+                    Button {
+                        model.beginTrip()
+                    } label: {
+                        Label("Simulate Begin Trip", systemImage: "play.fill")
+                    }
+                    
+                    Button {
+                        model.endTrip()
+                    } label: {
+                        Label("Simulate End Trip", systemImage: "stop.fill")
+                    }
+                }
 
                 if let trip = model.currentTrip {
                     Text("Current trip started ") + Text(trip.leftAt, style: .relative) + Text(" ago")
                 } else {
                     Text("Not currently on a trip")
+                }
+
+                if model.queuedTripCount > 0 {
+                    Button {
+                        model.recordQueuedTrips()
+                    } label: {
+                        Label("Record \(model.queuedTripCount) queued trips", systemImage: "icloud.and.arrow.up.fill")
+                    }
                 }
             }
 

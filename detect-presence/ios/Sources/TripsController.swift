@@ -8,6 +8,7 @@ class TripsController {
     }
 
     @Published var currentTrip: Trip?
+    @Published var queuedTrips: [Trip] = []
 
     @Published private var state = State()
     private let eventsSubject = PassthroughSubject<Event, Never>()
@@ -28,6 +29,7 @@ class TripsController {
         }.store(in: &cancellables)
 
         $state.map(\.currentTrip).assign(to: &$currentTrip)
+        $state.map(\.queuedTrips).assign(to: &$queuedTrips)
     }
 
     func eventsPublisher() -> AnyPublisher<Event, Never> {

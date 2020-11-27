@@ -38,6 +38,8 @@ class AppModel: ObservableObject {
                 switch evt {
                 case .recorded(let trips):
                     return "Recorded \(trips.count) trips"
+                case .recordFailed(let err):
+                    return "Failed to record trips: \(err)"
                 }
             }
         }
@@ -47,6 +49,7 @@ class AppModel: ObservableObject {
     let tripRecorder: TripRecorder
     @Published var allEvents: [Event] = []
     @Published var currentTrip: Trip?
+    @Published var queuedTripCount: Int = 0
 
     init(
         beaconObserver: BeaconObserver,
@@ -65,6 +68,7 @@ class AppModel: ObservableObject {
         }.assign(to: &$allEvents)
 
         tripsController.$currentTrip.assign(to: &$currentTrip)
+        tripsController.$queuedTrips.map(\.count).assign(to: &$queuedTripCount)
     }
 
     func beginTrip() {
@@ -77,5 +81,9 @@ class AppModel: ObservableObject {
 
     func setRecordToDevServer(_ useDev: Bool) {
         tripRecorder.setUpClient(useDevServer: useDev)
+    }
+
+    func recordQueuedTrips() {
+        tripRecorder.recordTrips(tripsController.queuedTrips)
     }
 }

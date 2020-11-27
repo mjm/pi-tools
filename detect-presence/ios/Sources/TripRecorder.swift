@@ -6,6 +6,7 @@ import detect_presence_proto_trips_trips_swift_proto_grpc_client
 class TripRecorder {
     enum Event {
         case recorded([Trip])
+        case recordFailed(String)
     }
 
     private var client: TripsServiceService!
@@ -35,17 +36,19 @@ class TripRecorder {
                 $0.trips = trips.map(\.asProto)
             }
             try client.recordTrips(request) { _, result in
-                if result.success {
-                    NSLog("successfully recorded trip")
-                    DispatchQueue.main.sync {
+                DispatchQueue.main.sync {
+                    if result.success && result.statusCode == .ok {
+                        NSLog("successfully recorded trip")
                         self.eventsSubject.send(.recorded(trips))
+                    } else {
+                        NSLog("failed to record trip: \(result)")
+                        self.eventsSubject.send(.recordFailed(result.description))
                     }
-                } else {
-                    NSLog("failed to record trip: \(result)")
                 }
             }
         } catch {
             NSLog("error trying to record trips: \(error)")
+            self.eventsSubject.send(.recordFailed(error.localizedDescription))
         }
     }
 

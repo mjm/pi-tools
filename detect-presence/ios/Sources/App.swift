@@ -29,8 +29,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         tripRecorder.eventsPublisher().sink { event in
-            switch event {
-            case .recorded(let trips):
+            if case .recorded(let trips) = event {
                 tripsController.removeFromQueue(trips)
             }
         }.store(in: &cancellables)
