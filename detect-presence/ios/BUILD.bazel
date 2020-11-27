@@ -1,5 +1,5 @@
-load("@build_bazel_rules_apple//apple:ios.bzl", "ios_application")
 load("@build_bazel_rules_swift//swift:swift.bzl", "swift_library")
+load("//detect-presence/ios:app.bzl", "presence_app")
 
 swift_library(
     name = "app-lib",
@@ -18,13 +18,23 @@ swift_library(
     ],
 )
 
-ios_application(
+_common_args = {
+    "bundle_id": "com.mattmoriarity.Presence",
+    "bundle_name": "Presence",
+    "families": ["iphone"],
+    "infoplists": [":Info.plist"],
+    "minimum_os_version": "14.0",
+    "deps": [":app-lib"],
+}
+
+presence_app(
     name = "ios",
-    bundle_id = "com.mattmoriarity.Presence",
-    bundle_name = "Presence",
-    families = ["iphone"],
-    infoplists = [":Info.plist"],
-    minimum_os_version = "14.0",
+    bundle_name = "Presence_Dev",
     provisioning_profile = "Presence_Development.mobileprovision",
-    deps = [":app-lib"],
+)
+
+presence_app(
+    name = "ios_ad_hoc",
+    bundle_name = "Presence",
+    provisioning_profile = "Presence_Ad_Hoc.mobileprovision",
 )
