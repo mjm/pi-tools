@@ -8,14 +8,11 @@ class TripRecorder {
         case recorded([Trip])
     }
 
-    private let client: TripsServiceService
+    private var client: TripsServiceService!
     private let eventsSubject = PassthroughSubject<Event, Never>()
     private var cancellables = Set<AnyCancellable>()
 
     init<P: Publisher>(events: P) where P.Output == TripsController.Event, P.Failure == Never {
-        client = TripsServiceServiceClient(address: "100.117.39.47:2121", secure: false)
-//        client = TripsServiceServiceClient(address: "detect-presence-grpc.homelab", certificates: homelabCA)
-
         events.sink { [weak self] event in
             guard let self = self else { return }
 
@@ -49,6 +46,16 @@ class TripRecorder {
             }
         } catch {
             NSLog("error trying to record trips: \(error)")
+        }
+    }
+
+    func setUpClient(useDevServer: Bool = false) {
+        if useDevServer {
+            NSLog("creating dev server client")
+            client = TripsServiceServiceClient(address: "100.117.39.47:2121", secure: false)
+        } else {
+            NSLog("creating real client")
+            client = TripsServiceServiceClient(address: "detect-presence-grpc.homelab", certificates: homelabCA)
         }
     }
 }

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @ObservedObject var model: AppModel
+    @AppStorage("recordToDevServer") private var recordToDevServer: Bool = false
 
     var body: some View {
         List {
@@ -18,6 +19,8 @@ struct ContentView: View {
                     Label("Simulate End Trip", systemImage: "stop.fill")
                 }
 
+                Toggle("Record to development server", isOn: $recordToDevServer)
+
                 if let trip = model.currentTrip {
                     Text("Current trip started ") + Text(trip.leftAt, style: .relative) + Text(" ago")
                 } else {
@@ -32,5 +35,13 @@ struct ContentView: View {
             }
         }
         .navigationTitle("Presence")
+        .onAppear {
+            NSLog("setting record to dev server to \(recordToDevServer)")
+            model.setRecordToDevServer(recordToDevServer)
+        }
+        .onChange(of: recordToDevServer) { useDev in
+            NSLog("setting record to dev server to \(useDev)")
+            model.setRecordToDevServer(useDev)
+        }
     }
 }

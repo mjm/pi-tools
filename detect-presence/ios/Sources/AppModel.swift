@@ -44,6 +44,7 @@ class AppModel: ObservableObject {
     }
 
     let tripsController: TripsController
+    let tripRecorder: TripRecorder
     @Published var allEvents: [Event] = []
     @Published var currentTrip: Trip?
 
@@ -53,6 +54,7 @@ class AppModel: ObservableObject {
         tripRecorder: TripRecorder
     ) {
         self.tripsController = tripsController
+        self.tripRecorder = tripRecorder
 
         let wrappedBeaconEvents = beaconObserver.eventsPublisher().map { Event.beaconEvent(UUID(), $0) }
         let wrappedTripsEvents = tripsController.eventsPublisher().map { Event.tripsEvent(UUID(), $0) }
@@ -71,5 +73,9 @@ class AppModel: ObservableObject {
 
     func endTrip() {
         tripsController.endTrip()
+    }
+
+    func setRecordToDevServer(_ useDev: Bool) {
+        tripRecorder.setUpClient(useDevServer: useDev)
     }
 }
