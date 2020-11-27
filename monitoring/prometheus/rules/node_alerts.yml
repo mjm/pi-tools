@@ -1,0 +1,23 @@
+groups:
+  - name: node_alerts
+    rules:
+      - alert: NodeTemperatureTooHigh
+        expr: node_hwmon_temp_celsius > 80
+        for: 5m
+        labels:
+          severity: notice
+        annotations:
+          summary: Raspberry Pi temperature is close to throttling
+          description: >
+            One or more Raspberry Pis are approaching a temperature that will cause the CPU to start
+            throttling.
+
+      - alert: LowDiskSpace
+        expr: (node_filesystem_avail_bytes{device!~'rootfs',mountpoint="/"} / node_filesystem_size_bytes{device!~'rootfs',mountpoint="/"}) < 0.05
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Raspberry Pi is running out of disk space
+          description: >
+            One or more Raspberry Pis have less than 5% space available on their root volume.
