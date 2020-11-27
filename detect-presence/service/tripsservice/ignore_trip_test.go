@@ -22,7 +22,7 @@ func TestServer_IgnoreTrip(t *testing.T) {
 		assert.NoError(t, err)
 		// no need to migrate, we shouldn't make it to the query
 
-		s := New(db)
+		s := New(db, fakeMessagesClient{})
 		res, err := s.IgnoreTrip(ctx, &tripspb.IgnoreTripRequest{})
 		assert.Nil(t, res)
 		assert.EqualError(t, err, "rpc error: code = InvalidArgument desc = missing ID for trip to ignore")
@@ -33,7 +33,7 @@ func TestServer_IgnoreTrip(t *testing.T) {
 		assert.NoError(t, err)
 		// no need to migrate, we shouldn't make it to the query
 
-		s := New(db)
+		s := New(db, fakeMessagesClient{})
 		res, err := s.IgnoreTrip(ctx, &tripspb.IgnoreTripRequest{Id: "some nonsense"})
 		assert.Nil(t, res)
 		assert.EqualError(t, err, "rpc error: code = InvalidArgument desc = invalid UUID for trip ID: invalid UUID length: 13")
@@ -44,7 +44,7 @@ func TestServer_IgnoreTrip(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
-		s := New(db)
+		s := New(db, fakeMessagesClient{})
 		id := uuid.New()
 		res, err := s.IgnoreTrip(ctx, &tripspb.IgnoreTripRequest{Id: id.String()})
 		assert.Nil(t, res)
@@ -64,7 +64,7 @@ func TestServer_IgnoreTrip(t *testing.T) {
 		})
 		assert.NoError(t, err)
 
-		s := New(db)
+		s := New(db, fakeMessagesClient{})
 		res, err := s.IgnoreTrip(ctx, &tripspb.IgnoreTripRequest{Id: id.String()})
 		assert.NoError(t, err)
 		assert.Equal(t, &tripspb.IgnoreTripResponse{}, res)

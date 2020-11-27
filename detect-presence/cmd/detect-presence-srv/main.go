@@ -27,6 +27,7 @@ var (
 	deviceFile   = flag.String("device-file", "", "JSON file to check for device presence instead of using Bluetooth")
 	deviceName   = flag.String("device-name", "hci0", "Local Bluetooth device name")
 	messagesURL  = flag.String("messages-url", "localhost:6361", "URL for messages service to use to send chat messages")
+	mode         = flag.String("mode", "server", "Mode (server or client) to use to detect presence")
 )
 
 var devices = []presence.Device{
@@ -41,6 +42,10 @@ func main() {
 	storage.SetDefaultDBName("presence_dev")
 	flag.Parse()
 
+	if *mode != "server" && *mode != "client" {
+		log.Panicf("invalid mode %q", *mode)
+	}
+
 	stopObs := observability.MustStart("detect-presence-srv")
 	defer stopObs()
 
@@ -51,35 +56,37 @@ func main() {
 
 	messages := messagespb.NewMessagesServiceClient(messagesConn)
 
-	tripTracker, err := trips.NewTracker(db, messages)
-	if err != nil {
-		log.Panicf("Error setting up trip tracker: %v", err)
-	}
-
-	t := presence.NewTracker()
-	t.OnLeave(tripTracker)
-	t.OnReturn(tripTracker)
-
-	var d detector.Detector
-	if *deviceFile != "" {
-		d = &detector.FileDetector{
-			Path: *deviceFile,
+	if *mode == "server" {
+		tripTracker, err := trips.NewTracker(db, messages)
+		if err != nil {
+			log.Panicf("Error setting up trip tracker: %v", err)
 		}
-	} else {
-		d = &detector.HCIDetector{
-			DeviceName: *deviceName,
+
+		t := presence.NewTracker()
+		t.OnLeave(tripTracker)
+		t.OnReturn(tripTracker)
+
+		var d detector.Detector
+		if *deviceFile != "" {
+			d = &detector.FileDetector{
+				Path: *deviceFile,
+			}
+		} else {
+			d = &detector.HCIDetector{
+				DeviceName: *deviceName,
+			}
 		}
+
+		c := &checker.Checker{
+			Tracker:  t,
+			Detector: d,
+			Interval: *pingInterval,
+			Devices:  devices,
+		}
+		go c.Run(context.Background(), nil)
 	}
 
-	c := &checker.Checker{
-		Tracker:  t,
-		Detector: d,
-		Interval: *pingInterval,
-		Devices:  devices,
-	}
-	go c.Run(context.Background(), nil)
-
-	tripsService := tripsservice.New(db)
+	tripsService := tripsservice.New(db, messages)
 	go rpc.ListenAndServe(rpc.WithRegisteredServices(func(server *grpc.Server) {
 		tripspb.RegisterTripsServiceServer(server, tripsService)
 	}))

@@ -13,6 +13,7 @@ import (
 
 	"github.com/mjm/pi-tools/detect-presence/database"
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
+	messagespb "github.com/mjm/pi-tools/homebase/bot/proto/messages"
 )
 
 func (s *Server) RecordTrips(ctx context.Context, req *tripspb.RecordTripsRequest) (*tripspb.RecordTripsResponse, error) {
@@ -31,6 +32,7 @@ func (s *Server) RecordTrips(ctx context.Context, req *tripspb.RecordTripsReques
 
 	q := s.q.WithTx(tx)
 
+	var recordedTrips []database.Trip
 	for i, t := range req.GetTrips() {
 		if t.GetId() == "" {
 			return nil, status.Errorf(codes.InvalidArgument, "missing ID for trip %d", i)
@@ -56,7 +58,7 @@ func (s *Server) RecordTrips(ctx context.Context, req *tripspb.RecordTripsReques
 			return nil, status.Errorf(codes.InvalidArgument, "invalid returned at time for trip %d: %s", i, err)
 		}
 
-		_, err = q.RecordTrip(ctx, database.RecordTripParams{
+		trip, err := q.RecordTrip(ctx, database.RecordTripParams{
 			ID:     id,
 			LeftAt: leftAt,
 			ReturnedAt: sql.NullTime{
@@ -67,10 +69,22 @@ func (s *Server) RecordTrips(ctx context.Context, req *tripspb.RecordTripsReques
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "recording trip: %s", err)
 		}
+
+		recordedTrips = append(recordedTrips, trip)
 	}
 
 	if err := tx.Commit(); err != nil {
 		return nil, status.Errorf(codes.Internal, "recording trips: %s", err)
+	}
+
+	for _, trip := range recordedTrips {
+		if _, err := s.messages.SendTripCompletedMessage(ctx, &messagespb.SendTripCompletedMessageRequest{
+			TripId:     trip.ID.String(),
+			LeftAt:     trip.LeftAt.Format(time.RFC3339),
+			ReturnedAt: trip.ReturnedAt.Time.Format(time.RFC3339),
+		}); err != nil {
+			return nil, status.Errorf(codes.Internal, "sending trip completed message: %s", err)
+		}
 	}
 
 	return &tripspb.RecordTripsResponse{}, nil

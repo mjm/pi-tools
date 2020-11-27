@@ -17,6 +17,7 @@ go_library(
     deps = [
         "//detect-presence/database",
         "//detect-presence/proto/trips",
+        "//homebase/bot/proto/messages",
         "//storage",
         "@com_github_google_uuid//:uuid",
         "@io_opentelemetry_go_otel//api/trace",
@@ -32,16 +33,19 @@ go_test(
         "ignore_trip_test.go",
         "list_trips_test.go",
         "main_test.go",
+        "messages_test.go",
     ],
     embed = [":tripsservice"],
     deps = [
         "//detect-presence/database",
         "//detect-presence/database/migrate",
         "//detect-presence/proto/trips",
+        "//homebase/bot/proto/messages",
         "//pkg/migrate/postgres",
         "@com_github_google_uuid//:uuid",
         "@com_github_jonboulle_clockwork//:clockwork",
         "@com_github_stretchr_testify//assert",
         "@com_zombiezen_go_postgrestest//:postgrestest",
+        "@org_golang_google_grpc//:go_default_library",
     ],
 )

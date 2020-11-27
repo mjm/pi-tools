@@ -24,7 +24,7 @@ func TestServer_ListTrips(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
-		s := New(db)
+		s := New(db, fakeMessagesClient{})
 		res, err := s.ListTrips(ctx, &tripspb.ListTripsRequest{})
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
@@ -69,7 +69,7 @@ func TestServer_ListTrips(t *testing.T) {
 			TagsToAdd: []string{"long trip", "dog walk"},
 		}))
 
-		s := New(db)
+		s := New(db, fakeMessagesClient{})
 		res, err := s.ListTrips(ctx, &tripspb.ListTripsRequest{})
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
