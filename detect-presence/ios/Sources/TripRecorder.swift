@@ -22,6 +22,8 @@ class TripRecorder {
                 NSLog("starting trip \(trip)")
             case .tripEnded(let queuedTrips):
                 self.recordTrips(queuedTrips)
+            default:
+                break
             }
         }.store(in: &cancellables)
     }

@@ -5,6 +5,7 @@ class TripsController {
     enum Event {
         case tripBegan(Trip)
         case tripEnded([Trip])
+        case tripDiscarded(Trip)
     }
 
     @Published var currentTrip: Trip?
@@ -81,8 +82,17 @@ class TripsController {
         }
 
         trip.returnedAt = Date()
-        state.queuedTrips.append(trip)
         state.currentTrip = nil
+
+        let duration = trip.leftAt.distance(to: trip.returnedAt!)
+        guard duration > 60 else {
+            NSLog("Discarding trip that only lasted \(duration) seconds")
+            saveState()
+            eventsSubject.send(.tripDiscarded(trip))
+            return
+        }
+
+        state.queuedTrips.append(trip)
         saveState()
 
         eventsSubject.send(.tripEnded(state.queuedTrips))
@@ -92,6 +102,11 @@ class TripsController {
         state.queuedTrips = state.queuedTrips.filter { trip in
             !trips.contains(where: { $0.id == trip.id })
         }
+        saveState()
+    }
+
+    func clearQueue() {
+        state.queuedTrips.removeAll()
         saveState()
     }
 }

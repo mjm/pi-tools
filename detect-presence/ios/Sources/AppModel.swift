@@ -33,6 +33,8 @@ class AppModel: ObservableObject {
                     return "Started trip \(trip.id)"
                 case .tripEnded(let queuedTrips):
                     return "Ended trip with \(queuedTrips.count) trips to record"
+                case .tripDiscarded(let trip):
+                    return "Discarded \(trip.leftAt.distance(to: trip.returnedAt!)) second trip"
                 }
             case .recorderEvent(_, let evt):
                 switch evt {
@@ -85,5 +87,9 @@ class AppModel: ObservableObject {
 
     func recordQueuedTrips() {
         tripRecorder.recordTrips(tripsController.queuedTrips)
+    }
+
+    func clearQueuedTrips() {
+        tripsController.clearQueue()
     }
 }

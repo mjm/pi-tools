@@ -13,13 +13,13 @@ struct ContentView: View {
                     Button {
                         model.beginTrip()
                     } label: {
-                        Label("Simulate Begin Trip", systemImage: "play.fill")
+                        Label("Simulate begin trip", systemImage: "play.fill")
                     }
-                    
+
                     Button {
                         model.endTrip()
                     } label: {
-                        Label("Simulate End Trip", systemImage: "stop.fill")
+                        Label("Simulate end trip", systemImage: "stop.fill")
                     }
                 }
 
@@ -34,6 +34,12 @@ struct ContentView: View {
                         model.recordQueuedTrips()
                     } label: {
                         Label("Record \(model.queuedTripCount) queued trips", systemImage: "icloud.and.arrow.up.fill")
+                    }
+
+                    Button {
+                        model.clearQueuedTrips()
+                    } label: {
+                        Label("Clear queued trips", systemImage: "trash.fill")
                     }
                 }
             }
