@@ -17,23 +17,23 @@ spec:
       # this is what lets us talk to the bluetooth device
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: NotIn
-                    values:
-                      - raspberrypi
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            # do not allow scheduling on the same node that is running detect-presence-srv, in case this advertising
-            # interferes with the other bluetooth things that it does
-            - topologyKey: kubernetes.io/hostname
-              labelSelector:
-                matchLabels:
-                  app: detect-presence
+#      affinity:
+#        nodeAffinity:
+#          requiredDuringSchedulingIgnoredDuringExecution:
+#            nodeSelectorTerms:
+#              - matchExpressions:
+#                  - key: kubernetes.io/hostname
+#                    operator: NotIn
+#                    values:
+#                      - raspberrypi
+#        podAntiAffinity:
+#          requiredDuringSchedulingIgnoredDuringExecution:
+#            # do not allow scheduling on the same node that is running detect-presence-srv, in case this advertising
+#            # interferes with the other bluetooth things that it does
+#            - topologyKey: kubernetes.io/hostname
+#              labelSelector:
+#                matchLabels:
+#                  app: detect-presence
       containers:
         - name: beacon-srv
           image: index.docker.io/mmoriarity/beacon-srv:latest

@@ -36,6 +36,8 @@ spec:
             - dbname=presence user=presence host=postgresql.storage sslmode=disable
             - "-messages-url"
             - homebase-bot-srv-grpc.homebase:80
+            - -mode
+            - client
           env:
             - name: PGPASSWORD
               valueFrom:
