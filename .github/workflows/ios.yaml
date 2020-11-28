@@ -28,11 +28,12 @@ jobs:
         env:
           APPLE_CERTS_PASSPHRASE: ${{ secrets.APPLE_CERTS_PASSPHRASE }}
         run: |
-          security create-keychain -p "" build.keychain
-          security import detect-presence/ios/Certificates.p12 -k ~/Library/Keychains/build.keychain -P "$APPLE_CERTS_PASSPHRASE" -A
-          security list-keychains -s ~/Library/Keychains/build.keychain
-          security default-keychain -s ~/Library/Keychains/build.keychain
-          security unlock-keychain -p "" ~/Library/Keychains/build.keychain
-          security set-key-partition-list -S apple-tool:,apple: -s -k "" ~/Library/Keychains/build.keychain
+          security create-keychain -p "" $RUNNER_TEMP/build.keychain
+          security set-keychain-settings -lut 21600 $RUNNER_TEMP/build.keychain
+          security unlock-keychain -p "" $RUNNER_TEMP/build.keychain
+          security import detect-presence/ios/Certificates.p12 -k $RUNNER_TEMP/build.keychain -P "$APPLE_CERTS_PASSPHRASE" -A
+          security list-keychains -d user -s $RUNNER_TEMP/build.keychain
+          security default-keychain -s $RUNNER_TEMP/build.keychain
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" $RUNNER_TEMP/build.keychain
       - name: Build Presence app
         run: bazel build --config=ci --apple_platform_type=ios --cpu=ios_arm64 --xcode_version=12.2 //detect-presence/ios:ios_ad_hoc
