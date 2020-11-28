@@ -10,7 +10,7 @@ spec:
   strategy:
     rollingUpdate:
       maxUnavailable: 1
-      maxSurge: 1
+      maxSurge: 0
   selector:
     matchLabels:
       app: prometheus
@@ -21,6 +21,8 @@ spec:
       annotations:
         prometheus.io/scrape: "true"
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: raspberrypi
       containers:
         - name: prometheus
           image: index.docker.io/mmoriarity/prometheus:latest
@@ -42,7 +44,7 @@ spec:
               containerPort: 9090
               protocol: TCP
           volumeMounts:
-            - name: prometheus-data
+            - name: prometheus-data-host
               mountPath: /prometheus
           livenessProbe:
             httpGet:
@@ -54,6 +56,6 @@ spec:
               path: /-/ready
               port: http
       volumes:
-        - name: prometheus-data
-          persistentVolumeClaim:
-            claimName: prometheus-data-nfs
+        - name: prometheus-data-host
+          hostPath:
+            path: /srv/nfs/kubernetes/monitoring/prometheus-data
