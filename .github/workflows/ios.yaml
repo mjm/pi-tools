@@ -22,5 +22,15 @@ jobs:
         run: |
           sudo curl -L https://github.com/bazelbuild/bazel/releases/download/3.7.1/bazel-3.7.1-darwin-x86_64 -o /usr/local/bin/bazel
           sudo chmod +x /usr/local/bin/bazel
+      - name: Install certificates
+        env:
+          APPLE_CERTS_PASSPHRASE: {{ secrets.APPLE_CERTS_PASSPHRASE }}
+        run: |
+          security create-keychain -p "" build.keychain
+          security import detect-presence/ios/Certificates.p12 -k ~/Library/Keychains/build.keychain -P "$APPLE_CERTS_PASSPHRASE" -A
+          security list-keychains -s ~/Library/Keychains/build.keychain
+          security default-keychain -s ~/Library/Keychains/build.keychain
+          security unlock-keychain -p "" ~/Library/Keychains/build.keychain
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" ~/Library/Keychains/build.keychain
       - name: Build Presence app
-        run: bazel build --config=ci //detect-presence/ios:ios_ad_hoc
+        run: bazel build --config=ci --apple_platform_type=ios --cpu=ios_arm64 //detect-presence/ios:ios_ad_hoc
