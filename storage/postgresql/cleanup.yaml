@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: storage
+  name: postgresql-cleanup
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: raspberrypi
+  containers:
+    - name: postgresql
+      image: index.docker.io/postgres@sha256:b6399aef923e0529a4f2a5874e8860d29cef3726ab7079883f3368aaa2a9f29c
+      command:
+        - pg_resetwal
+        - -f
+        - /var/lib/postgresql/data
+      env:
+        - name: POSTGRES_PASSWORD_FILE
+          value: /var/secrets/pg-password
+      volumeMounts:
+        - name: secrets
+          mountPath: /var/secrets
+          readOnly: true
+        - name: postgresql-data-nfs
+          mountPath: /var/lib/postgresql/data
+      securityContext:
+        runAsUser: 70
+        runAsGroup: 70
+  volumes:
+    - name: secrets
+      secret:
+        secretName: postgresql
+    - name: postgresql-data-nfs
+      hostPath:
+        path: /srv/nfs/kubernetes/storage/postgresql-data-nfs-postgresql-0
