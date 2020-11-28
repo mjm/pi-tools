@@ -6,6 +6,7 @@ swift_library(
     srcs = [
         "Sources/App.swift",
         "Sources/AppModel.swift",
+        "Sources/BackoffExecutor.swift",
         "Sources/BeaconObserver.swift",
         "Sources/ContentView.swift",
         "Sources/State.swift",

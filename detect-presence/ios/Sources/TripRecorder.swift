@@ -12,6 +12,7 @@ class TripRecorder {
     private var client: TripsServiceService!
     private let eventsSubject = PassthroughSubject<Event, Never>()
     private var cancellables = Set<AnyCancellable>()
+    private let backoff = BackoffExecutor()
 
     init<P: Publisher>(events: P) where P.Output == TripsController.Event, P.Failure == Never {
         events.sink { [weak self] event in
@@ -33,24 +34,30 @@ class TripRecorder {
     }
 
     func recordTrips(_ trips: [Trip]) {
-        do {
-            let request = RecordTripsRequest.with {
-                $0.trips = trips.map(\.asProto)
-            }
-            try client.recordTrips(request) { _, result in
-                DispatchQueue.main.sync {
-                    if result.success && result.statusCode == .ok {
-                        NSLog("successfully recorded trip")
-                        self.eventsSubject.send(.recorded(trips))
-                    } else {
-                        NSLog("failed to record trip: \(result)")
-                        self.eventsSubject.send(.recordFailed(result.description))
+        let request = RecordTripsRequest.with {
+            $0.trips = trips.map(\.asProto)
+        }
+
+        backoff.enqueue(initialDelay: 30) { completion in
+            do {
+                try self.client.recordTrips(request) { _, result in
+                    DispatchQueue.main.sync {
+                        if result.success && result.statusCode == .ok {
+                            NSLog("successfully recorded trip")
+                            self.eventsSubject.send(.recorded(trips))
+                            completion(true)
+                        } else {
+                            NSLog("failed to record trip: \(result)")
+                            self.eventsSubject.send(.recordFailed(result.description))
+                            completion(false)
+                        }
                     }
                 }
+            } catch {
+                NSLog("error trying to record trips: \(error)")
+                self.eventsSubject.send(.recordFailed(error.localizedDescription))
+                completion(false)
             }
-        } catch {
-            NSLog("error trying to record trips: \(error)")
-            self.eventsSubject.send(.recordFailed(error.localizedDescription))
         }
     }
 
