@@ -24,7 +24,7 @@ jobs:
           sudo chmod +x /usr/local/bin/bazel
       - name: Install certificates
         env:
-          APPLE_CERTS_PASSPHRASE: {{ secrets.APPLE_CERTS_PASSPHRASE }}
+          APPLE_CERTS_PASSPHRASE: ${{ secrets.APPLE_CERTS_PASSPHRASE }}
         run: |
           security create-keychain -p "" build.keychain
           security import detect-presence/ios/Certificates.p12 -k ~/Library/Keychains/build.keychain -P "$APPLE_CERTS_PASSPHRASE" -A
