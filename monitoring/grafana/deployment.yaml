@@ -6,7 +6,7 @@ metadata:
   labels:
     app: grafana
 spec:
-  replicas: 1
+  replicas: 3
   strategy:
     rollingUpdate:
       maxUnavailable: 1
@@ -25,6 +25,21 @@ spec:
         - image: index.docker.io/mmoriarity/grafana:latest
           name: grafana
           env:
+            - name: GF_DATABASE_TYPE
+              value: postgres
+            - name: GF_DATABASE_HOST
+              value: postgresql.storage
+            - name: GF_DATABASE_NAME
+              value: grafana
+            - name: GF_DATABASE_USER
+              value: grafana
+            - name: GF_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana
+                  key: db-password
+            - name: GF_DATABASE_SSL_MODE
+              value: disable
             - name: GF_USERS_ALLOW_SIGN_UP
               value: "false"
             - name: GF_USERS_AUTO_ASSIGN_ORG
@@ -47,6 +62,10 @@ spec:
               memory: "75M"
             limits:
               memory: "150M"
+          readinessProbe:
+            httpGet:
+              port: http
+              path: /api/health
           ports:
             - containerPort: 3000
               name: http
