@@ -1,8 +1,6 @@
 :8080 {
     root * /homebase
     file_server
-    reverse_proxy /TripsService/* detect-presence-srv.detect-presence:80
-    reverse_proxy /LinksService/* go-links-srv.go-links:80
 
     handle_errors {
       @404 {
