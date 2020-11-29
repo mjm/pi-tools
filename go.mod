@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
+	github.com/etherlabsio/healthcheck v0.0.0-20191224061800-dd3d2fd8c3f6
 	github.com/golang-migrate/migrate/v4 v4.13.0
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/golang/protobuf v1.4.2
@@ -28,7 +29,7 @@ require (
 	k8s.io/client-go v0.19.1
 	k8s.io/klog v1.0.0 // indirect
 	k8s.io/kubernetes v1.19.4
-	sigs.k8s.io/sig-storage-lib-external-provisioner/v6 v6.1.0 // indirect
+	sigs.k8s.io/sig-storage-lib-external-provisioner/v6 v6.1.0
 	zombiezen.com/go/postgrestest v1.0.0
 )
 

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/etherlabsio/healthcheck"
 	"go.opentelemetry.io/otel/semconv"
 
 	"github.com/mjm/pi-tools/pkg/instrumentation/otelsql"
@@ -29,11 +30,16 @@ func SetDefaultDBName(name string) {
 // should use this interface type rather than *sql.DB directly so that we can substitute an implementation
 // that supports tracing.
 type DB interface {
+	healthcheck.Checker
 	BeginTx(context.Context, *sql.TxOptions) (*sql.Tx, error)
 	ExecContext(context.Context, string, ...interface{}) (sql.Result, error)
 	PrepareContext(context.Context, string) (*sql.Stmt, error)
 	QueryContext(context.Context, string, ...interface{}) (*sql.Rows, error)
 	QueryRowContext(context.Context, string, ...interface{}) *sql.Row
+}
+
+type wrappedDB struct {
+	*otelsql.DB
 }
 
 // OpenDB opens the PostgreSQL database for the current application. Panics if SetDefaultDBName has not been called.
@@ -60,7 +66,7 @@ func OpenDB(migrations map[string][]byte) (DB, error) {
 		return nil, fmt.Errorf("migrating database: %w", err)
 	}
 
-	return db, nil
+	return &wrappedDB{DB: db}, nil
 }
 
 // MustOpenDB calls OpenDB, but panics if there is an error opening the database or running migrations. Use this in main

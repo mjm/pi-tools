@@ -23,6 +23,7 @@ go_library(
         "//pkg/signal",
         "//rpc",
         "//storage",
+        "@com_github_etherlabsio_healthcheck//:healthcheck",
         "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
         "@org_golang_google_grpc//:go_default_library",
     ],

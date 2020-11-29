@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/etherlabsio/healthcheck"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"google.golang.org/grpc"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -115,6 +116,11 @@ func main() {
 			},
 		})
 	}
+
+	http.Handle("/healthz",
+		otelhttp.WithRouteTag("CheckHealth", healthcheck.Handler(
+			healthcheck.WithTimeout(3*time.Second),
+			healthcheck.WithChecker("database", db))))
 
 	go rpc.ListenAndServe(rpc.WithRegisteredServices(func(s *grpc.Server) {
 		messagespb.RegisterMessagesServiceServer(s, messagesService)

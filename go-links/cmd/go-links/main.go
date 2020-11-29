@@ -4,7 +4,9 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/etherlabsio/healthcheck"
 	_ "github.com/lib/pq"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"google.golang.org/grpc"
@@ -35,8 +37,12 @@ func main() {
 	}
 
 	linksService := linksservice.New(db)
-	http.Handle("/healthz", otelhttp.WithRouteTag("CheckHealth", http.HandlerFunc(linksService.CheckHealth)))
-	http.Handle("/", otelhttp.WithRouteTag("HandleShortLink", http.HandlerFunc(linksService.HandleShortLink)))
+	http.Handle("/healthz",
+		otelhttp.WithRouteTag("CheckHealth", healthcheck.Handler(
+			healthcheck.WithTimeout(3*time.Second),
+			healthcheck.WithChecker("database", db))))
+	http.Handle("/",
+		otelhttp.WithRouteTag("HandleShortLink", http.HandlerFunc(linksService.HandleShortLink)))
 
 	go rpc.ListenAndServe(rpc.WithRegisteredServices(func(server *grpc.Server) {
 		linkspb.RegisterLinksServiceServer(server, linksService)

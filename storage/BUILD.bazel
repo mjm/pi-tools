@@ -2,12 +2,16 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "storage",
-    srcs = ["db.go"],
+    srcs = [
+        "db.go",
+        "healthcheck.go",
+    ],
     importpath = "github.com/mjm/pi-tools/storage",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/instrumentation/otelsql",
         "//pkg/migrate/postgres",
+        "@com_github_etherlabsio_healthcheck//:healthcheck",
         "@io_opentelemetry_go_otel//semconv",
     ],
 )

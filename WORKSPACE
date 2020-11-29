@@ -117,7 +117,7 @@ container_pull(
 container_pull(
     name = "blackbox_exporter",
     architecture = "arm64",
-    digest = "sha256:7c3e8d34768f2db17dce800b0b602196871928977f205bbb8ab44e95a8821be5", # v0.18.0
+    digest = "sha256:7c3e8d34768f2db17dce800b0b602196871928977f205bbb8ab44e95a8821be5",  # v0.18.0
     os = "linux",
     registry = "index.docker.io",
     repository = "prom/blackbox-exporter",
@@ -4069,6 +4069,13 @@ go_repository(
     importpath = "sigs.k8s.io/sig-storage-lib-external-provisioner/v6",
     sum = "h1:4kyxBJ/3fzLooWOZkx5NEO/pUN6woM9JBnHuyWzqkc8=",
     version = "v6.1.0",
+)
+
+go_repository(
+    name = "com_github_etherlabsio_healthcheck",
+    importpath = "github.com/etherlabsio/healthcheck",
+    sum = "h1:az9jaEKre+mwUWiS9Pl8h1FuOvdiFM7UqplmCmJtHUQ=",
+    version = "v0.0.0-20191224061800-dd3d2fd8c3f6",
 )
 
 gazelle_dependencies()

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/etherlabsio/healthcheck"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"google.golang.org/grpc"
 
@@ -91,7 +92,11 @@ func main() {
 
 	appService := appservice.New()
 	http.Handle("/download_app",
-		otelhttp.WithRouteTag("download_app", http.HandlerFunc(appService.DownloadApp)))
+		otelhttp.WithRouteTag("DownloadApp", http.HandlerFunc(appService.DownloadApp)))
+	http.Handle("/healthz",
+		otelhttp.WithRouteTag("CheckHealth", healthcheck.Handler(
+			healthcheck.WithTimeout(3*time.Second),
+			healthcheck.WithChecker("database", db))))
 
 	tripsService := tripsservice.New(db, messages)
 	go rpc.ListenAndServe(rpc.WithRegisteredServices(func(server *grpc.Server) {
