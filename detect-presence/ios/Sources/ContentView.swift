@@ -46,7 +46,13 @@ struct ContentView: View {
 
             Section(header: Text("All Events")) {
                 ForEach(model.allEvents) { event in
-                    Text(event.description)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(event.description)
+                            .font(.body)
+                        (Text(event.timestamp, style: .relative) + Text(" ago"))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
         }
