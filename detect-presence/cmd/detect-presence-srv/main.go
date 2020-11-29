@@ -4,8 +4,10 @@ import (
 	"context"
 	"flag"
 	"log"
+	"net/http"
 	"time"
 
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"google.golang.org/grpc"
 
 	"github.com/mjm/pi-tools/detect-presence/checker"
@@ -13,6 +15,7 @@ import (
 	"github.com/mjm/pi-tools/detect-presence/detector"
 	"github.com/mjm/pi-tools/detect-presence/presence"
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
+	"github.com/mjm/pi-tools/detect-presence/service/appservice"
 	"github.com/mjm/pi-tools/detect-presence/service/tripsservice"
 	"github.com/mjm/pi-tools/detect-presence/trips"
 	messagespb "github.com/mjm/pi-tools/homebase/bot/proto/messages"
@@ -85,6 +88,10 @@ func main() {
 		}
 		go c.Run(context.Background(), nil)
 	}
+
+	appService := appservice.New()
+	http.Handle("/download_app",
+		otelhttp.WithRouteTag("download_app", http.HandlerFunc(appService.DownloadApp)))
 
 	tripsService := tripsservice.New(db, messages)
 	go rpc.ListenAndServe(rpc.WithRegisteredServices(func(server *grpc.Server) {

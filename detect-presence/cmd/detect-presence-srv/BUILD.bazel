@@ -15,6 +15,7 @@ go_library(
         "//detect-presence/detector",
         "//detect-presence/presence",
         "//detect-presence/proto/trips",
+        "//detect-presence/service/appservice",
         "//detect-presence/service/tripsservice",
         "//detect-presence/trips",
         "//homebase/bot/proto/messages",
@@ -22,6 +23,7 @@ go_library(
         "//pkg/signal",
         "//rpc",
         "//storage",
+        "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
         "@org_golang_google_grpc//:go_default_library",
     ],
 )

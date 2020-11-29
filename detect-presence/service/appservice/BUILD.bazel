@@ -1,0 +1,17 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "appservice",
+    srcs = [
+        "download_app.go",
+        "server.go",
+    ],
+    importpath = "github.com/mjm/pi-tools/detect-presence/service/appservice",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/spanerr",
+        "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
+        "@io_opentelemetry_go_otel//api/trace",
+        "@io_opentelemetry_go_otel//label",
+    ],
+)
