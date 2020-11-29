@@ -10,14 +10,14 @@ import (
 	"github.com/mjm/pi-tools/go-links/database"
 	"github.com/mjm/pi-tools/go-links/database/migrate"
 	linkspb "github.com/mjm/pi-tools/go-links/proto/links"
-	"github.com/mjm/pi-tools/pkg/migrate/postgres"
+	"github.com/mjm/pi-tools/storage/storagetest"
 )
 
 func TestServer_GetLink(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("missing ID", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
 
 		s := New(db)
@@ -27,7 +27,7 @@ func TestServer_GetLink(t *testing.T) {
 	})
 
 	t.Run("invalid ID", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
 
 		s := New(db)
@@ -37,9 +37,8 @@ func TestServer_GetLink(t *testing.T) {
 	})
 
 	t.Run("missing link", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
 		s := New(db)
 		id := ksuid.New()
@@ -49,9 +48,8 @@ func TestServer_GetLink(t *testing.T) {
 	})
 
 	t.Run("valid link", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
 		q := database.New(db)
 		id := ksuid.New()

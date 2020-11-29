@@ -10,14 +10,14 @@ import (
 	"github.com/mjm/pi-tools/go-links/database"
 	"github.com/mjm/pi-tools/go-links/database/migrate"
 	linkspb "github.com/mjm/pi-tools/go-links/proto/links"
-	"github.com/mjm/pi-tools/pkg/migrate/postgres"
+	"github.com/mjm/pi-tools/storage/storagetest"
 )
 
 func TestServer_CreateLink(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("missing short URL", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
 
 		s := New(db)
@@ -29,7 +29,7 @@ func TestServer_CreateLink(t *testing.T) {
 	})
 
 	t.Run("missing destination URL", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
 
 		s := New(db)
@@ -41,9 +41,8 @@ func TestServer_CreateLink(t *testing.T) {
 	})
 
 	t.Run("valid input", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
 		s := New(db)
 		res, err := s.CreateLink(ctx, &linkspb.CreateLinkRequest{

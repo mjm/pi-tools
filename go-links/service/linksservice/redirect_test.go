@@ -12,16 +12,15 @@ import (
 
 	"github.com/mjm/pi-tools/go-links/database"
 	"github.com/mjm/pi-tools/go-links/database/migrate"
-	"github.com/mjm/pi-tools/pkg/migrate/postgres"
+	"github.com/mjm/pi-tools/storage/storagetest"
 )
 
 func TestServer_HandleShortLink(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("missing link", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
 		s := New(db)
 		ts := httptest.NewServer(http.HandlerFunc(s.HandleShortLink))
@@ -37,9 +36,8 @@ func TestServer_HandleShortLink(t *testing.T) {
 	})
 
 	t.Run("valid link", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
 		q := database.New(db)
 		_, err = q.CreateLink(ctx, database.CreateLinkParams{
@@ -65,9 +63,8 @@ func TestServer_HandleShortLink(t *testing.T) {
 	})
 
 	t.Run("strips slashes from the short URL", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
 		q := database.New(db)
 		_, err = q.CreateLink(ctx, database.CreateLinkParams{

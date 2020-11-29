@@ -12,7 +12,7 @@ import (
 
 	"github.com/mjm/pi-tools/detect-presence/database"
 	"github.com/mjm/pi-tools/detect-presence/database/migrate"
-	"github.com/mjm/pi-tools/pkg/migrate/postgres"
+	"github.com/mjm/pi-tools/storage/storagetest"
 )
 
 func TestNewTracker(t *testing.T) {
@@ -20,9 +20,8 @@ func TestNewTracker(t *testing.T) {
 	clock := clockwork.NewFakeClock()
 
 	t.Run("starts empty when there are no trips", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
 		tt, err := NewTracker(db, &fakeMessagesClient{})
 		assert.NoError(t, err)
@@ -33,9 +32,8 @@ func TestNewTracker(t *testing.T) {
 	})
 
 	t.Run("populates last left and last returned when there are previous trips", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
 		q := database.New(db)
 
@@ -62,9 +60,8 @@ func TestNewTracker(t *testing.T) {
 	})
 
 	t.Run("populates last left when there is only one trip and it's in-progress", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
 		q := database.New(db)
 
@@ -85,9 +82,8 @@ func TestNewTracker(t *testing.T) {
 	})
 
 	t.Run("populates last left and last returned when there are previous trips and a current trip", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
 		q := database.New(db)
 
@@ -128,9 +124,8 @@ func TestTracker_OnLeave(t *testing.T) {
 	clock := clockwork.NewFakeClock()
 
 	t.Run("starts a new trip", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 		q := database.New(db)
 
 		tt, err := NewTracker(db, &fakeMessagesClient{})
@@ -147,9 +142,8 @@ func TestTracker_OnLeave(t *testing.T) {
 	})
 
 	t.Run("does not start a trip if one is already in-progress", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
 		q := database.New(db)
 
@@ -179,9 +173,8 @@ func TestTracker_OnReturn(t *testing.T) {
 	clock := clockwork.NewFakeClock()
 
 	t.Run("ends the current trip", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
 		q := database.New(db)
 

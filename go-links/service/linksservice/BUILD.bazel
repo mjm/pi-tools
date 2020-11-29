@@ -43,7 +43,7 @@ go_test(
         "//go-links/database",
         "//go-links/database/migrate",
         "//go-links/proto/links",
-        "//pkg/migrate/postgres",
+        "//storage/storagetest",
         "@com_github_segmentio_ksuid//:ksuid",
         "@com_github_stretchr_testify//assert",
         "@com_zombiezen_go_postgrestest//:postgrestest",

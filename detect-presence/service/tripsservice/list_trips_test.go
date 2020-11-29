@@ -13,16 +13,15 @@ import (
 	"github.com/mjm/pi-tools/detect-presence/database"
 	"github.com/mjm/pi-tools/detect-presence/database/migrate"
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
-	"github.com/mjm/pi-tools/pkg/migrate/postgres"
+	"github.com/mjm/pi-tools/storage/storagetest"
 )
 
 func TestServer_ListTrips(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("empty list of trips", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
 		s := New(db, fakeMessagesClient{})
 		res, err := s.ListTrips(ctx, &tripspb.ListTripsRequest{})
@@ -32,9 +31,8 @@ func TestServer_ListTrips(t *testing.T) {
 	})
 
 	t.Run("with a few trips", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
 		clock := clockwork.NewFakeClockAt(time.Date(2020, 11, 3, 0, 0, 0, 0, time.UTC))
 		q := database.New(db)

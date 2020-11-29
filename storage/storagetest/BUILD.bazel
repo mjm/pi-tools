@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "storagetest",
+    srcs = ["db.go"],
+    importpath = "github.com/mjm/pi-tools/storage/storagetest",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/migrate/postgres",
+        "//storage",
+        "@com_zombiezen_go_postgrestest//:postgrestest",
+    ],
+)

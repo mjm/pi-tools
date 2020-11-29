@@ -33,7 +33,7 @@ go_test(
         "//detect-presence/database",
         "//detect-presence/database/migrate",
         "//homebase/bot/proto/messages",
-        "//pkg/migrate/postgres",
+        "//storage/storagetest",
         "@com_github_google_uuid//:uuid",
         "@com_github_jonboulle_clockwork//:clockwork",
         "@com_github_stretchr_testify//assert",

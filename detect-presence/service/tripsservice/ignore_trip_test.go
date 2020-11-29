@@ -11,16 +11,15 @@ import (
 	"github.com/mjm/pi-tools/detect-presence/database"
 	"github.com/mjm/pi-tools/detect-presence/database/migrate"
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
-	"github.com/mjm/pi-tools/pkg/migrate/postgres"
+	"github.com/mjm/pi-tools/storage/storagetest"
 )
 
 func TestServer_IgnoreTrip(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("missing trip ID", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		// no need to migrate, we shouldn't make it to the query
 
 		s := New(db, fakeMessagesClient{})
 		res, err := s.IgnoreTrip(ctx, &tripspb.IgnoreTripRequest{})
@@ -29,9 +28,8 @@ func TestServer_IgnoreTrip(t *testing.T) {
 	})
 
 	t.Run("non-UUID trip ID", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		// no need to migrate, we shouldn't make it to the query
 
 		s := New(db, fakeMessagesClient{})
 		res, err := s.IgnoreTrip(ctx, &tripspb.IgnoreTripRequest{Id: "some nonsense"})
@@ -40,9 +38,8 @@ func TestServer_IgnoreTrip(t *testing.T) {
 	})
 
 	t.Run("missing trip", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
 		s := New(db, fakeMessagesClient{})
 		id := uuid.New()
@@ -52,9 +49,8 @@ func TestServer_IgnoreTrip(t *testing.T) {
 	})
 
 	t.Run("valid trip", func(t *testing.T) {
-		db, err := dbSrv.NewDatabase(ctx)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
 		assert.NoError(t, err)
-		assert.NoError(t, postgres.UpIfNeeded(db, migrate.Data))
 
 		q := database.New(db)
 		id := uuid.New()
