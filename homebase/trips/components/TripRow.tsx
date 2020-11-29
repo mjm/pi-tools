@@ -16,13 +16,13 @@ export function TripRow({trip}: { trip: Trip }) {
 
     return (
         <tr key={trip.getId()}>
-            <td className="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900">
+            <td className="px-6 py-4 whitespace-nowrap text-sm leading-5 font-medium text-gray-900">
                 {format(leftAt, "PPpp")}
             </td>
-            <td className="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
+            <td className="px-6 py-4 whitespace-nowrap text-sm leading-5 text-gray-500">
                 {duration ? formatDuration(duration) : "Ongoing"}
             </td>
-            <td className="px-6 py-4 whitespace-no-wrap">
+            <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex flex-row space-x-3">
                     {trip.getTagsList().map(tag => (
                         <TripTag key={tag}>
@@ -31,7 +31,7 @@ export function TripRow({trip}: { trip: Trip }) {
                     ))}
                 </div>
             </td>
-            <td className="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
+            <td className="px-6 py-4 whitespace-nowrap text-right text-sm leading-5 font-medium">
                 <Link to={`/trips/${trip.getId()}`}
                       className="text-indigo-600 hover:text-indigo-900">
                     Details

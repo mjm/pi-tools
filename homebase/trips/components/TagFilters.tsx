@@ -13,7 +13,7 @@ export function TagFilters() {
 
     return (
         <>
-            <div className="flex flex-row items-baseline space-x-3 overflow-hidden whitespace-no-wrap flex-wrap">
+            <div className="flex flex-row items-baseline space-x-3 overflow-hidden whitespace-nowrap flex-wrap">
                 <span className="font-medium uppercase tracking-wider">Popular Tags:</span>
                 {data ? data.map(tag => (
                     <TripTag key={tag.getName()}>

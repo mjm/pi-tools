@@ -1,10 +1,6 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
-    future: {
-        removeDeprecatedGapUtilities: true,
-        purgeLayersByDefault: true,
-    },
     purge: [],
     theme: {
         extend: {
@@ -18,6 +14,8 @@ module.exports = {
         visibility: ['responsive', 'group-hover'],
     },
     plugins: [
-        require('@tailwindcss/ui'),
+        require('@tailwindcss/forms'),
+        require('@tailwindcss/typography'),
+        require('@tailwindcss/aspect-ratio'),
     ],
 }

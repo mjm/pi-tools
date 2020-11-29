@@ -2,6 +2,9 @@ import React from "react";
 import {Field, Form, Formik, FormikHelpers} from "formik";
 import {createLink, CreateLinkParams} from "com_github_mjm_pi_tools/homebase/go-links/lib/mutate";
 import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
+import {ShortURLField} from "com_github_mjm_pi_tools/homebase/go-links/components/ShortURLField";
+import {DestinationURLField} from "com_github_mjm_pi_tools/homebase/go-links/components/DestinationURLField";
+import {DescriptionField} from "com_github_mjm_pi_tools/homebase/go-links/components/DescriptionField";
 
 export function NewLinkCard() {
     async function onSubmit(values: CreateLinkParams, actions: FormikHelpers<CreateLinkParams>) {
@@ -37,55 +40,16 @@ export function NewLinkCard() {
                     )}
                     <div className="bg-gray-50 px-4 py-5 sm:p-6">
                         <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                            <div className="sm:col-span-4">
-                                <label htmlFor="shortURL"
-                                       className="block text-sm font-medium leading-5 text-gray-700">
-                                    Short URL
-                                </label>
-                                <div className="mt-1 flex rounded-md shadow-sm">
-            <span
-                className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
-              go/
-            </span>
-                                    <Field name="shortURL"
-                                           className="flex-1 form-input block w-full min-w-0 rounded-none rounded-r-md transition duration-150 ease-in-out sm:text-sm sm:leading-5"/>
-                                </div>
-                            </div>
-
-                            <div className="sm:col-span-6">
-                                <label htmlFor="destinationURL"
-                                       className="block text-sm font-medium leading-5 text-gray-700">
-                                    Destination URL
-                                </label>
-                                <div className="mt-1 rounded-md shadow-sm">
-                                    <Field name="destinationURL"
-                                           type="url"
-                                           className="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                                           placeholder="https://www.google.com/"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="sm:col-span-6">
-                                <label htmlFor="description"
-                                       className="block text-sm font-medium leading-5 text-gray-700">
-                                    Description
-                                </label>
-                                <div className="mt-1 rounded-md shadow-sm">
-                                    <Field as="textarea"
-                                           name="description"
-                                           rows={3}
-                                           className="form-textarea block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                                    />
-                                </div>
-                            </div>
+                            <ShortURLField />
+                            <DestinationURLField />
+                            <DescriptionField />
                         </div>
                     </div>
                     <div className="px-4 py-5 sm:px-6 text-right">
             <span className="inline-flex rounded-md shadow-sm">
               <button type="submit"
                       disabled={isSubmitting}
-                      className="inline-flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out">
+                      className="inline-flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:ring-indigo active:bg-indigo-700 transition duration-150 ease-in-out">
                 Create
               </button>
             </span>
