@@ -36,7 +36,7 @@ go_binary(
 
 container_image(
     name = "image",
-    base = "@ubuntu_bluetooth//image",
+    base = "@distroless_base//image",
     files = [
         ":detect-presence-srv",
     ],
