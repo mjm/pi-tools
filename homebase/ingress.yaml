@@ -21,6 +21,13 @@ spec:
                 name: prometheus-proxy
                 port:
                   number: 80
+          - path: "/download_app"
+            pathType: Prefix
+            backend:
+              service:
+                name: detect-presence-proxy
+                port:
+                  number: 80
           - path: "/"
             pathType: Prefix
             backend:
@@ -66,6 +73,18 @@ metadata:
 spec:
   type: ExternalName
   externalName: prometheus.monitoring.svc.cluster.local
+  ports:
+    - port: 80
+      protocol: TCP
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: detect-presence-proxy
+  namespace: homebase
+spec:
+  type: ExternalName
+  externalName: detect-presence-srv.detect-presence.svc.cluster.local
   ports:
     - port: 80
       protocol: TCP

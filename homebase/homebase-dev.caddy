@@ -6,6 +6,7 @@
     reverse_proxy /api/v1/* https://prometheus.homelab {
       header_up Host {http.reverse_proxy.upstream.hostport}
     }
+    reverse_proxy /download_app localhost:2120
 
     handle_errors {
       @404 {
