@@ -49,6 +49,12 @@ spec:
               value: "1080"
             - name: DNSMASQ_LISTENING
               value: all
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "150M"
+            limits:
+              memory: "200M"
           volumeMounts:
             - name: pi-hole-data
               mountPath: /etc/pihole
@@ -67,6 +73,12 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "30M"
+            limits:
+              memory: "50M"
           volumeMounts:
             - name: pi-hole-data
               mountPath: /etc/pihole
