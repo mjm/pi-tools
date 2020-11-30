@@ -26,6 +26,12 @@ spec:
           env:
             - name: POSTGRES_PASSWORD_FILE
               value: /var/secrets/pg-password
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "300M"
+            limits:
+              memory: "500M"
           volumeMounts:
             - name: secrets
               mountPath: /var/secrets

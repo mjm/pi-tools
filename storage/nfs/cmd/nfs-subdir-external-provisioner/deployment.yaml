@@ -17,7 +17,8 @@ spec:
       labels:
         app: nfs-client-provisioner
     spec:
-      nodeName: raspberrypi
+      nodeSelector:
+        kubernetes.io/hostname: raspberrypi
       containers:
         - name: nfs-client-provisioner
           image: index.docker.io/mmoriarity/nfs-client-provisioner:latest
@@ -33,6 +34,12 @@ spec:
               value: 10.0.0.2
             - name: NFS_PATH
               value: /srv/nfs/kubernetes
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "15M"
+            limits:
+              memory: "30M"
       volumes:
         - name: nfs-client-root
           nfs:
