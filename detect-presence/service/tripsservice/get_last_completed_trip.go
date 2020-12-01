@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"go.opentelemetry.io/otel/api/trace"
 	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/trace"
 
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
 )

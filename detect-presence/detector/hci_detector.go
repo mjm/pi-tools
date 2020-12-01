@@ -6,9 +6,9 @@ import (
 	"os/exec"
 	"strings"
 
-	"go.opentelemetry.io/otel/api/trace"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type HCIDetector struct {

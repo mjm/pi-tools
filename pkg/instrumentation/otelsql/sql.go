@@ -4,11 +4,11 @@ import (
 	"context"
 	"database/sql"
 
-	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/trace"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/label"
 	"go.opentelemetry.io/otel/semconv"
+	"go.opentelemetry.io/otel/trace"
 )
 
 const (
@@ -30,7 +30,7 @@ func NewDBWithTracing(db *sql.DB, opts ...Option) *DB {
 	return &DB{
 		DB:     db,
 		cfg:    cfg,
-		tracer: global.Tracer(defaultTracerName),
+		tracer: otel.Tracer(defaultTracerName),
 	}
 }
 

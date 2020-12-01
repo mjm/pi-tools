@@ -17,10 +17,10 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/spanerr",
-        "@io_opentelemetry_go_otel//api/global",
-        "@io_opentelemetry_go_otel//api/metric",
-        "@io_opentelemetry_go_otel//api/trace",
+        "@io_opentelemetry_go_otel//:otel",
         "@io_opentelemetry_go_otel//label",
+        "@io_opentelemetry_go_otel//metric",
         "@io_opentelemetry_go_otel//semconv",
+        "@io_opentelemetry_go_otel//trace",
     ],
 )

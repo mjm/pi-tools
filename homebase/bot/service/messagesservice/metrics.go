@@ -1,7 +1,7 @@
 package messagesservice
 
 import (
-	"go.opentelemetry.io/otel/api/metric"
+	"go.opentelemetry.io/otel/metric"
 )
 
 type metrics struct {

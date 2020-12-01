@@ -9,10 +9,10 @@ import (
 	"net/url"
 	"time"
 
-	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/trace"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/label"
 	"go.opentelemetry.io/otel/semconv"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/pkg/spanerr"
 )
@@ -47,7 +47,7 @@ func New(cfg Config) (*Client, error) {
 		cfg.HTTPClient = http.DefaultClient
 	}
 
-	meter := global.Meter(instrumentationName)
+	meter := otel.Meter(instrumentationName)
 	return &Client{
 		cfg:     cfg,
 		baseURL: baseURL,

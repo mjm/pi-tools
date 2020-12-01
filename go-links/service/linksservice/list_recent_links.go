@@ -3,8 +3,8 @@ package linksservice
 import (
 	"context"
 
-	"go.opentelemetry.io/otel/api/trace"
 	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/trace"
 
 	linkspb "github.com/mjm/pi-tools/go-links/proto/links"
 )

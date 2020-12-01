@@ -9,11 +9,11 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jonboulle/clockwork"
-	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/metric"
-	"go.opentelemetry.io/otel/api/trace"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/detect-presence/database"
 	"github.com/mjm/pi-tools/detect-presence/presence"
@@ -24,7 +24,7 @@ import (
 
 const instrumentationName = "github.com/mjm/pi-tools/detect-presence/trips"
 
-var tracer = global.Tracer(instrumentationName)
+var tracer = otel.Tracer(instrumentationName)
 
 type Tracker struct {
 	db                  *database.Queries
@@ -78,7 +78,7 @@ func NewTracker(db storage.DB, messages messagespb.MessagesServiceClient) (*Trac
 		}
 	}
 
-	m := metric.Must(global.Meter(instrumentationName))
+	m := metric.Must(otel.Meter(instrumentationName))
 	t.tripDurationSeconds = m.NewFloat64ValueRecorder("presence.trip.duration.seconds",
 		metric.WithDescription("Measures how long trips away from home last"))
 

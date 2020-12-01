@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/jonboulle/clockwork"
-	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/metric"
-	"go.opentelemetry.io/otel/api/trace"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/detect-presence/detector"
 	"github.com/mjm/pi-tools/detect-presence/presence"
@@ -18,7 +18,7 @@ import (
 
 const instrumentationName = "github.com/mjm/pi-tools/detect-presence/checker"
 
-var tracer = global.Tracer(instrumentationName)
+var tracer = otel.Tracer(instrumentationName)
 
 type Checker struct {
 	Tracker  *presence.Tracker
@@ -38,7 +38,7 @@ func (c *Checker) Run(ctx context.Context, tickCh chan<- struct{}) {
 		c.clock = clockwork.NewRealClock()
 	}
 
-	meter := global.Meter(instrumentationName)
+	meter := otel.Meter(instrumentationName)
 	c.metrics = newMetrics(meter)
 	metric.Must(meter).NewInt64ValueObserver("presence.bluetooth.healthy", func(ctx context.Context, result metric.Int64ObserverResult) {
 		c.lock.Lock()

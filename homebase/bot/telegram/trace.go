@@ -1,9 +1,9 @@
 package telegram
 
 import (
-	"go.opentelemetry.io/otel/api/global"
+	"go.opentelemetry.io/otel"
 )
 
 const instrumentationName = "github.com/mjm/pi-tools/homebase/bot/telegram"
 
-var tracer = global.Tracer(instrumentationName)
+var tracer = otel.Tracer(instrumentationName)

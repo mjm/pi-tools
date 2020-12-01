@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"go.opentelemetry.io/otel/api/trace"
 	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/trace"
 
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
 	"github.com/mjm/pi-tools/homebase/bot/telegram"
@@ -102,7 +102,7 @@ func (s *Server) handleCallbackQuery(ctx context.Context, cbq *telegram.Callback
 		})
 		if err != nil {
 			// TODO respond to user
-			span.RecordError(ctx, err)
+			span.RecordError(err)
 			return err
 		}
 
@@ -160,7 +160,7 @@ func (s *Server) getCallbackQueryTrip(ctx context.Context, cbq *telegram.Callbac
 
 	tripID, err := s.q.GetTripForMessage(ctx, int64(cbq.Message.MessageID))
 	if err != nil {
-		span.RecordError(ctx, err)
+		span.RecordError(err)
 		var text string
 		if errors.Is(err, sql.ErrNoRows) {
 			text = "Sorry, I couldn't find the trip that goes with that message."

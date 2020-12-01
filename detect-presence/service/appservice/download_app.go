@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.opentelemetry.io/otel/api/trace"
 	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/pkg/spanerr"
 )

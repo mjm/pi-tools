@@ -8,11 +8,10 @@ import (
 
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/exporters/metric/prometheus"
 	"go.opentelemetry.io/otel/exporters/trace/jaeger"
 	"go.opentelemetry.io/otel/label"
-	"go.opentelemetry.io/otel/propagators"
+	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/semconv"
 
 	"github.com/mjm/pi-tools/debug"
@@ -41,8 +40,8 @@ func Start(svcname string) (func(), error) {
 		return nil, fmt.Errorf("installing jaeger tracing pipeline: %w", err)
 	}
 
-	global.SetTextMapPropagator(
-		otel.NewCompositeTextMapPropagator(propagators.TraceContext{}, propagators.Baggage{}))
+	otel.SetTextMapPropagator(
+		propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 
 	// this comes after because we want the prometheus meter provider even when debugging
 	metrics, err := prometheus.InstallNewPipeline(prometheus.Config{

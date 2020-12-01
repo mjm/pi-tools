@@ -11,7 +11,7 @@ go_library(
     deps = [
         "//pkg/spanerr",
         "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
-        "@io_opentelemetry_go_otel//api/trace",
         "@io_opentelemetry_go_otel//label",
+        "@io_opentelemetry_go_otel//trace",
     ],
 )

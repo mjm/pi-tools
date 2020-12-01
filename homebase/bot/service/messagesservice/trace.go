@@ -1,9 +1,9 @@
 package messagesservice
 
 import (
-	"go.opentelemetry.io/otel/api/global"
+	"go.opentelemetry.io/otel"
 )
 
 const instrumentationName = "github.com/mjm/pi-tools/homebase/bot/service/messagesservice"
 
-var tracer = global.Tracer(instrumentationName)
+var tracer = otel.Tracer(instrumentationName)

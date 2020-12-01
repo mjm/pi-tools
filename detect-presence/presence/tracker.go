@@ -4,15 +4,15 @@ import (
 	"context"
 	"sync"
 
-	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/metric"
-	"go.opentelemetry.io/otel/api/trace"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/trace"
 )
 
 const instrumentationName = "github.com/mjm/pi-tools/detect-presence/presence"
 
-var tracer = global.Tracer(instrumentationName)
+var tracer = otel.Tracer(instrumentationName)
 
 type Tracker struct {
 	AllowedFailures int
@@ -35,7 +35,7 @@ func NewTracker() *Tracker {
 		},
 	}
 
-	m := metric.Must(global.Meter(instrumentationName))
+	m := metric.Must(otel.Meter(instrumentationName))
 	m.NewInt64ValueObserver("presence.device.total", func(ctx context.Context, result metric.Int64ObserverResult) {
 		t.lock.Lock()
 		defer t.lock.Unlock()
