@@ -1,0 +1,16 @@
+groups:
+  - name: k8s_alerts
+    rules:
+      - alert: KubeAPIServerHighMemory
+        expr: process_resident_memory_bytes{job="kubernetes-apiservers"} > 2500000000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: A Kubernetes apiserver is using too much memory
+          description: >
+            If its memory use continues growing, it may cause the Raspberry Pi to freeze up and become unreachable.
+            You should probably restart the apiserver manually by running
+            `sudo systemctl restart snap.microk8s.daemon-apiserver`.
+
+            If this continues to happen regularly, you should automate restarting the apiserver regularly.
