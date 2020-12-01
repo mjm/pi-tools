@@ -1,29 +1,32 @@
 groups:
   - name: presence_alerts
     rules:
-#      - alert: DeviceAwayFromHome
-#        expr: presence_device_total < 0.5
-#        for: 1m
-#        labels:
-#          severity: notice
-#        annotations:
-#          summary: A device is away from home
-
-      - alert: CanaryMissing
-        expr: presence_canary_missing > 0.5
-        for: 2m
+      - alert: PresenceServiceDown
+        expr: sum(up{app="detect-presence"}) < 1
+        for: 5m
         labels:
           severity: warning
         annotations:
-          summary: A canary device cannot be found
+          summary: No detect-presence-srv instances are running
           description: >
-            Canary devices should always be present, so this probably means that Bluetooth on the Raspberry Pi
-            is in a bad state. You should probably reboot it. Other devices are not being checked while the canary is
-            missing.
+            There don't seem to be any running pods of detect-presence-srv. Trips won't be able to recorded until this
+            is addressed.
 
-      - alert: LongTrip
-        expr: presence:trip_duration_seconds:current > 14400 # 4 hours
-        labels:
-          severity: notice
-        annotations:
-          summary: A device has been away from home for over four hours
+#      - alert: CanaryMissing
+#        expr: presence_canary_missing > 0.5
+#        for: 2m
+#        labels:
+#          severity: warning
+#        annotations:
+#          summary: A canary device cannot be found
+#          description: >
+#            Canary devices should always be present, so this probably means that Bluetooth on the Raspberry Pi
+#            is in a bad state. You should probably reboot it. Other devices are not being checked while the canary is
+#            missing.
+#
+#      - alert: LongTrip
+#        expr: presence:trip_duration_seconds:current > 14400 # 4 hours
+#        labels:
+#          severity: notice
+#        annotations:
+#          summary: A device has been away from home for over four hours
