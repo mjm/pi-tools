@@ -8,3 +8,11 @@ datasources:
     isDefault: true
     version: 1
     editable: false
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki
+    version: 1
+    editable: false
+    jsonData:
+      maxLines: 1000
