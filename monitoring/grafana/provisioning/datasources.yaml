@@ -19,6 +19,6 @@ datasources:
   - name: Jaeger
     type: jaeger
     access: proxy
-    url: http://jaeger-query
+    url: http://jaeger-query:16686
     version: 1
     editable: false
