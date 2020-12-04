@@ -4078,6 +4078,13 @@ go_repository(
     version = "v0.0.0-20191224061800-dd3d2fd8c3f6",
 )
 
+go_repository(
+    name = "com_github_zserge_hid",
+    importpath = "github.com/zserge/hid",
+    sum = "h1:DAdExZJtAXR150WHt4wzTCzHH7lXkD4vKN9xLtF05VU=",
+    version = "v0.0.0-20190124175232-e1626f1782f3",
+)
+
 gazelle_dependencies()
 
 http_archive(

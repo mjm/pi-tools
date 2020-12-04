@@ -16,6 +16,7 @@ require (
 	github.com/rs/cors v1.7.0 // indirect
 	github.com/segmentio/ksuid v1.0.3
 	github.com/stretchr/testify v1.6.1
+	github.com/zserge/hid v0.0.0-20190124175232-e1626f1782f3
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.14.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.14.0
 	go.opentelemetry.io/contrib/instrumentation/runtime v0.14.0
@@ -27,7 +28,6 @@ require (
 	k8s.io/api v0.19.1
 	k8s.io/apimachinery v0.19.1
 	k8s.io/client-go v0.19.1
-	k8s.io/klog v1.0.0 // indirect
 	k8s.io/kubernetes v1.19.4
 	sigs.k8s.io/sig-storage-lib-external-provisioner/v6 v6.1.0
 	zombiezen.com/go/postgrestest v1.0.0

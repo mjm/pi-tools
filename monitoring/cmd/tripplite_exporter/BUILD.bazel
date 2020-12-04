@@ -1,0 +1,49 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
+load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
+
+go_library(
+    name = "tripplite_exporter_lib",
+    srcs = [
+        "main.go",
+        "metric.go",
+        "report.go",
+    ],
+    importpath = "github.com/mjm/pi-tools/monitoring/cmd/tripplite_exporter",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//observability",
+        "//pkg/signal",
+        "//rpc",
+        "@com_github_zserge_hid//:hid",
+        "@io_opentelemetry_go_otel//:otel",
+        "@io_opentelemetry_go_otel//label",
+        "@io_opentelemetry_go_otel//metric",
+    ],
+)
+
+go_binary(
+    name = "tripplite_exporter",
+    embed = [":tripplite_exporter_lib"],
+    visibility = ["//visibility:public"],
+)
+
+container_image(
+    name = "image",
+    base = "@distroless_base//image",
+    files = [
+        ":tripplite_exporter",
+    ],
+    mode = "0755",
+    tags = ["no-cache"],
+)
+
+k8s_object(
+    name = "k8s",
+    images = {
+        "index.docker.io/mmoriarity/tripplite-exporter:latest": ":image",
+    },
+    template = "daemonset.yaml",
+    visibility = ["//visibility:public"],
+)

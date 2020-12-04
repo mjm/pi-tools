@@ -5,6 +5,7 @@ k8s_objects(
     objects = [
         "//monitoring/alertmanager:k8s",
         "//monitoring/blackbox_exporter:k8s",
+        "//monitoring/cmd/tripplite_exporter:k8s",
         "//monitoring/grafana:k8s",
         "//monitoring/loki:k8s",
         "//monitoring/jaeger:k8s_operator",
