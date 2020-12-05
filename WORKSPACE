@@ -4085,6 +4085,62 @@ go_repository(
     version = "v0.0.0-20190124175232-e1626f1782f3",
 )
 
+go_repository(
+    name = "com_github_dsnet_compress",
+    importpath = "github.com/dsnet/compress",
+    sum = "h1:PlZu0n3Tuv04TzpfPbrnI0HW/YwodEXDS+oPKahKF0Q=",
+    version = "v0.0.1",
+)
+
+go_repository(
+    name = "com_github_dsnet_golib",
+    importpath = "github.com/dsnet/golib",
+    sum = "h1:tFh1tRc4CA31yP6qDcu+Trax5wW5GuMxvkIba07qVLY=",
+    version = "v0.0.0-20171103203638-1ea166775780",
+)
+
+go_repository(
+    name = "com_github_magefile_mage",
+    importpath = "github.com/magefile/mage",
+    sum = "h1:3HiXzCUY12kh9bIuyXShaVe529fJfyqoVM42o/uom2g=",
+    version = "v1.10.0",
+)
+
+go_repository(
+    name = "com_github_mholt_archiver",
+    importpath = "github.com/mholt/archiver",
+    sum = "h1:1dCVxuqs0dJseYEhi5pl7MYPH9zDa1wBi7mF09cbNkU=",
+    version = "v3.1.1+incompatible",
+)
+
+go_repository(
+    name = "com_github_nwaples_rardecode",
+    importpath = "github.com/nwaples/rardecode",
+    sum = "h1:vSxaY8vQhOcVr4mm5e8XllHWTiM4JF507A0Katqw7MQ=",
+    version = "v1.1.0",
+)
+
+go_repository(
+    name = "com_github_ulikunitz_xz",
+    importpath = "github.com/ulikunitz/xz",
+    sum = "h1:ERv8V6GKqVi23rgu5cj9pVfVzJbOqAY2Ntl88O6c2nQ=",
+    version = "v0.5.8",
+)
+
+go_repository(
+    name = "com_github_wrouesnel_postgres_exporter",
+    importpath = "github.com/wrouesnel/postgres_exporter",
+    sum = "h1:DjiSYqYpq3dtuYkP18WhhhVtxaKJZk2+vJoOPuowKtU=",
+    version = "v0.8.0",
+)
+
+go_repository(
+    name = "com_github_xi2_xz",
+    importpath = "github.com/xi2/xz",
+    sum = "h1:nIPpBwaJSVYIxUFsDv3M8ofmx9yWTog9BfvIu0q41lo=",
+    version = "v0.0.0-20171230120015-48954b6210f8",
+)
+
 gazelle_dependencies()
 
 http_archive(

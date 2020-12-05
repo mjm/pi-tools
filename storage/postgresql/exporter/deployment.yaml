@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: storage
+  name: postgresql-exporter
+  labels:
+    app: postgresql-exporter
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
+  selector:
+    matchLabels:
+      app: postgresql-exporter
+  template:
+    metadata:
+      labels:
+        app: postgresql-exporter
+      annotations:
+        prometheus.io/scrape: "true"
+    spec:
+      containers:
+        - name: postgresql-exporter
+          image: index.docker.io/mmoriarity/postgres-exporter:latest
+          command:
+            - /postgres_exporter
+            - --auto-discover-databases
+          ports:
+            - name: http
+              containerPort: 9187
+              protocol: TCP
+          env:
+            - name: DATA_SOURCE_URI
+              value: postgresql.storage.svc.cluster.local?sslmode=disable
+            - name: DATA_SOURCE_USER
+              value: postgres
+            - name: DATA_SOURCE_PASS_FILE
+              value: /var/secrets/pg-password
+          volumeMounts:
+            - mountPath: /var/secrets
+              name: secrets
+      volumes:
+        - name: secrets
+          secret:
+            secretName: postgresql

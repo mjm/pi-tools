@@ -18,6 +18,7 @@ k8s_objects(
     objects = [
         ":k8s_statefulset",
         ":k8s_service",
+        "//storage/postgresql/exporter:k8s",
     ],
     tags = ["manual"],
     visibility = ["//visibility:public"],
