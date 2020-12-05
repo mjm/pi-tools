@@ -15,12 +15,6 @@ k8s_object(
 )
 
 k8s_object(
-    name = "k8s_storage",
-    kind = "persistentvolumeclaim",
-    template = "storage.yaml",
-)
-
-k8s_object(
     name = "k8s_service",
     kind = "service",
     template = "service.yaml",
@@ -37,7 +31,6 @@ k8s_objects(
     objects = [
         ":k8s_daemonset",
         ":k8s_controller_config",
-        ":k8s_storage",
         ":k8s_service",
         ":k8s_ingress",
     ],
