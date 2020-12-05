@@ -7,13 +7,13 @@ import (
 )
 
 const (
+	ReportConfigVoltage   = 1
 	ReportConfigFrequency = 2
 	ReportConfigPower     = 3
 	ReportInputVoltage    = 24
 	ReportInputFrequency  = 25
 	ReportOutputVoltage   = 27
-	ReportConfigVoltage   = 48
-	ReportStatus          = 50
+	ReportStatus          = 35
 	ReportHealth          = 52
 	ReportTimeToEmpty     = 53
 	ReportOutputPower     = 71
@@ -41,6 +41,19 @@ func ReadFloat(device hid.Device, feature int) (float64, error) {
 		return 0, err
 	}
 	return float64(val) / 10.0, nil
+}
+
+func ReadBitSet(device hid.Device, feature int) ([]bool, error) {
+	val, err := ReadInt8(device, feature)
+	if err != nil {
+		return nil, err
+	}
+
+	var flags [8]bool
+	for i := 0; i < 8; i++ {
+		flags[i] = val&(1<<i) != 0
+	}
+	return flags[:], nil
 }
 
 func readFeature(device hid.Device, feature int) ([]byte, error) {

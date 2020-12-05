@@ -113,6 +113,40 @@ func ObserveDevices(ctx context.Context, devices []hid.Device) {
 			result.Observe(int64(freq), deviceLabels(d)...)
 		}
 	})
+
+	var (
+		statusFullyDischarged        metric.Int64ValueObserver
+		statusFullyCharged           metric.Int64ValueObserver
+		statusBelowRemainingCapacity metric.Int64ValueObserver
+		statusNeedsReplacement       metric.Int64ValueObserver
+		statusDischarging            metric.Int64ValueObserver
+		statusCharging               metric.Int64ValueObserver
+	)
+
+	statusObs := meter.NewBatchObserver(func(ctx context.Context, result metric.BatchObserverResult) {
+		for _, d := range devices {
+			statuses, err := ReadBitSet(d, ReportStatus)
+			if err != nil {
+				// TODO
+				return
+			}
+
+			result.Observe(deviceLabels(d),
+				statusBelowRemainingCapacity.Observation(boolToInt64(statuses[2])),
+				statusFullyCharged.Observation(boolToInt64(statuses[3])),
+				statusCharging.Observation(boolToInt64(statuses[4])),
+				statusDischarging.Observation(boolToInt64(statuses[5])),
+				statusFullyDischarged.Observation(boolToInt64(statuses[6])),
+				statusNeedsReplacement.Observation(boolToInt64(statuses[7])))
+		}
+	})
+
+	statusFullyDischarged = statusObs.NewInt64ValueObserver("tripplite.status.battery.fully_discharged")
+	statusFullyCharged = statusObs.NewInt64ValueObserver("tripplite.status.battery.fully_charged")
+	statusBelowRemainingCapacity = statusObs.NewInt64ValueObserver("tripplite.status.battery.below_remaining_capacity")
+	statusNeedsReplacement = statusObs.NewInt64ValueObserver("tripplite.status.battery.needs_replacement")
+	statusDischarging = statusObs.NewInt64ValueObserver("tripplite.status.battery.discharging")
+	statusCharging = statusObs.NewInt64ValueObserver("tripplite.status.battery.charging")
 }
 
 func deviceLabels(d hid.Device) []label.KeyValue {
@@ -121,4 +155,11 @@ func deviceLabels(d hid.Device) []label.KeyValue {
 		label.String("vendor", fmt.Sprintf("%04x", info.Vendor)),
 		label.String("product", fmt.Sprintf("%04x", info.Product)),
 	}
+}
+
+func boolToInt64(v bool) int64 {
+	if v {
+		return 1
+	}
+	return 0
 }
