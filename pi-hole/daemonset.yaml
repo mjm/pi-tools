@@ -13,12 +13,15 @@ spec:
     metadata:
       labels:
         app: pi-hole
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9617"
     spec:
       hostNetwork: true
       shareProcessNamespace: true
       containers:
         - name: pi-hole
-          image: index.docker.io/pihole/pihole@sha256:6e07364aa328f62971379e9d95ac5d7bc3b06221a7f497117507f69630fa562a
+          image: index.docker.io/pihole/pihole@sha256:d899e498cb7beb5784aef9d62e1bb7f28b4ec3306cf96f4d1bc6cd62e26bf599
           ports:
             - name: http
               containerPort: 1080
@@ -88,6 +91,27 @@ spec:
               subPath: dnsmasq.d
             - name: ingress-controller-config
               mountPath: /cfg
+        - name: exporter
+          image: index.docker.io/ekofr/pihole-exporter@sha256:bd3fac5603edcd39e3ec158f29c58e7b0b253f5d1b81892b3185849cb3ad8602
+          ports:
+            - name: http
+              containerPort: 9617
+              hostPort: 9617
+              protocol: TCP
+          env:
+            - name: PIHOLE_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: INTERVAL
+              value: 30s
+            - name: PIHOLE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pi-hole
+                  key: password
+            - name: PIHOLE_PORT
+              value: "1080"
       volumes:
         - name: pi-hole-data
           hostPath:
