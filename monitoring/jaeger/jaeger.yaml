@@ -4,7 +4,7 @@ metadata:
   namespace: monitoring
   name: jaeger
 spec:
-  strategy: allInOne
+  strategy: allinone
   allInOne:
     # TODO replace with official Jaeger all-in-one image once they publish a multiarch image
     # https://github.com/jaegertracing/jaeger/pull/2325

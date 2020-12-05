@@ -152,7 +152,7 @@ func main() {
 
 		out, err := cmd.CombinedOutput()
 		if err != nil {
-			log.Panicf("failed to apply resources with kubectl: %v", err)
+			log.Panicf("failed to apply resources with kubectl: %v\n%s", err, out)
 		}
 
 		fmt.Printf("%s", out)
