@@ -160,6 +160,15 @@ container_pull(
 )
 
 container_pull(
+    name = "haproxy",
+    architecture = "arm64",
+    digest = "sha256:cf7c03903a3d54724eef758ec9a7ac8d4fb978aae8f9d6a0fb30aa6203b967b5",  # 2.2
+    os = "linux",
+    registry = "index.docker.io",
+    repository = "haproxy",
+)
+
+container_pull(
     name = "pihole",
     architecture = "arm64",
     digest = "sha256:6e07364aa328f62971379e9d95ac5d7bc3b06221a7f497117507f69630fa562a",
