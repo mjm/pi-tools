@@ -1,0 +1,57 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: ca-issuer
+    nginx.ingress.kubernetes.io/rewrite-target: http://linkerd.homelab/$1
+  name: linkerd-redirect
+  namespace: linkerd
+spec:
+  rules:
+    - host: linkerd
+      http:
+        paths:
+          - backend:
+              service:
+                name: linkerd-web
+                port:
+                  number: 8084
+            path: /(.*)
+            pathType: Prefix
+  tls:
+    - hosts:
+        - linkerd
+      secretName: linkerd-redirect-cert
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: ca-issuer
+    nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-User,X-Auth-Request-Email
+    nginx.ingress.kubernetes.io/auth-signin: http://homebase.homelab/oauth2/start?rd=$escaped_request_uri
+    nginx.ingress.kubernetes.io/auth-url: http://oauth2-proxy.auth.svc.cluster.local/oauth2/auth
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header Origin "";
+      proxy_hide_header l5d-remote-ip;
+      proxy_hide_header l5d-server-id;
+    nginx.ingress.kubernetes.io/upstream-vhost: $service_name.$namespace.svc.cluster.local:8084
+  name: linkerd
+  namespace: linkerd
+spec:
+  rules:
+    - host: linkerd.homelab
+      http:
+        paths:
+          - backend:
+              service:
+                name: linkerd-web
+                port:
+                  number: 8084
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - linkerd.homelab
+      secretName: linkerd-cert

@@ -9,6 +9,8 @@ spec:
     # TODO replace with official Jaeger all-in-one image once they publish a multiarch image
     # https://github.com/jaegertracing/jaeger/pull/2325
     image: querycapistio/all-in-one@sha256:ad4552a9facb5e71ea2ca296fb92cf510e97783ad5068f5d23a6b169edb4a9dd
+    annotations:
+      linkerd.io/inject: enabled
   ingress:
     annotations:
       nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.auth.svc.cluster.local/oauth2/auth"

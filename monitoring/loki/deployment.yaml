@@ -20,6 +20,8 @@ spec:
         app: loki
       annotations:
         prometheus.io/scrape: "true"
+        prometheus.io/port: "3100"
+        linkerd.io/inject: enabled
     spec:
       containers:
         - image: index.docker.io/mmoriarity/loki:latest

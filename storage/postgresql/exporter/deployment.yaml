@@ -20,6 +20,8 @@ spec:
         app: postgresql-exporter
       annotations:
         prometheus.io/scrape: "true"
+        prometheus.io/port: "9187"
+        linkerd.io/inject: enabled
     spec:
       containers:
         - name: postgresql-exporter

@@ -20,6 +20,8 @@ spec:
         app: grafana
       annotations:
         prometheus.io/scrape: "true"
+        prometheus.io/port: "3000"
+        linkerd.io/inject: enabled
     spec:
       containers:
         - image: index.docker.io/mmoriarity/grafana:latest

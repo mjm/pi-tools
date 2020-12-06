@@ -14,6 +14,7 @@ k8s_objects(
         "//detect-presence:k8s",
         "//go-links/cmd/go-links:k8s",
         "//homebase:k8s",
+        "//linkerd:k8s",
         "//monitoring:k8s",
         "//pi-hole:k8s",
         "//security/cert-manager:k8s",
