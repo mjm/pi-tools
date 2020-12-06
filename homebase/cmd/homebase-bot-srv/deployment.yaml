@@ -21,6 +21,7 @@ spec:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "6360"
+        linkerd.io/inject: enabled
     spec:
       containers:
         - name: homebase-bot-srv

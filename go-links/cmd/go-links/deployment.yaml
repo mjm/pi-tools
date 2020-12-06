@@ -23,6 +23,8 @@ spec:
         app: go-links
       annotations:
         prometheus.io/scrape: "true"
+        prometheus.io/port: "4240"
+        linkerd.io/inject: enabled
     spec:
       containers:
         - name: go-links-srv

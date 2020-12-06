@@ -21,6 +21,7 @@ spec:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "2120"
+        linkerd.io/inject: enabled
     spec:
       containers:
         - name: detect-presence-srv

@@ -3,6 +3,10 @@ kind: Ingress
 metadata:
   namespace: auth
   name: oauth2-proxy
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;
+      grpc_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;
 spec:
   rules:
     - host: homebase.homelab
