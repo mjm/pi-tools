@@ -80,12 +80,24 @@ k8s_object(
     template = "grpc-ingress.yaml",
 )
 
+k8s_object(
+    name = "k8s_http_profile",
+    template = "http-profile.yaml",
+)
+
+k8s_object(
+    name = "k8s_grpc_profile",
+    template = "grpc-profile.yaml",
+)
+
 k8s_objects(
     name = "k8s",
     objects = [
         ":k8s_deploy",
         ":k8s_http_service",
+        ":k8s_http_profile",
         ":k8s_grpc_service",
+        ":k8s_grpc_profile",
         ":k8s_ingress",
         ":k8s_grpc_ingress",
     ],
