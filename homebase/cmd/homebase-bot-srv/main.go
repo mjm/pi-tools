@@ -10,6 +10,8 @@ import (
 
 	"github.com/etherlabsio/healthcheck"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/metric"
 	"google.golang.org/grpc"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -34,6 +36,8 @@ var (
 	namespace  = flag.String("namespace", "", "Kubernetes namespace to use for leader election")
 	instanceID = flag.String("instance-id", "", "Name of this instance of the service to use for leader election")
 )
+
+const instrumentationName = "github.com/mjm/pi-tools/homebase/cmd/homebase-bot-srv"
 
 func main() {
 	storage.SetDefaultDBName("homebase_bot_dev")
@@ -66,7 +70,13 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	var isLeader int64
+	metric.Must(otel.Meter(instrumentationName)).NewInt64ValueObserver("homebase.bot.is_leader", func(ctx context.Context, result metric.Int64ObserverResult) {
+		result.Observe(isLeader)
+	}, metric.WithDescription("Indicates if the instance is the leader and is responsible for watching for incoming messages"))
+
 	if *instanceID == "" {
+		isLeader = 1
 		if err := messagesService.RegisterCommands(ctx); err != nil {
 			log.Panicf("Error registering bot commands: %v", err)
 		}
@@ -97,6 +107,8 @@ func main() {
 			RetryPeriod:     2 * time.Second,
 			Callbacks: leaderelection.LeaderCallbacks{
 				OnStartedLeading: func(ctx context.Context) {
+					isLeader = 1
+
 					log.Printf("Started leading")
 					if err := messagesService.RegisterCommands(ctx); err != nil {
 						log.Printf("Error registering bot commands: %v", err)

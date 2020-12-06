@@ -4,6 +4,7 @@ pkg_tar(
     name = "pkg",
     srcs = [
         "dns_alerts.yml",
+        "homebase_alerts.yml",
         "k8s_alerts.yml",
         "node_alerts.yml",
         "presence.yml",
