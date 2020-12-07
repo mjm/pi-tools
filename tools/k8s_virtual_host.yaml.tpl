@@ -11,6 +11,8 @@ metadata:
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;
       grpc_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;
+      auth_request_set $auth_access_token $upstream_http_x_auth_request_access_token;
+      proxy_set_header Authorization "Bearer $auth_access_token";
     nginx.ingress.kubernetes.io/auth-snippet: |
       proxy_set_header l5d-dst-override oauth2-proxy.auth.svc.cluster.local:80;
       grpc_set_header l5d-dst-override oauth2-proxy.auth.svc.cluster.local:80;

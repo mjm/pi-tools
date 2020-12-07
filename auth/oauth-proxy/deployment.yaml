@@ -27,13 +27,14 @@ spec:
           args:
             - --provider=github
             - --email-domain=*
-            - --github-user=mjm
+            - --github-org=mmoriarity
             - --upstream=file:///dev/null
             - --http-address=0.0.0.0:4180
             - --cookie-secure=false
             - --cookie-domain=.homelab
             - --redirect-url=http://homebase.homelab/oauth2/callback
             - --set-xauthrequest
+            - --pass-access-token
           env:
             - name: OAUTH2_PROXY_CLIENT_ID
               value: 18da98312638f7ea59f2
