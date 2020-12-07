@@ -1,16 +1,14 @@
 load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
 load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
-load("//tools:k8s.bzl", "k8s_virtual_host")
 
 k8s_object(
     name = "k8s_deploy",
     template = "deployment.yaml",
 )
 
-k8s_virtual_host(
+k8s_object(
     name = "k8s_ingress",
-    namespace = "monitoring",
-    service_name = "kubernetes-dashboard",
+    template = "ingress.yaml",
 )
 
 k8s_objects(

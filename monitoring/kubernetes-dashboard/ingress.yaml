@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: ca-issuer
+    nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-User,X-Auth-Request-Email
+    nginx.ingress.kubernetes.io/auth-signin: http://homebase.homelab/oauth2/start?rd=$escaped_request_uri
+    nginx.ingress.kubernetes.io/auth-snippet: |
+      proxy_set_header l5d-dst-override oauth2-proxy.auth.svc.cluster.local:80;
+      grpc_set_header l5d-dst-override oauth2-proxy.auth.svc.cluster.local:80;
+    nginx.ingress.kubernetes.io/auth-url: http://oauth2-proxy.auth.svc.cluster.local/oauth2/auth
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;
+      grpc_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;
+      auth_request_set $auth_access_token $upstream_http_x_auth_request_access_token;
+      proxy_set_header Authorization "Bearer $auth_access_token";
+  name: kubernetes-dashboard
+  namespace: monitoring
+spec:
+  rules:
+    - host: kubernetes-dashboard.homelab
+      http:
+        paths:
+          - backend:
+              service:
+                name: kubernetes-dashboard
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - kubernetes-dashboard.homelab
+      secretName: kubernetes-dashboard-cert
