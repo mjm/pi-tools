@@ -144,6 +144,14 @@ func (s *Server) handleCallbackQuery(ctx context.Context, cbq *telegram.Callback
 		}); err != nil {
 			return spanerr.RecordError(ctx, err)
 		}
+
+		if err := s.t.DeleteMessage(ctx, telegram.DeleteMessageRequest{
+			ChatID:    cbq.Message.Chat.ID,
+			MessageID: cbq.Message.MessageID,
+		}); err != nil {
+			return spanerr.RecordError(ctx, err)
+		}
+		return nil
 	}
 
 	if err := s.t.AnswerCallbackQuery(ctx, telegram.AnswerCallbackQueryRequest{
