@@ -13,14 +13,11 @@ spec:
     metadata:
       labels:
         app: ingress-proxy
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "9090"
     spec:
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       containers:
-        - name: caddy
+        - name: haproxy
           image: index.docker.io/mmoriarity/ingress-proxy:latest
           resources:
             requests:
