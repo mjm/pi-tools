@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: monitoring
+  name: unifi-exporter
+  labels:
+    app: unifi-exporter
+spec:
+  selector:
+    matchLabels:
+      app: unifi-exporter
+  template:
+    metadata:
+      labels:
+        app: unifi-exporter
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9130"
+    spec:
+      containers:
+        - name: unifi-exporter
+          image: index.docker.io/jessestuart/unifi_exporter@sha256:805345eaf009a1a83264d51cf9e90e6b7db39035e66ff829899baf14f1143073 # 0.4.0
+          command:
+            - /bin/unifi_exporter
+            - -config.file=/unifi_exporter/config.yml
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "30M"
+            limits:
+              memory: "50M"
+          ports:
+            - name: http
+              containerPort: 9130
+              protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /unifi_exporter/config.yml
+              subPath: config.yml
+              readOnly: true
+      volumes:
+        - name: config
+          secret:
+            secretName: unifi-exporter
