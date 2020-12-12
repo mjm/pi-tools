@@ -1,0 +1,154 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: pi-hole
+  name: bind-config
+data:
+  named.conf: |
+    include "/etc/bind/named.conf.options";
+    include "/etc/bind/named.conf.local";
+  named.conf.options: |
+    acl tailscale {
+      100.64.0.0/10; // range of tailscale IPs
+    };
+    acl local {
+      10.0.0.0/8;    // everything inside the k8s cluster, and in the local network;
+    };
+
+    options {
+      directory "/var/cache/bind";
+      recursion yes;
+      forwarders {
+        10.152.183.183;
+      };
+
+      dnssec-validation auto;
+
+      listen-on-v6 { any; };
+    };
+  named.conf.local: |
+    view tailscale {
+      match-clients { tailscale; };
+      allow-recursion { any; };
+
+      zone "homelab" {
+        type master;
+        file "/etc/bind/db.homelab.tailscale";
+      };
+
+      include "/etc/bind/named.conf.default-zones";
+    };
+    view local {
+      match-clients { local; };
+      allow-recursion { any; };
+
+      zone "homelab" {
+        type master;
+        file "/etc/bind/db.homelab.local";
+      };
+
+      include "/etc/bind/named.conf.default-zones";
+    };
+
+  named.conf.default-zones: |
+    zone "." {
+      type hint;
+      file "/usr/share/dns/root.hints";
+    };
+
+    zone "localhost" {
+      type master;
+      file "/etc/bind/db.local";
+    };
+
+    zone "127.in-addr.arpa" {
+      type master;
+      file "/etc/bind/db.127";
+    };
+
+    zone "0.in-addr.arpa" {
+      type master;
+      file "/etc/bind/db.0";
+    };
+
+    zone "255.in-addr.arpa" {
+      type master;
+      file "/etc/bind/db.255";
+    };
+  db.local: |
+    ;
+    ; BIND data file for local loopback interface
+    ;
+    $TTL	604800
+    @	IN	SOA	localhost. root.localhost. (
+                      2		; Serial
+                 604800		; Refresh
+                  86400		; Retry
+                2419200		; Expire
+                 604800 )	; Negative Cache TTL
+    ;
+    @	IN	NS	localhost.
+    @	IN	A	127.0.0.1
+    @	IN	AAAA	::1
+  db.127: |
+    ;
+    ; BIND reverse data file for local loopback interface
+    ;
+    $TTL	604800
+    @	IN	SOA	localhost. root.localhost. (
+    			      1		; Serial
+    			 604800		; Refresh
+    			  86400		; Retry
+    			2419200		; Expire
+    			 604800 )	; Negative Cache TTL
+    ;
+    @	IN	NS	localhost.
+    1.0.0	IN	PTR	localhost.
+  db.0: |
+    ;
+    ; BIND reverse data file for broadcast zone
+    ;
+    $TTL	604800
+    @	IN	SOA	localhost. root.localhost. (
+    			      1		; Serial
+    			 604800		; Refresh
+    			  86400		; Retry
+    			2419200		; Expire
+    			 604800 )	; Negative Cache TTL
+    ;
+    @	IN	NS	localhost.
+  db.255: |
+    ;
+    ; BIND reverse data file for broadcast zone
+    ;
+    $TTL	604800
+    @	IN	SOA	localhost. root.localhost. (
+    			      1		; Serial
+    			 604800		; Refresh
+    			  86400		; Retry
+    			2419200		; Expire
+    			 604800 )	; Negative Cache TTL
+    ;
+    @	IN	NS	localhost.
+  db.homelab.local: |
+    $TTL  1m
+    @   IN  SOA localhost. matt.mattmoriarity.com. (
+                      1
+    	             1m     ; Refresh
+    			     1h		; Retry
+    			     1w		; Expire
+    			     1h )	; Negative Cache TTL
+    @   IN  NS  localhost.
+
+    *.homelab.  1m  A   10.0.0.2
+  db.homelab.tailscale: |
+    $TTL  1m
+    @   IN  SOA localhost. matt.mattmoriarity.com. (
+                      1
+    	             1m     ; Refresh
+    			     1h		; Retry
+    			     1w		; Expire
+    			     1h )	; Negative Cache TTL
+    @   IN  NS  localhost.
+
+    *.homelab.  1m  A   100.111.80.85

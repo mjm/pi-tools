@@ -17,20 +17,18 @@ spec:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9617"
     spec:
-      hostNetwork: true
-      shareProcessNamespace: true
+      hostNetwork: false
+      shareProcessNamespace: false
       containers:
         - name: pi-hole
           image: index.docker.io/pihole/pihole@sha256:d899e498cb7beb5784aef9d62e1bb7f28b4ec3306cf96f4d1bc6cd62e26bf599
           ports:
             - name: http
               containerPort: 1080
-              hostPort: 1080
               protocol: TCP
             - name: dns
               containerPort: 53
-              hostPort: 53
-              protocol: TCP
+              protocol: UDP
           env:
             - name: ADMIN_EMAIL
               value: matt@mattmoriarity.com
@@ -46,8 +44,6 @@ spec:
                   fieldPath: status.podIP
             - name: VIRTUAL_HOST
               value: pi.hole
-            - name: INTERFACE
-              value: tailscale0
             - name: WEB_PORT
               value: "1080"
             - name: DNSMASQ_LISTENING
@@ -65,32 +61,6 @@ spec:
             - name: pi-hole-data
               mountPath: /etc/dnsmasq.d
               subPath: dnsmasq.d
-        - name: ingress-controller
-          image: index.docker.io/mmoriarity/pi-hole-ingress-controller:latest
-          command:
-            - /pi-hole-ingress-controller
-            - -node-name
-            - $(NODE_NAME)
-          env:
-            - name: NODE_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
-          resources:
-            requests:
-              cpu: "50m"
-              memory: "30M"
-            limits:
-              memory: "50M"
-          volumeMounts:
-            - name: pi-hole-data
-              mountPath: /etc/pihole
-              subPath: pihole
-            - name: pi-hole-data
-              mountPath: /etc/dnsmasq.d
-              subPath: dnsmasq.d
-            - name: ingress-controller-config
-              mountPath: /cfg
         - name: exporter
           image: index.docker.io/ekofr/pihole-exporter@sha256:bd3fac5603edcd39e3ec158f29c58e7b0b253f5d1b81892b3185849cb3ad8602
           ports:
@@ -116,6 +86,3 @@ spec:
         - name: pi-hole-data
           hostPath:
             path: /var/lib/pihole
-        - name: ingress-controller-config
-          configMap:
-            name: ingress-controller-config

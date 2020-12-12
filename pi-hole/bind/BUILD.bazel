@@ -3,26 +3,22 @@ load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
 
 k8s_object(
     name = "k8s_daemonset",
+    images = {
+        "index.docker.io/mmoriarity/zone-provisioner:latest": "//pi-hole/cmd/zone-provisioner:image",
+    },
     template = "daemonset.yaml",
 )
 
 k8s_object(
-    name = "k8s_service",
-    template = "service.yaml",
-)
-
-k8s_object(
-    name = "k8s_ingress",
-    template = "ingress.yaml",
+    name = "k8s_config",
+    template = "configmap.yaml",
 )
 
 k8s_objects(
     name = "k8s",
     objects = [
         ":k8s_daemonset",
-        ":k8s_service",
-        ":k8s_ingress",
-        "//pi-hole/bind:k8s",
+        ":k8s_config",
     ],
     tags = ["manual"],
     visibility = ["//visibility:public"],

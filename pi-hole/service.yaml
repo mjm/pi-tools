@@ -4,9 +4,20 @@ metadata:
   namespace: pi-hole
   name: pi-hole
 spec:
+  # use a stable IP that the bind instance can forward to
+  clusterIP: 10.152.183.183
   selector:
     app: pi-hole
   ports:
-    - port: 80
+    - name: http
+      port: 80
       targetPort: 1080
+      protocol: TCP
+    - name: dns-udp
+      port: 53
+      targetPort: 53
+      protocol: UDP
+    - name: dns-tcp
+      port: 53
+      targetPort: 53
       protocol: TCP

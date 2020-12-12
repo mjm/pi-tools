@@ -107,6 +107,8 @@ scrape_configs:
           - 1.0.0.1
           - 1.1.1.1
           - 10.0.0.2
+          - 10.0.0.3
+          - 10.0.0.4
         labels:
           probe_type: dns
           probe_scope: public
@@ -125,9 +127,31 @@ scrape_configs:
     static_configs:
       - targets:
           - 10.0.0.2
+          - 10.0.0.3
+          - 10.0.0.4
         labels:
           probe_type: dns
           probe_scope: private
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:80
+
+  - job_name: 'blackbox-dns-private-cname'
+    metrics_path: /probe
+    params:
+      module: [dns_private_cname]
+    static_configs:
+      - targets:
+          - 10.0.0.2
+          - 10.0.0.3
+          - 10.0.0.4
+        labels:
+          probe_type: dns
+          probe_scope: private-cname
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
