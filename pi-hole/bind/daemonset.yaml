@@ -13,9 +13,9 @@ spec:
     metadata:
       labels:
         app: named
-#      annotations:
-#        prometheus.io/scrape: "true"
-#        prometheus.io/port: "9617"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9119"
     spec:
       hostNetwork: true
       shareProcessNamespace: false
