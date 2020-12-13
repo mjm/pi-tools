@@ -68,6 +68,12 @@ spec:
           volumeMounts:
             - name: bind-data
               mountPath: /data/bind
+        - name: exporter
+          image: index.docker.io/prometheuscommunity/bind-exporter@sha256:24424c6a00264f4e3a9af6f2f4bb4be717594171903f84812982ef46f6733ccc # 0.3.0
+          ports:
+            - name: http
+              containerPort: 9119
+              protocol: TCP
       volumes:
         - name: bind-data
           emptyDir: {}

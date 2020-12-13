@@ -26,6 +26,11 @@ data:
 
       listen-on-v6 { any; };
     };
+
+    // let the bind-exporter get stats
+    statistics-channels {
+      inet 127.0.0.1 port 8053 allow { 127.0.0.1; };
+    };
   named.conf.local: |
     view tailscale {
       match-clients { tailscale; };
@@ -34,6 +39,7 @@ data:
       zone "homelab" {
         type master;
         file "/etc/bind/db.homelab.tailscale";
+        zone-statistics yes;
       };
 
       include "/etc/bind/named.conf.default-zones";
@@ -45,6 +51,7 @@ data:
       zone "homelab" {
         type master;
         file "/etc/bind/db.homelab.local";
+        zone-statistics yes;
       };
 
       include "/etc/bind/named.conf.default-zones";
