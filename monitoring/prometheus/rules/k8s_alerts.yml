@@ -1,6 +1,17 @@
 groups:
   - name: k8s_alerts
     rules:
+      - alert: KubeAPIUnreachable
+        expr: probe_success{job="blackbox-kubernetes-api"} < 0.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Kubernetes API is not reachable
+          description: >
+            Attempts to access the Kubernetes API are failing. Check on the host that's failing, and consider restarting
+            the Kubernetes apiserver.
+
       - alert: KubeAPIServerHighMemory
         expr: process_resident_memory_bytes{job="kubernetes-apiservers"} > 2500000000
         for: 5m
