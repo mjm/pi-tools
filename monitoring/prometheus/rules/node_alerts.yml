@@ -1,6 +1,17 @@
 groups:
   - name: node_alerts
     rules:
+      - alert: NodeExporterDown
+        expr: up{app="node-exporter"} < 0.5
+        for: 5m
+        labels:
+          severity: notice
+        annotations:
+          summary: Node exporter is down
+          annotations: >
+            One or more of the node-exporters can't be scraped by Prometheus. You should look into this, as you're
+            probably missing some metrics you'd like to have.
+
       - alert: NodeTemperatureTooHigh
         expr: node_hwmon_temp_celsius > 80
         for: 5m
