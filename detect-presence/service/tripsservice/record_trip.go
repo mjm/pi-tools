@@ -24,68 +24,73 @@ func (s *Server) RecordTrips(ctx context.Context, req *tripspb.RecordTripsReques
 		return &tripspb.RecordTripsResponse{}, nil
 	}
 
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "starting transaction: %s", err)
-	}
-	defer tx.Rollback()
-
-	q := s.q.WithTx(tx)
-
-	var recordedTrips []database.Trip
+	var failures []*tripspb.RecordTripsResponse_RecordFailure
 	for i, t := range req.GetTrips() {
-		if t.GetId() == "" {
-			return nil, status.Errorf(codes.InvalidArgument, "missing ID for trip %d", i)
-		}
-		id, err := uuid.Parse(t.GetId())
-		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid UUID for ID of trip %d: %s", i, err)
-		}
-
-		if t.GetLeftAt() == "" {
-			return nil, status.Errorf(codes.InvalidArgument, "missing left at time for trip %d", i)
-		}
-		leftAt, err := time.Parse(time.RFC3339, t.GetLeftAt())
-		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid left at time for trip %d: %s", i, err)
-		}
-
-		if t.GetReturnedAt() == "" {
-			return nil, status.Errorf(codes.InvalidArgument, "missing returned at time for trip %d", i)
-		}
-		returnedAt, err := time.Parse(time.RFC3339, t.GetReturnedAt())
-		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid returned at time for trip %d: %s", i, err)
-		}
-
-		trip, err := q.RecordTrip(ctx, database.RecordTripParams{
-			ID:     id,
-			LeftAt: leftAt,
-			ReturnedAt: sql.NullTime{
-				Time:  returnedAt,
-				Valid: true,
-			},
-		})
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "recording trip: %s", err)
-		}
-
-		recordedTrips = append(recordedTrips, trip)
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, status.Errorf(codes.Internal, "recording trips: %s", err)
-	}
-
-	for _, trip := range recordedTrips {
-		if _, err := s.messages.SendTripCompletedMessage(ctx, &messagespb.SendTripCompletedMessageRequest{
-			TripId:     trip.ID.String(),
-			LeftAt:     trip.LeftAt.Format(time.RFC3339),
-			ReturnedAt: trip.ReturnedAt.Time.Format(time.RFC3339),
-		}); err != nil {
-			return nil, status.Errorf(codes.Internal, "sending trip completed message: %s", err)
+		if err := s.recordSingleTrip(ctx, t); err != nil {
+			span.RecordError(err, trace.WithAttributes(label.Int("trip.idx", i), label.String("trip.id", t.GetId())))
+			failures = append(failures, &tripspb.RecordTripsResponse_RecordFailure{
+				TripId:  t.GetId(),
+				Message: err.Error(),
+			})
 		}
 	}
 
-	return &tripspb.RecordTripsResponse{}, nil
+	return &tripspb.RecordTripsResponse{
+		Failures: failures,
+	}, nil
+}
+
+func (s *Server) recordSingleTrip(ctx context.Context, t *tripspb.Trip) error {
+	ctx, span := tracer.Start(ctx, "Server.recordSingleTrip",
+		trace.WithAttributes(
+			label.String("trip.id", t.GetId()),
+			label.String("trip.left_at", t.GetLeftAt()),
+			label.String("trip.returned_at", t.GetReturnedAt())))
+	defer span.End()
+
+	if t.GetId() == "" {
+		return status.Errorf(codes.InvalidArgument, "missing ID for trip")
+	}
+	id, err := uuid.Parse(t.GetId())
+	if err != nil {
+		return status.Errorf(codes.InvalidArgument, "invalid UUID for ID of trip: %s", err)
+	}
+
+	if t.GetLeftAt() == "" {
+		return status.Error(codes.InvalidArgument, "missing left at time for trip")
+	}
+	leftAt, err := time.Parse(time.RFC3339, t.GetLeftAt())
+	if err != nil {
+		return status.Errorf(codes.InvalidArgument, "invalid left at time for trip: %s", err)
+	}
+
+	if t.GetReturnedAt() == "" {
+		return status.Error(codes.InvalidArgument, "missing returned at time for trip")
+	}
+	returnedAt, err := time.Parse(time.RFC3339, t.GetReturnedAt())
+	if err != nil {
+		return status.Errorf(codes.InvalidArgument, "invalid returned at time for trip: %s", err)
+	}
+
+	trip, err := s.q.RecordTrip(ctx, database.RecordTripParams{
+		ID:     id,
+		LeftAt: leftAt,
+		ReturnedAt: sql.NullTime{
+			Time:  returnedAt,
+			Valid: true,
+		},
+	})
+	if err != nil {
+		return status.Errorf(codes.Internal, "recording trip: %s", err)
+	}
+
+	if _, err := s.messages.SendTripCompletedMessage(ctx, &messagespb.SendTripCompletedMessageRequest{
+		TripId:     trip.ID.String(),
+		LeftAt:     trip.LeftAt.Format(time.RFC3339),
+		ReturnedAt: trip.ReturnedAt.Time.Format(time.RFC3339),
+	}); err != nil {
+		return status.Errorf(codes.Internal, "sending trip completed message: %s", err)
+	}
+
+	return nil
 }

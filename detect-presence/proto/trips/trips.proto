@@ -55,6 +55,12 @@ message RecordTripsRequest {
 }
 
 message RecordTripsResponse {
+    message RecordFailure {
+        string trip_id = 1;
+        string message = 2;
+    }
+
+    repeated RecordFailure failures = 1;
 }
 
 message ListTagsRequest {
