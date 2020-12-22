@@ -48,11 +48,11 @@ $TTL  1m
 @   IN  NS  localhost.
 
 *.homelab.  IN  CNAME {{ .Node.Name }}.homelab.
+unifi  IN  A 10.0.0.1
 {{ end }}
 
 {{ define "local-zone" -}}
 {{ template "common" . }}
-unifi IN  A 10.0.0.1
 {{ range .Nodes -}}
 {{ .Name }} IN  A {{ .IP }}
 {{ end -}}
