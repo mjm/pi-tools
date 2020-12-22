@@ -51,6 +51,7 @@ $TTL  1m
 {{ end }}
 
 {{ define "local-zone" -}}
+unifi IN  A 10.0.0.1
 {{ template "common" . }}
 {{ range .Nodes -}}
 {{ .Name }} IN  A {{ .IP }}
