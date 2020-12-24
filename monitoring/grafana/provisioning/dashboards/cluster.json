@@ -63,7 +63,7 @@
       "pluginVersion": "7.2.1",
       "targets": [
         {
-          "expr": "count by (app) (up{app=~\"(detect-presence|homebase|go-links|homebase-bot)\"})",
+          "expr": "count by (app) (up{app=~\"(detect-presence|homebase|go-links|homebase-bot)\",job=\"kubernetes-pods\"})",
           "instant": true,
           "interval": "",
           "legendFormat": "{{app}}",
@@ -603,5 +603,5 @@
   "timezone": "",
   "title": "Cluster",
   "uid": "3frfw9AMz",
-  "version": 7
+  "version": 1
 }
