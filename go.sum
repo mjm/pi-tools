@@ -523,6 +523,10 @@ github.com/matttproud/golang_protobuf_extensions v1.0.1 h1:4hp9jkHxhMHkqkrB3Ix0j
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
 github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 h1:I0XW9+e1XWDxdcEniV4rQAIOPUGDq67JSCiRCgGCZLI=
 github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369/go.mod h1:BSXmuO+STAnVfrANrmjBb36TMTDstsz7MSK+HVaYKv4=
+github.com/mdlayher/unifi v0.0.0-20180604180305-be73af8d7922 h1:Ojrc2OzOsMpz8m8sTLjptIJ2dg4ITH+4ZA1cPWykkMg=
+github.com/mdlayher/unifi v0.0.0-20180604180305-be73af8d7922/go.mod h1:j3FnKW2xGfTK2p6dxj4/ezMuUVx3BuewHu9cdgV+qZ0=
+github.com/mdlayher/unifi_exporter v0.0.0-20180610203931-85455df7c491 h1:Fva/ZqxceEhabBhEdSnxVZC/17X+pKw917rrV8DeVGM=
+github.com/mdlayher/unifi_exporter v0.0.0-20180610203931-85455df7c491/go.mod h1:yjAQ/bf5JHKhZ7iRz6yoHBDjZBpW/5UeA5HpsZDhdAg=
 github.com/mholt/archiver v1.1.2 h1:xukR55YIrnhDHp10lrNtRSsAK5THpWrOCuviweNSBw4=
 github.com/mholt/archiver v3.1.1+incompatible h1:1dCVxuqs0dJseYEhi5pl7MYPH9zDa1wBi7mF09cbNkU=
 github.com/mholt/archiver v3.1.1+incompatible/go.mod h1:Dh2dOXnSdiLxRiPoVfIr/fI1TwETms9B8CTWfeh7ROU=

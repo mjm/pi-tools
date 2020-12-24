@@ -3,8 +3,20 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_image")
 load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
 load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
 
+container_image(
+    name = "image",
+    base = "@distroless_base//image",
+    files = [
+        "@com_github_mdlayher_unifi_exporter//cmd/unifi_exporter",
+    ],
+    tags = ["no-cache"],
+)
+
 k8s_object(
     name = "k8s_deploy",
+    images = {
+        "index.docker.io/mmoriarity/unifi_exporter:latest": ":image",
+    },
     template = "deployment.yaml",
     visibility = ["//visibility:public"],
 )

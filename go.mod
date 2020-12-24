@@ -15,6 +15,8 @@ require (
 	github.com/jonboulle/clockwork v0.2.2
 	github.com/lib/pq v1.8.0
 	github.com/magefile/mage v1.10.0 // indirect
+	github.com/mdlayher/unifi v0.0.0-20180604180305-be73af8d7922 // indirect
+	github.com/mdlayher/unifi_exporter v0.0.0-20180610203931-85455df7c491 // indirect
 	github.com/mholt/archiver v3.1.1+incompatible // indirect
 	github.com/nwaples/rardecode v1.1.0 // indirect
 	github.com/rs/cors v1.7.0 // indirect

@@ -1,0 +1,16 @@
+# Copy this file to config.yml, replace the username and password with the correct values, then run:
+#   kubectl -n monitoring create secret generic unifi-exporter --from-file=config.yml=monitoring/unifi_exporter/config.yml
+# to create the secret for the file.
+#
+# To update the config, delete the secret and recreate it.
+listen:
+  address: :9130
+  metricspath: /metrics
+unifi:
+  address: https://10.0.0.1
+  username: UNIFI_USERNAME
+  password: UNIFI_PASSWORD
+  site: Default
+  insecure: true
+  timeout: 10s
+  unifi_os: true

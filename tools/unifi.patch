@@ -1,0 +1,69 @@
+diff --git a/client.go b/client.go
+index 1be51d3..356e317 100644
+--- a/client.go
++++ b/client.go
+@@ -7,6 +7,7 @@ import (
+ 	"crypto/tls"
+ 	"encoding/json"
+ 	"fmt"
++	"mime"
+ 	"net/http"
+ 	"net/http/cookiejar"
+ 	"net/url"
+@@ -16,8 +17,7 @@ import (
+ 
+ const (
+ 	// Predefined content types for HTTP requests.
+-	formEncodedContentType = "application/x-www-form-urlencoded"
+-	jsonContentType        = "application/json;charset=UTF-8"
++	jsonContentType        = "application/json; charset=utf-8"
+ 
+ 	// userAgent is the default user agent this package will report to the UniFi
+ 	// Controller v4 API.
+@@ -46,6 +46,7 @@ func InsecureHTTPClient(timeout time.Duration) *http.Client {
+ // actions can be performed with a Client.
+ type Client struct {
+ 	UserAgent string
++	UnifiOS   bool
+ 
+ 	apiURL *url.URL
+ 	client *http.Client
+@@ -117,6 +118,14 @@ type login struct {
+ // API endpoint. Additionally, it accepts a struct which can be marshaled to
+ // a JSON body.
+ func (c *Client) newRequest(method string, endpoint string, body interface{}) (*http.Request, error) {
++	if c.UnifiOS {
++		if endpoint == "/api/login" {
++			endpoint = "/api/auth/login"
++		} else {
++			endpoint = "/proxy/network" + endpoint
++		}
++	}
++
+ 	rel, err := url.Parse(endpoint)
+ 	if err != nil {
+ 		return nil, err
+@@ -143,7 +152,7 @@ func (c *Client) newRequest(method string, endpoint string, body interface{}) (*
+ 
+ 	// For POST requests, add proper headers
+ 	if hasBody {
+-		req.Header.Add("Content-Type", formEncodedContentType)
++		req.Header.Add("Content-Type", jsonContentType)
+ 		req.ContentLength = length
+ 	}
+ 
+@@ -177,8 +186,12 @@ func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
+ // checkResponse checks for correct content type in a response and for non-200
+ // HTTP status codes, and returns any errors encountered.
+ func checkResponse(res *http.Response) error {
+-	if cType := res.Header.Get("Content-Type"); cType != jsonContentType {
+-		return fmt.Errorf("expected %q content type, but received %q", jsonContentType, cType)
++	cType, _, err := mime.ParseMediaType(res.Header.Get("Content-Type"))
++	if err != nil {
++		return err
++	}
++	if cType != "application/json" {
++		return fmt.Errorf("expected application/json content type, but received %q", cType)
+ 	}
+ 
+ 	// Check for 200-range status code

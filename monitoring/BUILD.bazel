@@ -14,6 +14,7 @@ k8s_objects(
         "//monitoring/node_exporter:k8s",
         "//monitoring/prometheus:k8s",
         "//monitoring/promtail:k8s",
+        "//monitoring/unifi_exporter:k8s",
     ],
     tags = ["manual"],
     visibility = ["//visibility:public"],

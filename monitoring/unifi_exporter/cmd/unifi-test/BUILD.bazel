@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "unifi-test_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mjm/pi-tools/monitoring/unifi_exporter/cmd/unifi-test",
+    visibility = ["//visibility:private"],
+    deps = ["@com_github_mdlayher_unifi//:unifi"],
+)
+
+go_binary(
+    name = "unifi-test",
+    embed = [":unifi-test_lib"],
+    visibility = ["//visibility:public"],
+)

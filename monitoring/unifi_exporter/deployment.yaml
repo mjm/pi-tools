@@ -19,10 +19,10 @@ spec:
     spec:
       containers:
         - name: unifi-exporter
-          image: index.docker.io/jessestuart/unifi_exporter@sha256:805345eaf009a1a83264d51cf9e90e6b7db39035e66ff829899baf14f1143073 # 0.4.0
+          image: index.docker.io/mmoriarity/unifi_exporter:latest
           command:
-            - /bin/unifi_exporter
-            - -config.file=/unifi_exporter/config.yml
+            - /unifi_exporter
+            - -config.file=/config.yml
           resources:
             requests:
               cpu: "100m"
@@ -35,7 +35,7 @@ spec:
               protocol: TCP
           volumeMounts:
             - name: config
-              mountPath: /unifi_exporter/config.yml
+              mountPath: /config.yml
               subPath: config.yml
               readOnly: true
       volumes:

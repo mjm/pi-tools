@@ -1,0 +1,61 @@
+diff --git a/cmd/unifi_exporter/main.go b/cmd/unifi_exporter/main.go
+index b50d6b0..3a61067 100644
+--- a/cmd/unifi_exporter/main.go
++++ b/cmd/unifi_exporter/main.go
+@@ -15,6 +15,7 @@ import (
+ 	"github.com/mdlayher/unifi"
+ 	"github.com/mdlayher/unifi_exporter"
+ 	"github.com/prometheus/client_golang/prometheus"
++	"github.com/prometheus/client_golang/prometheus/promhttp"
+ 	"gopkg.in/yaml.v2"
+ )
+ 
+@@ -57,6 +58,14 @@ func main() {
+ 		}
+ 	}
+ 
++	unifiOS := false
++	if uos, ok := config.Unifi["unifi_os"]; ok {
++		unifiOS, err = strconv.ParseBool(uos)
++		if err != nil {
++			log.Fatalf("failed to parse bool %s: %v", uos, err)
++		}
++	}
++
+ 	timeout := 5*time.Second
+ 	if to, ok := config.Unifi["timeout"]; ok {
+ 		timeout, err = time.ParseDuration(to)
+@@ -87,6 +96,7 @@ func main() {
+ 		username,
+ 		password,
+ 		insecure,
++		unifiOS,
+ 		timeout,
+ 	)
+ 	c, err := clientFn()
+@@ -111,7 +121,7 @@ func main() {
+ 
+ 	prometheus.MustRegister(e)
+ 
+-	http.Handle(metricsPath, prometheus.Handler())
++	http.Handle(metricsPath, promhttp.Handler())
+ 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+ 		http.Redirect(w, r, metricsPath, http.StatusMovedPermanently)
+ 	})
+@@ -156,7 +166,7 @@ func sitesString(sites []*unifi.Site) string {
+ }
+ 
+ // newClient returns a unifiexporter.ClientFunc using the input parameters.
+-func newClient(addr, username, password string, insecure bool, timeout time.Duration) unifiexporter.ClientFunc {
++func newClient(addr, username, password string, insecure bool, unifiOS bool, timeout time.Duration) unifiexporter.ClientFunc {
+ 	return func() (*unifi.Client, error) {
+ 		httpClient := &http.Client{Timeout: timeout}
+ 		if insecure {
+@@ -168,6 +178,7 @@ func newClient(addr, username, password string, insecure bool, timeout time.Dura
+ 			return nil, fmt.Errorf("cannot create UniFi Controller client: %v", err)
+ 		}
+ 		c.UserAgent = userAgent
++		c.UnifiOS = unifiOS
+ 
+ 		if err := c.Login(username, password); err != nil {
+ 			return nil, fmt.Errorf("failed to authenticate to UniFi Controller: %v", err)
