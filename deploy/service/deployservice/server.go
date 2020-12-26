@@ -2,6 +2,8 @@ package deployservice
 
 import (
 	"github.com/google/go-github/v33/github"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/metric"
 )
 
 // Config contains configuration parameters for how to fetch the build artifact to deploy.
@@ -36,11 +38,18 @@ type Server struct {
 	GitHubClient *github.Client
 
 	lastSuccessfulCommit string
+	deployChecksTotal    metric.Int64Counter
+	deployCheckDuration  metric.Float64ValueRecorder
 }
 
 func New(gh *github.Client, cfg Config) *Server {
+	m := metric.Must(otel.Meter(instrumentationName))
 	return &Server{
 		Config:       cfg,
 		GitHubClient: gh,
+		deployChecksTotal: m.NewInt64Counter("deploy.check.total",
+			metric.WithDescription("Counts the number of times that the service checked for a new version to deploy")),
+		deployCheckDuration: m.NewFloat64ValueRecorder("deploy.check.duration.seconds",
+			metric.WithDescription("Records the amount of time spent checking for and applying new changes")),
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -18,8 +19,10 @@ import (
 	"github.com/mjm/pi-tools/pkg/spanerr"
 )
 
+var errSkipped = errors.New("skipped deploy because current version was already deployed successfully")
+
 func (s *Server) PollForChanges(ctx context.Context, interval time.Duration) {
-	_ = s.checkForChanges(ctx)
+	s.performCheck(ctx)
 
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
@@ -29,9 +32,25 @@ func (s *Server) PollForChanges(ctx context.Context, interval time.Duration) {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
-			_ = s.checkForChanges(ctx)
+			s.performCheck(ctx)
 		}
 	}
+}
+
+func (s *Server) performCheck(ctx context.Context) {
+	startTime := time.Now()
+	status := "succeeded"
+	if err := s.checkForChanges(ctx); err != nil {
+		if errors.Is(err, errSkipped) {
+			status = "skipped"
+		} else {
+			status = "failed"
+		}
+	}
+	duration := time.Now().Sub(startTime)
+
+	s.deployChecksTotal.Add(ctx, 1, label.String("status", status))
+	s.deployCheckDuration.Record(ctx, duration.Seconds(), label.String("status", status))
 }
 
 func (s *Server) checkForChanges(ctx context.Context) error {
@@ -63,7 +82,7 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 
 	if run.GetHeadCommit().GetID() == s.lastSuccessfulCommit {
 		span.SetAttributes(label.Bool("deploy_skipped", true))
-		return nil
+		return errSkipped
 	}
 
 	span.SetAttributes(label.Bool("deploy_skipped", false))

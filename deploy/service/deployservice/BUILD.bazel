@@ -14,5 +14,6 @@ go_library(
         "@com_github_google_go_github_v33//github",
         "@io_opentelemetry_go_otel//:otel",
         "@io_opentelemetry_go_otel//label",
+        "@io_opentelemetry_go_otel//metric",
     ],
 )
