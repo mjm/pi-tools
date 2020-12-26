@@ -3,14 +3,17 @@ load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
 
 k8s_object(
     name = "k8s_statefulset",
-    kind = "statefulset",
     template = "statefulset.yaml",
 )
 
 k8s_object(
     name = "k8s_service",
-    kind = "service",
     template = "service.yaml",
+)
+
+k8s_object(
+    name = "k8s_volume",
+    template = "volume.yaml",
 )
 
 k8s_objects(
@@ -18,6 +21,7 @@ k8s_objects(
     objects = [
         ":k8s_statefulset",
         ":k8s_service",
+        ":k8s_volume",
         "//storage/postgresql/exporter:k8s",
     ],
     tags = ["manual"],
