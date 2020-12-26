@@ -10,7 +10,7 @@ k8s_objects(
     objects = [
         "//auth/oauth-proxy:k8s",
         "//backup/tarsnap:k8s",
-        "//deploy/cmd/autodeployer:k8s",
+        "//deploy/cmd/deploy-srv:k8s",
         "//detect-presence:k8s",
         "//go-links/cmd/go-links:k8s",
         "//homebase:k8s",

@@ -4165,17 +4165,24 @@ go_repository(
     name = "com_github_mdlayher_unifi_exporter",
     importpath = "github.com/mdlayher/unifi_exporter",
     patch_args = ["-p1"],
-    patches = [
-        "//tools:unifi_exporter.patch",
-    ],
     # This is needed because the patch above adds the promhttp dependency, but patches in go_repository
     # rules run after Gazelle has already run for the repo, so it ends up missing from the build file.
     patch_cmds = ["""sed -i.bak '/com_github_prometheus_client_golang/ a\\
         "@com_github_prometheus_client_golang//prometheus/promhttp",
 ' cmd/unifi_exporter/BUILD.bazel
 """],
+    patches = [
+        "//tools:unifi_exporter.patch",
+    ],
     sum = "h1:Fva/ZqxceEhabBhEdSnxVZC/17X+pKw917rrV8DeVGM=",
     version = "v0.0.0-20180610203931-85455df7c491",
+)
+
+go_repository(
+    name = "com_github_google_go_github_v33",
+    importpath = "github.com/google/go-github/v33",
+    sum = "h1:qAf9yP0qc54ufQxzwv+u9H0tiVOnPJxo0lI/JXqw3ZM=",
+    version = "v33.0.0",
 )
 
 gazelle_dependencies()

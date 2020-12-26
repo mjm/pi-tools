@@ -1,0 +1,45 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
+
+go_library(
+    name = "deploy-srv_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mjm/pi-tools/deploy/cmd/deploy-srv",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//deploy/service/deployservice",
+        "//observability",
+        "//pkg/signal",
+        "//rpc",
+        "@com_github_etherlabsio_healthcheck//:healthcheck",
+        "@com_github_google_go_github_v33//github",
+        "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
+        "@org_golang_x_oauth2//:oauth2",
+    ],
+)
+
+go_binary(
+    name = "deploy-srv",
+    embed = [":deploy-srv_lib"],
+    visibility = ["//visibility:public"],
+)
+
+container_image(
+    name = "image",
+    base = "@kubectl//image",
+    files = [
+        ":deploy-srv",
+    ],
+    mode = "0755",
+    tags = ["no-cache"],
+)
+
+k8s_object(
+    name = "k8s",
+    images = {
+        "index.docker.io/mmoriarity/deploy-srv:latest": ":image",
+    },
+    template = "deployment.yaml",
+    visibility = ["//visibility:public"],
+)

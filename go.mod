@@ -8,14 +8,16 @@ require (
 	github.com/etherlabsio/healthcheck v0.0.0-20191224061800-dd3d2fd8c3f6
 	github.com/golang-migrate/migrate/v4 v4.13.0
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
-	github.com/golang/protobuf v1.4.3
+	github.com/golang/protobuf v1.4.3 // indirect
+	github.com/google/go-github v17.0.0+incompatible
+	github.com/google/go-github/v33 v33.0.0
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/improbable-eng/grpc-web v0.13.0
 	github.com/jonboulle/clockwork v0.2.2
 	github.com/lib/pq v1.8.0
 	github.com/magefile/mage v1.10.0 // indirect
-	github.com/mdlayher/unifi v0.0.0-20180604180305-be73af8d7922 // indirect
+	github.com/mdlayher/unifi v0.0.0-20180604180305-be73af8d7922
 	github.com/mdlayher/unifi_exporter v0.0.0-20180610203931-85455df7c491 // indirect
 	github.com/mholt/archiver v3.1.1+incompatible // indirect
 	github.com/nwaples/rardecode v1.1.0 // indirect
@@ -32,8 +34,9 @@ require (
 	go.opentelemetry.io/otel v0.14.0
 	go.opentelemetry.io/otel/exporters/metric/prometheus v0.14.0
 	go.opentelemetry.io/otel/exporters/trace/jaeger v0.14.0
+	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	google.golang.org/grpc v1.33.2
-	google.golang.org/protobuf v1.25.0
+	google.golang.org/protobuf v1.25.0 // indirect
 	k8s.io/api v0.19.1
 	k8s.io/apimachinery v0.19.1
 	k8s.io/client-go v0.19.1
