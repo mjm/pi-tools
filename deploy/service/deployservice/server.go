@@ -6,6 +6,11 @@ import (
 
 // Config contains configuration parameters for how to fetch the build artifact to deploy.
 type Config struct {
+	// DryRun is a flag controlling whether to actually attempt to update the Kubernetes cluster.
+	// If it is true, all actions will be performed up until the actual kubectl command would be
+	// run, and then that will be skipped and assumed to have succeeded.
+	DryRun bool
+
 	// GitHubRepo is the full name of the GitHub repository to pull the build artifact from.
 	GitHubRepo string
 

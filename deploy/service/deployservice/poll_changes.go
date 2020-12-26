@@ -127,7 +127,7 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 			return spanerr.RecordError(ctx, err)
 		}
 
-		if err := applyKubernetesResources(ctx, rc); err != nil {
+		if err := s.applyKubernetesResources(ctx, rc); err != nil {
 			return spanerr.RecordError(ctx, err)
 		}
 
@@ -138,11 +138,16 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 	return spanerr.RecordError(ctx, fmt.Errorf("no file found in archive named %s.yaml", s.Config.FileToApply))
 }
 
-func applyKubernetesResources(ctx context.Context, r io.ReadCloser) error {
-	ctx, span := tracer.Start(ctx, "applyKubernetesResources")
+func (s *Server) applyKubernetesResources(ctx context.Context, r io.ReadCloser) error {
+	ctx, span := tracer.Start(ctx, "Server.applyKubernetesResources")
 	defer span.End()
 
 	defer r.Close()
+
+	span.SetAttributes(label.Bool("dry_run", s.Config.DryRun))
+	if s.Config.DryRun {
+		return nil
+	}
 
 	cmd := exec.Command("kubectl", "apply", "--server-side", "-f", "-")
 	stdin, err := cmd.StdinPipe()
