@@ -102,9 +102,9 @@ func (s *Server) buildTripMessage(ctx context.Context, tripID uuid.UUID) (string
 	if returnedAgo < 5*time.Minute {
 		returnedText = "just returned"
 	} else {
-		returnedText = fmt.Sprintf("returned %s ago", durafmt.ParseShort(returnedAgo).String())
+		returnedText = fmt.Sprintf("returned %s ago", durafmt.ParseShort(returnedAgo))
 	}
-	text := fmt.Sprintf("You %s from a trip that lasted *%s*\\.", returnedText, durafmt.ParseShort(duration).String())
+	text := fmt.Sprintf("You %s from a trip that lasted *%s*\\.", returnedText, durafmt.ParseShort(duration))
 	if len(res.GetTrip().GetTags()) > 0 {
 		text += fmt.Sprintf("\n\n🏷 %s", strings.Join(res.GetTrip().GetTags(), ", "))
 	}
