@@ -11,6 +11,9 @@ import (
 
 const (
 	tripCompletedTemplate = "TripCompleted"
+	tripIgnoredTemplate   = "TripIgnored"
+	tripTaggedTemplate    = "TripTagged"
+	tripUntaggedTemplate  = "TripUntagged"
 )
 
 const templatesText = `
@@ -25,6 +28,18 @@ returned {{ .ReturnedAt | ago | durafmtshort }} ago
 🏷 {{ .Tags | join ", " }}
 {{- end }}
 {{- end }}
+
+{{ define "TripIgnored" -}}
+Done! Your trip from {{ .ReturnedAt | ago | durafmtshort }} ago has been ignored.
+{{- end }}
+
+{{ define "TripTagged" -}}
+Done! Your trip from {{ .ReturnedAt | ago | durafmtshort }} ago has been tagged.
+{{- end }}
+
+{{ define "TripUntagged" -}}
+Done! Your trip from {{ .ReturnedAt | ago | durafmtshort }} ago has been untagged.
+{{- end }}
 `
 
 type tripCompletedTemplateInput struct {
@@ -32,6 +47,13 @@ type tripCompletedTemplateInput struct {
 	Duration   time.Duration
 	Tags       []string
 }
+
+type tripIgnoredTemplateInput struct {
+	ReturnedAt time.Time
+}
+
+type tripTaggedTemplateInput tripIgnoredTemplateInput
+type tripUntaggedTemplateInput tripIgnoredTemplateInput
 
 var templates *template.Template
 

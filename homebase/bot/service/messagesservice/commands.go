@@ -2,11 +2,9 @@ package messagesservice
 
 import (
 	"context"
-	"fmt"
 	"strings"
 	"time"
 
-	"github.com/hako/durafmt"
 	"go.opentelemetry.io/otel/label"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/codes"
@@ -61,10 +59,16 @@ func (s *Server) handleIgnoreCommand(ctx context.Context, msg *telegram.Message)
 		return spanerr.RecordError(ctx, err)
 	}
 
-	returnedAgo := time.Now().Sub(returnedAt)
+	var text strings.Builder
+	if err := templates.ExecuteTemplate(&text, tripIgnoredTemplate, &tripIgnoredTemplateInput{
+		ReturnedAt: returnedAt,
+	}); err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+
 	if _, err := s.t.SendMessage(ctx, telegram.SendMessageRequest{
 		ChatID:           msg.Chat.ID,
-		Text:             fmt.Sprintf("Done! Your trip from %s ago has been ignored.", durafmt.ParseShort(returnedAgo)),
+		Text:             text.String(),
 		ReplyToMessageID: msg.MessageID,
 	}); err != nil {
 		return spanerr.RecordError(ctx, err)
@@ -95,10 +99,16 @@ func (s *Server) handleTagCommand(ctx context.Context, msg *telegram.Message) er
 		return spanerr.RecordError(ctx, err)
 	}
 
-	returnedAgo := time.Now().Sub(returnedAt)
+	var text strings.Builder
+	if err := templates.ExecuteTemplate(&text, tripTaggedTemplate, &tripTaggedTemplateInput{
+		ReturnedAt: returnedAt,
+	}); err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+
 	if _, err := s.t.SendMessage(ctx, telegram.SendMessageRequest{
 		ChatID:           msg.Chat.ID,
-		Text:             fmt.Sprintf("Done! Your trip from %s ago has been tagged.", durafmt.ParseShort(returnedAgo)),
+		Text:             text.String(),
 		ReplyToMessageID: msg.MessageID,
 	}); err != nil {
 		return spanerr.RecordError(ctx, err)
@@ -129,10 +139,16 @@ func (s *Server) handleUntagCommand(ctx context.Context, msg *telegram.Message) 
 		return spanerr.RecordError(ctx, err)
 	}
 
-	returnedAgo := time.Now().Sub(returnedAt)
+	var text strings.Builder
+	if err := templates.ExecuteTemplate(&text, tripUntaggedTemplate, &tripUntaggedTemplateInput{
+		ReturnedAt: returnedAt,
+	}); err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+
 	if _, err := s.t.SendMessage(ctx, telegram.SendMessageRequest{
 		ChatID:           msg.Chat.ID,
-		Text:             fmt.Sprintf("Done! Your trip from %s ago has been untagged.", durafmt.ParseShort(returnedAgo)),
+		Text:             text.String(),
 		ReplyToMessageID: msg.MessageID,
 	}); err != nil {
 		return spanerr.RecordError(ctx, err)

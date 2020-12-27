@@ -60,3 +60,48 @@ func TestTripCompletedMessage(t *testing.T) {
 		})
 	}
 }
+
+func TestTripIgnoredMessage(t *testing.T) {
+	clock := clockwork.NewFakeClock()
+	temps, err := parseTemplates(clock)
+	if !assert.NoError(t, err) {
+		return
+	}
+
+	var output strings.Builder
+	if assert.NoError(t, temps.ExecuteTemplate(&output, tripIgnoredTemplate, &tripIgnoredTemplateInput{
+		ReturnedAt: clock.Now().Add(-27 * time.Minute),
+	})) {
+		assert.Equal(t, `Done! Your trip from 27 minutes ago has been ignored.`, output.String())
+	}
+}
+
+func TestTripTaggedMessage(t *testing.T) {
+	clock := clockwork.NewFakeClock()
+	temps, err := parseTemplates(clock)
+	if !assert.NoError(t, err) {
+		return
+	}
+
+	var output strings.Builder
+	if assert.NoError(t, temps.ExecuteTemplate(&output, tripTaggedTemplate, &tripTaggedTemplateInput{
+		ReturnedAt: clock.Now().Add(-27 * time.Minute),
+	})) {
+		assert.Equal(t, `Done! Your trip from 27 minutes ago has been tagged.`, output.String())
+	}
+}
+
+func TestTripUntaggedMessage(t *testing.T) {
+	clock := clockwork.NewFakeClock()
+	temps, err := parseTemplates(clock)
+	if !assert.NoError(t, err) {
+		return
+	}
+
+	var output strings.Builder
+	if assert.NoError(t, temps.ExecuteTemplate(&output, tripUntaggedTemplate, &tripUntaggedTemplateInput{
+		ReturnedAt: clock.Now().Add(-27 * time.Minute),
+	})) {
+		assert.Equal(t, `Done! Your trip from 27 minutes ago has been untagged.`, output.String())
+	}
+}
