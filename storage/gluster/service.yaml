@@ -6,6 +6,7 @@ metadata:
 spec:
   ports:
     - port: 1
+      protocol: TCP
 ---
 apiVersion: v1
 kind: Endpoints
