@@ -3,6 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "deployservice",
     srcs = [
+        "get_most_recent_deploy.go",
         "poll_changes.go",
         "server.go",
         "trace.go",
@@ -10,10 +11,14 @@ go_library(
     importpath = "github.com/mjm/pi-tools/deploy/service/deployservice",
     visibility = ["//visibility:public"],
     deps = [
+        "//deploy/proto/deploy",
         "//pkg/spanerr",
         "@com_github_google_go_github_v33//github",
         "@io_opentelemetry_go_otel//:otel",
         "@io_opentelemetry_go_otel//label",
         "@io_opentelemetry_go_otel//metric",
+        "@io_opentelemetry_go_otel//trace",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
     ],
 )

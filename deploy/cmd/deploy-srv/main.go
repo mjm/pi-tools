@@ -13,7 +13,9 @@ import (
 	"github.com/google/go-github/v33/github"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"golang.org/x/oauth2"
+	"google.golang.org/grpc"
 
+	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
 	"github.com/mjm/pi-tools/deploy/service/deployservice"
 	"github.com/mjm/pi-tools/observability"
 	"github.com/mjm/pi-tools/pkg/signal"
@@ -27,7 +29,6 @@ var (
 	artifactName = flag.String("artifact", "all_k8s", "Name of artifact to download from workflow run")
 	fileToApply  = flag.String("f", "k8s", "Extension-less name of the YAML file to apply")
 
-	//githubUsername  = flag.String("github-user", "mjm", "Username of GitHub user to authorize as for artifact download")
 	githubTokenPath = flag.String("github-token-path", "/var/secrets/github-token", "Path to file containing GitHub PAT token")
 
 	pollInterval = flag.Duration("poll-interval", 5*time.Minute, "How often to check with GitHub for a new build artifact")
@@ -36,6 +37,7 @@ var (
 
 func main() {
 	rpc.SetDefaultHTTPPort(8480)
+	rpc.SetDefaultGRPCPort(8481)
 	flag.Parse()
 
 	stopObs := observability.MustStart("deploy-srv")
@@ -69,7 +71,9 @@ func main() {
 		otelhttp.WithRouteTag("CheckHealth", healthcheck.Handler(
 			healthcheck.WithTimeout(3*time.Second))))
 
-	go rpc.ListenAndServe()
+	go rpc.ListenAndServe(rpc.WithRegisteredServices(func(s *grpc.Server) {
+		deploypb.RegisterDeployServiceServer(s, deploysSrv)
+	}))
 
 	signal.Wait()
 }

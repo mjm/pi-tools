@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+service DeployService {
+    rpc GetMostRecentDeploy (GetMostRecentDeployRequest) returns (GetMostRecentDeployResponse);
+}
+
+message GetMostRecentDeployRequest {
+}
+
+message GetMostRecentDeployResponse {
+    Deploy deploy = 1;
+}
+
+message Deploy {
+    enum State {
+        UNKNOWN = 0;
+        PENDING = 1;
+        IN_PROGRESS = 2;
+        SUCCESS = 3;
+        FAILURE = 4;
+        INACTIVE = 5;
+    }
+
+    int64 id = 1;
+    string commit_sha = 2;
+    string commit_message = 3;
+    State state = 4;
+    string started_at = 5;
+    string finished_at = 6;
+}
