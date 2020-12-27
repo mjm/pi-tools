@@ -58,6 +58,44 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 	defer span.End()
 
 	repoParts := strings.SplitN(s.Config.GitHubRepo, "/", 2)
+	deployments, _, err := s.GitHubClient.Repositories.ListDeployments(ctx, repoParts[0], repoParts[1], &github.DeploymentsListOptions{
+		Task:        "deploy",
+		Environment: "production",
+		ListOptions: github.ListOptions{
+			PerPage: 1,
+		},
+	})
+	if err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+
+	var prevSuccessfulCommit string
+
+	// Assuming the first deployment returned is the most recently deployed one, so only looking at that one.
+	if len(deployments) > 0 {
+		prevDeploy := deployments[0]
+		span.SetAttributes(
+			label.Int64("deployment.previous.id", prevDeploy.GetID()),
+			label.String("deployment.previous.sha", prevDeploy.GetSHA()))
+
+		// Again, assuming the first deployment status returned is the newest one.
+		statuses, _, err := s.GitHubClient.Repositories.ListDeploymentStatuses(ctx, repoParts[0], repoParts[1], prevDeploy.GetID(), &github.ListOptions{
+			PerPage: 1,
+		})
+		if err != nil {
+			return spanerr.RecordError(ctx, err)
+		}
+
+		if len(statuses) > 0 {
+			status := statuses[0]
+			span.SetAttributes(label.String("deployment.previous.status", status.GetState()))
+
+			if status.GetState() == "success" {
+				prevSuccessfulCommit = prevDeploy.GetSHA()
+			}
+		}
+	}
+
 	runs, _, err := s.GitHubClient.Actions.ListWorkflowRunsByFileName(ctx, repoParts[0], repoParts[1], s.Config.WorkflowName, &github.ListWorkflowRunsOptions{
 		Branch: s.Config.GitHubBranch,
 		Status: "success",
@@ -78,15 +116,59 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 	span.SetAttributes(
 		label.String("workflow.run.commit_id", run.GetHeadCommit().GetID()),
 		label.String("workflow.run.commit_message", run.GetHeadCommit().GetMessage()),
-		label.String("last_successful_commit_id", s.lastSuccessfulCommit))
+		label.String("last_successful_commit_id", prevSuccessfulCommit))
 
-	if run.GetHeadCommit().GetID() == s.lastSuccessfulCommit {
+	if run.GetHeadCommit().GetID() == prevSuccessfulCommit {
 		span.SetAttributes(label.Bool("deploy_skipped", true))
 		return errSkipped
 	}
 
 	span.SetAttributes(label.Bool("deploy_skipped", false))
 
+	// First, create a new deployment for this commit
+	deploy, _, err := s.GitHubClient.Repositories.CreateDeployment(ctx, repoParts[0], repoParts[1], &github.DeploymentRequest{
+		Ref:         run.GetHeadCommit().ID,
+		Task:        github.String("deploy"),
+		AutoMerge:   github.Bool(false),
+		Description: github.String("Deploy triggered by deploy-srv"),
+	})
+	if err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+	span.SetAttributes(
+		label.Int64("deployment.id", deploy.GetID()),
+		label.String("deployment.sha", deploy.GetSHA()))
+
+	// Now set the new deployment to be in progress
+	inProgressStatus, _, err := s.GitHubClient.Repositories.CreateDeploymentStatus(ctx, repoParts[0], repoParts[1], deploy.GetID(), &github.DeploymentStatusRequest{
+		State:        github.String("in_progress"),
+		AutoInactive: github.Bool(true),
+	})
+	if err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+	span.SetAttributes(label.Int64("deployment.in_progress_status_id", inProgressStatus.GetID()))
+
+	// This will get set to "success" at the end once we are done with the deploy.
+	// If we don't make it that far, we'll return an error, and our defer should automatically add a "failure" status
+	// to the deployment.
+	finalDeploymentStatus := "failure"
+	defer func(deployID int64) {
+		span.SetAttributes(label.String("deployment.status", finalDeploymentStatus))
+
+		// Create the final status for the deployment
+		finalStatus, _, err := s.GitHubClient.Repositories.CreateDeploymentStatus(ctx, repoParts[0], repoParts[1], deployID, &github.DeploymentStatusRequest{
+			State:        &finalDeploymentStatus,
+			AutoInactive: github.Bool(true),
+		})
+		if err != nil {
+			span.RecordError(err)
+		}
+
+		span.SetAttributes(label.Int64("deployment.final_status_id", finalStatus.GetID()))
+	}(deploy.GetID())
+
+	// Alright, on with the show.
 	artifacts, _, err := s.GitHubClient.Actions.ListWorkflowRunArtifacts(ctx, repoParts[0], repoParts[1], run.GetID(), nil)
 	if err != nil {
 		return spanerr.RecordError(ctx, err)
@@ -150,7 +232,7 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 			return spanerr.RecordError(ctx, err)
 		}
 
-		s.lastSuccessfulCommit = run.GetHeadCommit().GetID()
+		finalDeploymentStatus = "success"
 		return nil
 	}
 
