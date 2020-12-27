@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/hako/durafmt"
 	"go.opentelemetry.io/otel"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -97,17 +96,15 @@ func (s *Server) buildTripMessage(ctx context.Context, tripID uuid.UUID) (string
 		InlineKeyboard: buttonRows,
 	}
 
-	returnedAgo := time.Now().Sub(returnedAt)
-	var returnedText string
-	if returnedAgo < 5*time.Minute {
-		returnedText = "just returned"
-	} else {
-		returnedText = fmt.Sprintf("returned %s ago", durafmt.ParseShort(returnedAgo))
+	var text strings.Builder
+	templateInput := &tripCompletedTemplateInput{
+		ReturnedAt: returnedAt,
+		Duration:   duration,
+		Tags:       res.GetTrip().GetTags(),
 	}
-	text := fmt.Sprintf("You %s from a trip that lasted *%s*\\.", returnedText, durafmt.ParseShort(duration))
-	if len(res.GetTrip().GetTags()) > 0 {
-		text += fmt.Sprintf("\n\n🏷 %s", strings.Join(res.GetTrip().GetTags(), ", "))
+	if err := templates.ExecuteTemplate(&text, tripCompletedTemplate, templateInput); err != nil {
+		return "", nil, status.Errorf(codes.Internal, "rendering message template: %s", err)
 	}
 
-	return text, replyMarkup, nil
+	return text.String(), replyMarkup, nil
 }

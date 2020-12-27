@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "messagesservice",
@@ -8,6 +8,7 @@ go_library(
         "send_trip_began_message.go",
         "send_trip_completed_message.go",
         "server.go",
+        "templates.go",
         "trace.go",
         "watch_updates.go",
     ],
@@ -22,11 +23,22 @@ go_library(
         "//storage",
         "@com_github_google_uuid//:uuid",
         "@com_github_hako_durafmt//:durafmt",
+        "@com_github_jonboulle_clockwork//:clockwork",
         "@io_opentelemetry_go_otel//:otel",
         "@io_opentelemetry_go_otel//label",
         "@io_opentelemetry_go_otel//metric",
         "@io_opentelemetry_go_otel//trace",
         "@org_golang_google_grpc//codes",
         "@org_golang_google_grpc//status",
+    ],
+)
+
+go_test(
+    name = "messagesservice_test",
+    srcs = ["templates_test.go"],
+    embed = [":messagesservice"],
+    deps = [
+        "@com_github_jonboulle_clockwork//:clockwork",
+        "@com_github_stretchr_testify//assert",
     ],
 )

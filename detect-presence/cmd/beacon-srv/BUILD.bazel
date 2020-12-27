@@ -35,6 +35,7 @@ k8s_object(
     images = {
         "index.docker.io/mmoriarity/beacon-srv:latest": ":image",
     },
+    tags = ["manual"],
     template = "daemonset.yaml",
     visibility = ["//visibility:public"],
 )
