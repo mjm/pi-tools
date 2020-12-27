@@ -21,6 +21,7 @@ go_library(
         "//pkg/spanerr",
         "//storage",
         "@com_github_google_uuid//:uuid",
+        "@com_github_hako_durafmt//:durafmt",
         "@io_opentelemetry_go_otel//:otel",
         "@io_opentelemetry_go_otel//label",
         "@io_opentelemetry_go_otel//metric",

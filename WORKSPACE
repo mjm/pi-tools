@@ -4185,6 +4185,13 @@ go_repository(
     version = "v33.0.0",
 )
 
+go_repository(
+    name = "com_github_hako_durafmt",
+    importpath = "github.com/hako/durafmt",
+    sum = "h1:BpJ2o0OR5FV7vrkDYfXYVJQeMNWa8RhklZOpW2ITAIQ=",
+    version = "v0.0.0-20200710122514-c0fb7b4da026",
+)
+
 gazelle_dependencies()
 
 http_archive(

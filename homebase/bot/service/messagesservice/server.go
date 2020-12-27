@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/hako/durafmt"
 	"go.opentelemetry.io/otel"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -92,11 +93,18 @@ func (s *Server) buildTripMessage(ctx context.Context, tripID uuid.UUID) (string
 			CallbackData: "IGNORE",
 		},
 	})
-
 	replyMarkup := &telegram.ReplyMarkup{
 		InlineKeyboard: buttonRows,
 	}
-	text := fmt.Sprintf("You just returned from a trip that lasted *%s*\\.", duration)
+
+	returnedAgo := time.Now().Sub(returnedAt)
+	var returnedText string
+	if returnedAgo < 5*time.Minute {
+		returnedText = "just returned"
+	} else {
+		returnedText = fmt.Sprintf("returned %s ago", durafmt.ParseShort(returnedAgo).String())
+	}
+	text := fmt.Sprintf("You %s from a trip that lasted *%s*\\.", returnedText, durafmt.ParseShort(duration).String())
 	if len(res.GetTrip().GetTags()) > 0 {
 		text += fmt.Sprintf("\n\n🏷 %s", strings.Join(res.GetTrip().GetTags(), ", "))
 	}
