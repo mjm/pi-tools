@@ -127,10 +127,11 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 
 	// First, create a new deployment for this commit
 	deploy, _, err := s.GitHubClient.Repositories.CreateDeployment(ctx, repoParts[0], repoParts[1], &github.DeploymentRequest{
-		Ref:         run.GetHeadCommit().ID,
-		Task:        github.String("deploy"),
-		AutoMerge:   github.Bool(false),
-		Description: github.String("Deploy triggered by deploy-srv"),
+		Ref:              run.GetHeadCommit().ID,
+		Task:             github.String("deploy"),
+		AutoMerge:        github.Bool(false),
+		Description:      github.String("Deploy triggered by deploy-srv"),
+		RequiredContexts: &[]string{},
 	})
 	if err != nil {
 		return spanerr.RecordError(ctx, err)
