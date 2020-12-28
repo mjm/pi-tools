@@ -19,7 +19,6 @@ k8s_objects(
         "//pi-hole:k8s",
         "//security/cert-manager:k8s",
         "//storage/gluster:k8s",
-        "//storage/nfs/cmd/nfs-subdir-external-provisioner:k8s",
         "//storage/postgresql:k8s",
     ],
     tags = ["manual"],
