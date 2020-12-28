@@ -26,3 +26,4 @@
 *.xcodeproj
 xcuserdata
 tulsigen-*
+/secrets.yaml

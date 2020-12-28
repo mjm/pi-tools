@@ -81,7 +81,7 @@ spec:
       volumes:
         - name: grafana-data
           persistentVolumeClaim:
-            claimName: grafana-data-nfs
+            claimName: grafana-data
         - name: grafana-dashboards
           configMap:
             name: provisioned-dashboards

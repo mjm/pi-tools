@@ -100,6 +100,10 @@ metadata:
   namespace: security
 spec:
   replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
   selector:
     matchLabels:
       app.kubernetes.io/component: cainjector
@@ -116,7 +120,8 @@ spec:
       containers:
         - args:
             - --v=2
-            - --leader-election-namespace=kube-system
+#            - --leader-election-namespace=kube-system
+            - --leader-elect=false
           env:
             - name: POD_NAMESPACE
               valueFrom:
