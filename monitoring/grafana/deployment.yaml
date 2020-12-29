@@ -27,6 +27,8 @@ spec:
         - image: index.docker.io/mmoriarity/grafana:latest
           name: grafana
           env:
+            - name: GF_LOG_LEVEL
+              value: info
             - name: GF_DATABASE_TYPE
               value: postgres
             - name: GF_DATABASE_HOST
