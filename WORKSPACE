@@ -2554,8 +2554,8 @@ go_repository(
 go_repository(
     name = "com_github_opentracing_opentracing_go",
     importpath = "github.com/opentracing/opentracing-go",
-    sum = "h1:fI6mGTyggeIYVmGhf80XFHxTupjOexbCppgTNDkv9AA=",
-    version = "v1.1.1-0.20190913142402-a7454ce5950e",
+    sum = "h1:pWlfV3Bxv7k65HYwkikxat0+s3pV4bsqf19k25Ur8rU=",
+    version = "v1.1.0",
 )
 
 go_repository(
@@ -4190,6 +4190,13 @@ go_repository(
     importpath = "github.com/hako/durafmt",
     sum = "h1:BpJ2o0OR5FV7vrkDYfXYVJQeMNWa8RhklZOpW2ITAIQ=",
     version = "v0.0.0-20200710122514-c0fb7b4da026",
+)
+
+go_repository(
+    name = "com_github_mjm_graphql_go",
+    importpath = "github.com/mjm/graphql-go",
+    sum = "h1:uFZvCeM6RutHugCbyVQc5GHyTOVYn7KMb4OOR5niMQg=",
+    version = "v0.0.0-20200213070811-48021cabfccf",
 )
 
 gazelle_dependencies()

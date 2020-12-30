@@ -7,7 +7,10 @@ load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
 load("//tools:k8s.bzl", "k8s_http_service", "k8s_virtual_host")
 
 exports_files(
-    ["tsconfig.json"],
+    [
+        "schema.graphql",
+        "tsconfig.json",
+    ],
     visibility = ["//visibility:public"],
 )
 

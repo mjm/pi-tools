@@ -1,0 +1,44 @@
+scalar Cursor
+scalar Time
+
+interface Node {
+    id: ID!
+}
+
+type Query {
+    viewer: Viewer
+    node(id: ID!): Node
+}
+
+type Viewer {
+    trips(
+        first: Int
+        after: Cursor
+    ): TripConnection
+}
+
+type PageInfo {
+    startCursor: Cursor
+    endCursor: Cursor
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+}
+
+type TripConnection {
+    edges: [TripEdge!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
+}
+
+type TripEdge {
+    node: Trip!
+    cursor: Cursor!
+}
+
+type Trip implements Node {
+    id: ID!
+    leftAt: Time!
+    returnedAt: Time
+    tags: [String!]!
+}
+

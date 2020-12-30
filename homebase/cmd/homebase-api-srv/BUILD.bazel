@@ -1,0 +1,63 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
+load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
+load("//tools:k8s.bzl", "k8s_http_service")
+
+go_library(
+    name = "homebase-api-srv_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mjm/pi-tools/homebase/cmd/homebase-api-srv",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//detect-presence/proto/trips",
+        "//homebase/service/apiservice",
+        "//observability",
+        "//pkg/signal",
+        "//rpc",
+        "@com_github_etherlabsio_healthcheck//:healthcheck",
+        "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
+    ],
+)
+
+go_binary(
+    name = "homebase-api-srv",
+    embed = [":homebase-api-srv_lib"],
+    visibility = ["//visibility:public"],
+)
+
+container_image(
+    name = "image",
+    base = "@distroless_base//image",
+    files = [
+        ":homebase-api-srv",
+        "//homebase:schema.graphql",
+    ],
+    mode = "0755",
+    tags = ["no-cache"],
+)
+
+k8s_object(
+    name = "k8s_deploy",
+    images = {
+        "index.docker.io/mmoriarity/homebase-api-srv:latest": ":image",
+    },
+    template = "deployment.yaml",
+)
+
+k8s_http_service(
+    name = "k8s_http_service",
+    app = "homebase-api",
+    namespace = "homebase",
+    service_name = "homebase-api-srv",
+)
+
+k8s_objects(
+    name = "k8s",
+    objects = [
+        ":k8s_deploy",
+        ":k8s_http_service",
+    ],
+    tags = ["manual"],
+    visibility = ["//visibility:public"],
+)

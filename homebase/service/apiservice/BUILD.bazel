@@ -1,0 +1,20 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "apiservice",
+    srcs = [
+        "cursor.go",
+        "node_resolver.go",
+        "pageinfo_resolver.go",
+        "query_resolver.go",
+        "server.go",
+        "trip_resolver.go",
+    ],
+    importpath = "github.com/mjm/pi-tools/homebase/service/apiservice",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//detect-presence/proto/trips",
+        "@com_github_mjm_graphql_go//:graphql-go",
+        "@com_github_mjm_graphql_go//relay",
+    ],
+)

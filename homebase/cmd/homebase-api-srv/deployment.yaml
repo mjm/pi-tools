@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: homebase
+  name: homebase-api-srv
+  labels:
+    app: homebase-api
+spec:
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: homebase-api
+  template:
+    metadata:
+      labels:
+        app: homebase-api
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "6460"
+        linkerd.io/inject: enabled
+    spec:
+      containers:
+        - name: homebase-api-srv
+          image: index.docker.io/mmoriarity/homebase-api-srv:latest
+          command:
+            - /homebase-api-srv
+            - "-trips-url"
+            - detect-presence-srv-grpc.detect-presence:80
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "30M"
+            limits:
+              memory: "50M"
+          ports:
+            - name: http
+              containerPort: 6360
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            successThreshold: 3
+            timeoutSeconds: 3
+            periodSeconds: 15

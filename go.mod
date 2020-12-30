@@ -4,30 +4,22 @@ go 1.14
 
 require (
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
-	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/etherlabsio/healthcheck v0.0.0-20191224061800-dd3d2fd8c3f6
 	github.com/golang-migrate/migrate/v4 v4.13.0
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/golang/protobuf v1.4.3
-	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-github/v33 v33.0.0
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/websocket v1.4.2 // indirect
-	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026 // indirect
+	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026
 	github.com/improbable-eng/grpc-web v0.13.0
 	github.com/jonboulle/clockwork v0.2.2
 	github.com/lib/pq v1.8.0
-	github.com/magefile/mage v1.10.0 // indirect
 	github.com/mdlayher/unifi v0.0.0-20180604180305-be73af8d7922
-	github.com/mdlayher/unifi_exporter v0.0.0-20180610203931-85455df7c491 // indirect
-	github.com/mholt/archiver v3.1.1+incompatible // indirect
-	github.com/nwaples/rardecode v1.1.0 // indirect
+	github.com/mjm/graphql-go v0.0.0-20200213070811-48021cabfccf
 	github.com/rs/cors v1.7.0 // indirect
 	github.com/segmentio/ksuid v1.0.3
 	github.com/stretchr/testify v1.6.1
-	github.com/ulikunitz/xz v0.5.8 // indirect
-	github.com/wrouesnel/postgres_exporter v0.8.0 // indirect
-	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/zserge/hid v0.0.0-20190124175232-e1626f1782f3
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.14.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.14.0
