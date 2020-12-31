@@ -18,11 +18,17 @@ k8s_object(
     template = "issuer.yaml",
 )
 
+k8s_object(
+    name = "k8s_certs",
+    template = "certs.yaml",
+)
+
 k8s_objects(
     name = "k8s",
     objects = [
         ":k8s_operator",
         ":k8s_issuer",
+        ":k8s_certs",
     ],
     tags = ["manual"],
     visibility = ["//visibility:public"],
