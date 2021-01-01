@@ -23,7 +23,7 @@ func (r *Resolver) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Nod
 
 func (r *Resolver) Trips(ctx context.Context, args struct {
 	First *int32
-	After *string
+	After *Cursor
 }) (*TripConnection, error) {
 	// TODO actually support paging
 
@@ -51,4 +51,21 @@ func (r *Resolver) Trip(ctx context.Context, args struct {
 		return nil, err
 	}
 	return &Trip{Trip: res.GetTrip()}, nil
+}
+
+func (r *Resolver) Tags(ctx context.Context, args struct {
+	First *int32
+	After *Cursor
+}) (*TagConnection, error) {
+	// TODO actually support paging
+
+	var limit int32 = 30
+	if args.First != nil {
+		limit = *args.First
+	}
+	res, err := r.tripsClient.ListTags(ctx, &tripspb.ListTagsRequest{Limit: limit})
+	if err != nil {
+		return nil, err
+	}
+	return &TagConnection{res: res}, nil
 }

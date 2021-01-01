@@ -15,6 +15,7 @@ export type TripsPageQueryResponse = {
                 };
             }>;
         } | null;
+        readonly " $fragmentRefs": FragmentRefs<"TagFilters_tags">;
     } | null;
 };
 export type TripsPageQuery = {
@@ -27,12 +28,24 @@ export type TripsPageQuery = {
 /*
 query TripsPageQuery {
   viewer {
+    ...TagFilters_tags
     trips {
       edges {
         node {
           id
           ...TripRow_trip
         }
+      }
+    }
+  }
+}
+
+fragment TagFilters_tags on Viewer {
+  tags(first: 5) {
+    edges {
+      node {
+        name
+        tripCount
       }
     }
   }
@@ -107,6 +120,11 @@ return {
               }
             ],
             "storageKey": null
+          },
+          {
+            "args": null,
+            "kind": "FragmentSpread",
+            "name": "TagFilters_tags"
           }
         ],
         "storageKey": null
@@ -129,6 +147,59 @@ return {
         "name": "viewer",
         "plural": false,
         "selections": [
+          {
+            "alias": null,
+            "args": [
+              {
+                "kind": "Literal",
+                "name": "first",
+                "value": 5
+              }
+            ],
+            "concreteType": "TagConnection",
+            "kind": "LinkedField",
+            "name": "tags",
+            "plural": false,
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "TagEdge",
+                "kind": "LinkedField",
+                "name": "edges",
+                "plural": true,
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "Tag",
+                    "kind": "LinkedField",
+                    "name": "node",
+                    "plural": false,
+                    "selections": [
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "name",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "tripCount",
+                        "storageKey": null
+                      }
+                    ],
+                    "storageKey": null
+                  }
+                ],
+                "storageKey": null
+              }
+            ],
+            "storageKey": "tags(first:5)"
+          },
           {
             "alias": null,
             "args": null,
@@ -190,14 +261,14 @@ return {
     ]
   },
   "params": {
-    "cacheID": "365bb696a528e71119c2de88cb28c770",
+    "cacheID": "182e8409dbfdd548f633ad837becc1ea",
     "id": null,
     "metadata": {},
     "name": "TripsPageQuery",
     "operationKind": "query",
-    "text": "query TripsPageQuery {\n  viewer {\n    trips {\n      edges {\n        node {\n          id\n          ...TripRow_trip\n        }\n      }\n    }\n  }\n}\n\nfragment TripRow_trip on Trip {\n  id\n  leftAt\n  returnedAt\n  tags\n}\n"
+    "text": "query TripsPageQuery {\n  viewer {\n    ...TagFilters_tags\n    trips {\n      edges {\n        node {\n          id\n          ...TripRow_trip\n        }\n      }\n    }\n  }\n}\n\nfragment TagFilters_tags on Viewer {\n  tags(first: 5) {\n    edges {\n      node {\n        name\n        tripCount\n      }\n    }\n  }\n}\n\nfragment TripRow_trip on Trip {\n  id\n  leftAt\n  returnedAt\n  tags\n}\n"
   }
 };
 })();
-(node as any).hash = '071ae0cfdf1a4e283f32a242717e93e3';
+(node as any).hash = '9551198261ba8d7caaddce9137680661';
 export default node;

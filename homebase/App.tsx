@@ -21,20 +21,22 @@ export function App() {
                     <div>
                         <NavigationBar/>
 
-                        <Switch>
-                            <Route exact path="/">
-                                <HomePage/>
-                            </Route>
-                            <Route path="/trips">
-                                <TripRoutes/>
-                            </Route>
-                            <Route path="/go">
-                                <GoLinkRoutes/>
-                            </Route>
-                            <Route path="*">
-                                <NoMatch/>
-                            </Route>
-                        </Switch>
+                        <React.Suspense fallback={"Loading..."}>
+                            <Switch>
+                                <Route exact path="/">
+                                    <HomePage/>
+                                </Route>
+                                <Route path="/trips">
+                                    <TripRoutes/>
+                                </Route>
+                                <Route path="/go">
+                                    <GoLinkRoutes/>
+                                </Route>
+                                <Route path="*">
+                                    <NoMatch/>
+                                </Route>
+                            </Switch>
+                        </React.Suspense>
                     </div>
                 </Router>
             </React.Suspense>

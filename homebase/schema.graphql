@@ -17,6 +17,11 @@ type Viewer {
     ): TripConnection
 
     trip(id: ID!): Trip
+
+    tags(
+        first: Int
+        after: Cursor
+    ): TagConnection
 }
 
 type PageInfo {
@@ -45,3 +50,18 @@ type Trip implements Node {
     tags: [String!]!
 }
 
+type TagConnection {
+    edges: [TagEdge!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
+}
+
+type TagEdge {
+    node: Tag!
+    cursor: Cursor!
+}
+
+type Tag {
+    name: String!
+    tripCount: Int!
+}
