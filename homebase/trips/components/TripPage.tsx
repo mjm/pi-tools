@@ -1,22 +1,34 @@
 import React from "react";
 import {Helmet} from "react-helmet";
 import {useHistory, useParams} from "react-router-dom";
-import useSWR from "swr";
 import {format, formatDuration, intervalToDuration, parseISO} from "date-fns";
 import {DescriptionField} from "com_github_mjm_pi_tools/homebase/components/DescriptionField";
-import {Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
-import {GET_TRIP} from "com_github_mjm_pi_tools/homebase/trips/lib/fetch";
 import {ignoreTrip} from "com_github_mjm_pi_tools/homebase/trips/lib/mutate";
 import {TripTagField} from "com_github_mjm_pi_tools/homebase/trips/components/TripTagField";
 import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
+import {graphql, useLazyLoadQuery} from "react-relay/hooks";
+import {TripPageQuery} from "com_github_mjm_pi_tools/homebase/api/__generated__/TripPageQuery.graphql";
 
 export function TripPage() {
     const {id} = useParams<{ id: string }>();
-    const {data, error} = useSWR<Trip>([GET_TRIP, id]);
+    const data = useLazyLoadQuery<TripPageQuery>(
+        graphql`
+            query TripPageQuery($id: ID!) {
+                viewer {
+                    trip(id: $id) {
+                        id
+                        rawID
+                        leftAt
+                        returnedAt
+                        ...TripTagField_trip
+                    }
+                }
+            }
+        `,
+        {id},
+    );
 
-    if (error) {
-        console.error(error);
-    }
+    const trip = data.viewer.trip;
 
     return (
         <main className="max-w-3xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -33,39 +45,38 @@ export function TripPage() {
                             </h3>
                         </div>
                         <div className="ml-4 mt-2 flex-shrink-0 flex">
-                            {data && <TripIgnoreButton id={data.getId()}/>}
+                            {trip && <TripIgnoreButton id={trip.rawID}/>}
                         </div>
                     </div>
                 </div>
-                {error && (
-                    <Alert severity="error" rounded={false} title="Couldn't load this trip">
-                        {error.toString()}
-                    </Alert>
-                )}
-                {data && (
+                {trip ? (
                     <div>
                         <dl>
                             <DescriptionField label="Left at" offset>
-                                {format(parseISO(data.getLeftAt()), "PPpp")}
+                                {format(parseISO(trip.leftAt), "PPpp")}
                             </DescriptionField>
-                            {data.getReturnedAt() && (
+                            {trip.returnedAt && (
                                 <>
                                     <DescriptionField label="Returned at">
-                                        {format(parseISO(data.getReturnedAt()), "PPpp")}
+                                        {format(parseISO(trip.returnedAt), "PPpp")}
                                     </DescriptionField>
                                     <DescriptionField label="Duration" offset>
                                         {formatDuration(intervalToDuration({
-                                            start: parseISO(data.getLeftAt()),
-                                            end: parseISO(data.getReturnedAt()),
+                                            start: parseISO(trip.leftAt),
+                                            end: parseISO(trip.returnedAt),
                                         }))}
                                     </DescriptionField>
                                 </>
                             )}
                             <DescriptionField label="Tags">
-                                <TripTagField trip={data}/>
+                                <TripTagField trip={trip}/>
                             </DescriptionField>
                         </dl>
                     </div>
+                ) : (
+                    <Alert title="Couldn't load this trip" severity="error" rounded={false}>
+                        No trip was found with this ID.
+                    </Alert>
                 )}
             </div>
         </main>

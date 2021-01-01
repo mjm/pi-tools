@@ -1,14 +1,25 @@
 import React from "react";
-import {Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
 import {TripTag} from "com_github_mjm_pi_tools/homebase/trips/components/TripTag";
 import {updateTripTags} from "com_github_mjm_pi_tools/homebase/trips/lib/mutate";
+import {graphql, useFragment} from "react-relay/hooks";
+import {TripTagField_trip$key} from "com_github_mjm_pi_tools/homebase/api/__generated__/TripTagField_trip.graphql";
 
-export function TripTagField({trip}: { trip: Trip }) {
+export function TripTagField({trip}: { trip: TripTagField_trip$key }) {
+    const data = useFragment(
+        graphql`
+            fragment TripTagField_trip on Trip {
+                rawID
+                tags
+            }
+        `,
+        trip,
+    );
+
     const [draftTags, setDraftTags] = React.useState<string | null>(null);
     const [isSaving, setSaving] = React.useState(false);
 
     function onEdit() {
-        setDraftTags(trip.getTagsList().join(", "));
+        setDraftTags(data.tags.join(", "));
     }
 
     function onChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -21,7 +32,7 @@ export function TripTagField({trip}: { trip: Trip }) {
         const newTags = draftTags.split(",").map(tag => tag.trim());
 
         try {
-            await updateTripTags(trip.getId(), trip.getTagsList(), newTags);
+            await updateTripTags(data.rawID, data.tags, newTags);
             setDraftTags(null);
         } catch (e) {
             // TODO surface error
@@ -37,10 +48,10 @@ export function TripTagField({trip}: { trip: Trip }) {
 
     return draftTags === null ? (
         <div className="group flex flex-row items-center space-x-3">
-            {trip.getTagsList().length === 0 ? (
+            {data.tags.length === 0 ? (
                 <span>No tags</span>
             ) : (
-                trip.getTagsList().map(tag => (
+                data.tags.map(tag => (
                     <TripTag key={tag}>
                         {tag}
                     </TripTag>

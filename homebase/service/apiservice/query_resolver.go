@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/mjm/graphql-go"
+	"github.com/mjm/graphql-go/relay"
 
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
 )
@@ -35,4 +36,19 @@ func (r *Resolver) Trips(ctx context.Context, args struct {
 		return nil, err
 	}
 	return &TripConnection{res: res}, nil
+}
+
+func (r *Resolver) Trip(ctx context.Context, args struct {
+	ID graphql.ID
+}) (*Trip, error) {
+	var id string
+	if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
+		return nil, err
+	}
+
+	res, err := r.tripsClient.GetTrip(ctx, &tripspb.GetTripRequest{Id: id})
+	if err != nil {
+		return nil, err
+	}
+	return &Trip{Trip: res.GetTrip()}, nil
 }

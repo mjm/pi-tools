@@ -1,11 +1,7 @@
 import {mutate} from "swr";
 import {client} from "com_github_mjm_pi_tools/homebase/trips/lib/trips_client";
-import {
-    IgnoreTripRequest,
-    Trip,
-    UpdateTripTagsRequest,
-} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
-import {GET_TRIP, LIST_TRIPS} from "com_github_mjm_pi_tools/homebase/trips/lib/fetch";
+import {IgnoreTripRequest, UpdateTripTagsRequest} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
+import {LIST_TRIPS} from "com_github_mjm_pi_tools/homebase/trips/lib/fetch";
 
 export async function ignoreTrip(id: string): Promise<void> {
     const req = new IgnoreTripRequest();
@@ -14,7 +10,7 @@ export async function ignoreTrip(id: string): Promise<void> {
     await mutate(LIST_TRIPS);
 }
 
-export async function updateTripTags(id: string, oldTags: string[], newTags: string[]): Promise<void> {
+export async function updateTripTags(id: string, oldTags: readonly string[], newTags: string[]): Promise<void> {
     const oldTagsSet = new Set(oldTags);
     const newTagsSet = new Set(newTags);
 
@@ -27,13 +23,4 @@ export async function updateTripTags(id: string, oldTags: string[], newTags: str
     req.setTagsToRemoveList(tagsToRemove);
 
     await client.updateTripTags(req);
-
-    await Promise.all([
-        mutate(LIST_TRIPS),
-        mutate([GET_TRIP, id], (trip: Trip) => {
-            const newTrip = trip.cloneMessage();
-            newTrip.setTagsList(newTags);
-            return newTrip;
-        }),
-    ]);
 }

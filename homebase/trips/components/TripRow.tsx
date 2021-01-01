@@ -10,13 +10,12 @@ export function TripRow({trip}: { trip: TripRow_trip$key }) {
         graphql`
             fragment TripRow_trip on Trip {
                 id
-                rawID
                 leftAt
                 returnedAt
                 tags
             }
         `,
-        trip
+        trip,
     );
 
     const leftAt = parseISO(data.leftAt);
@@ -46,7 +45,7 @@ export function TripRow({trip}: { trip: TripRow_trip$key }) {
                 </div>
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-right text-sm leading-5 font-medium">
-                <Link to={`/trips/${data.rawID}`}
+                <Link to={`/trips/${data.id}`}
                       className="text-indigo-600 hover:text-indigo-900">
                     Details
                 </Link>
