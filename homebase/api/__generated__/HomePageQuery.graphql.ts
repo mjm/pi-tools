@@ -7,7 +7,7 @@ import { FragmentRefs } from "relay-runtime";
 export type HomePageQueryVariables = {};
 export type HomePageQueryResponse = {
     readonly viewer: {
-        readonly " $fragmentRefs": FragmentRefs<"MostRecentTripCard_viewer">;
+        readonly " $fragmentRefs": FragmentRefs<"MostRecentTripCard_viewer" | "MostRecentDeployCard_viewer">;
     } | null;
 };
 export type HomePageQuery = {
@@ -21,6 +21,18 @@ export type HomePageQuery = {
 query HomePageQuery {
   viewer {
     ...MostRecentTripCard_viewer
+    ...MostRecentDeployCard_viewer
+  }
+}
+
+fragment MostRecentDeployCard_viewer on Viewer {
+  mostRecentDeploy {
+    commitSHA
+    commitMessage
+    state
+    startedAt
+    finishedAt
+    id
   }
 }
 
@@ -37,7 +49,15 @@ fragment MostRecentTripCard_viewer on Viewer {
 }
 */
 
-const node: ConcreteRequest = {
+const node: ConcreteRequest = (function(){
+var v0 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+};
+return {
   "fragment": {
     "argumentDefinitions": [],
     "kind": "Fragment",
@@ -56,6 +76,11 @@ const node: ConcreteRequest = {
             "args": null,
             "kind": "FragmentSpread",
             "name": "MostRecentTripCard_viewer"
+          },
+          {
+            "args": null,
+            "kind": "FragmentSpread",
+            "name": "MostRecentDeployCard_viewer"
           }
         ],
         "storageKey": null
@@ -122,13 +147,7 @@ const node: ConcreteRequest = {
                         "name": "returnedAt",
                         "storageKey": null
                       },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "id",
-                        "storageKey": null
-                      }
+                      (v0/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -137,6 +156,53 @@ const node: ConcreteRequest = {
               }
             ],
             "storageKey": "trips(first:1)"
+          },
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "Deploy",
+            "kind": "LinkedField",
+            "name": "mostRecentDeploy",
+            "plural": false,
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "commitSHA",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "commitMessage",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "state",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "startedAt",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "finishedAt",
+                "storageKey": null
+              },
+              (v0/*: any*/)
+            ],
+            "storageKey": null
           }
         ],
         "storageKey": null
@@ -144,13 +210,14 @@ const node: ConcreteRequest = {
     ]
   },
   "params": {
-    "cacheID": "cc65b8bc820b14cbb504a0d1bd1477f5",
+    "cacheID": "a224166903a34806f9bccce5222fdcc2",
     "id": null,
     "metadata": {},
     "name": "HomePageQuery",
     "operationKind": "query",
-    "text": "query HomePageQuery {\n  viewer {\n    ...MostRecentTripCard_viewer\n  }\n}\n\nfragment MostRecentTripCard_viewer on Viewer {\n  trips(first: 1) {\n    edges {\n      node {\n        leftAt\n        returnedAt\n        id\n      }\n    }\n  }\n}\n"
+    "text": "query HomePageQuery {\n  viewer {\n    ...MostRecentTripCard_viewer\n    ...MostRecentDeployCard_viewer\n  }\n}\n\nfragment MostRecentDeployCard_viewer on Viewer {\n  mostRecentDeploy {\n    commitSHA\n    commitMessage\n    state\n    startedAt\n    finishedAt\n    id\n  }\n}\n\nfragment MostRecentTripCard_viewer on Viewer {\n  trips(first: 1) {\n    edges {\n      node {\n        leftAt\n        returnedAt\n        id\n      }\n    }\n  }\n}\n"
   }
 };
-(node as any).hash = 'd6ed3cbc7dbe835c108641913fcab594';
+})();
+(node as any).hash = '393aecc1e944ed9796b7bdce5a96be1a';
 export default node;

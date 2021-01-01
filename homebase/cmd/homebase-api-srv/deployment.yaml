@@ -28,8 +28,10 @@ spec:
           image: index.docker.io/mmoriarity/homebase-api-srv:latest
           command:
             - /homebase-api-srv
-            - "-trips-url"
+            - -trips-url
             - detect-presence-srv-grpc.detect-presence:80
+            - -deploy-url
+            - deploy-srv-grpc.deploy:80
           env:
             - name: POD_NAME
               valueFrom:

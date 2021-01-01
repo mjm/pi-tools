@@ -4,6 +4,7 @@ import {MostRecentTripCard} from "com_github_mjm_pi_tools/homebase/homepage/comp
 import {FiringAlertsCard} from "com_github_mjm_pi_tools/homebase/homepage/components/FiringAlertsCard";
 import {graphql, useLazyLoadQuery} from "react-relay/hooks";
 import {HomePageQuery} from "com_github_mjm_pi_tools/homebase/api/__generated__/HomePageQuery.graphql";
+import {MostRecentDeployCard} from "com_github_mjm_pi_tools/homebase/homepage/components/MostRecentDeployCard";
 
 export function HomePage() {
     const data = useLazyLoadQuery<HomePageQuery>(
@@ -11,6 +12,7 @@ export function HomePage() {
             query HomePageQuery {
                 viewer {
                     ...MostRecentTripCard_viewer
+                    ...MostRecentDeployCard_viewer
                 }
             }
         `,
@@ -24,6 +26,7 @@ export function HomePage() {
                 <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     <MostRecentTripCard viewer={data.viewer}/>
                     <FiringAlertsCard/>
+                    <MostRecentDeployCard viewer={data.viewer}/>
                 </div>
             </div>
         </main>

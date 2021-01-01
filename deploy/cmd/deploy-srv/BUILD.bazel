@@ -1,6 +1,8 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image")
 load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
+load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
+load("//tools:k8s.bzl", "k8s_http_service")
 
 go_library(
     name = "deploy-srv_lib",
@@ -38,10 +40,33 @@ container_image(
 )
 
 k8s_object(
-    name = "k8s",
+    name = "k8s_deploy",
     images = {
         "index.docker.io/mmoriarity/deploy-srv:latest": ":image",
     },
     template = "deployment.yaml",
+)
+
+k8s_http_service(
+    name = "k8s_grpc_service",
+    app = "deploy-srv",
+    namespace = "deploy",
+    service_name = "deploy-srv-grpc",
+    target_port = "grpc",
+)
+
+k8s_object(
+    name = "k8s_grpc_profile",
+    template = "grpc-profile.yaml",
+)
+
+k8s_objects(
+    name = "k8s",
+    objects = [
+        ":k8s_deploy",
+        ":k8s_grpc_service",
+        ":k8s_grpc_profile",
+    ],
+    tags = ["manual"],
     visibility = ["//visibility:public"],
 )

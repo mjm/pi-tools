@@ -27,6 +27,8 @@ type Viewer {
         first: Int
         after: Cursor
     ): TagConnection
+
+    mostRecentDeploy: Deploy
 }
 
 type PageInfo {
@@ -69,6 +71,24 @@ type TagEdge {
 type Tag {
     name: String!
     tripCount: Int!
+}
+
+type Deploy {
+    id: ID!
+    commitSHA: String!
+    commitMessage: String!
+    state: DeployState!
+    startedAt: Time!
+    finishedAt: Time
+}
+
+enum DeployState {
+    UNKNOWN
+    PENDING
+    IN_PROGRESS
+    SUCCESS
+    FAILURE
+    INACTIVE
 }
 
 input IgnoreTripInput {

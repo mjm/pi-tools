@@ -4,6 +4,7 @@ go_library(
     name = "apiservice",
     srcs = [
         "cursor.go",
+        "deploy_resolver.go",
         "node_resolver.go",
         "pageinfo_resolver.go",
         "query_resolver.go",
@@ -15,6 +16,7 @@ go_library(
     importpath = "github.com/mjm/pi-tools/homebase/service/apiservice",
     visibility = ["//visibility:public"],
     deps = [
+        "//deploy/proto/deploy",
         "//detect-presence/proto/trips",
         "@com_github_mjm_graphql_go//:graphql-go",
         "@com_github_mjm_graphql_go//relay",

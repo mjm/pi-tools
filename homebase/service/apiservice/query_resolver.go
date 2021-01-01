@@ -6,11 +6,13 @@ import (
 	"github.com/mjm/graphql-go"
 	"github.com/mjm/graphql-go/relay"
 
+	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
 )
 
 type Resolver struct {
-	tripsClient tripspb.TripsServiceClient
+	tripsClient  tripspb.TripsServiceClient
+	deployClient deploypb.DeployServiceClient
 }
 
 func (r *Resolver) Viewer() *Resolver {
@@ -68,4 +70,13 @@ func (r *Resolver) Tags(ctx context.Context, args struct {
 		return nil, err
 	}
 	return &TagConnection{res: res}, nil
+}
+
+func (r *Resolver) MostRecentDeploy(ctx context.Context) (*Deploy, error) {
+	res, err := r.deployClient.GetMostRecentDeploy(ctx, &deploypb.GetMostRecentDeployRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	return &Deploy{Deploy: res.GetDeploy()}, nil
 }
