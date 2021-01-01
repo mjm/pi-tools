@@ -5,7 +5,7 @@
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type TripTagField_trip = {
-    readonly rawID: string;
+    readonly id: string;
     readonly tags: ReadonlyArray<string>;
     readonly " $refType": "TripTagField_trip";
 };
@@ -27,7 +27,7 @@ const node: ReaderFragment = {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "rawID",
+      "name": "id",
       "storageKey": null
     },
     {
@@ -41,5 +41,5 @@ const node: ReaderFragment = {
   "type": "Trip",
   "abstractKey": null
 };
-(node as any).hash = '97122a6c4084e4f16efde01f89c3d24a';
+(node as any).hash = '41655570d1f83c7b5ca5713c6309bfe7';
 export default node;

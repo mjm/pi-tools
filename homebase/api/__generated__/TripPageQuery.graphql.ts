@@ -39,7 +39,7 @@ query TripPageQuery(
 }
 
 fragment TripTagField_trip on Trip {
-  rawID
+  id
   tags
 }
 */
@@ -150,13 +150,6 @@ return {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "rawID",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
                 "name": "tags",
                 "storageKey": null
               }
@@ -169,12 +162,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "804ba7435fd83bb78a473be8dadf2148",
+    "cacheID": "b9874facfc1b5dfb37fb4ba5848d2f9c",
     "id": null,
     "metadata": {},
     "name": "TripPageQuery",
     "operationKind": "query",
-    "text": "query TripPageQuery(\n  $id: ID!\n) {\n  viewer {\n    trip(id: $id) {\n      id\n      leftAt\n      returnedAt\n      ...TripTagField_trip\n    }\n  }\n}\n\nfragment TripTagField_trip on Trip {\n  rawID\n  tags\n}\n"
+    "text": "query TripPageQuery(\n  $id: ID!\n) {\n  viewer {\n    trip(id: $id) {\n      id\n      leftAt\n      returnedAt\n      ...TripTagField_trip\n    }\n  }\n}\n\nfragment TripTagField_trip on Trip {\n  id\n  tags\n}\n"
   }
 };
 })();

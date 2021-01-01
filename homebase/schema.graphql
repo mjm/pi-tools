@@ -12,6 +12,7 @@ type Query {
 
 type Mutation {
     ignoreTrip(input: IgnoreTripInput!): IgnoreTripPayload!
+    updateTripTags(input: UpdateTripTagsInput!): UpdateTripTagsPayload!
 }
 
 type Viewer {
@@ -76,4 +77,14 @@ input IgnoreTripInput {
 
 type IgnoreTripPayload {
     ignoredTripID: ID!
+}
+
+input UpdateTripTagsInput {
+    tripID: ID!
+    tagsToAdd: [String!]!
+    tagsToRemove: [String!]!
+}
+
+type UpdateTripTagsPayload {
+    trip: Trip
 }

@@ -19,12 +19,8 @@ export function useIgnoreTrip() {
                     input: {id},
                     connections: ["TripsPageQuery_trips"],
                 },
-                onCompleted(resp) {
-                    resolve(resp);
-                },
-                onError(err) {
-                    reject(err);
-                },
+                onCompleted: resolve,
+                onError: reject,
             });
         });
     }

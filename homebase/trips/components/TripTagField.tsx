@@ -1,22 +1,22 @@
 import React from "react";
 import {TripTag} from "com_github_mjm_pi_tools/homebase/trips/components/TripTag";
-import {updateTripTags} from "com_github_mjm_pi_tools/homebase/trips/lib/mutate";
 import {graphql, useFragment} from "react-relay/hooks";
 import {TripTagField_trip$key} from "com_github_mjm_pi_tools/homebase/api/__generated__/TripTagField_trip.graphql";
+import {useUpdateTripTags} from "com_github_mjm_pi_tools/homebase/trips/lib/UpdateTripTags";
 
 export function TripTagField({trip}: { trip: TripTagField_trip$key }) {
     const data = useFragment(
         graphql`
             fragment TripTagField_trip on Trip {
-                rawID
+                id
                 tags
             }
         `,
         trip,
     );
+    const [commit, isInFlight] = useUpdateTripTags();
 
     const [draftTags, setDraftTags] = React.useState<string | null>(null);
-    const [isSaving, setSaving] = React.useState(false);
 
     function onEdit() {
         setDraftTags(data.tags.join(", "));
@@ -28,17 +28,14 @@ export function TripTagField({trip}: { trip: TripTagField_trip$key }) {
 
     async function onSave(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        setSaving(true);
         const newTags = draftTags.split(",").map(tag => tag.trim());
 
         try {
-            await updateTripTags(data.rawID, data.tags, newTags);
+            await commit(data.id, data.tags, newTags);
             setDraftTags(null);
         } catch (e) {
             // TODO surface error
             console.error(e);
-        } finally {
-            setSaving(false);
         }
     }
 
@@ -85,7 +82,7 @@ export function TripTagField({trip}: { trip: TripTagField_trip$key }) {
                 </div>
                 <span className="inline-flex rounded-md shadow-sm">
   <button type="submit"
-          disabled={isSaving}
+          disabled={isInFlight}
           className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs leading-4 font-medium rounded text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:ring-indigo active:bg-indigo-700 transition ease-in-out duration-150">
     Save
   </button>

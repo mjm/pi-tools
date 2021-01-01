@@ -9,9 +9,8 @@ ts_library(
         "//homebase/trips:__subpackages__",
     ],
     deps = [
-        "//detect-presence/proto/trips:trips_ts_proto",
         "//homebase/api",
         "//homebase/lib",
-        "@npm_homebase//:node_modules",
+        "@npm_homebase//react-relay",
     ],
 )
