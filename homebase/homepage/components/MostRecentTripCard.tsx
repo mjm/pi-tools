@@ -1,22 +1,27 @@
 import React from "react";
 import {Link} from "react-router-dom";
-import useSWR from "swr";
-import {Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
-import {fetcher, GET_MOST_RECENT_TRIP} from "com_github_mjm_pi_tools/homebase/trips/lib/fetch";
-import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
+import {graphql, useFragment} from "react-relay/hooks";
+import {MostRecentTripCard_viewer$key} from "com_github_mjm_pi_tools/homebase/api/__generated__/MostRecentTripCard_viewer.graphql";
 import {formatDuration, intervalToDuration, parseISO} from "date-fns";
 
-export function MostRecentTripCard() {
-    const {data, error} = useSWR<Trip | null>(GET_MOST_RECENT_TRIP, fetcher);
-    if (error) {
-        console.error(error);
+export function MostRecentTripCard({viewer}: { viewer: MostRecentTripCard_viewer$key }) {
+    const data = useFragment(
+        graphql`
+            fragment MostRecentTripCard_viewer on Viewer {
+                trips(first: 1) {
+                    edges {
+                        node {
+                            leftAt
+                            returnedAt
+                        }
+                    }
+                }
+            }
+        `,
+        viewer,
+    );
 
-        return (
-            <Alert title="Couldn't load most recent trip" severity="error">
-                {error.toString()}
-            </Alert>
-        );
-    }
+    const trip = data.trips.edges[0].node;
 
     return (
         <div className="bg-white overflow-hidden shadow rounded-lg">
@@ -30,31 +35,19 @@ export function MostRecentTripCard() {
                         </svg>
                     </div>
                     <div className="ml-5 w-0 flex-1">
-                        {data !== undefined ? (
-                            <dl>
-                                <dt className="text-sm leading-5 font-medium text-gray-500 truncate">
-                                    {data && data.getReturnedAt() === "" ? <>Current trip</> : <>Most recent trip</>}
-                                </dt>
-                                <dd>
-                                    <div className="text-lg leading-7 font-medium text-gray-900">
-                                        {data ? (
-                                            formatDuration(intervalToDuration({
-                                                start: parseISO(data.getLeftAt()),
-                                                end: data.getReturnedAt() ? parseISO(data.getReturnedAt()) : new Date()
-                                            }))
-                                        ) : (
-                                            "None"
-                                        )}
-                                    </div>
-                                </dd>
-                            </dl>
-                        ) : (
-                            <dl>
-                                <dt className="text-sm leading-5 font-medium text-gray-500 truncate">
-                                    Loading…
-                                </dt>
-                            </dl>
-                        )}
+                        <dl>
+                            <dt className="text-sm leading-5 font-medium text-gray-500 truncate">
+                                {trip.returnedAt ? <>Most recent trip</> : <>Current trip</>}
+                            </dt>
+                            <dd>
+                                <div className="text-lg leading-7 font-medium text-gray-900">
+                                    {formatDuration(intervalToDuration({
+                                        start: parseISO(trip.leftAt),
+                                        end: trip.returnedAt ? parseISO(trip.returnedAt) : new Date(),
+                                    }))}
+                                </div>
+                            </dd>
+                        </dl>
                     </div>
                 </div>
             </div>

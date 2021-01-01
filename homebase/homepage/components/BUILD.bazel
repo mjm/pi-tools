@@ -7,6 +7,7 @@ ts_library(
     visibility = ["//homebase:__subpackages__"],
     deps = [
         "//detect-presence/proto/trips:trips_ts_proto",
+        "//homebase/api",
         "//homebase/components",
         "//homebase/homepage/lib",
         "//homebase/trips/lib",
