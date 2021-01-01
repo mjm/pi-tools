@@ -35,6 +35,13 @@ spec:
                 name: detect-presence-proxy
                 port:
                   number: 80
+          - path: "/graphql"
+            pathType: Prefix
+            backend:
+              service:
+                name: homebase-api-srv
+                port:
+                  number: 80
           - path: "/TripsService"
             pathType: Prefix
             backend:

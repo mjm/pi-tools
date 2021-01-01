@@ -49,6 +49,10 @@ func (t *Trip) ID() graphql.ID {
 	return relay.MarshalID("trip", t.GetId())
 }
 
+func (t *Trip) RawID() string {
+	return t.GetId()
+}
+
 func (t *Trip) LeftAt() (graphql.Time, error) {
 	t2, err := time.Parse(time.RFC3339, t.GetLeftAt())
 	if err != nil {

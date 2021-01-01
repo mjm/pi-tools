@@ -37,6 +37,7 @@ type TripEdge {
 
 type Trip implements Node {
     id: ID!
+    rawID: String!
     leftAt: Time!
     returnedAt: Time
     tags: [String!]!

@@ -43,7 +43,7 @@ spec:
               memory: "50M"
           ports:
             - name: http
-              containerPort: 6360
+              containerPort: 6460
               protocol: TCP
           readinessProbe:
             httpGet:

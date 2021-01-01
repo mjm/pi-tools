@@ -110,6 +110,7 @@ k8s_objects(
         ":k8s_deploy",
         ":k8s_service",
         ":k8s_ingress",
+        "//homebase/cmd/homebase-api-srv:k8s",
         "//homebase/cmd/homebase-bot-srv:k8s",
     ],
     tags = ["manual"],
