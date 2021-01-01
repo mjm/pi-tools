@@ -125,49 +125,52 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 
 	span.SetAttributes(label.Bool("deploy_skipped", false))
 
-	// First, create a new deployment for this commit
-	deploy, _, err := s.GitHubClient.Repositories.CreateDeployment(ctx, repoParts[0], repoParts[1], &github.DeploymentRequest{
-		Ref:              run.GetHeadCommit().ID,
-		Task:             github.String("deploy"),
-		AutoMerge:        github.Bool(false),
-		Description:      github.String("Deploy triggered by deploy-srv"),
-		RequiredContexts: &[]string{},
-	})
-	if err != nil {
-		return spanerr.RecordError(ctx, err)
-	}
-	span.SetAttributes(
-		label.Int64("deployment.id", deploy.GetID()),
-		label.String("deployment.sha", deploy.GetSHA()))
-
-	// Now set the new deployment to be in progress
-	inProgressStatus, _, err := s.GitHubClient.Repositories.CreateDeploymentStatus(ctx, repoParts[0], repoParts[1], deploy.GetID(), &github.DeploymentStatusRequest{
-		State:        github.String("in_progress"),
-		AutoInactive: github.Bool(true),
-	})
-	if err != nil {
-		return spanerr.RecordError(ctx, err)
-	}
-	span.SetAttributes(label.Int64("deployment.in_progress_status_id", inProgressStatus.GetID()))
-
 	// This will get set to "success" at the end once we are done with the deploy.
 	// If we don't make it that far, we'll return an error, and our defer should automatically add a "failure" status
 	// to the deployment.
 	finalDeploymentStatus := "failure"
-	defer func(deployID int64) {
-		span.SetAttributes(label.String("deployment.status", finalDeploymentStatus))
 
-		// Create the final status for the deployment
-		finalStatus, _, err := s.GitHubClient.Repositories.CreateDeploymentStatus(ctx, repoParts[0], repoParts[1], deployID, &github.DeploymentStatusRequest{
-			State:        &finalDeploymentStatus,
+	if !s.Config.DryRun {
+		// First, create a new deployment for this commit
+		deploy, _, err := s.GitHubClient.Repositories.CreateDeployment(ctx, repoParts[0], repoParts[1], &github.DeploymentRequest{
+			Ref:              run.GetHeadCommit().ID,
+			Task:             github.String("deploy"),
+			AutoMerge:        github.Bool(false),
+			Description:      github.String("Deploy triggered by deploy-srv"),
+			RequiredContexts: &[]string{},
+		})
+		if err != nil {
+			return spanerr.RecordError(ctx, err)
+		}
+		span.SetAttributes(
+			label.Int64("deployment.id", deploy.GetID()),
+			label.String("deployment.sha", deploy.GetSHA()))
+
+		// Now set the new deployment to be in progress
+		inProgressStatus, _, err := s.GitHubClient.Repositories.CreateDeploymentStatus(ctx, repoParts[0], repoParts[1], deploy.GetID(), &github.DeploymentStatusRequest{
+			State:        github.String("in_progress"),
 			AutoInactive: github.Bool(true),
 		})
 		if err != nil {
-			span.RecordError(err)
+			return spanerr.RecordError(ctx, err)
 		}
+		span.SetAttributes(label.Int64("deployment.in_progress_status_id", inProgressStatus.GetID()))
 
-		span.SetAttributes(label.Int64("deployment.final_status_id", finalStatus.GetID()))
-	}(deploy.GetID())
+		defer func(deployID int64) {
+			span.SetAttributes(label.String("deployment.status", finalDeploymentStatus))
+
+			// Create the final status for the deployment
+			finalStatus, _, err := s.GitHubClient.Repositories.CreateDeploymentStatus(ctx, repoParts[0], repoParts[1], deployID, &github.DeploymentStatusRequest{
+				State:        &finalDeploymentStatus,
+				AutoInactive: github.Bool(true),
+			})
+			if err != nil {
+				span.RecordError(err)
+			}
+
+			span.SetAttributes(label.Int64("deployment.final_status_id", finalStatus.GetID()))
+		}(deploy.GetID())
+	}
 
 	// Alright, on with the show.
 	artifacts, _, err := s.GitHubClient.Actions.ListWorkflowRunArtifacts(ctx, repoParts[0], repoParts[1], run.GetID(), nil)
