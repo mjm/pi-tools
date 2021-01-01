@@ -10,6 +10,10 @@ type Query {
     node(id: ID!): Node
 }
 
+type Mutation {
+    ignoreTrip(input: IgnoreTripInput!): IgnoreTripPayload!
+}
+
 type Viewer {
     trips(
         first: Int
@@ -64,4 +68,12 @@ type TagEdge {
 type Tag {
     name: String!
     tripCount: Int!
+}
+
+input IgnoreTripInput {
+    id: ID!
+}
+
+type IgnoreTripPayload {
+    ignoredTripID: ID!
 }

@@ -12,7 +12,7 @@ export function TripsPage() {
             query TripsPageQuery {
                 viewer {
                     ...TagFilters_tags
-                    trips {
+                    trips(first: 30) @connection(key: "TripsPageQuery_trips") {
                         edges {
                             node {
                                 id

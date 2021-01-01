@@ -9,6 +9,7 @@ go_library(
         "query_resolver.go",
         "server.go",
         "tag_resolver.go",
+        "trip_mutation.go",
         "trip_resolver.go",
     ],
     importpath = "github.com/mjm/pi-tools/homebase/service/apiservice",

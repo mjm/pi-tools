@@ -1,11 +1,5 @@
 import {client} from "com_github_mjm_pi_tools/homebase/trips/lib/trips_client";
-import {IgnoreTripRequest, UpdateTripTagsRequest} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
-
-export async function ignoreTrip(id: string): Promise<void> {
-    const req = new IgnoreTripRequest();
-    req.setId(id);
-    await client.ignoreTrip(req);
-}
+import {UpdateTripTagsRequest} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
 
 export async function updateTripTags(id: string, oldTags: readonly string[], newTags: string[]): Promise<void> {
     const oldTagsSet = new Set(oldTags);

@@ -29,12 +29,18 @@ export type TripsPageQuery = {
 query TripsPageQuery {
   viewer {
     ...TagFilters_tags
-    trips {
+    trips(first: 30) {
       edges {
         node {
           id
           ...TripRow_trip
+          __typename
         }
+        cursor
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
       }
     }
   }
@@ -66,7 +72,53 @@ var v0 = {
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
-};
+},
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "__typename",
+  "storageKey": null
+},
+v2 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "cursor",
+  "storageKey": null
+},
+v3 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "PageInfo",
+  "kind": "LinkedField",
+  "name": "pageInfo",
+  "plural": false,
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "endCursor",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "hasNextPage",
+      "storageKey": null
+    }
+  ],
+  "storageKey": null
+},
+v4 = [
+  {
+    "kind": "Literal",
+    "name": "first",
+    "value": 30
+  }
+];
 return {
   "fragment": {
     "argumentDefinitions": [],
@@ -83,11 +135,11 @@ return {
         "plural": false,
         "selections": [
           {
-            "alias": null,
+            "alias": "trips",
             "args": null,
             "concreteType": "TripConnection",
             "kind": "LinkedField",
-            "name": "trips",
+            "name": "__TripsPageQuery_trips_connection",
             "plural": false,
             "selections": [
               {
@@ -107,6 +159,7 @@ return {
                     "plural": false,
                     "selections": [
                       (v0/*: any*/),
+                      (v1/*: any*/),
                       {
                         "args": null,
                         "kind": "FragmentSpread",
@@ -114,10 +167,12 @@ return {
                       }
                     ],
                     "storageKey": null
-                  }
+                  },
+                  (v2/*: any*/)
                 ],
                 "storageKey": null
-              }
+              },
+              (v3/*: any*/)
             ],
             "storageKey": null
           },
@@ -202,7 +257,7 @@ return {
           },
           {
             "alias": null,
-            "args": null,
+            "args": (v4/*: any*/),
             "concreteType": "TripConnection",
             "kind": "LinkedField",
             "name": "trips",
@@ -245,15 +300,27 @@ return {
                         "kind": "ScalarField",
                         "name": "tags",
                         "storageKey": null
-                      }
+                      },
+                      (v1/*: any*/)
                     ],
                     "storageKey": null
-                  }
+                  },
+                  (v2/*: any*/)
                 ],
                 "storageKey": null
-              }
+              },
+              (v3/*: any*/)
             ],
-            "storageKey": null
+            "storageKey": "trips(first:30)"
+          },
+          {
+            "alias": null,
+            "args": (v4/*: any*/),
+            "filters": null,
+            "handle": "connection",
+            "key": "TripsPageQuery_trips",
+            "kind": "LinkedHandle",
+            "name": "trips"
           }
         ],
         "storageKey": null
@@ -261,14 +328,26 @@ return {
     ]
   },
   "params": {
-    "cacheID": "182e8409dbfdd548f633ad837becc1ea",
+    "cacheID": "ac44b7cc027417e5982504386d2e25ee",
     "id": null,
-    "metadata": {},
+    "metadata": {
+      "connection": [
+        {
+          "count": null,
+          "cursor": null,
+          "direction": "forward",
+          "path": [
+            "viewer",
+            "trips"
+          ]
+        }
+      ]
+    },
     "name": "TripsPageQuery",
     "operationKind": "query",
-    "text": "query TripsPageQuery {\n  viewer {\n    ...TagFilters_tags\n    trips {\n      edges {\n        node {\n          id\n          ...TripRow_trip\n        }\n      }\n    }\n  }\n}\n\nfragment TagFilters_tags on Viewer {\n  tags(first: 5) {\n    edges {\n      node {\n        name\n        tripCount\n      }\n    }\n  }\n}\n\nfragment TripRow_trip on Trip {\n  id\n  leftAt\n  returnedAt\n  tags\n}\n"
+    "text": "query TripsPageQuery {\n  viewer {\n    ...TagFilters_tags\n    trips(first: 30) {\n      edges {\n        node {\n          id\n          ...TripRow_trip\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n  }\n}\n\nfragment TagFilters_tags on Viewer {\n  tags(first: 5) {\n    edges {\n      node {\n        name\n        tripCount\n      }\n    }\n  }\n}\n\nfragment TripRow_trip on Trip {\n  id\n  leftAt\n  returnedAt\n  tags\n}\n"
   }
 };
 })();
-(node as any).hash = '9551198261ba8d7caaddce9137680661';
+(node as any).hash = 'd64148bf568f09c66b4fa7de319587fb';
 export default node;

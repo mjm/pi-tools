@@ -3,11 +3,11 @@ import {Helmet} from "react-helmet";
 import {useHistory, useParams} from "react-router-dom";
 import {format, formatDuration, intervalToDuration, parseISO} from "date-fns";
 import {DescriptionField} from "com_github_mjm_pi_tools/homebase/components/DescriptionField";
-import {ignoreTrip} from "com_github_mjm_pi_tools/homebase/trips/lib/mutate";
 import {TripTagField} from "com_github_mjm_pi_tools/homebase/trips/components/TripTagField";
 import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
 import {graphql, useLazyLoadQuery} from "react-relay/hooks";
 import {TripPageQuery} from "com_github_mjm_pi_tools/homebase/api/__generated__/TripPageQuery.graphql";
+import {useIgnoreTrip} from "com_github_mjm_pi_tools/homebase/trips/lib/IgnoreTrip";
 
 export function TripPage() {
     const {id} = useParams<{ id: string }>();
@@ -17,7 +17,6 @@ export function TripPage() {
                 viewer {
                     trip(id: $id) {
                         id
-                        rawID
                         leftAt
                         returnedAt
                         ...TripTagField_trip
@@ -45,7 +44,7 @@ export function TripPage() {
                             </h3>
                         </div>
                         <div className="ml-4 mt-2 flex-shrink-0 flex">
-                            {trip && <TripIgnoreButton id={trip.rawID}/>}
+                            {trip && <TripIgnoreButton id={trip.id}/>}
                         </div>
                     </div>
                 </div>
@@ -85,26 +84,23 @@ export function TripPage() {
 
 function TripIgnoreButton({id}: { id: string }) {
     const history = useHistory();
-    const [isIgnoring, setIgnoring] = React.useState(false);
+    const [commit, isInFlight] = useIgnoreTrip();
 
     async function onIgnore() {
-        setIgnoring(true);
         try {
-            await ignoreTrip(id);
+            await commit(id);
 
             // return to the trips page upon successful ignore
             history.push("/trips");
         } catch (e) {
             console.error(e);
-        } finally {
-            setIgnoring(false);
         }
     }
 
     return (
         <span className="inline-flex rounded-md shadow-sm">
             <button type="button"
-                    disabled={isIgnoring}
+                    disabled={isInFlight}
                     onClick={onIgnore}
                     className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:ring-blue focus:border-blue-300 active:bg-gray-50 active:text-gray-800">
                 <svg className="-ml-1 mr-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg"

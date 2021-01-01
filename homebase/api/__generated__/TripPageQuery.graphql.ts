@@ -11,7 +11,6 @@ export type TripPageQueryResponse = {
     readonly viewer: {
         readonly trip: {
             readonly id: string;
-            readonly rawID: string;
             readonly leftAt: string;
             readonly returnedAt: string | null;
             readonly " $fragmentRefs": FragmentRefs<"TripTagField_trip">;
@@ -32,7 +31,6 @@ query TripPageQuery(
   viewer {
     trip(id: $id) {
       id
-      rawID
       leftAt
       returnedAt
       ...TripTagField_trip
@@ -72,17 +70,10 @@ v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "rawID",
-  "storageKey": null
-},
-v4 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
   "name": "leftAt",
   "storageKey": null
 },
-v5 = {
+v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -115,7 +106,6 @@ return {
               (v2/*: any*/),
               (v3/*: any*/),
               (v4/*: any*/),
-              (v5/*: any*/),
               {
                 "args": null,
                 "kind": "FragmentSpread",
@@ -156,7 +146,13 @@ return {
               (v2/*: any*/),
               (v3/*: any*/),
               (v4/*: any*/),
-              (v5/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "rawID",
+                "storageKey": null
+              },
               {
                 "alias": null,
                 "args": null,
@@ -173,14 +169,14 @@ return {
     ]
   },
   "params": {
-    "cacheID": "b35ef26368d7d746be983021d28cfca1",
+    "cacheID": "804ba7435fd83bb78a473be8dadf2148",
     "id": null,
     "metadata": {},
     "name": "TripPageQuery",
     "operationKind": "query",
-    "text": "query TripPageQuery(\n  $id: ID!\n) {\n  viewer {\n    trip(id: $id) {\n      id\n      rawID\n      leftAt\n      returnedAt\n      ...TripTagField_trip\n    }\n  }\n}\n\nfragment TripTagField_trip on Trip {\n  rawID\n  tags\n}\n"
+    "text": "query TripPageQuery(\n  $id: ID!\n) {\n  viewer {\n    trip(id: $id) {\n      id\n      leftAt\n      returnedAt\n      ...TripTagField_trip\n    }\n  }\n}\n\nfragment TripTagField_trip on Trip {\n  rawID\n  tags\n}\n"
   }
 };
 })();
-(node as any).hash = 'c250a0fb28d14ff5160605f34e3609d7';
+(node as any).hash = '204bddb451d6d943808f539a6d845b0d';
 export default node;
