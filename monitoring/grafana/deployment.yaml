@@ -66,6 +66,15 @@ spec:
               memory: "75M"
             limits:
               memory: "150M"
+          # if the container isn't ready within the first five minutes, restart it.
+          # this addresses the case where it tried to start DB migrations before the linkerd proxy was ready,
+          # and therefore got stuck. Restarting should get it unstuck in that case.
+          startupProbe:
+            httpGet:
+              port: http
+              path: /api/health
+            failureThreshold: 20
+            periodSeconds: 15
           readinessProbe:
             httpGet:
               port: http
