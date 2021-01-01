@@ -31,7 +31,7 @@ var (
 
 	githubTokenPath = flag.String("github-token-path", "/var/secrets/github-token", "Path to file containing GitHub PAT token")
 
-	pollInterval = flag.Duration("poll-interval", 5*time.Minute, "How often to check with GitHub for a new build artifact")
+	pollInterval = flag.Duration("poll-interval", 2*time.Minute, "How often to check with GitHub for a new build artifact")
 	dryRun       = flag.Bool("dry-run", false, "Skip actually applying changes to the Kubernetes cluster")
 )
 
