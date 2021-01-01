@@ -1,19 +1,32 @@
 import React from "react";
 import {Helmet} from "react-helmet";
-import useSWR from "swr";
-import {LIST_TRIPS} from "com_github_mjm_pi_tools/homebase/trips/lib/fetch";
-import {Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
 import {TripRow} from "com_github_mjm_pi_tools/homebase/trips/components/TripRow";
 import {PageHeader} from "com_github_mjm_pi_tools/homebase/components/PageHeader";
 import {TagFilters} from "com_github_mjm_pi_tools/homebase/trips/components/TagFilters";
 import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
+import {graphql, useLazyLoadQuery} from "react-relay/hooks";
+import {TripsPageQuery} from "com_github_mjm_pi_tools/homebase/api/__generated__/TripsPageQuery.graphql";
 
 export function TripsPage() {
-    const {data, error} = useSWR<Trip[]>(LIST_TRIPS);
+    const data = useLazyLoadQuery<TripsPageQuery>(
+        graphql`
+            query TripsPageQuery {
+                viewer {
+                    trips {
+                        edges {
+                            node {
+                                id
+                                ...TripRow_trip
+                            }
+                        }
+                    }
+                }
+            }
+        `,
+        {},
+    );
 
-    if (error) {
-        console.error(error);
-    }
+    const tripNodes = data.viewer.trips.edges.map(e => e.node);
 
     return (
         <main className="mb-8">
@@ -33,11 +46,11 @@ export function TripsPage() {
                 Your trips
             </PageHeader>
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                {error && (
-                    <Alert severity="error" title="Couldn't load your trips">
-                        {error.toString()}
-                    </Alert>
-                )}
+                {/*{error && (*/}
+                {/*    <Alert severity="error" title="Couldn't load your trips">*/}
+                {/*        {error.toString()}*/}
+                {/*    </Alert>*/}
+                {/*)}*/}
                 {data && (
                     <div className="flex flex-col">
                         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -65,8 +78,8 @@ export function TripsPage() {
                                         </tr>
                                         </thead>
                                         <tbody className="bg-white divide-y divide-gray-200">
-                                        {data.map(trip => (
-                                            <TripRow key={trip.getId()} trip={trip}/>
+                                        {tripNodes.map(trip => (
+                                            <TripRow key={trip.id} trip={trip}/>
                                         ))}
                                         </tbody>
                                     </table>

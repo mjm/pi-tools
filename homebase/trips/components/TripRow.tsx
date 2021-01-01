@@ -1,21 +1,35 @@
 import React from "react";
 import {format, formatDuration, intervalToDuration, parseISO} from "date-fns";
 import {Link} from "react-router-dom";
-import {Trip} from "com_github_mjm_pi_tools/detect-presence/proto/trips/trips_pb";
 import {TripTag} from "com_github_mjm_pi_tools/homebase/trips/components/TripTag";
+import {graphql, useFragment} from "react-relay/hooks";
+import {TripRow_trip$key} from "com_github_mjm_pi_tools/homebase/api/__generated__/TripRow_trip.graphql";
 
-export function TripRow({trip}: { trip: Trip }) {
-    const leftAt = parseISO(trip.getLeftAt());
+export function TripRow({trip}: { trip: TripRow_trip$key }) {
+    const data = useFragment(
+        graphql`
+            fragment TripRow_trip on Trip {
+                id
+                rawID
+                leftAt
+                returnedAt
+                tags
+            }
+        `,
+        trip
+    );
+
+    const leftAt = parseISO(data.leftAt);
     let duration = null;
-    if (trip.getReturnedAt()) {
+    if (data.returnedAt) {
         duration = intervalToDuration({
             start: leftAt,
-            end: parseISO(trip.getReturnedAt()),
+            end: parseISO(data.returnedAt),
         });
     }
 
     return (
-        <tr key={trip.getId()}>
+        <tr>
             <td className="px-6 py-4 whitespace-nowrap text-sm leading-5 font-medium text-gray-900">
                 {format(leftAt, "PPpp")}
             </td>
@@ -24,7 +38,7 @@ export function TripRow({trip}: { trip: Trip }) {
             </td>
             <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex flex-row space-x-3">
-                    {trip.getTagsList().map(tag => (
+                    {data.tags.map(tag => (
                         <TripTag key={tag}>
                             {tag}
                         </TripTag>
@@ -32,7 +46,7 @@ export function TripRow({trip}: { trip: Trip }) {
                 </div>
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-right text-sm leading-5 font-medium">
-                <Link to={`/trips/${trip.getId()}`}
+                <Link to={`/trips/${data.rawID}`}
                       className="text-indigo-600 hover:text-indigo-900">
                     Details
                 </Link>

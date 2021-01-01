@@ -1,6 +1,7 @@
 :8080 {
     root * {$ROOT_PATH}
     file_server
+    reverse_proxy /graphql localhost:6460
     reverse_proxy /TripsService/* localhost:2120
     reverse_proxy /LinksService/* localhost:4240
     reverse_proxy /api/v1/* https://prometheus.homelab {

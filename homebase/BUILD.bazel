@@ -25,6 +25,7 @@ ts_library(
         "//homebase/components",
         "//homebase/go-links/components",
         "//homebase/homepage/components",
+        "//homebase/lib",
         "//homebase/trips/components",
         "@npm_homebase//:node_modules",
     ],
