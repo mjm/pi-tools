@@ -15,7 +15,12 @@ async function fetchRelay(params, variables) {
     return await response.json();
 }
 
+const store = new Store(new RecordSource());
+
+// @ts-ignore
+window.RELAY_STORE = store;
+
 export default new Environment({
     network: Network.create(fetchRelay),
-    store: new Store(new RecordSource()),
+    store,
 })

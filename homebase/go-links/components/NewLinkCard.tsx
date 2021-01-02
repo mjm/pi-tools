@@ -1,16 +1,19 @@
 import React from "react";
-import {Field, Form, Formik, FormikHelpers} from "formik";
-import {createLink, CreateLinkParams} from "com_github_mjm_pi_tools/homebase/go-links/lib/mutate";
+import {Form, Formik, FormikHelpers} from "formik";
+import {CreateLinkParams} from "com_github_mjm_pi_tools/homebase/go-links/lib/mutate";
 import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
 import {ShortURLField} from "com_github_mjm_pi_tools/homebase/go-links/components/ShortURLField";
 import {DestinationURLField} from "com_github_mjm_pi_tools/homebase/go-links/components/DestinationURLField";
 import {DescriptionField} from "com_github_mjm_pi_tools/homebase/go-links/components/DescriptionField";
+import {useCreateLink} from "com_github_mjm_pi_tools/homebase/go-links/lib/CreateLink";
 
 export function NewLinkCard() {
+    const [commit] = useCreateLink();
+
     async function onSubmit(values: CreateLinkParams, actions: FormikHelpers<CreateLinkParams>) {
         actions.setStatus(null);
         try {
-            await createLink(values);
+            await commit(values);
             actions.resetForm();
         } catch (err) {
             actions.setStatus({error: err});
@@ -40,9 +43,9 @@ export function NewLinkCard() {
                     )}
                     <div className="bg-gray-50 px-4 py-5 sm:p-6">
                         <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                            <ShortURLField />
-                            <DestinationURLField />
-                            <DescriptionField />
+                            <ShortURLField/>
+                            <DestinationURLField/>
+                            <DescriptionField/>
                         </div>
                     </div>
                     <div className="px-4 py-5 sm:px-6 text-right">

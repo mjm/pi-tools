@@ -6,6 +6,7 @@ go_library(
         "alert_resolver.go",
         "cursor.go",
         "deploy_resolver.go",
+        "link_mutation.go",
         "link_resolver.go",
         "node_resolver.go",
         "pageinfo_resolver.go",
