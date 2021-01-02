@@ -20,9 +20,10 @@ import (
 )
 
 var (
-	tripsURL   = flag.String("trips-url", "localhost:2121", "URL for trips service")
-	deployURL  = flag.String("deploy-url", "localhost:8481", "URL for deploy service")
-	schemaPath = flag.String("schema-path", "/schema.graphql", "Path to the file with the GraphQL schema")
+	tripsURL      = flag.String("trips-url", "localhost:2121", "URL for trips service")
+	deployURL     = flag.String("deploy-url", "localhost:8481", "URL for deploy service")
+	prometheusURL = flag.String("prometheus-url", "https://prometheus.homelab", "URL for Prometheus for querying alerts")
+	schemaPath    = flag.String("schema-path", "/schema.graphql", "Path to the file with the GraphQL schema")
 )
 
 func main() {
@@ -49,7 +50,7 @@ func main() {
 
 	deploy := deploypb.NewDeployServiceClient(deployConn)
 
-	apiService, err := apiservice.New(string(schema), trips, deploy)
+	apiService, err := apiservice.New(string(schema), trips, deploy, *prometheusURL)
 	if err != nil {
 		log.Panicf("creating API service: %v", err)
 	}

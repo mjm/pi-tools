@@ -3,6 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "apiservice",
     srcs = [
+        "alert_resolver.go",
         "cursor.go",
         "deploy_resolver.go",
         "node_resolver.go",
@@ -20,5 +21,7 @@ go_library(
         "//detect-presence/proto/trips",
         "@com_github_mjm_graphql_go//:graphql-go",
         "@com_github_mjm_graphql_go//relay",
+        "@com_github_prometheus_client_golang//api",
+        "@com_github_prometheus_client_golang//api/prometheus/v1:prometheus",
     ],
 )

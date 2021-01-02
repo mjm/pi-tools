@@ -1,24 +1,24 @@
 import React from "react";
-import useSWR from "swr";
-import {PrometheusAlert} from "com_github_mjm_pi_tools/homebase/homepage/lib/prometheus";
-import {fetcher, LIST_FIRING_ALERTS} from "com_github_mjm_pi_tools/homebase/homepage/lib/fetch";
-import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
 import {HomePageCard} from "com_github_mjm_pi_tools/homebase/homepage/components/HomePageCard";
+import {graphql, useFragment} from "react-relay/hooks";
+import {FiringAlertsCard_viewer$key} from "com_github_mjm_pi_tools/homebase/api/__generated__/FiringAlertsCard_viewer.graphql";
 
-export function FiringAlertsCard() {
-    const {data, error} = useSWR<PrometheusAlert[]>(LIST_FIRING_ALERTS, fetcher);
-    if (error) {
-        console.error(error);
-        return (
-            <Alert title="Couldn't load firing alerts" severity="error">
-                {error.toString()}
-            </Alert>
-        );
-    }
+export function FiringAlertsCard({viewer}: { viewer: FiringAlertsCard_viewer$key }) {
+    const data = useFragment(
+        graphql`
+            fragment FiringAlertsCard_viewer on Viewer {
+                alerts {
+                    activeAt
+                    value
+                }
+            }
+        `,
+        viewer,
+    );
 
     return (
         <HomePageCard
-            title={data ? "Alerts firing" : "Loading…"}
+            title="Alerts firing"
             icon={
                 <svg className="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg"
                      fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -29,7 +29,7 @@ export function FiringAlertsCard() {
             footerHref="https://alertmanager.homelab/"
             footer="View active alerts"
         >
-            {data ? data.length : null}
+            {data.alerts.length}
         </HomePageCard>
     );
 }

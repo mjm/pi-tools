@@ -32,6 +32,8 @@ spec:
             - detect-presence-srv-grpc.detect-presence:80
             - -deploy-url
             - deploy-srv-grpc.deploy:80
+            - -prometheus-url
+            - http://prometheus.monitoring
           env:
             - name: POD_NAME
               valueFrom:

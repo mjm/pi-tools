@@ -2,17 +2,22 @@ package apiservice
 
 import (
 	"context"
+	"net/http"
+	"strings"
 
 	"github.com/mjm/graphql-go"
 	"github.com/mjm/graphql-go/relay"
+	"github.com/prometheus/client_golang/api"
+	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 
 	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
 )
 
 type Resolver struct {
-	tripsClient  tripspb.TripsServiceClient
-	deployClient deploypb.DeployServiceClient
+	tripsClient   tripspb.TripsServiceClient
+	deployClient  deploypb.DeployServiceClient
+	prometheusURL string
 }
 
 func (r *Resolver) Viewer() *Resolver {
@@ -79,4 +84,57 @@ func (r *Resolver) MostRecentDeploy(ctx context.Context) (*Deploy, error) {
 	}
 
 	return &Deploy{Deploy: res.GetDeploy()}, nil
+}
+
+func (r *Resolver) Alerts(ctx context.Context) ([]*Alert, error) {
+	promClient, err := r.newPromClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	alerts, err := promClient.Alerts(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var res []*Alert
+	for _, a := range alerts.Alerts {
+		res = append(res, &Alert{Alert: a})
+	}
+	return res, nil
+}
+
+func (r *Resolver) newPromClient(ctx context.Context) (v1.API, error) {
+	transport := http.DefaultTransport
+	if strings.HasPrefix(r.prometheusURL, "https://") {
+		cookieHeader := ctx.Value(cookieHeaderContextKey).(string)
+		transport = &oauthProxyCookieTripper{
+			cookieHeader: cookieHeader,
+			wrapped:      transport,
+		}
+	}
+
+	c, err := api.NewClient(api.Config{
+		Address:      r.prometheusURL,
+		RoundTripper: transport,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return v1.NewAPI(c), nil
+}
+
+type oauthProxyCookieTripper struct {
+	cookieHeader string
+	wrapped      http.RoundTripper
+}
+
+func (t *oauthProxyCookieTripper) RoundTrip(r *http.Request) (*http.Response, error) {
+	transport := t.wrapped
+	if transport == nil {
+		transport = http.DefaultTransport
+	}
+
+	r.Header.Set("Cookie", t.cookieHeader)
+	return transport.RoundTrip(r)
 }

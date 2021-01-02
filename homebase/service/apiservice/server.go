@@ -1,6 +1,7 @@
 package apiservice
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/mjm/graphql-go"
@@ -14,10 +15,16 @@ type Server struct {
 	handler http.Handler
 }
 
-func New(schemaString string, trips tripspb.TripsServiceClient, deploys deploypb.DeployServiceClient) (*Server, error) {
+func New(
+	schemaString string,
+	trips tripspb.TripsServiceClient,
+	deploys deploypb.DeployServiceClient,
+	prometheusURL string,
+) (*Server, error) {
 	r := &Resolver{
-		tripsClient:  trips,
-		deployClient: deploys,
+		tripsClient:   trips,
+		deployClient:  deploys,
+		prometheusURL: prometheusURL,
 	}
 	schema, err := graphql.ParseSchema(schemaString, r, graphql.UseFieldResolvers())
 	if err != nil {
@@ -28,6 +35,12 @@ func New(schemaString string, trips tripspb.TripsServiceClient, deploys deploypb
 	}, nil
 }
 
+type contextKey string
+
+const cookieHeaderContextKey contextKey = "cookie-header"
+
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ctx := context.WithValue(r.Context(), cookieHeaderContextKey, r.Header.Get("Cookie"))
+	r = r.WithContext(ctx)
 	s.handler.ServeHTTP(w, r)
 }

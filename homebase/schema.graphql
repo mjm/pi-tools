@@ -29,6 +29,8 @@ type Viewer {
     ): TagConnection
 
     mostRecentDeploy: Deploy
+
+    alerts: [Alert!]!
 }
 
 type PageInfo {
@@ -89,6 +91,11 @@ enum DeployState {
     SUCCESS
     FAILURE
     INACTIVE
+}
+
+type Alert {
+    activeAt: Time!
+    value: String!
 }
 
 input IgnoreTripInput {

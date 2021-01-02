@@ -21,13 +21,6 @@ spec:
     - host: homebase.homelab
       http:
         paths:
-          - path: "/api/v1"
-            pathType: Prefix
-            backend:
-              service:
-                name: prometheus-proxy
-                port:
-                  number: 80
           - path: "/download_app"
             pathType: Prefix
             backend:
@@ -85,18 +78,6 @@ spec:
     - hosts:
         - homebase
       secretName: homebase-redirect-cert
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: prometheus-proxy
-  namespace: homebase
-spec:
-  type: ExternalName
-  externalName: prometheus.monitoring.svc.cluster.local
-  ports:
-    - port: 80
-      protocol: TCP
 ---
 kind: Service
 apiVersion: v1

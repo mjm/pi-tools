@@ -7,7 +7,7 @@ import { FragmentRefs } from "relay-runtime";
 export type HomePageQueryVariables = {};
 export type HomePageQueryResponse = {
     readonly viewer: {
-        readonly " $fragmentRefs": FragmentRefs<"MostRecentTripCard_viewer" | "MostRecentDeployCard_viewer">;
+        readonly " $fragmentRefs": FragmentRefs<"MostRecentTripCard_viewer" | "FiringAlertsCard_viewer" | "MostRecentDeployCard_viewer">;
     } | null;
 };
 export type HomePageQuery = {
@@ -21,7 +21,15 @@ export type HomePageQuery = {
 query HomePageQuery {
   viewer {
     ...MostRecentTripCard_viewer
+    ...FiringAlertsCard_viewer
     ...MostRecentDeployCard_viewer
+  }
+}
+
+fragment FiringAlertsCard_viewer on Viewer {
+  alerts {
+    activeAt
+    value
   }
 }
 
@@ -76,6 +84,11 @@ return {
             "args": null,
             "kind": "FragmentSpread",
             "name": "MostRecentTripCard_viewer"
+          },
+          {
+            "args": null,
+            "kind": "FragmentSpread",
+            "name": "FiringAlertsCard_viewer"
           },
           {
             "args": null,
@@ -160,6 +173,31 @@ return {
           {
             "alias": null,
             "args": null,
+            "concreteType": "Alert",
+            "kind": "LinkedField",
+            "name": "alerts",
+            "plural": true,
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "activeAt",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "value",
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
             "concreteType": "Deploy",
             "kind": "LinkedField",
             "name": "mostRecentDeploy",
@@ -210,14 +248,14 @@ return {
     ]
   },
   "params": {
-    "cacheID": "a224166903a34806f9bccce5222fdcc2",
+    "cacheID": "df1cb5443fab504b7a8b7feda87426a7",
     "id": null,
     "metadata": {},
     "name": "HomePageQuery",
     "operationKind": "query",
-    "text": "query HomePageQuery {\n  viewer {\n    ...MostRecentTripCard_viewer\n    ...MostRecentDeployCard_viewer\n  }\n}\n\nfragment MostRecentDeployCard_viewer on Viewer {\n  mostRecentDeploy {\n    commitSHA\n    commitMessage\n    state\n    startedAt\n    finishedAt\n    id\n  }\n}\n\nfragment MostRecentTripCard_viewer on Viewer {\n  trips(first: 1) {\n    edges {\n      node {\n        leftAt\n        returnedAt\n        id\n      }\n    }\n  }\n}\n"
+    "text": "query HomePageQuery {\n  viewer {\n    ...MostRecentTripCard_viewer\n    ...FiringAlertsCard_viewer\n    ...MostRecentDeployCard_viewer\n  }\n}\n\nfragment FiringAlertsCard_viewer on Viewer {\n  alerts {\n    activeAt\n    value\n  }\n}\n\nfragment MostRecentDeployCard_viewer on Viewer {\n  mostRecentDeploy {\n    commitSHA\n    commitMessage\n    state\n    startedAt\n    finishedAt\n    id\n  }\n}\n\nfragment MostRecentTripCard_viewer on Viewer {\n  trips(first: 1) {\n    edges {\n      node {\n        leftAt\n        returnedAt\n        id\n      }\n    }\n  }\n}\n"
   }
 };
 })();
-(node as any).hash = '393aecc1e944ed9796b7bdce5a96be1a';
+(node as any).hash = 'd2f61b101b71eff4afe78d5885c3dbf9';
 export default node;

@@ -3,9 +3,6 @@
     file_server
     reverse_proxy /graphql localhost:6460
     reverse_proxy /LinksService/* localhost:4240
-    reverse_proxy /api/v1/* https://prometheus.homelab {
-      header_up Host {http.reverse_proxy.upstream.hostport}
-    }
     reverse_proxy /download_app localhost:2120
 
     handle_errors {
