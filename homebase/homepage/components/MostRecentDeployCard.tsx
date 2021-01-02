@@ -24,10 +24,17 @@ export function MostRecentDeployCard({viewer}: { viewer: MostRecentDeployCard_vi
     return (
         <HomePageCard
             title={deploy.state === "IN_PROGRESS" ? "Currently deploying" : "Most recent deploy"}
-            icon={null}
+            icon={
+                <svg className="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                          d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                </svg>
+            }
             footerHref="https://github.com/mjm/pi-tools/deployments"
             footer="View deploy history">
-            <a href={`https://github.com/mjm/pi-tools/commit/${deploy.commitSHA}`} target="_blank" className="text-base">
+            <a href={`https://github.com/mjm/pi-tools/commit/${deploy.commitSHA}`} target="_blank"
+               className="text-base">
                 {deploy.commitMessage}
             </a>
         </HomePageCard>
