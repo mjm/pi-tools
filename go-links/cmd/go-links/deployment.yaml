@@ -53,6 +53,9 @@ spec:
             - name: http
               containerPort: 4240
               protocol: TCP
+            - name: grpc
+              containerPort: 4241
+              protocol: TCP
           readinessProbe:
             httpGet:
               path: /healthz

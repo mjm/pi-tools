@@ -28,6 +28,11 @@ type Viewer {
         after: Cursor
     ): TagConnection
 
+    links(
+        first: Int
+        after: Cursor
+    ): LinkConnection
+
     mostRecentDeploy: Deploy
 
     alerts: [Alert!]!
@@ -73,6 +78,25 @@ type TagEdge {
 type Tag {
     name: String!
     tripCount: Int!
+}
+
+type LinkConnection {
+    edges: [LinkEdge!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
+}
+
+type LinkEdge {
+    node: Link!
+    cursor: Cursor!
+}
+
+type Link implements Node {
+    id: ID!
+    rawID: String!
+    shortURL: String!
+    destinationURL: String!
+    description: String!
 }
 
 type Deploy {

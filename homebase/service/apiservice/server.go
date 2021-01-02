@@ -9,6 +9,7 @@ import (
 
 	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
+	linkspb "github.com/mjm/pi-tools/go-links/proto/links"
 )
 
 type Server struct {
@@ -18,11 +19,13 @@ type Server struct {
 func New(
 	schemaString string,
 	trips tripspb.TripsServiceClient,
+	links linkspb.LinksServiceClient,
 	deploys deploypb.DeployServiceClient,
 	prometheusURL string,
 ) (*Server, error) {
 	r := &Resolver{
 		tripsClient:   trips,
+		linksClient:   links,
 		deployClient:  deploys,
 		prometheusURL: prometheusURL,
 	}

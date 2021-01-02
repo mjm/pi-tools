@@ -50,10 +50,18 @@ k8s_object(
 )
 
 k8s_http_service(
-    name = "k8s_service",
+    name = "k8s_http_service",
     app = "go-links",
     namespace = "go-links",
     service_name = "go-links-srv",
+)
+
+k8s_http_service(
+    name = "k8s_grpc_service",
+    app = "go-links",
+    namespace = "go-links",
+    service_name = "go-links-srv-grpc",
+    target_port = "grpc",
 )
 
 k8s_virtual_host(
@@ -67,7 +75,8 @@ k8s_objects(
     name = "k8s",
     objects = [
         ":k8s_deploy",
-        ":k8s_service",
+        ":k8s_http_service",
+        ":k8s_grpc_service",
         ":k8s_ingress",
     ],
     tags = ["manual"],

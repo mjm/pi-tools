@@ -30,6 +30,8 @@ spec:
             - /homebase-api-srv
             - -trips-url
             - detect-presence-srv-grpc.detect-presence:80
+            - -links-url
+            - go-links-srv-grpc.go-links:80
             - -deploy-url
             - deploy-srv-grpc.deploy:80
             - -prometheus-url

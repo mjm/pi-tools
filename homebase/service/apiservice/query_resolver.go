@@ -12,10 +12,12 @@ import (
 
 	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
+	linkspb "github.com/mjm/pi-tools/go-links/proto/links"
 )
 
 type Resolver struct {
 	tripsClient   tripspb.TripsServiceClient
+	linksClient   linkspb.LinksServiceClient
 	deployClient  deploypb.DeployServiceClient
 	prometheusURL string
 }
@@ -75,6 +77,23 @@ func (r *Resolver) Tags(ctx context.Context, args struct {
 		return nil, err
 	}
 	return &TagConnection{res: res}, nil
+}
+
+func (r *Resolver) Links(ctx context.Context, args struct {
+	First *int32
+	After *Cursor
+}) (*LinkConnection, error) {
+	// TODO actually support paging
+
+	//var limit int32 = 30
+	//if args.First != nil {
+	//	limit = *args.First
+	//}
+	res, err := r.linksClient.ListRecentLinks(ctx, &linkspb.ListRecentLinksRequest{})
+	if err != nil {
+		return nil, err
+	}
+	return &LinkConnection{res: res}, nil
 }
 
 func (r *Resolver) MostRecentDeploy(ctx context.Context) (*Deploy, error) {

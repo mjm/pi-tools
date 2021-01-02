@@ -6,6 +6,7 @@ go_library(
         "alert_resolver.go",
         "cursor.go",
         "deploy_resolver.go",
+        "link_resolver.go",
         "node_resolver.go",
         "pageinfo_resolver.go",
         "query_resolver.go",
@@ -19,6 +20,7 @@ go_library(
     deps = [
         "//deploy/proto/deploy",
         "//detect-presence/proto/trips",
+        "//go-links/proto/links",
         "@com_github_mjm_graphql_go//:graphql-go",
         "@com_github_mjm_graphql_go//relay",
         "@com_github_prometheus_client_golang//api",

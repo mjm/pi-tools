@@ -13,6 +13,7 @@ import (
 
 	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
+	linkspb "github.com/mjm/pi-tools/go-links/proto/links"
 	"github.com/mjm/pi-tools/homebase/service/apiservice"
 	"github.com/mjm/pi-tools/observability"
 	"github.com/mjm/pi-tools/pkg/signal"
@@ -21,6 +22,7 @@ import (
 
 var (
 	tripsURL      = flag.String("trips-url", "localhost:2121", "URL for trips service")
+	linksURL      = flag.String("links-url", "localhost:4241", "URL for links service")
 	deployURL     = flag.String("deploy-url", "localhost:8481", "URL for deploy service")
 	prometheusURL = flag.String("prometheus-url", "https://prometheus.homelab", "URL for Prometheus for querying alerts")
 	schemaPath    = flag.String("schema-path", "/schema.graphql", "Path to the file with the GraphQL schema")
@@ -45,12 +47,17 @@ func main() {
 
 	trips := tripspb.NewTripsServiceClient(tripsConn)
 
+	linksConn := rpc.MustDial(ctx, *linksURL)
+	defer linksConn.Close()
+
+	links := linkspb.NewLinksServiceClient(linksConn)
+
 	deployConn := rpc.MustDial(ctx, *deployURL)
 	defer deployConn.Close()
 
 	deploy := deploypb.NewDeployServiceClient(deployConn)
 
-	apiService, err := apiservice.New(string(schema), trips, deploy, *prometheusURL)
+	apiService, err := apiservice.New(string(schema), trips, links, deploy, *prometheusURL)
 	if err != nil {
 		log.Panicf("creating API service: %v", err)
 	}

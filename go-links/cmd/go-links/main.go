@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"log"
 	"net/http"
 	"time"
 
@@ -22,19 +21,14 @@ import (
 
 func main() {
 	rpc.SetDefaultHTTPPort(4240)
+	rpc.SetDefaultGRPCPort(4241)
 	storage.SetDefaultDBName("golinks_dev")
 	flag.Parse()
 
-	stopObs, err := observability.Start("go-links")
-	if err != nil {
-		log.Panicf("Error setting up observability: %v", err)
-	}
+	stopObs := observability.MustStart("go-links")
 	defer stopObs()
 
-	db, err := storage.OpenDB(migrate.Data)
-	if err != nil {
-		log.Panicf("Error setting up storage: %v", err)
-	}
+	db := storage.MustOpenDB(migrate.Data)
 
 	linksService := linksservice.New(db)
 	http.Handle("/healthz",

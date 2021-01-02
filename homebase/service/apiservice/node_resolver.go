@@ -14,3 +14,7 @@ func (n *Node) ID() graphql.ID {
 func (n *Node) ToTrip() (*Trip, bool) {
 	return nil, false
 }
+
+func (n *Node) ToLink() (*Link, bool) {
+	return nil, false
+}

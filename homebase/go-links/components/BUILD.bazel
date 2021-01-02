@@ -7,6 +7,7 @@ ts_library(
     visibility = ["//homebase:__subpackages__"],
     deps = [
         "//go-links/proto/links:links_ts_proto",
+        "//homebase/api",
         "//homebase/components",
         "//homebase/go-links/lib",
         "@npm_homebase//:node_modules",

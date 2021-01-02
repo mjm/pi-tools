@@ -12,6 +12,7 @@ go_library(
     deps = [
         "//deploy/proto/deploy",
         "//detect-presence/proto/trips",
+        "//go-links/proto/links",
         "//homebase/service/apiservice",
         "//observability",
         "//pkg/signal",

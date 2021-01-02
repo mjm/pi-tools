@@ -15,8 +15,6 @@ export default {
         replace({
             'process.env.NODE_ENV': JSON.stringify(env),
         }),
-        nodeResolve(),
-        commonjs(),
         babel({
             babelHelpers: 'bundled',
             plugins: [
@@ -26,6 +24,8 @@ export default {
                 }]
             ],
         }),
+        nodeResolve(),
+        commonjs(),
         styles({
             mode: 'extract',
         }),

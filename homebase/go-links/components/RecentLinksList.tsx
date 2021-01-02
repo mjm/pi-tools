@@ -1,15 +1,26 @@
 import React from "react";
-import useSWR from "swr";
-import {Link} from "com_github_mjm_pi_tools/go-links/proto/links/links_pb";
-import {LIST_RECENT_LINKS} from "com_github_mjm_pi_tools/homebase/go-links/lib/fetch";
 import {LinkRow} from "com_github_mjm_pi_tools/homebase/go-links/components/LinkRow";
-import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
+import {graphql, useFragment} from "react-relay/hooks";
+import {RecentLinksList_viewer$key} from "com_github_mjm_pi_tools/homebase/api/__generated__/RecentLinksList_viewer.graphql";
 
-export function RecentLinksList() {
-    const {data, error} = useSWR<Link[]>(LIST_RECENT_LINKS);
-    if (error) {
-        console.error(error);
-    }
+export function RecentLinksList({viewer}: { viewer: RecentLinksList_viewer$key }) {
+    const data = useFragment(
+        graphql`
+            fragment RecentLinksList_viewer on Viewer {
+                links(first: 30) @connection(key: "RecentLinksList_links") {
+                    edges {
+                        node {
+                            id
+                            ...LinkRow_link
+                        }
+                    }
+                }
+            }
+        `,
+        viewer,
+    );
+
+    const linkNodes = data.links.edges.map(e => e.node);
 
     return (
         <div className="bg-white overflow-hidden shadow rounded-lg">
@@ -18,18 +29,11 @@ export function RecentLinksList() {
                     Recently added links
                 </h3>
             </div>
-            {error && (
-                <Alert title="Couldn't load recent links" severity="error" rounded={false}>
-                    {error.toString()}
-                </Alert>
-            )}
-            {data && (
-                <ul className="border-b border-gray-200">
-                    {data.map(link => (
-                        <LinkRow key={link.getId()} link={link}/>
-                    ))}
-                </ul>
-            )}
+            <ul className="border-b border-gray-200">
+                {linkNodes.map(link => (
+                    <LinkRow key={link.id} link={link}/>
+                ))}
+            </ul>
         </div>
     );
 }
