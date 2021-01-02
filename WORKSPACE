@@ -4200,20 +4200,3 @@ go_repository(
 )
 
 gazelle_dependencies()
-
-http_archive(
-    name = "rules_typescript_proto",
-    patch_args = ["-p1"],
-    patches = [
-        "//tools:rules_typescript_proto.patch",
-    ],
-    sha256 = "8a62f8eee53db86043cf6c40fc3d3b4b6d4c0cb7e3c0798cd972988cd13e5175",
-    strip_prefix = "rules_typescript_proto-692cbfb909c8972250bc6b378a3c1f14f36b9c54",
-    urls = [
-        "https://github.com/Dig-Doug/rules_typescript_proto/archive/692cbfb909c8972250bc6b378a3c1f14f36b9c54.tar.gz",
-    ],
-)
-
-load("@rules_typescript_proto//:index.bzl", "rules_typescript_proto_dependencies")
-
-rules_typescript_proto_dependencies()

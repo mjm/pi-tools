@@ -1,7 +1,6 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
-load("@rules_typescript_proto//:index.bzl", "typescript_proto_library")
 
 proto_library(
     name = "links_proto",
@@ -21,11 +20,5 @@ go_library(
     name = "links",
     embed = [":links_go_proto"],
     importpath = "github.com/mjm/pi-tools/go-links/proto/links",
-    visibility = ["//visibility:public"],
-)
-
-typescript_proto_library(
-    name = "links_ts_proto",
-    proto = "//go-links/proto/links:links_proto",
     visibility = ["//visibility:public"],
 )

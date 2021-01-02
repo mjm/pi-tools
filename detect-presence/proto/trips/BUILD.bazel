@@ -1,7 +1,6 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
-load("@rules_typescript_proto//:index.bzl", "typescript_proto_library")
 load("@build_bazel_rules_swift//swift:swift.bzl", "swift_grpc_library", "swift_proto_library")
 
 proto_library(
@@ -22,12 +21,6 @@ go_library(
     name = "trips",
     embed = [":trips_go_proto"],
     importpath = "github.com/mjm/pi-tools/detect-presence/proto/trips",
-    visibility = ["//visibility:public"],
-)
-
-typescript_proto_library(
-    name = "trips_ts_proto",
-    proto = ":trips_proto",
     visibility = ["//visibility:public"],
 )
 
