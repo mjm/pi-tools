@@ -17,6 +17,7 @@ require (
 	github.com/lib/pq v1.8.0
 	github.com/mdlayher/unifi v0.0.0-20180604180305-be73af8d7922
 	github.com/mjm/graphql-go v0.0.0-20200213070811-48021cabfccf
+	github.com/prometheus/client_golang v1.7.1
 	github.com/rs/cors v1.7.0 // indirect
 	github.com/segmentio/ksuid v1.0.3
 	github.com/stretchr/testify v1.6.1
