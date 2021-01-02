@@ -4,16 +4,18 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type LinkRow_link = {
+export type EditLinkForm_link = {
     readonly id: string;
+    readonly rawID: string;
     readonly shortURL: string;
+    readonly destinationURL: string;
     readonly description: string;
-    readonly " $refType": "LinkRow_link";
+    readonly " $refType": "EditLinkForm_link";
 };
-export type LinkRow_link$data = LinkRow_link;
-export type LinkRow_link$key = {
-    readonly " $data"?: LinkRow_link$data;
-    readonly " $fragmentRefs": FragmentRefs<"LinkRow_link">;
+export type EditLinkForm_link$data = EditLinkForm_link;
+export type EditLinkForm_link$key = {
+    readonly " $data"?: EditLinkForm_link$data;
+    readonly " $fragmentRefs": FragmentRefs<"EditLinkForm_link">;
 };
 
 
@@ -22,13 +24,20 @@ const node: ReaderFragment = {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
-  "name": "LinkRow_link",
+  "name": "EditLinkForm_link",
   "selections": [
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "id",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "rawID",
       "storageKey": null
     },
     {
@@ -42,6 +51,13 @@ const node: ReaderFragment = {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
+      "name": "destinationURL",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
       "name": "description",
       "storageKey": null
     }
@@ -49,5 +65,5 @@ const node: ReaderFragment = {
   "type": "Link",
   "abstractKey": null
 };
-(node as any).hash = '7dee66937f9d2d22bff6b14a065743ca';
+(node as any).hash = 'c2e3712566ee991668c8774439fcf67e';
 export default node;

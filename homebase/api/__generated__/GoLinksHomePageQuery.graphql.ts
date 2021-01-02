@@ -25,7 +25,7 @@ query GoLinksHomePageQuery {
 }
 
 fragment LinkRow_link on Link {
-  rawID
+  id
   shortURL
   description
 }
@@ -132,13 +132,6 @@ return {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "rawID",
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
                         "name": "shortURL",
                         "storageKey": null
                       },
@@ -212,12 +205,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "e73fa8d21ee7f9c8eb9c7fe2b4135310",
+    "cacheID": "57a681eb021931db30bd3f85bf9ea90e",
     "id": null,
     "metadata": {},
     "name": "GoLinksHomePageQuery",
     "operationKind": "query",
-    "text": "query GoLinksHomePageQuery {\n  viewer {\n    ...RecentLinksList_viewer\n  }\n}\n\nfragment LinkRow_link on Link {\n  rawID\n  shortURL\n  description\n}\n\nfragment RecentLinksList_viewer on Viewer {\n  links(first: 30) {\n    edges {\n      node {\n        id\n        ...LinkRow_link\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query GoLinksHomePageQuery {\n  viewer {\n    ...RecentLinksList_viewer\n  }\n}\n\nfragment LinkRow_link on Link {\n  id\n  shortURL\n  description\n}\n\nfragment RecentLinksList_viewer on Viewer {\n  links(first: 30) {\n    edges {\n      node {\n        id\n        ...LinkRow_link\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })();

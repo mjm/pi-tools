@@ -56,7 +56,6 @@
         "react-relay": "^0.0.0-experimental-0b967d2e",
         "react-router-dom": "^5.2.0",
         "relay-runtime": "^10.1.2",
-        "swr": "^0.3.5",
         "tailwindcss": "^2.0.1"
     }
 }

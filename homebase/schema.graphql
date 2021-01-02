@@ -33,6 +33,8 @@ type Viewer {
         after: Cursor
     ): LinkConnection
 
+    link(id: ID!): Link
+
     mostRecentDeploy: Deploy
 
     alerts: [Alert!]!

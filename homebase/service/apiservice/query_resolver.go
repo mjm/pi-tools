@@ -96,6 +96,21 @@ func (r *Resolver) Links(ctx context.Context, args struct {
 	return &LinkConnection{res: res}, nil
 }
 
+func (r *Resolver) Link(ctx context.Context, args struct {
+	ID graphql.ID
+}) (*Link, error) {
+	var id string
+	if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
+		return nil, err
+	}
+
+	res, err := r.linksClient.GetLink(ctx, &linkspb.GetLinkRequest{Id: id})
+	if err != nil {
+		return nil, err
+	}
+	return &Link{Link: res.GetLink()}, nil
+}
+
 func (r *Resolver) MostRecentDeploy(ctx context.Context) (*Deploy, error) {
 	res, err := r.deployClient.GetMostRecentDeploy(ctx, &deploypb.GetMostRecentDeployRequest{})
 	if err != nil {

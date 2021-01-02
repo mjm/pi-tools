@@ -8,7 +8,7 @@ export function LinkRow({link}: { link: LinkRow_link$key }) {
     const data = useFragment(
         graphql`
             fragment LinkRow_link on Link {
-                rawID
+                id
                 shortURL
                 description
             }
@@ -18,7 +18,7 @@ export function LinkRow({link}: { link: LinkRow_link$key }) {
 
     return (
         <li className="border-t border-gray-200">
-            <RouterLink to={`/go/${data.rawID}`}
+            <RouterLink to={`/go/${data.id}`}
                         className="block hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition duration-150 ease-in-out">
                 <div className="px-4 py-4 sm:px-6">
                     <div className="flex items-center justify-between">
