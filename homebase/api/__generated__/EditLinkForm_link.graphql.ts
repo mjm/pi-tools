@@ -6,7 +6,6 @@ import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type EditLinkForm_link = {
     readonly id: string;
-    readonly rawID: string;
     readonly shortURL: string;
     readonly destinationURL: string;
     readonly description: string;
@@ -37,13 +36,6 @@ const node: ReaderFragment = {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "rawID",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
       "name": "shortURL",
       "storageKey": null
     },
@@ -65,5 +57,5 @@ const node: ReaderFragment = {
   "type": "Link",
   "abstractKey": null
 };
-(node as any).hash = 'c2e3712566ee991668c8774439fcf67e';
+(node as any).hash = 'e9074bcfd75f01c31ad02ca00993e9c5';
 export default node;

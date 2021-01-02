@@ -6,9 +6,8 @@ ts_library(
     tsconfig = "//homebase:tsconfig.json",
     visibility = ["//homebase/go-links:__subpackages__"],
     deps = [
-        "//go-links/proto/links:links_ts_proto",
         "//homebase/api",
-        "//homebase/lib",
-        "@npm_homebase//:node_modules",
+        "@npm_homebase//@types/node",
+        "@npm_homebase//react-relay",
     ],
 )

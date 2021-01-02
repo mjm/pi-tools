@@ -15,6 +15,7 @@ type Mutation {
     updateTripTags(input: UpdateTripTagsInput!): UpdateTripTagsPayload!
 
     createLink(input: CreateLinkInput!): CreateLinkPayload!
+    updateLink(input: UpdateLinkInput!): UpdateLinkPayload!
 }
 
 type Viewer {
@@ -151,5 +152,16 @@ input CreateLinkInput {
 }
 
 type CreateLinkPayload {
+    link: Link!
+}
+
+input UpdateLinkInput {
+    id: ID!
+    shortURL: String!
+    destinationURL: String!
+    description: String!
+}
+
+type UpdateLinkPayload {
     link: Link!
 }

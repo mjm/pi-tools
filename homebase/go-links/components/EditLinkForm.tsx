@@ -1,6 +1,5 @@
 import React from "react";
 import {Form, Formik, FormikHelpers} from "formik";
-import {updateLink, UpdateLinkParams} from "com_github_mjm_pi_tools/homebase/go-links/lib/mutate";
 import {useHistory} from "react-router-dom";
 import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
 import {ShortURLField} from "com_github_mjm_pi_tools/homebase/go-links/components/ShortURLField";
@@ -8,13 +7,14 @@ import {DestinationURLField} from "com_github_mjm_pi_tools/homebase/go-links/com
 import {DescriptionField} from "com_github_mjm_pi_tools/homebase/go-links/components/DescriptionField";
 import {graphql, useFragment} from "react-relay/hooks";
 import {EditLinkForm_link$key} from "com_github_mjm_pi_tools/homebase/api/__generated__/EditLinkForm_link.graphql";
+import {useUpdateLink} from "com_github_mjm_pi_tools/homebase/go-links/lib/UpdateLink";
+import {UpdateLinkInput} from "com_github_mjm_pi_tools/homebase/api/__generated__/UpdateLinkMutation.graphql";
 
 export function EditLinkForm({link}: { link: EditLinkForm_link$key }) {
     const data = useFragment(
         graphql`
             fragment EditLinkForm_link on Link {
                 id
-                rawID
                 shortURL
                 destinationURL
                 description
@@ -22,12 +22,13 @@ export function EditLinkForm({link}: { link: EditLinkForm_link$key }) {
         `,
         link,
     );
+    const [commit] = useUpdateLink();
     const history = useHistory();
 
-    async function onSubmit(values: UpdateLinkParams, actions: FormikHelpers<UpdateLinkParams>) {
+    async function onSubmit(values: UpdateLinkInput, actions: FormikHelpers<UpdateLinkInput>) {
         actions.setStatus(null);
         try {
-            await updateLink(values);
+            await commit(values);
             history.push("/go");
         } catch (err) {
             actions.setStatus({error: err});
@@ -37,7 +38,7 @@ export function EditLinkForm({link}: { link: EditLinkForm_link$key }) {
     return (
         <Formik
             initialValues={{
-                id: data.rawID,
+                id: data.id,
                 shortURL: data.shortURL,
                 destinationURL: data.destinationURL,
                 description: data.description,

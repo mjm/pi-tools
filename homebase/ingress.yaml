@@ -35,13 +35,6 @@ spec:
                 name: homebase-api-srv
                 port:
                   number: 80
-          - path: "/LinksService"
-            pathType: Prefix
-            backend:
-              service:
-                name: go-links-proxy
-                port:
-                  number: 80
           - path: "/"
             pathType: Prefix
             backend:
@@ -87,18 +80,6 @@ metadata:
 spec:
   type: ExternalName
   externalName: detect-presence-srv.detect-presence.svc.cluster.local
-  ports:
-    - port: 80
-      protocol: TCP
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: go-links-proxy
-  namespace: homebase
-spec:
-  type: ExternalName
-  externalName: go-links-srv.go-links.svc.cluster.local
   ports:
     - port: 80
       protocol: TCP

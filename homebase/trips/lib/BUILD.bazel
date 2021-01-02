@@ -10,7 +10,6 @@ ts_library(
     ],
     deps = [
         "//homebase/api",
-        "//homebase/lib",
         "@npm_homebase//react-relay",
     ],
 )

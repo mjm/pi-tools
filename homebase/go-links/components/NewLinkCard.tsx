@@ -1,16 +1,16 @@
 import React from "react";
 import {Form, Formik, FormikHelpers} from "formik";
-import {CreateLinkParams} from "com_github_mjm_pi_tools/homebase/go-links/lib/mutate";
 import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
 import {ShortURLField} from "com_github_mjm_pi_tools/homebase/go-links/components/ShortURLField";
 import {DestinationURLField} from "com_github_mjm_pi_tools/homebase/go-links/components/DestinationURLField";
 import {DescriptionField} from "com_github_mjm_pi_tools/homebase/go-links/components/DescriptionField";
 import {useCreateLink} from "com_github_mjm_pi_tools/homebase/go-links/lib/CreateLink";
+import {CreateLinkInput} from "com_github_mjm_pi_tools/homebase/api/__generated__/CreateLinkMutation.graphql";
 
 export function NewLinkCard() {
     const [commit] = useCreateLink();
 
-    async function onSubmit(values: CreateLinkParams, actions: FormikHelpers<CreateLinkParams>) {
+    async function onSubmit(values: CreateLinkInput, actions: FormikHelpers<CreateLinkInput>) {
         actions.setStatus(null);
         try {
             await commit(values);

@@ -2,7 +2,6 @@
     root * {$ROOT_PATH}
     file_server
     reverse_proxy /graphql localhost:6460
-    reverse_proxy /LinksService/* localhost:4240
     reverse_proxy /download_app localhost:2120
 
     handle_errors {
