@@ -1,9 +1,9 @@
 import React from "react";
 import {format, formatDuration, intervalToDuration, parseISO} from "date-fns";
-import {Link} from "react-router-dom";
 import {TripTag} from "com_github_mjm_pi_tools/homebase/trips/components/TripTag";
 import {graphql, useFragment} from "react-relay/hooks";
 import {TripRow_trip$key} from "com_github_mjm_pi_tools/homebase/api/__generated__/TripRow_trip.graphql";
+import {TransitionLink} from "com_github_mjm_pi_tools/homebase/components/TransitionLink";
 
 export function TripRow({trip}: { trip: TripRow_trip$key }) {
     const data = useFragment(
@@ -45,10 +45,10 @@ export function TripRow({trip}: { trip: TripRow_trip$key }) {
                 </div>
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-right text-sm leading-5 font-medium">
-                <Link to={`/trips/${data.id}`}
-                      className="text-indigo-600 hover:text-indigo-900">
+                <TransitionLink to={`/trips/${data.id}`}
+                                className="text-indigo-600 hover:text-indigo-900">
                     Details
-                </Link>
+                </TransitionLink>
             </td>
         </tr>
     );

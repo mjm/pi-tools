@@ -1,8 +1,8 @@
 import React from "react";
-import {Link as RouterLink} from "react-router-dom";
 import {destinationURL} from "com_github_mjm_pi_tools/homebase/go-links/lib/links_client";
 import {graphql, useFragment} from "react-relay/hooks";
 import {LinkRow_link$key} from "com_github_mjm_pi_tools/homebase/api/__generated__/LinkRow_link.graphql";
+import {TransitionLink} from "com_github_mjm_pi_tools/homebase/components/TransitionLink";
 
 export function LinkRow({link}: { link: LinkRow_link$key }) {
     const data = useFragment(
@@ -18,8 +18,8 @@ export function LinkRow({link}: { link: LinkRow_link$key }) {
 
     return (
         <li className="border-t border-gray-200">
-            <RouterLink to={`/go/${data.id}`}
-                        className="block hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition duration-150 ease-in-out">
+            <TransitionLink to={`/go/${data.id}`}
+                            className="block hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition duration-150 ease-in-out">
                 <div className="px-4 py-4 sm:px-6">
                     <div className="flex items-center justify-between">
                         <a href={destinationURL(data.shortURL)} target="_blank"
@@ -36,7 +36,7 @@ export function LinkRow({link}: { link: LinkRow_link$key }) {
                         </div>
                     </div>
                 </div>
-            </RouterLink>
+            </TransitionLink>
         </li>
     );
 }

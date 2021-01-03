@@ -1,5 +1,5 @@
 import React from "react";
-import {Link} from "react-router-dom";
+import {TransitionLink} from "com_github_mjm_pi_tools/homebase/components/TransitionLink";
 
 export function HomePageCard({title, icon, children, footerHref, footer}: {
     title: React.ReactNode;
@@ -40,10 +40,10 @@ export function HomePageCard({title, icon, children, footerHref, footer}: {
                             {footer}
                         </a>
                     ) : (
-                        <Link to={footerHref}
-                              className="font-medium text-indigo-700 hover:text-indigo-900 transition ease-in-out duration-150">
+                        <TransitionLink to={footerHref}
+                                        className="font-medium text-indigo-700 hover:text-indigo-900 transition ease-in-out duration-150">
                             {footer}
-                        </Link>
+                        </TransitionLink>
                     )}
                 </div>
             </div>
