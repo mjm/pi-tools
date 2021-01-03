@@ -85,13 +85,17 @@ export function TripPage() {
 function TripIgnoreButton({id}: { id: string }) {
     const history = useHistory();
     const [commit, isInFlight] = useIgnoreTrip();
+    // @ts-ignore
+    const [startTransition, isPending] = React.unstable_useTransition();
 
     async function onIgnore() {
         try {
             await commit(id);
 
             // return to the trips page upon successful ignore
-            history.push("/trips");
+            startTransition(() => {
+                history.push("/trips");
+            });
         } catch (e) {
             console.error(e);
         }
