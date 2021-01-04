@@ -4,6 +4,7 @@ k8s_object(
     name = "k8s",
     images = {
         "index.docker.io/mmoriarity/prometheus-backup:latest": "//backup/cmd/prometheus-backup:image",
+        "index.docker.io/mmoriarity/dump-secrets:latest": "//backup:dump-secrets-image",
     },
     template = "cronjob.yaml",
     visibility = ["//visibility:public"],

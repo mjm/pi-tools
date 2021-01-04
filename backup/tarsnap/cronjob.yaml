@@ -15,6 +15,13 @@ spec:
           nodeName: raspberrypi
           restartPolicy: Never
           initContainers:
+            - name: prepare-kube-secrets
+              image: index.docker.io/mmoriarity/dump-secrets:latest
+              command:
+                - /dump-secrets.sh
+              volumeMounts:
+                - mountPath: /backup
+                  name: backup
             - name: prepare-postgres-dump-presence
               # keep in sync with the image in storage/postgresql/statefulset.yaml
               image: index.docker.io/postgres@sha256:b6399aef923e0529a4f2a5874e8860d29cef3726ab7079883f3368aaa2a9f29c
