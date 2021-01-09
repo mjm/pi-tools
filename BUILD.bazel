@@ -9,7 +9,7 @@ k8s_objects(
     name = "k8s",
     objects = [
         "//auth/oauth-proxy:k8s",
-        "//backup/tarsnap:k8s",
+        "//backup:k8s",
         "//deploy/cmd/deploy-srv:k8s",
         "//detect-presence:k8s",
         "//go-links/cmd/go-links:k8s",

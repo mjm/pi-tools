@@ -1,0 +1,151 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  namespace: backup
+  name: borg-backup-hourly
+spec:
+  concurrencyPolicy: Forbid
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 31200 # 12 hours
+      template:
+        spec:
+          # Always schedule on this node, as it's the one with all the content on it
+          nodeName: raspberrypi
+          restartPolicy: Never
+          initContainers:
+            - name: prepare-kube-secrets
+              image: index.docker.io/mmoriarity/dump-secrets:latest
+              command:
+                - /dump-secrets.sh
+              volumeMounts:
+                - mountPath: /backup
+                  name: backup
+            - name: prepare-postgres-dump-presence
+              # keep in sync with the image in storage/postgresql/statefulset.yaml
+              image: index.docker.io/postgres@sha256:b6399aef923e0529a4f2a5874e8860d29cef3726ab7079883f3368aaa2a9f29c
+              command:
+                - pg_dump
+                - --host=postgresql.storage
+                - --dbname=presence
+                - --user=postgres
+                - --file=/backup/presence.sql
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgresql
+                      key: pg-password
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                - name: postgresql-secrets
+                  mountPath: /var/secrets
+            - name: prepare-postgres-dump-golinks
+              # keep in sync with the image in storage/postgresql/statefulset.yaml
+              image: index.docker.io/postgres@sha256:b6399aef923e0529a4f2a5874e8860d29cef3726ab7079883f3368aaa2a9f29c
+              command:
+                - pg_dump
+                - --host=postgresql.storage
+                - --dbname=golinks
+                - --user=postgres
+                - --file=/backup/golinks.sql
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgresql
+                      key: pg-password
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                - name: postgresql-secrets
+                  mountPath: /var/secrets
+            - name: prepare-postgres-dump-homebasebot
+              # keep in sync with the image in storage/postgresql/statefulset.yaml
+              image: index.docker.io/postgres@sha256:b6399aef923e0529a4f2a5874e8860d29cef3726ab7079883f3368aaa2a9f29c
+              command:
+                - pg_dump
+                - --host=postgresql.storage
+                - --dbname=homebase_bot
+                - --user=postgres
+                - --file=/backup/homebase_bot.sql
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgresql
+                      key: pg-password
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                - name: postgresql-secrets
+                  mountPath: /var/secrets
+            - name: prepare-postgres-dump-grafana
+              # keep in sync with the image in storage/postgresql/statefulset.yaml
+              image: index.docker.io/postgres@sha256:b6399aef923e0529a4f2a5874e8860d29cef3726ab7079883f3368aaa2a9f29c
+              command:
+                - pg_dump
+                - --host=postgresql.storage
+                - --dbname=grafana
+                - --user=postgres
+                - --file=/backup/grafana.sql
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgresql
+                      key: pg-password
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                - name: postgresql-secrets
+                  mountPath: /var/secrets
+            - name: prepare-prometheus
+              image: index.docker.io/mmoriarity/prometheus-backup:latest
+              command:
+                - /prometheus-backup
+                - -prometheus-url
+                - http://prometheus.monitoring
+                - -prometheus-data-path
+                - /prometheus-data
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                - name: nfs-data
+                  mountPath: /prometheus-data
+                  subPath: monitoring/prometheus-data
+          containers:
+            - name: borg
+              image: index.docker.io/mmoriarity/borgbackup@sha256:66a6c3f35b441b35f111ef7817605be03a3a45e9be58d0186fc100a7e65abf65
+              command:
+                - borg
+                - create
+                - --stats
+                - /dest/backup::$(POD_NAME)
+                - /backup
+              env:
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                  readOnly: true
+                - name: backup-dest
+                  mountPath: /dest
+          volumes:
+            - name: backup
+              emptyDir: {}
+            - name: backup-dest
+              nfs:
+                path: /volume1/homelab
+                server: 10.0.0.10
+            - name: nfs-data
+              hostPath:
+                path: /srv/nfs/kubernetes
+            - name: postgresql-secrets
+              secret:
+                secretName: postgresql

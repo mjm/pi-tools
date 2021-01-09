@@ -22,5 +22,5 @@ container_image(
     ],
     mode = "0755",
     tags = ["no-cache"],
-    visibility = ["//backup/tarsnap:__pkg__"],
+    visibility = ["//backup:__subpackages__"],
 )
