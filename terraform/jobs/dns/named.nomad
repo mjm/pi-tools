@@ -64,7 +64,9 @@ job "named" {
               // 10.152.183.183;
             };
 
-            dnssec-validation auto;
+
+            dnssec-enable no;
+            dnssec-validation no;
 
             listen-on-v6 { any; };
           };
@@ -132,6 +134,12 @@ job "named" {
           zone "255.in-addr.arpa" {
             type master;
             file "/etc/bind/db.255";
+          };
+
+          zone "consul" IN {
+            type forward;
+            forward only;
+            forwarders { 127.0.0.1 port 8600; };
           };
           EOF
       }
