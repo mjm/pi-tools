@@ -10,6 +10,7 @@ StartLimitIntervalSec=10
 [Service]
 ExecReload=/bin/kill -HUP $MAINPID
 ExecStart=/usr/local/bin/nomad agent -config /etc/nomad.hcl
+EnvironmentFile=/etc/nomad.env
 KillMode=process
 KillSignal=SIGINT
 LimitNOFILE=infinity
