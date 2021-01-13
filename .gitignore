@@ -27,3 +27,4 @@
 xcuserdata
 tulsigen-*
 /secrets.yaml
+/terraform/.terraform/
