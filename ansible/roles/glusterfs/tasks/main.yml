@@ -1,0 +1,8 @@
+- name: Mount postgresql-0 volume
+  ansible.posix.mount:
+    path: /srv/mnt/postgresql-0
+    src: 127.0.0.1:/postgresql-0
+    fstype: glusterfs
+    opts: defaults,_netdev
+    state: mounted
+  become: true

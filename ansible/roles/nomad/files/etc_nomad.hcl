@@ -7,6 +7,11 @@ server {
 
 client {
   enabled = true
+
+  host_volume "postgresql_0" {
+    path = "/srv/mnt/postgresql-0"
+    read_only = false
+  }
 }
 
 vault {
