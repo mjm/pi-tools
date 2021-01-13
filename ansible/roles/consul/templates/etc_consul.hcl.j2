@@ -1,0 +1,16 @@
+server = true
+data_dir = "/var/lib/consul"
+
+bootstrap_expect = 3
+retry_join = ["10.0.0.2", "10.0.0.3", "10.0.0.4"]
+
+advertise_addr = "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+client_addr = "0.0.0.0"
+
+connect {
+  enabled = true
+}
+
+ui_config {
+  enabled = true
+}

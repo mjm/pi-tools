@@ -1,0 +1,59 @@
+- name: Check if Consul is installed
+  stat:
+    path: /usr/local/bin/consul
+  register: consul_installed
+
+- name: Download Consul
+  get_url:
+    url: https://releases.hashicorp.com/consul/1.9.1/consul_1.9.1_linux_arm64.zip
+    dest: /tmp/consul.zip
+  when: consul_installed.stat.exists == false
+
+- name: Unzip Consul into install location
+  command:
+    cmd: unzip /tmp/consul.zip
+    chdir: /usr/local/bin
+  become: true
+  when: consul_installed.stat.exists == false
+
+- name: Ensure Consul data directory exists
+  file:
+    path: /var/lib/consul
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+  become: true
+
+- name: Install Consul config file
+  template:
+    src: etc_consul.hcl.j2
+    dest: /etc/consul.hcl
+  become: true
+  register: config_file
+
+- name: Install Consul systemd unit
+  copy:
+    src: consul.service
+    dest: /usr/lib/systemd/system/consul.service
+    mode: 0644
+    owner: root
+    group: root
+  become: true
+  register: systemd
+
+- name: Enable and restart Consul service
+  systemd:
+    name: consul
+    daemon_reload: true
+    enabled: true
+    state: restarted
+  become: true
+  when: systemd.changed or config_file.changed
+
+- name: Ensure Consul service is started
+  systemd:
+    name: consul
+    enabled: true
+    state: started
+  become: true

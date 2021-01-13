@@ -1,0 +1,59 @@
+- name: Check if Nomad is installed
+  stat:
+    path: /usr/local/bin/nomad
+  register: nomad_installed
+
+- name: Download Nomad
+  get_url:
+    url: https://releases.hashicorp.com/nomad/1.0.1/nomad_1.0.1_linux_arm64.zip
+    dest: /tmp/nomad.zip
+  when: nomad_installed.stat.exists == false
+
+- name: Unzip Nomad into install location
+  command:
+    cmd: unzip /tmp/nomad.zip
+    chdir: /usr/local/bin
+  become: true
+  when: nomad_installed.stat.exists == false
+
+- name: Ensure Nomad data directory exists
+  file:
+    path: /var/lib/nomad
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+  become: true
+
+- name: Install Nomad config file
+  copy:
+    src: etc_nomad.hcl
+    dest: /etc/nomad.hcl
+  become: true
+  register: config_file
+
+- name: Install Nomad systemd unit
+  copy:
+    src: nomad.service
+    dest: /usr/lib/systemd/system/nomad.service
+    mode: 0644
+    owner: root
+    group: root
+  become: true
+  register: systemd
+
+- name: Enable and restart Nomad service
+  systemd:
+    name: nomad
+    daemon_reload: true
+    enabled: true
+    state: restarted
+  become: true
+  when: systemd.changed or config_file.changed
+
+- name: Ensure Nomad service is started
+  systemd:
+    name: nomad
+    enabled: true
+    state: started
+  become: true

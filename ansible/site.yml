@@ -1,0 +1,6 @@
+- hosts: all
+  remote_user: ubuntu
+  roles:
+    - role: consul
+    - role: vault
+    - role: nomad
