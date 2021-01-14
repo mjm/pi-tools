@@ -23,19 +23,15 @@ job "postgresql" {
     }
 
     network {
-      port "db" {
-        to = 5432
-      }
+      mode = "bridge"
     }
 
     service {
       name = "postgresql"
-      port = "db"
+      port = 5432
 
-      check {
-        type     = "tcp"
-        interval = "10s"
-        timeout  = "2s"
+      connect {
+        sidecar_service {}
       }
     }
 

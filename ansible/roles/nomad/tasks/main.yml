@@ -1,3 +1,26 @@
+- name: Create CNI plugins directory
+  file:
+    path: /opt/cni/bin
+    state: directory
+  become: true
+
+- name: Check if the CNI plugins are installed
+  stat:
+    path: /opt/cni/bin/bridge
+  register: cni_installed
+
+- name: Download CNI plugins
+  get_url:
+    url: https://github.com/containernetworking/plugins/releases/download/v0.9.0/cni-plugins-linux-arm64-v0.9.0.tgz
+    dest: /tmp/cni.tgz
+  when: cni_installed.stat.exists == false
+
+- name: Unzip CNI plugins
+  command:
+    cmd: tar -C /opt/cni/bin -xzf /tmp/cni.tgz
+  become: true
+  when: cni_installed.stat.exists == false
+
 - name: Check if Nomad is installed
   stat:
     path: /usr/local/bin/nomad

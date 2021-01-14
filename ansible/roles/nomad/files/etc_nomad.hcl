@@ -12,10 +12,20 @@ client {
     path = "/srv/mnt/postgresql-0"
     read_only = false
   }
+
+  meta {
+    "connect.sidecar_image" = "envoyproxy/envoy:v1.16.2"
+  }
 }
 
 vault {
   enabled = true
   address = "http://127.0.0.1:8200"
   create_from_role = "nomad-cluster"
+}
+
+plugin "docker" {
+  config {
+    infra_image = "rancher/pause:3.2"
+  }
 }

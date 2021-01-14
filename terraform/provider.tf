@@ -23,5 +23,5 @@ provider "nomad" {
 }
 
 provider "docker" {
-  host = "tcp://127.0.0.1:2376/"
+  host = "unix:///var/run/docker.sock"
 }
