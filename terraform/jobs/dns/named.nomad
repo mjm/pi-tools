@@ -231,7 +231,8 @@ job "named" {
                            1w		; Expire
                            1h )	; Negative Cache TTL
           @   IN  NS  localhost.
-          ;
+          ;{{ range nodes }}
+          {{ .Node }} IN  A {{ .Address }}{{ end }}
           *.homelab.  IN  CNAME {{ env "node.unique.name" }}.homelab.
           unifi	IN  A 10.0.0.1
           nas	IN  A 10.0.0.10
@@ -250,7 +251,8 @@ job "named" {
                            1w		; Expire
                            1h )	; Negative Cache TTL
           @   IN  NS  localhost.
-          ;
+          ;{{ range nodes }}
+          {{ .Node }} IN  A {{ .Meta.tailscale_ip }}{{ end }}
           *.homelab.  IN  CNAME {{ env "node.unique.name" }}.homelab.
           unifi	IN  A 10.0.0.1
           nas	IN  A 10.0.0.10
