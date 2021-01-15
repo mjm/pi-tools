@@ -63,11 +63,15 @@ job "named" {
               // 10.152.183.183;
             };
 
+            auth-nxdomain no;
 
             dnssec-enable no;
             dnssec-validation no;
 
             listen-on-v6 { any; };
+
+            zero-no-soa-ttl-cache yes;
+            max-ncache-ttl 15;
           };
 
           // let the bind-exporter get stats
