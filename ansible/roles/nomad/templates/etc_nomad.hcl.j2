@@ -34,5 +34,10 @@ vault {
 plugin "docker" {
   config {
     infra_image = "rancher/pause:3.2"
+    allow_privileged = true
+
+    volumes {
+      enabled = true
+    }
   }
 }
