@@ -61,6 +61,10 @@ resource "nomad_job" "go_links_srv" {
   jobspec = replace(file("${path.module}/jobs/go-links-srv.nomad"), "__DIGEST__", data.docker_registry_image.go_links_srv.sha256_digest)
 }
 
+resource "nomad_job" "homebase" {
+  jobspec = replace(file("${path.module}/jobs/homebase.nomad"), "__HOMEBASE_SRV_DIGEST__", data.docker_registry_image.homebase_srv.sha256_digest)
+}
+
 resource "nomad_job" "oauth_proxy" {
   jobspec = file("${path.module}/jobs/oauth-proxy.nomad")
 }

@@ -59,7 +59,8 @@ job "ingress" {
 
       vault {
         policies = [
-          "ingress"]
+          "ingress"
+        ]
         change_mode = "noop"
       }
 
@@ -67,6 +68,13 @@ job "ingress" {
         data = <<EOF
 upstream go-links {
   server 127.0.0.1:4240;
+}
+
+upstream homebase {
+{{ range service "homebase" }}
+  server {{ .Address }}:{{ .Port }};
+{{ else }}server 127.0.0.1:65535; # force a 502
+{{ end }}
 }
 
 upstream prometheus {
@@ -104,8 +112,28 @@ server {
   ssl_certificate /etc/nginx/ssl/go.homelab.pem;
   ssl_certificate_key /etc/nginx/ssl/go.homelab.pem;
 
+  __OAUTH_LOCATIONS_SNIPPET__
+
   location / {
+    __OAUTH_REQUEST_SNIPPET__
+
     proxy_pass http://go-links;
+  }
+}
+
+server {
+  listen 443 ssl default_server;
+  server_name homebase.homelab;
+
+  ssl_certificate /etc/nginx/ssl/homebase.homelab.pem;
+  ssl_certificate_key /etc/nginx/ssl/homebase.homelab.pem;
+
+  __OAUTH_LOCATIONS_SNIPPET__
+
+  location / {
+    __OAUTH_REQUEST_SNIPPET__
+
+    proxy_pass http://homebase;
   }
 }
 
@@ -132,7 +160,11 @@ server {
   ssl_certificate /etc/nginx/ssl/jaeger.homelab.pem;
   ssl_certificate_key /etc/nginx/ssl/jaeger.homelab.pem;
 
+  __OAUTH_LOCATIONS_SNIPPET__
+
   location / {
+    __OAUTH_REQUEST_SNIPPET__
+
     proxy_pass http://jaeger-query;
   }
 }
@@ -150,6 +182,18 @@ EOF
 {{ end }}
 EOF
         destination = "secrets/go.homelab.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        data = <<EOF
+{{ with secret "pki-homelab/issue/homelab" "common_name=homebase.homelab" -}}
+{{ .Data.certificate }}
+{{ .Data.private_key }}
+{{ end }}
+EOF
+        destination = "secrets/homebase.homelab.pem"
         change_mode = "signal"
         change_signal = "SIGHUP"
       }
