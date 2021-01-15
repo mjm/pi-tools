@@ -2,7 +2,6 @@ job "go-links" {
   datacenters = [
     "dc1"
   ]
-  namespace = "apps"
 
   type = "service"
 

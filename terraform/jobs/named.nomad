@@ -2,7 +2,6 @@ job "named" {
   datacenters = [
     "dc1"
   ]
-  namespace = "dns"
 
   type = "system"
 

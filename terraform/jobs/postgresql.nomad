@@ -2,7 +2,6 @@ job "postgresql" {
   datacenters = [
     "dc1"
   ]
-  namespace = "storage"
 
   type = "service"
 
