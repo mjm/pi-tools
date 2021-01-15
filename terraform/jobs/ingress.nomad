@@ -130,6 +130,13 @@ server {
 }
 
 server {
+  listen 80;
+  server_name go;
+
+  return 301 https://go.homelab$request_uri;
+}
+
+server {
   listen 443 ssl default_server;
   server_name homebase.homelab;
 
