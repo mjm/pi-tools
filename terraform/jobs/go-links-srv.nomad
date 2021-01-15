@@ -10,7 +10,9 @@ job "go-links" {
 
     network {
       mode = "bridge"
-      port "expose_http" {}
+      port "http" {
+        to = 4240
+      }
     }
 
     service {
@@ -18,8 +20,8 @@ job "go-links" {
       port = 4240
 
       check {
-        expose = true
         type = "http"
+        port = "http"
         path = "/healthz"
         timeout = "3s"
         interval = "15s"
@@ -29,20 +31,21 @@ job "go-links" {
       connect {
         sidecar_service {
           proxy {
-            expose {
-              path {
-                path = "/metrics"
-                protocol = "http"
-                local_path_port = 4240
-                listener_port = "expose_http"
-              }
-            }
             upstreams {
               destination_name = "postgresql"
               local_bind_port = 5432
             }
           }
         }
+      }
+    }
+
+    service {
+      name = "go-links-metrics"
+      port = "http"
+
+      meta {
+        metrics_path = "/metrics"
       }
     }
 

@@ -8,12 +8,6 @@ job "prometheus" {
   group "prometheus" {
     count = 1
 
-    // prometheus's data only lives on this particular machine
-//    constraint {
-//      attribute = "${node.unique.name}"
-//      value = "raspberrypi"
-//    }
-
     volume "data" {
       type = "host"
       read_only = false
@@ -21,14 +15,16 @@ job "prometheus" {
     }
 
     network {
-      port "http" {
-        to = 9090
-      }
+      port "http" {}
     }
 
     service {
       name = "prometheus"
       port = "http"
+
+      meta {
+        metrics_path = "/metrics"
+      }
 
       check {
         type = "http"
@@ -44,6 +40,7 @@ job "prometheus" {
       config {
         image = "mmoriarity/prometheus@__DIGEST__"
         args = [
+          "--web.listen-address=0.0.0.0:${NOMAD_PORT_http}",
           "--config.file=/etc/prometheus/prometheus.yml",
           "--storage.tsdb.path=/prometheus",
           "--web.console.libraries=/usr/share/prometheus/console_libraries",
@@ -51,7 +48,7 @@ job "prometheus" {
           "--web.external-url=https://prometheus.homelab/",
           "--web.enable-admin-api",
         ]
-        ports = ["http"]
+        network_mode = "host"
       }
 
       resources {
