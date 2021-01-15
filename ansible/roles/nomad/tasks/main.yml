@@ -26,16 +26,11 @@
     path: /usr/local/bin/nomad
   register: nomad_installed
 
-- name: Download Nomad
-  get_url:
-    url: https://releases.hashicorp.com/nomad/1.0.1/nomad_1.0.1_linux_arm64.zip
-    dest: /tmp/nomad.zip
-  when: nomad_installed.stat.exists == false
-
-- name: Unzip Nomad into install location
-  command:
-    cmd: unzip /tmp/nomad.zip
-    chdir: /usr/local/bin
+- name: Install Nomad
+  unarchive:
+    src: https://releases.hashicorp.com/nomad/1.0.2/nomad_1.0.2_linux_arm64.zip
+    dest: /usr/local/bin
+    remote_src: true
   become: true
   when: nomad_installed.stat.exists == false
 
