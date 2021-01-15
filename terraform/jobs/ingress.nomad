@@ -62,6 +62,13 @@ upstream go-links {
   server 127.0.0.1:4240;
 }
 
+upstream prometheus {
+{{ range service "prometheus" }}
+  server {{ .Address }}:{{ .Port }};
+{{ else }}server 127.0.0.1:65535; # force a 502
+{{ end }}
+}
+
 server {
     listen 80 default_server;
     server_name _;
@@ -80,8 +87,19 @@ server {
     proxy_pass http://go-links;
   }
 }
-EOF
 
+server {
+  listen 443 ssl;
+  server_name prometheus.homelab;
+
+  ssl_certificate /etc/nginx/ssl/prometheus.homelab.pem;
+  ssl_certificate_key /etc/nginx/ssl/prometheus.homelab.pem;
+
+  location / {
+    proxy_pass http://prometheus;
+  }
+}
+EOF
         destination = "local/load-balancer.conf"
         change_mode = "signal"
         change_signal = "SIGHUP"
@@ -95,6 +113,18 @@ EOF
 {{ end }}
 EOF
         destination = "secrets/go.homelab.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        data = <<EOF
+{{ with secret "pki-homelab/issue/homelab" "common_name=prometheus.homelab" -}}
+{{ .Data.certificate }}
+{{ .Data.private_key }}
+{{ end }}
+EOF
+        destination = "secrets/prometheus.homelab.pem"
         change_mode = "signal"
         change_signal = "SIGHUP"
       }

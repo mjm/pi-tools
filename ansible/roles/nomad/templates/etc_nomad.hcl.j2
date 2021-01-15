@@ -13,6 +13,13 @@ client {
     read_only = false
   }
 
+{% if inventory_hostname == "10.0.0.2" %}
+  host_volume "prometheus_data" {
+    path = "/srv/nfs/kubernetes/monitoring/prometheus-data"
+    read_only = false
+  }
+{% endif %}
+
   meta {
     "connect.sidecar_image" = "envoyproxy/envoy:v1.16.2"
   }

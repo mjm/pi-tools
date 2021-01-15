@@ -2,6 +2,10 @@ resource "nomad_job" "named" {
   jobspec = file("${path.module}/jobs/named.nomad")
 }
 
+resource "nomad_job" "prometheus" {
+  jobspec = replace(file("${path.module}/jobs/prometheus.nomad"), "__DIGEST__", data.docker_registry_image.prometheus.sha256_digest)
+}
+
 resource "nomad_job" "postgresql" {
   jobspec = file("${path.module}/jobs/postgresql.nomad")
 }
