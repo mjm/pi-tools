@@ -76,6 +76,13 @@ upstream prometheus {
 {{ end }}
 }
 
+upstream jaeger-query {
+{{ range service "jaeger-query" }}
+  server {{ .Address }}:{{ .Port }};
+{{ else }}server 127.0.0.1:65535; # force a 502
+{{ end }}
+}
+
 server {
     listen 80 default_server;
     server_name _;
@@ -106,6 +113,18 @@ server {
     proxy_pass http://prometheus;
   }
 }
+
+server {
+  listen 443 ssl;
+  server_name jaeger.homelab;
+
+  ssl_certificate /etc/nginx/ssl/jaeger.homelab.pem;
+  ssl_certificate_key /etc/nginx/ssl/jaeger.homelab.pem;
+
+  location / {
+    proxy_pass http://jaeger-query;
+  }
+}
 EOF
         destination = "local/load-balancer.conf"
         change_mode = "signal"
@@ -132,6 +151,18 @@ EOF
 {{ end }}
 EOF
         destination = "secrets/prometheus.homelab.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        data = <<EOF
+{{ with secret "pki-homelab/issue/homelab" "common_name=jaeger.homelab" -}}
+{{ .Data.certificate }}
+{{ .Data.private_key }}
+{{ end }}
+EOF
+        destination = "secrets/jaeger.homelab.pem"
         change_mode = "signal"
         change_signal = "SIGHUP"
       }

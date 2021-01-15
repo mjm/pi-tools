@@ -10,6 +10,10 @@ resource "nomad_job" "node_exporter" {
   jobspec = file("${path.module}/jobs/node-exporter.nomad")
 }
 
+resource "nomad_job" "jaeger" {
+  jobspec = file("${path.module}/jobs/jaeger.nomad")
+}
+
 resource "nomad_job" "postgresql" {
   jobspec = file("${path.module}/jobs/postgresql.nomad")
 }

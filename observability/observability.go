@@ -25,7 +25,7 @@ func Start(svcname string) (func(), error) {
 	if debug.IsEnabled() {
 		endpoint = jaeger.WithAgentEndpoint("localhost:6831")
 	} else {
-		endpoint = jaeger.WithCollectorEndpoint("http://jaeger-collector.monitoring:14268/api/traces")
+		endpoint = jaeger.WithCollectorEndpoint("http://localhost:14268/api/traces")
 	}
 	stopTracing, err = jaeger.InstallNewPipeline(
 		endpoint,
