@@ -24,6 +24,13 @@ job "postgresql" {
 
     network {
       mode = "bridge"
+
+      // most connections from services will go through the connect sidecar, but I'm not sure how to do that for the
+      // Vault database engine, so we'll also listen on port 5432 on the host itself
+      port "db" {
+        static = 5432
+        to = 5432
+      }
     }
 
     service {

@@ -70,17 +70,29 @@ job "go-links" {
         command = "/go-links"
         args = [
           "-db",
-          "dbname=golinks user=golinks host=localhost sslmode=disable",
+          "dbname=golinks host=localhost sslmode=disable",
         ]
       }
 
-//      env {
-//        FOO = "bar"
-//      }
-//
       resources {
         cpu = 50
         memory = 50
+      }
+
+      vault {
+        policies = ["go-links"]
+      }
+
+      template {
+        data = <<EOF
+{{ with secret "database/creds/go-links" }}
+PGUSER="{{ .Data.username }}"
+PGPASSWORD={{ .Data.password | toJSON }}
+{{ end }}
+EOF
+        destination = "secrets/db.env"
+        env = true
+        change_mode = "restart"
       }
     }
   }
