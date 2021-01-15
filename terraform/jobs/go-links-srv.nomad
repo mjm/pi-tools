@@ -74,6 +74,13 @@ job "go-links" {
           "-db",
           "dbname=golinks host=localhost sslmode=disable",
         ]
+
+        logging {
+          type = "journald"
+          config {
+            tag = "go-links-srv"
+          }
+        }
       }
 
       resources {

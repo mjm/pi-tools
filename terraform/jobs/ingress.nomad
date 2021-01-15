@@ -48,6 +48,13 @@ job "ingress" {
           "local:/etc/nginx/conf.d",
           "secrets:/etc/nginx/ssl",
         ]
+
+        logging {
+          type = "journald"
+          config {
+            tag = "ingress"
+          }
+        }
       }
 
       vault {

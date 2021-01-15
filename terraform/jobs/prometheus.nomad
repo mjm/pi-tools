@@ -49,6 +49,13 @@ job "prometheus" {
           "--web.enable-admin-api",
         ]
         network_mode = "host"
+
+        logging {
+          type = "journald"
+          config {
+            tag = "prometheus"
+          }
+        }
       }
 
       resources {
