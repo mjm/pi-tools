@@ -83,6 +83,13 @@ upstream jaeger-query {
 {{ end }}
 }
 
+upstream oauth-proxy {
+{{ range service "oauth-proxy" }}
+  server {{ .Address }}:{{ .Port }};
+{{ else }}server 127.0.0.1:65535; # force a 502
+{{ end }}
+}
+
 server {
     listen 80 default_server;
     server_name _;
@@ -109,7 +116,11 @@ server {
   ssl_certificate /etc/nginx/ssl/prometheus.homelab.pem;
   ssl_certificate_key /etc/nginx/ssl/prometheus.homelab.pem;
 
+  __OAUTH_LOCATIONS_SNIPPET__
+
   location / {
+    __OAUTH_REQUEST_SNIPPET__
+
     proxy_pass http://prometheus;
   }
 }
