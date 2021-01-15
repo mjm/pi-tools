@@ -29,6 +29,10 @@ job "ingress" {
               destination_name = "go-links"
               local_bind_port = 4240
             }
+            upstreams {
+              destination_name = "homebase-api"
+              local_bind_port = 6460
+            }
           }
         }
       }
@@ -75,6 +79,10 @@ upstream homebase {
   server {{ .Address }}:{{ .Port }};
 {{ else }}server 127.0.0.1:65535; # force a 502
 {{ end }}
+}
+
+upstream homebase-api {
+  server 127.0.0.1:6460;
 }
 
 upstream prometheus {
@@ -129,6 +137,12 @@ server {
   ssl_certificate_key /etc/nginx/ssl/homebase.homelab.pem;
 
   __OAUTH_LOCATIONS_SNIPPET__
+
+  location /graphql {
+    __OAUTH_REQUEST_SNIPPET__
+
+    proxy_pass http://homebase-api;
+  }
 
   location / {
     __OAUTH_REQUEST_SNIPPET__

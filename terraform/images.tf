@@ -10,6 +10,10 @@ data "docker_registry_image" "homebase_srv" {
   name = "mmoriarity/homebase-srv:latest"
 }
 
+data "docker_registry_image" "homebase_api_srv" {
+  name = "mmoriarity/homebase-api-srv:latest"
+}
+
 data "docker_registry_image" "prometheus" {
   name = "mmoriarity/prometheus:latest"
 }
