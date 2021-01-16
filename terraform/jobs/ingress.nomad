@@ -33,6 +33,10 @@ job "ingress" {
               destination_name = "homebase-api"
               local_bind_port = 6460
             }
+            upstreams {
+              destination_name = "grafana"
+              local_bind_port = 3000
+            }
           }
         }
       }
@@ -83,6 +87,10 @@ upstream homebase {
 
 upstream homebase-api {
   server 127.0.0.1:6460;
+}
+
+upstream grafana {
+  server 127.0.0.1:3000;
 }
 
 upstream prometheus {
@@ -176,6 +184,22 @@ server {
 
 server {
   listen 443 ssl;
+  server_name grafana.homelab;
+
+  ssl_certificate /etc/nginx/ssl/grafana.homelab.pem;
+  ssl_certificate_key /etc/nginx/ssl/grafana.homelab.pem;
+
+  __OAUTH_LOCATIONS_SNIPPET__
+
+  location / {
+    __OAUTH_REQUEST_SNIPPET__
+
+    proxy_pass http://grafana;
+  }
+}
+
+server {
+  listen 443 ssl;
   server_name jaeger.homelab;
 
   ssl_certificate /etc/nginx/ssl/jaeger.homelab.pem;
@@ -215,6 +239,18 @@ EOF
 {{ end }}
 EOF
         destination = "secrets/homebase.homelab.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        data = <<EOF
+{{ with secret "pki-homelab/issue/homelab" "common_name=grafana.homelab" -}}
+{{ .Data.certificate }}
+{{ .Data.private_key }}
+{{ end }}
+EOF
+        destination = "secrets/grafana.homelab.pem"
         change_mode = "signal"
         change_signal = "SIGHUP"
       }

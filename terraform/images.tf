@@ -6,6 +6,10 @@ data "docker_registry_image" "go_links_srv" {
   name = "mmoriarity/go-links-srv:latest"
 }
 
+data "docker_registry_image" "grafana" {
+  name = "mmoriarity/grafana:latest"
+}
+
 data "docker_registry_image" "homebase_srv" {
   name = "mmoriarity/homebase-srv:latest"
 }
