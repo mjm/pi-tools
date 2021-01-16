@@ -40,6 +40,10 @@ resource "nomad_job" "beacon_srv" {
   jobspec = replace(file("${path.module}/jobs/beacon-srv.nomad"), "__DIGEST__", data.docker_registry_image.beacon_srv.sha256_digest)
 }
 
+resource "nomad_job" "presence" {
+  jobspec = replace(file("${path.module}/jobs/presence.nomad"), "__DIGEST__", data.docker_registry_image.detect_presence_srv.sha256_digest)
+}
+
 resource "nomad_job" "go_links_srv" {
   jobspec = replace(file("${path.module}/jobs/go-links-srv.nomad"), "__DIGEST__", data.docker_registry_image.go_links_srv.sha256_digest)
 }

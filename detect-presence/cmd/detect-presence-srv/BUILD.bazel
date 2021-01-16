@@ -1,5 +1,5 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
-load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
 load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
 load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
 load("//tools:k8s.bzl", "k8s_http_service", "k8s_virtual_host")
@@ -43,6 +43,14 @@ container_image(
     ],
     mode = "0755",
     tags = ["no-cache"],
+)
+
+container_push(
+    name = "image-push",
+    format = "Docker",
+    image = ":image",
+    registry = "index.docker.io",
+    repository = "mmoriarity/detect-presence-srv",
 )
 
 k8s_object(

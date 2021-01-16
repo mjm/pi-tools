@@ -33,7 +33,8 @@ job "homebase" {
           "caddyfile",
         ]
         ports = [
-          "http"]
+          "http"
+        ]
 
         logging {
           type = "journald"
@@ -79,6 +80,10 @@ job "homebase" {
             upstreams {
               destination_name = "go-links-grpc"
               local_bind_port = 4241
+            }
+            upstreams {
+              destination_name = "detect-presence-grpc"
+              local_bind_port = 2121
             }
             upstreams {
               destination_name = "jaeger-collector"

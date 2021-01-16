@@ -26,6 +26,10 @@ job "ingress" {
         sidecar_service {
           proxy {
             upstreams {
+              destination_name = "detect-presence-grpc"
+              local_bind_port = 2121
+            }
+            upstreams {
               destination_name = "go-links"
               local_bind_port = 4240
             }
@@ -87,6 +91,10 @@ upstream homebase {
 
 upstream homebase-api {
   server 127.0.0.1:6460;
+}
+
+upstream detect-presence-grpc {
+  server 127.0.0.1:2121;
 }
 
 upstream grafana {
@@ -170,6 +178,18 @@ server {
     __OAUTH_REQUEST_SNIPPET__
 
     proxy_pass http://homebase;
+  }
+}
+
+server {
+  listen 443 ssl http2;
+  server_name detect-presence-grpc.homelab;
+
+  ssl_certificate /etc/nginx/ssl/detect-presence-grpc.homelab.pem;
+  ssl_certificate_key /etc/nginx/ssl/detect-presence-grpc.homelab.pem;
+
+  location / {
+    grpc_pass grpc://detect-presence-grpc;
   }
 }
 
@@ -262,6 +282,18 @@ EOF
 {{ end }}
 EOF
         destination = "secrets/homebase.homelab.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        data = <<EOF
+{{ with secret "pki-homelab/issue/homelab" "common_name=detect-presence-grpc.homelab" -}}
+{{ .Data.certificate }}
+{{ .Data.private_key }}
+{{ end }}
+EOF
+        destination = "secrets/detect-presence-grpc.homelab.pem"
         change_mode = "signal"
         change_signal = "SIGHUP"
       }
