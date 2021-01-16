@@ -97,33 +97,6 @@ container_pull(
 )
 
 container_pull(
-    name = "prometheus",
-    architecture = "arm64",
-    digest = "sha256:9fa25ec244e0109fdbeaff89496ac149c0539489f2f2126b9e38cf9837235be4",
-    os = "linux",
-    registry = "index.docker.io",
-    repository = "prom/prometheus",
-)
-
-container_pull(
-    name = "alertmanager",
-    architecture = "arm64",
-    digest = "sha256:e690a0f96fcf69c2e1161736d6bb076e22a84841e1ec8ecc87e801c70b942200",
-    os = "linux",
-    registry = "index.docker.io",
-    repository = "prom/alertmanager",
-)
-
-container_pull(
-    name = "blackbox_exporter",
-    architecture = "arm64",
-    digest = "sha256:7c3e8d34768f2db17dce800b0b602196871928977f205bbb8ab44e95a8821be5",  # v0.18.0
-    os = "linux",
-    registry = "index.docker.io",
-    repository = "prom/blackbox-exporter",
-)
-
-container_pull(
     name = "grafana",
     architecture = "arm64",
     digest = "sha256:f0817ecbf8dcf33e10cca2245bd25439433c441189bbe1ce935ac61d05f9cc6f",  # 7.2.1
@@ -133,39 +106,12 @@ container_pull(
 )
 
 container_pull(
-    name = "loki",
-    architecture = "arm64",
-    digest = "sha256:6afc0da6995fecf15307762d378242b65cab20d4a35b4a39397d67cad48fb7fb",  # 1.6.1
-    os = "linux",
-    registry = "index.docker.io",
-    repository = "grafana/loki",
-)
-
-container_pull(
-    name = "promtail",
-    architecture = "arm64",
-    digest = "sha256:d0965273b4e7c9dc2430f48e7b31f9eebf3a1d301a24c5d1cf49bdd2a9289dfb",  # 1.6.1
-    os = "linux",
-    registry = "index.docker.io",
-    repository = "grafana/promtail",
-)
-
-container_pull(
     name = "caddy",
     architecture = "arm64",
     digest = "sha256:085d496dad79fa71008de50e50f06591ab871b8f4711510a759b48a560bfe3aa",  # 2.2.1-alpine
     os = "linux",
     registry = "index.docker.io",
     repository = "caddy",
-)
-
-container_pull(
-    name = "haproxy",
-    architecture = "arm64",
-    digest = "sha256:cf7c03903a3d54724eef758ec9a7ac8d4fb978aae8f9d6a0fb30aa6203b967b5",  # 2.2
-    os = "linux",
-    registry = "index.docker.io",
-    repository = "haproxy",
 )
 
 container_pull(

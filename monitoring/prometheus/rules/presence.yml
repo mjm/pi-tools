@@ -1,8 +1,0 @@
-groups:
-  - name: presence
-    rules:
-      - record: presence:trip_duration_seconds:last
-        expr: (presence_last_return_timestamp - presence_last_leave_timestamp) > 0
-
-      - record: presence:trip_duration_seconds:current
-        expr: (presence_last_return_timestamp < bool presence_last_leave_timestamp) * (time() - presence_last_leave_timestamp) > 0

@@ -9,7 +9,7 @@ resource "nomad_job" "named" {
 }
 
 resource "nomad_job" "prometheus" {
-  jobspec = replace(file("${path.module}/jobs/prometheus.nomad"), "__DIGEST__", data.docker_registry_image.prometheus.sha256_digest)
+  jobspec = file("${path.module}/jobs/prometheus.nomad")
 }
 
 resource "nomad_job" "loki" {
@@ -22,6 +22,10 @@ resource "nomad_job" "promtail" {
 
 resource "nomad_job" "node_exporter" {
   jobspec = file("${path.module}/jobs/node-exporter.nomad")
+}
+
+resource "nomad_job" "blackbox_exporter" {
+  jobspec = file("${path.module}/jobs/blackbox-exporter.nomad")
 }
 
 resource "nomad_job" "jaeger" {
