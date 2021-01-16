@@ -49,8 +49,9 @@ resource "nomad_job" "go_links_srv" {
 }
 
 resource "nomad_job" "homebase" {
-  jobspec = replace(replace(file("${path.module}/jobs/homebase.nomad"), "__HOMEBASE_SRV_DIGEST__", data.docker_registry_image.homebase_srv.sha256_digest),
-  "__HOMEBASE_API_DIGEST__", data.docker_registry_image.homebase_api_srv.sha256_digest)
+  jobspec = replace(replace(replace(file("${path.module}/jobs/homebase.nomad"), "__HOMEBASE_SRV_DIGEST__", data.docker_registry_image.homebase_srv.sha256_digest),
+  "__HOMEBASE_API_DIGEST__", data.docker_registry_image.homebase_api_srv.sha256_digest),
+  "__HOMEBASE_BOT_DIGEST__", data.docker_registry_image.homebase_bot_srv.sha256_digest)
 }
 
 resource "nomad_job" "oauth_proxy" {

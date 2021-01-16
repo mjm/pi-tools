@@ -9,15 +9,11 @@ import (
 	"time"
 
 	"github.com/etherlabsio/healthcheck"
+	"github.com/hashicorp/consul/api"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/metric"
 	"google.golang.org/grpc"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/leaderelection"
-	"k8s.io/client-go/tools/leaderelection/resourcelock"
 
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
 	"github.com/mjm/pi-tools/homebase/bot/database/migrate"
@@ -31,13 +27,14 @@ import (
 )
 
 var (
-	tripsURL   = flag.String("trips-url", "localhost:2121", "URL for trips service to lookup and update trip information")
-	chatID     = flag.Int("chat-id", 223272201, "Chat ID to send messages to")
-	namespace  = flag.String("namespace", "", "Kubernetes namespace to use for leader election")
-	instanceID = flag.String("instance-id", "", "Name of this instance of the service to use for leader election")
+	tripsURL    = flag.String("trips-url", "localhost:2121", "URL for trips service to lookup and update trip information")
+	chatID      = flag.Int("chat-id", 223272201, "Chat ID to send messages to")
+	leaderElect = flag.Bool("leader-elect", false, "Enable leader election using Consul")
 )
 
 const instrumentationName = "github.com/mjm/pi-tools/homebase/cmd/homebase-bot-srv"
+
+const leaderKeyName = "service/homebase-bot/leader"
 
 func main() {
 	storage.SetDefaultDBName("homebase_bot_dev")
@@ -75,7 +72,10 @@ func main() {
 		result.Observe(isLeader)
 	}, metric.WithDescription("Indicates if the instance is the leader and is responsible for watching for incoming messages"))
 
-	if *instanceID == "" {
+	stopLeader := func() {}
+	if !*leaderElect {
+		log.Printf("No leader election desired.")
+
 		isLeader = 1
 		if err := messagesService.RegisterCommands(ctx); err != nil {
 			log.Panicf("Error registering bot commands: %v", err)
@@ -83,50 +83,108 @@ func main() {
 
 		go messagesService.WatchUpdates(ctx)
 	} else {
-		cfg, err := rest.InClusterConfig()
+		client, err := api.NewClient(api.DefaultConfig())
 		if err != nil {
-			log.Panicf("Error creating in-cluster Kubernetes config: %v", err)
-		}
-		clientset := kubernetes.NewForConfigOrDie(cfg)
-		lock := &resourcelock.LeaseLock{
-			LeaseMeta: metav1.ObjectMeta{
-				Namespace: *namespace,
-				Name:      "homebase-bot-srv-leader",
-			},
-			Client: clientset.CoordinationV1(),
-			LockConfig: resourcelock.ResourceLockConfig{
-				Identity: *instanceID,
-			},
+			log.Panicf("Error creating Consul client: %v", err)
 		}
 
-		go leaderelection.RunOrDie(ctx, leaderelection.LeaderElectionConfig{
-			Lock:            lock,
-			ReleaseOnCancel: true,
-			LeaseDuration:   15 * time.Second,
-			RenewDeadline:   10 * time.Second,
-			RetryPeriod:     2 * time.Second,
-			Callbacks: leaderelection.LeaderCallbacks{
-				OnStartedLeading: func(ctx context.Context) {
-					isLeader = 1
+		log.Printf("Creating Consul session for key %s", leaderKeyName)
+		sessionID, _, err := client.Session().Create(&api.SessionEntry{
+			Name: leaderKeyName,
+			TTL:  "15s",
+		}, nil)
+		if err != nil {
+			log.Panicf("Error creating Consul session: %v", err)
+		}
+		go client.Session().RenewPeriodic("15s", sessionID, nil, ctx.Done())
 
-					log.Printf("Started leading")
-					if err := messagesService.RegisterCommands(ctx); err != nil {
-						log.Printf("Error registering bot commands: %v", err)
-					}
+		go func() {
+			gotLeader, _, err := client.KV().Acquire(&api.KVPair{
+				Key:     leaderKeyName,
+				Value:   []byte(sessionID),
+				Session: sessionID,
+			}, nil)
+			if err != nil {
+				log.Panicf("Error trying to acquire leadership: %v", err)
+			}
 
-					messagesService.WatchUpdates(ctx)
-				},
-				OnStoppedLeading: func() {
-					log.Fatalf("Stopped leading")
-				},
-				OnNewLeader: func(identity string) {
-					if identity == *instanceID {
-						return
+			var waitIndex uint64
+			for !gotLeader {
+				// Watch for the key to change to not have a session anymore, and try to grab leader
+				kvPair, meta, err := client.KV().Get(leaderKeyName, &api.QueryOptions{
+					WaitIndex: waitIndex,
+				})
+				if err != nil {
+					log.Printf("Error checking on leader key %q: %v", leaderKeyName, err)
+					time.Sleep(10 * time.Second)
+					continue
+				}
+
+				if meta.LastIndex < waitIndex {
+					waitIndex = 0
+				} else {
+					waitIndex = meta.LastIndex
+				}
+
+				if kvPair == nil || kvPair.Session == "" {
+					// There's no longer a session, so try to acquire leadership
+					gotLeader, _, err = client.KV().Acquire(&api.KVPair{
+						Key:     leaderKeyName,
+						Value:   []byte(sessionID),
+						Session: sessionID,
+					}, nil)
+					if err != nil {
+						log.Printf("Error trying to acquire leadership: %v", err)
+						time.Sleep(10 * time.Second)
+						continue
 					}
-					log.Printf("New leader: %s", identity)
-				},
-			},
-		})
+				}
+			}
+
+			// Once we get here, we are the leader
+			isLeader = 1
+
+			go func() {
+				log.Printf("Started leading")
+				if err := messagesService.RegisterCommands(ctx); err != nil {
+					log.Printf("Error registering bot commands: %v", err)
+				}
+
+				messagesService.WatchUpdates(ctx)
+			}()
+
+			stopLeader = func() {
+				log.Printf("Releasing leadership voluntarily")
+				_, _, err = client.KV().Release(&api.KVPair{
+					Key:     leaderKeyName,
+					Value:   []byte{},
+					Session: sessionID,
+				}, nil)
+				if err != nil {
+					log.Printf("Failed to release lock: %v", err)
+				}
+			}
+
+			for {
+				// Watch to see if our leadership gets revoked
+				kvPair, meta, err := client.KV().Get(leaderKeyName, &api.QueryOptions{
+					WaitIndex: waitIndex,
+				})
+				if err != nil {
+					log.Panicf("Error checking on leader key %q: %v", leaderKeyName, err)
+				}
+
+				if meta.LastIndex < waitIndex {
+					waitIndex = 0
+				} else {
+					waitIndex = meta.LastIndex
+				}
+
+				if kvPair.Session != sessionID {
+					log.Fatalf("Lost leadership")
+				}
+			}
+		}()
 	}
 
 	http.Handle("/healthz",
@@ -139,4 +197,5 @@ func main() {
 	}))
 
 	signal.Wait()
+	stopLeader()
 }

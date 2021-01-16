@@ -39,6 +39,10 @@ job "presence" {
               local_bind_port = 5432
             }
             upstreams {
+              destination_name = "homebase-bot-grpc"
+              local_bind_port = 6361
+            }
+            upstreams {
               destination_name = "jaeger-collector"
               local_bind_port = 14268
             }
@@ -74,7 +78,6 @@ job "presence" {
         args = [
           "-db",
           "dbname=presence host=localhost sslmode=disable",
-          // TODO homebase-bot
           "-mode",
           "client",
         ]
