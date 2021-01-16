@@ -50,6 +50,10 @@ job "presence" {
     service {
       name = "detect-presence-metrics"
       port = "http"
+
+      meta {
+        metrics_path = "/metrics"
+      }
     }
 
     service {
