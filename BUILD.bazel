@@ -1,34 +1,5 @@
 load("@bazel_gazelle//:def.bzl", "gazelle")
-load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
 
 # gazelle:prefix github.com/mjm/pi-tools
 # gazelle:exclude **/*.xcodeproj
 gazelle(name = "gazelle")
-
-k8s_objects(
-    name = "k8s",
-    objects = [
-        "//auth/oauth-proxy:k8s",
-        "//backup:k8s",
-        "//deploy/cmd/deploy-srv:k8s",
-        "//detect-presence:k8s",
-        "//go-links/cmd/go-links:k8s",
-        "//homebase:k8s",
-        "//linkerd:k8s",
-        "//monitoring:k8s",
-        "//pi-hole:k8s",
-        "//security/cert-manager:k8s",
-        "//storage/gluster:k8s",
-        "//storage/postgresql:k8s",
-    ],
-    tags = ["manual"],
-)
-
-k8s_objects(
-    name = "k8s_crds",
-    objects = [
-        "//monitoring/jaeger:k8s_operator_crd",
-        "//security/cert-manager:k8s_crds",
-    ],
-    tags = ["manual"],
-)

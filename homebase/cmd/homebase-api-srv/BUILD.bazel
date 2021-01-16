@@ -1,8 +1,5 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
-load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
-load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
-load("//tools:k8s.bzl", "k8s_http_service")
 
 go_library(
     name = "homebase-api-srv_lib",
@@ -45,29 +42,4 @@ container_push(
     image = ":image",
     registry = "index.docker.io",
     repository = "mmoriarity/homebase-api-srv",
-)
-
-k8s_object(
-    name = "k8s_deploy",
-    images = {
-        "index.docker.io/mmoriarity/homebase-api-srv:latest": ":image",
-    },
-    template = "deployment.yaml",
-)
-
-k8s_http_service(
-    name = "k8s_http_service",
-    app = "homebase-api",
-    namespace = "homebase",
-    service_name = "homebase-api-srv",
-)
-
-k8s_objects(
-    name = "k8s",
-    objects = [
-        ":k8s_deploy",
-        ":k8s_http_service",
-    ],
-    tags = ["manual"],
-    visibility = ["//visibility:public"],
 )

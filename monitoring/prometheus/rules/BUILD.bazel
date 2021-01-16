@@ -5,7 +5,6 @@ pkg_tar(
     srcs = [
         "dns_alerts.yml",
         "homebase_alerts.yml",
-        #        "k8s_alerts.yml",
         "node_alerts.yml",
         "presence.yml",
         "presence_alerts.yml",

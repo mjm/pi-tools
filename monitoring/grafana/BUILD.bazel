@@ -1,7 +1,4 @@
 load("@io_bazel_rules_docker//container:container.bzl", "container_image")
-load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
-load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
-load("//tools:k8s.bzl", "k8s_http_service", "k8s_virtual_host")
 
 container_image(
     name = "image",
@@ -10,49 +7,4 @@ container_image(
     tars = [
         "//monitoring/grafana/provisioning:pkg",
     ],
-)
-
-k8s_object(
-    name = "k8s_deploy",
-    images = {
-        "index.docker.io/mmoriarity/grafana:latest": ":image",
-    },
-    kind = "deployment",
-    template = "deployment.yaml",
-)
-
-k8s_object(
-    name = "k8s_dashboards",
-    template = "//monitoring/grafana/provisioning:dashboards_configmap",
-)
-
-k8s_object(
-    name = "k8s_storage",
-    kind = "persistentvolumeclaim",
-    template = "storage.yaml",
-)
-
-k8s_http_service(
-    name = "k8s_service",
-    namespace = "monitoring",
-    service_name = "grafana",
-)
-
-k8s_virtual_host(
-    name = "k8s_ingress",
-    namespace = "monitoring",
-    service_name = "grafana",
-)
-
-k8s_objects(
-    name = "k8s",
-    objects = [
-        ":k8s_deploy",
-        ":k8s_storage",
-        ":k8s_dashboards",
-        ":k8s_service",
-        ":k8s_ingress",
-    ],
-    tags = ["manual"],
-    visibility = ["//visibility:public"],
 )

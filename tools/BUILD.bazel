@@ -1,5 +1,4 @@
 exports_files([
-    "k8s_service.yaml.tpl",
-    "k8s_virtual_host.yaml.tpl",
-    "rules_nodejs.patch",
+    "unifi.patch",
+    "unifi_exporter.patch",
 ])

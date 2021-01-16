@@ -60,7 +60,7 @@ job "named" {
             100.64.0.0/10; // range of tailscale IPs
           };
           acl local {
-            10.0.0.0/8;    // everything inside the k8s cluster, and in the local network;
+            10.0.0.0/8;    // everything inside the cluster, and in the local network;
           };
 
           options {
