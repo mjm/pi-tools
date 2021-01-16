@@ -13,6 +13,11 @@ client {
     read_only = false
   }
 
+  host_volume "promtail_run" {
+    path = "/run/promtail"
+    read_only = false
+  }
+
 {% if inventory_hostname == "10.0.0.2" %}
   host_volume "prometheus_data" {
     path = "/srv/nfs/kubernetes/monitoring/prometheus-data"

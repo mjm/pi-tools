@@ -12,6 +12,14 @@ resource "nomad_job" "prometheus" {
   jobspec = replace(file("${path.module}/jobs/prometheus.nomad"), "__DIGEST__", data.docker_registry_image.prometheus.sha256_digest)
 }
 
+resource "nomad_job" "loki" {
+  jobspec = file("${path.module}/jobs/loki.nomad")
+}
+
+resource "nomad_job" "promtail" {
+  jobspec = file("${path.module}/jobs/promtail.nomad")
+}
+
 resource "nomad_job" "node_exporter" {
   jobspec = file("${path.module}/jobs/node-exporter.nomad")
 }

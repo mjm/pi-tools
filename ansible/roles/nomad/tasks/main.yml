@@ -43,6 +43,15 @@
     group: root
   become: true
 
+- name: Ensure Promtail run directory exists
+  file:
+    path: /run/promtail
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+  become: true
+
 - name: Install Nomad config file
   template:
     src: etc_nomad.hcl.j2

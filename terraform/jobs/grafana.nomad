@@ -34,6 +34,10 @@ job "grafana" {
               destination_name = "postgresql"
               local_bind_port = 5432
             }
+            upstreams {
+              destination_name = "loki"
+              local_bind_port = 3100
+            }
           }
         }
       }
@@ -119,14 +123,14 @@ datasources:
     isDefault: true
     version: 1
     editable: false
-#  - name: Loki
-#    type: loki
-#    access: proxy
-#    url: http://loki
-#    version: 1
-#    editable: false
-#    jsonData:
-#      maxLines: 1000
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://127.0.0.1:3100
+    version: 1
+    editable: false
+    jsonData:
+      maxLines: 1000
   - name: Jaeger
     type: jaeger
     access: proxy
@@ -146,7 +150,7 @@ providers:
     type: file
     updateIntervalSeconds: 600
     options:
-      path: ${NOMAD_TASK_DIR}/dashboards
+      path: {{ env "NOMAD_TASK_DIR" }}/dashboards
       foldersFromFilesStructure: true
 EOF
         destination = "local/provisioning/dashboards/dashboards.yaml"
