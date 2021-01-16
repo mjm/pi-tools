@@ -57,7 +57,7 @@ job "grafana" {
       driver = "docker"
 
       config {
-        image = "mmoriarity/grafana@__DIGEST__"
+        image = "grafana/grafana@sha256:f0817ecbf8dcf33e10cca2245bd25439433c441189bbe1ce935ac61d05f9cc6f"
 
         logging {
           type = "journald"

@@ -37,7 +37,7 @@ resource "nomad_job" "postgresql" {
 }
 
 resource "nomad_job" "grafana" {
-  jobspec = replace(file("${path.module}/jobs/grafana.nomad"), "__DIGEST__", data.docker_registry_image.grafana.sha256_digest)
+  jobspec = file("${path.module}/jobs/grafana.nomad")
 }
 
 resource "nomad_job" "beacon_srv" {
