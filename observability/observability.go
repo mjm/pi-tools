@@ -32,7 +32,16 @@ func Start(svcname string) (func(), error) {
 		jaeger.WithProcess(jaeger.Process{
 			ServiceName: svcname,
 			Tags: []label.KeyValue{
-				semconv.K8SPodNameKey.String(os.Getenv("POD_NAME")),
+				semconv.ServiceNamespaceKey.String(os.Getenv("NOMAD_NAMESPACE")),
+				semconv.ServiceNameKey.String(fmt.Sprintf("%s/%s",
+					os.Getenv("NOMAD_JOB_NAME"),
+					os.Getenv("NOMAD_GROUP_NAME"))),
+				semconv.ServiceInstanceIDKey.String(os.Getenv("NOMAD_ALLOC_ID")),
+
+				semconv.ContainerNameKey.String(os.Getenv("NOMAD_TASK_NAME")),
+
+				semconv.HostNameKey.String(os.Getenv("HOSTNAME")),
+				semconv.HostIDKey.String(os.Getenv("NOMAD_CLIENT_ID")),
 			},
 		}))
 
