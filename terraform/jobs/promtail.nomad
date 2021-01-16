@@ -4,6 +4,7 @@ job "promtail" {
   ]
 
   type = "system"
+  priority = 80
 
   group "promtail" {
     network {

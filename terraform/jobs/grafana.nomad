@@ -4,6 +4,7 @@ job "grafana" {
   ]
 
   type = "service"
+  priority = 70
 
   group "grafana" {
     count = 3

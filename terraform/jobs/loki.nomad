@@ -4,6 +4,7 @@ job "loki" {
   ]
 
   type = "service"
+  priority = 80
 
   group "loki" {
     count = 1

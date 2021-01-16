@@ -4,6 +4,7 @@ job "prometheus" {
   ]
 
   type = "service"
+  priority = 80
 
   group "prometheus" {
     count = 1

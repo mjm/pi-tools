@@ -4,6 +4,7 @@ job "named" {
   ]
 
   type = "system"
+  priority = 90
 
   group "named" {
     network {

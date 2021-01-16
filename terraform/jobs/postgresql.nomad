@@ -4,6 +4,7 @@ job "postgresql" {
   ]
 
   type = "service"
+  priority = 60
 
   group "postgresql" {
     count = 1

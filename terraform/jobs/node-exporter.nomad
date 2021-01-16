@@ -4,6 +4,7 @@ job "node-exporter" {
   ]
 
   type = "system"
+  priority = 70
 
   group "node-exporter" {
     network {

@@ -4,6 +4,7 @@ job "oauth-proxy" {
   ]
 
   type = "service"
+  priority = 70
 
   group "oauth-proxy" {
     count = 3

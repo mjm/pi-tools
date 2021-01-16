@@ -4,6 +4,7 @@ job "ingress" {
   ]
 
   type = "system"
+  priority = 70
 
   group "ingress" {
     network {
