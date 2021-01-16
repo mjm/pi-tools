@@ -35,4 +35,4 @@ jobs:
       - name: Build and push container images
         run: |
           bazel query 'kind(container_push, //...)' \
-            | xargs bazel run --config=ci --platforms @io_bazel_rules_go//go/toolchain:linux_arm64
+            | xargs -n1 bazel run --config=ci --platforms @io_bazel_rules_go//go/toolchain:linux_arm64
