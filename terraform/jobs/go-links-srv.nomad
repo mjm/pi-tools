@@ -1,7 +1,5 @@
 job "go-links" {
-  datacenters = [
-    "dc1"
-  ]
+  datacenters = ["dc1"]
 
   type = "service"
 
@@ -20,11 +18,11 @@ job "go-links" {
       port = 4240
 
       check {
-        type = "http"
-        port = "http"
-        path = "/healthz"
-        timeout = "3s"
-        interval = "15s"
+        type                   = "http"
+        port                   = "http"
+        path                   = "/healthz"
+        timeout                = "3s"
+        interval               = "15s"
         success_before_passing = 3
       }
 
@@ -33,11 +31,11 @@ job "go-links" {
           proxy {
             upstreams {
               destination_name = "postgresql"
-              local_bind_port = 5432
+              local_bind_port  = 5432
             }
             upstreams {
               destination_name = "jaeger-collector"
-              local_bind_port = 14268
+              local_bind_port  = 14268
             }
           }
         }
@@ -57,12 +55,12 @@ job "go-links" {
       name = "go-links-grpc"
       port = 4241
 
-//      check {
-//        type = "grpc"
-//        timeout = "3s"
-//        interval = "15s"
-//        success_before_passing = 3
-//      }
+      //      check {
+      //        type = "grpc"
+      //        timeout = "3s"
+      //        interval = "15s"
+      //        success_before_passing = 3
+      //      }
       connect {
         sidecar_service {}
       }
@@ -72,9 +70,9 @@ job "go-links" {
       driver = "docker"
 
       config {
-        image = "mmoriarity/go-links-srv@__DIGEST__"
+        image   = "mmoriarity/go-links-srv@__DIGEST__"
         command = "/go-links"
-        args = [
+        args    = [
           "-db",
           "dbname=golinks host=localhost sslmode=disable",
         ]
@@ -88,8 +86,13 @@ job "go-links" {
       }
 
       resources {
-        cpu = 50
+        cpu    = 50
         memory = 50
+      }
+
+      env {
+        HOSTNAME        = "${attr.unique.hostname}"
+        NOMAD_CLIENT_ID = "${node.unique.id}"
       }
 
       vault {
@@ -97,14 +100,15 @@ job "go-links" {
       }
 
       template {
-        data = <<EOF
+        // language=GoTemplate
+        data        = <<EOF
 {{ with secret "database/creds/go-links" }}
 PGUSER="{{ .Data.username }}"
 PGPASSWORD={{ .Data.password | toJSON }}
 {{ end }}
 EOF
         destination = "secrets/db.env"
-        env = true
+        env         = true
         change_mode = "restart"
       }
     }

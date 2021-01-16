@@ -1,7 +1,5 @@
 job "homebase" {
-  datacenters = [
-    "dc1",
-  ]
+  datacenters = ["dc1"]
 
   type = "service"
 
@@ -23,16 +21,16 @@ job "homebase" {
       driver = "docker"
 
       config {
-        image = "mmoriarity/homebase-srv@__HOMEBASE_SRV_DIGEST__"
+        image   = "mmoriarity/homebase-srv@__HOMEBASE_SRV_DIGEST__"
         command = "caddy"
-        args = [
+        args    = [
           "run",
           "--config",
           "/homebase.caddy",
           "--adapter",
           "caddyfile",
         ]
-        ports = [
+        ports   = [
           "http"
         ]
 
@@ -45,7 +43,7 @@ job "homebase" {
       }
 
       resources {
-        cpu = 50
+        cpu    = 50
         memory = 75
       }
     }
@@ -66,11 +64,11 @@ job "homebase" {
       port = 6460
 
       check {
-        type = "http"
-        port = "http"
-        path = "/healthz"
-        timeout = "3s"
-        interval = "15s"
+        type                   = "http"
+        port                   = "http"
+        path                   = "/healthz"
+        timeout                = "3s"
+        interval               = "15s"
         success_before_passing = 3
       }
 
@@ -79,15 +77,15 @@ job "homebase" {
           proxy {
             upstreams {
               destination_name = "go-links-grpc"
-              local_bind_port = 4241
+              local_bind_port  = 4241
             }
             upstreams {
               destination_name = "detect-presence-grpc"
-              local_bind_port = 2121
+              local_bind_port  = 2121
             }
             upstreams {
               destination_name = "jaeger-collector"
-              local_bind_port = 14268
+              local_bind_port  = 14268
             }
           }
         }
@@ -98,13 +96,18 @@ job "homebase" {
       driver = "docker"
 
       config {
-        image = "mmoriarity/homebase-api-srv@__HOMEBASE_API_DIGEST__"
+        image   = "mmoriarity/homebase-api-srv@__HOMEBASE_API_DIGEST__"
         command = "/homebase-api-srv"
       }
 
       resources {
-        cpu = 50
+        cpu    = 50
         memory = 50
+      }
+
+      env {
+        HOSTNAME        = "${attr.unique.hostname}"
+        NOMAD_CLIENT_ID = "${node.unique.id}"
       }
     }
   }
@@ -127,11 +130,11 @@ job "homebase" {
       port = 6360
 
       check {
-        type = "http"
-        port = "http"
-        path = "/healthz"
-        timeout = "3s"
-        interval = "15s"
+        type                   = "http"
+        port                   = "http"
+        path                   = "/healthz"
+        timeout                = "3s"
+        interval               = "15s"
         success_before_passing = 3
       }
 
@@ -140,15 +143,15 @@ job "homebase" {
           proxy {
             upstreams {
               destination_name = "postgresql"
-              local_bind_port = 5432
+              local_bind_port  = 5432
             }
             upstreams {
               destination_name = "detect-presence-grpc"
-              local_bind_port = 2121
+              local_bind_port  = 2121
             }
             upstreams {
               destination_name = "jaeger-collector"
-              local_bind_port = 14268
+              local_bind_port  = 14268
             }
           }
         }
@@ -177,9 +180,9 @@ job "homebase" {
       driver = "docker"
 
       config {
-        image = "mmoriarity/homebase-bot-srv@__HOMEBASE_BOT_DIGEST__"
+        image   = "mmoriarity/homebase-bot-srv@__HOMEBASE_BOT_DIGEST__"
         command = "/homebase-bot-srv"
-        args = [
+        args    = [
           "-db",
           "dbname=homebase_bot host=localhost sslmode=disable",
           "-leader-elect",
@@ -194,12 +197,14 @@ job "homebase" {
       }
 
       resources {
-        cpu = 50
+        cpu    = 50
         memory = 50
       }
 
       env {
         CONSUL_HTTP_ADDR = "${attr.unique.network.ip-address}:8500"
+        HOSTNAME         = "${attr.unique.hostname}"
+        NOMAD_CLIENT_ID  = "${node.unique.id}"
       }
 
       vault {
@@ -207,7 +212,8 @@ job "homebase" {
       }
 
       template {
-        data = <<EOF
+        // language=GoTemplate
+        data        = <<EOF
 {{ with secret "database/creds/homebase-bot" }}
 PGUSER="{{ .Data.username }}"
 PGPASSWORD={{ .Data.password | toJSON }}
@@ -217,7 +223,7 @@ TELEGRAM_TOKEN={{ .Data.data.telegram_token | toJSON }}
 {{ end }}
 EOF
         destination = "secrets/db.env"
-        env = true
+        env         = true
         change_mode = "restart"
       }
     }

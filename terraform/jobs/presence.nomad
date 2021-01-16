@@ -1,7 +1,5 @@
 job "presence" {
-  datacenters = [
-    "dc1",
-  ]
+  datacenters = ["dc1"]
 
   type = "service"
 
@@ -23,11 +21,11 @@ job "presence" {
       port = 2120
 
       check {
-        type = "http"
-        port = "http"
-        path = "/healthz"
-        timeout = "3s"
-        interval = "15s"
+        type                   = "http"
+        port                   = "http"
+        path                   = "/healthz"
+        timeout                = "3s"
+        interval               = "15s"
         success_before_passing = 3
       }
 
@@ -36,15 +34,15 @@ job "presence" {
           proxy {
             upstreams {
               destination_name = "postgresql"
-              local_bind_port = 5432
+              local_bind_port  = 5432
             }
             upstreams {
               destination_name = "homebase-bot-grpc"
-              local_bind_port = 6361
+              local_bind_port  = 6361
             }
             upstreams {
               destination_name = "jaeger-collector"
-              local_bind_port = 14268
+              local_bind_port  = 14268
             }
           }
         }
@@ -73,9 +71,9 @@ job "presence" {
       driver = "docker"
 
       config {
-        image = "mmoriarity/detect-presence-srv@__DIGEST__"
+        image   = "mmoriarity/detect-presence-srv@__DIGEST__"
         command = "/detect-presence-srv"
-        args = [
+        args    = [
           "-db",
           "dbname=presence host=localhost sslmode=disable",
           "-mode",
@@ -91,8 +89,13 @@ job "presence" {
       }
 
       resources {
-        cpu = 50
+        cpu    = 50
         memory = 50
+      }
+
+      env {
+        HOSTNAME        = "${attr.unique.hostname}"
+        NOMAD_CLIENT_ID = "${node.unique.id}"
       }
 
       vault {
@@ -100,14 +103,15 @@ job "presence" {
       }
 
       template {
-        data = <<EOF
+        // language=GoTemplate
+        data        = <<EOF
 {{ with secret "database/creds/presence" }}
 PGUSER="{{ .Data.username }}"
 PGPASSWORD={{ .Data.password | toJSON }}
 {{ end }}
 EOF
         destination = "secrets/db.env"
-        env = true
+        env         = true
         change_mode = "restart"
       }
     }
