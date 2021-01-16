@@ -100,6 +100,13 @@ upstream prometheus {
 {{ end }}
 }
 
+upstream alertmanager {
+{{ range service "alertmanager" }}
+  server {{ .Address }}:{{ .Port }};
+{{ else }}server 127.0.0.1:65535; # force a 502
+{{ end }}
+}
+
 upstream jaeger-query {
 {{ range service "jaeger-query" }}
   server {{ .Address }}:{{ .Port }};
@@ -184,6 +191,22 @@ server {
 
 server {
   listen 443 ssl;
+  server_name alertmanager.homelab;
+
+  ssl_certificate /etc/nginx/ssl/alertmanager.homelab.pem;
+  ssl_certificate_key /etc/nginx/ssl/alertmanager.homelab.pem;
+
+  __OAUTH_LOCATIONS_SNIPPET__
+
+  location / {
+    __OAUTH_REQUEST_SNIPPET__
+
+    proxy_pass http://alertmanager;
+  }
+}
+
+server {
+  listen 443 ssl;
   server_name grafana.homelab;
 
   ssl_certificate /etc/nginx/ssl/grafana.homelab.pem;
@@ -263,6 +286,18 @@ EOF
 {{ end }}
 EOF
         destination = "secrets/prometheus.homelab.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        data = <<EOF
+{{ with secret "pki-homelab/issue/homelab" "common_name=alertmanager.homelab" -}}
+{{ .Data.certificate }}
+{{ .Data.private_key }}
+{{ end }}
+EOF
+        destination = "secrets/alertmanager.homelab.pem"
         change_mode = "signal"
         change_signal = "SIGHUP"
       }
