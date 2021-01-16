@@ -79,6 +79,9 @@ job "ingress" {
 
       template {
         data = <<EOF
+# https://github.com/envoyproxy/envoy/issues/2506#issuecomment-362558239
+proxy_http_version 1.1;
+
 upstream nomad {
 {{ range service "http.nomad" }}
   server {{ .Address }}:{{ .Port }};
@@ -212,6 +215,7 @@ server {
 
   ssl_certificate /etc/nginx/ssl/go.homelab.pem;
   ssl_certificate_key /etc/nginx/ssl/go.homelab.pem;
+  add_header Strict-Transport-Security "max-age=2628000" always;
 
   __OAUTH_LOCATIONS_SNIPPET__
 

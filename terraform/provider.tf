@@ -11,6 +11,10 @@ terraform {
       source = "hashicorp/nomad"
       version = "1.4.11"
     }
+    consul = {
+      source = "hashicorp/consul"
+      version = "2.11.0"
+    }
     docker = {
       source = "kreuzwerker/docker"
       version = "2.10.0"
@@ -20,6 +24,10 @@ terraform {
 
 provider "nomad" {
   address = var.nomad_address
+}
+
+provider "consul" {
+  address = var.consul_address
 }
 
 provider "docker" {
