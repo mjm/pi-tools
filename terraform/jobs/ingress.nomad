@@ -78,6 +78,27 @@ job "ingress" {
 
       template {
         data = <<EOF
+upstream nomad {
+{{ range service "http.nomad" }}
+  server {{ .Address }}:{{ .Port }};
+{{ else }}server 127.0.0.1:65535; # force a 502
+{{ end }}
+}
+
+upstream consul {
+{{ range service "consul" }}
+  server {{ .Address }}:8500;
+{{ else }}server 127.0.0.1:65535; # force a 502
+{{ end }}
+}
+
+upstream vault {
+{{ range service "vault" }}
+  server {{ .Address }}:{{ .Port }};
+{{ else }}server 127.0.0.1:65535; # force a 502
+{{ end }}
+}
+
 upstream go-links {
   server 127.0.0.1:4240;
 }
@@ -134,6 +155,54 @@ server {
     server_name _;
 
     return 301 https://$host$request_uri;
+}
+
+server {
+  listen 443 ssl;
+  server_name nomad.homelab;
+
+  ssl_certificate /etc/nginx/ssl/nomad.homelab.pem;
+  ssl_certificate_key /etc/nginx/ssl/nomad.homelab.pem;
+
+  __OAUTH_LOCATIONS_SNIPPET__
+
+  location / {
+    __OAUTH_REQUEST_SNIPPET__
+
+    proxy_pass http://nomad;
+  }
+}
+
+server {
+  listen 443 ssl;
+  server_name consul.homelab;
+
+  ssl_certificate /etc/nginx/ssl/consul.homelab.pem;
+  ssl_certificate_key /etc/nginx/ssl/consul.homelab.pem;
+
+  __OAUTH_LOCATIONS_SNIPPET__
+
+  location / {
+    __OAUTH_REQUEST_SNIPPET__
+
+    proxy_pass http://consul;
+  }
+}
+
+server {
+  listen 443 ssl;
+  server_name vault.homelab;
+
+  ssl_certificate /etc/nginx/ssl/vault.homelab.pem;
+  ssl_certificate_key /etc/nginx/ssl/vault.homelab.pem;
+
+  __OAUTH_LOCATIONS_SNIPPET__
+
+  location / {
+    __OAUTH_REQUEST_SNIPPET__
+
+    proxy_pass http://vault;
+  }
 }
 
 server {
@@ -258,6 +327,42 @@ server {
 }
 EOF
         destination = "local/load-balancer.conf"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        data = <<EOF
+{{ with secret "pki-homelab/issue/homelab" "common_name=nomad.homelab" -}}
+{{ .Data.certificate }}
+{{ .Data.private_key }}
+{{ end }}
+EOF
+        destination = "secrets/nomad.homelab.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        data = <<EOF
+{{ with secret "pki-homelab/issue/homelab" "common_name=consul.homelab" -}}
+{{ .Data.certificate }}
+{{ .Data.private_key }}
+{{ end }}
+EOF
+        destination = "secrets/consul.homelab.pem"
+        change_mode = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        data = <<EOF
+{{ with secret "pki-homelab/issue/homelab" "common_name=vault.homelab" -}}
+{{ .Data.certificate }}
+{{ .Data.private_key }}
+{{ end }}
+EOF
+        destination = "secrets/vault.homelab.pem"
         change_mode = "signal"
         change_signal = "SIGHUP"
       }
