@@ -83,6 +83,7 @@ job "ingress" {
 proxy_http_version 1.1;
 
 upstream nomad {
+  ip_hash;
 {{ range service "http.nomad" }}
   server {{ .Address }}:{{ .Port }};
 {{ else }}server 127.0.0.1:65535; # force a 502
@@ -181,6 +182,27 @@ server {
     __OAUTH_REQUEST_SNIPPET__
 
     proxy_pass http://nomad;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    # Nomad blocking queries will remain open for a default of 5 minutes.
+    # Increase the proxy timeout to accommodate this timeout with an
+    # additional grace period.
+    proxy_read_timeout 310s;
+
+    # Nomad log streaming uses streaming HTTP requests. In order to
+    # synchronously stream logs from Nomad to NGINX to the browser
+    # proxy buffering needs to be turned off.
+    proxy_buffering off;
+
+    # The Upgrade and Connection headers are used to establish
+    # a WebSockets connection.
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+
+    # The default Origin header will be the proxy address, which
+    # will be rejected by Nomad. It must be rewritten to be the
+    # host address instead.
+    proxy_set_header Origin "${scheme}://${proxy_host}";
   }
 }
 
