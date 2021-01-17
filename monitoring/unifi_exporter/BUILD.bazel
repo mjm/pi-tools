@@ -1,7 +1,4 @@
-load("@rules_pkg//:pkg.bzl", "pkg_tar")
-load("@io_bazel_rules_docker//container:container.bzl", "container_image")
-load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
-load("@io_bazel_rules_k8s//k8s:objects.bzl", "k8s_objects")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
 
 container_image(
     name = "image",
@@ -12,20 +9,10 @@ container_image(
     tags = ["no-cache"],
 )
 
-k8s_object(
-    name = "k8s_deploy",
-    images = {
-        "index.docker.io/mmoriarity/unifi_exporter:latest": ":image",
-    },
-    template = "deployment.yaml",
-    visibility = ["//visibility:public"],
-)
-
-k8s_objects(
-    name = "k8s",
-    objects = [
-        ":k8s_deploy",
-    ],
-    tags = ["manual"],
-    visibility = ["//visibility:public"],
+container_push(
+    name = "image-push",
+    format = "Docker",
+    image = ":image",
+    registry = "index.docker.io",
+    repository = "mmoriarity/unifi_exporter",
 )

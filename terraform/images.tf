@@ -25,3 +25,8 @@ data "docker_registry_image" "homebase_bot_srv" {
 data "docker_registry_image" "tripplite_exporter" {
   name = "mmoriarity/tripplite-exporter:latest"
 }
+
+data "docker_registry_image" "unifi_exporter" {
+  name = "mmoriarity/unifi_exporter:latest"
+}
+

@@ -32,6 +32,10 @@ resource "nomad_job" "tripplite_exporter" {
   jobspec = replace(file("${path.module}/jobs/tripplite-exporter.nomad"), "__DIGEST__", data.docker_registry_image.tripplite_exporter.sha256_digest)
 }
 
+resource "nomad_job" "unifi_exporter" {
+  jobspec = replace(file("${path.module}/jobs/unifi-exporter.nomad"), "__DIGEST__", data.docker_registry_image.unifi_exporter.sha256_digest)
+}
+
 resource "nomad_job" "jaeger" {
   jobspec = file("${path.module}/jobs/jaeger.nomad")
 }
