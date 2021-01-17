@@ -119,6 +119,10 @@ job "homebase" {
       config {
         image   = "mmoriarity/homebase-api-srv@__HOMEBASE_API_DIGEST__"
         command = "/homebase-api-srv"
+        args = [
+          "-prometheus-url",
+          "http://10.0.0.2:9090",
+        ]
       }
 
       resources {
