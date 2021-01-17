@@ -1,11 +1,11 @@
-server = true
+server   = true
 data_dir = "/var/lib/consul"
 
 bootstrap_expect = 3
-retry_join = ["10.0.0.2", "10.0.0.3", "10.0.0.4"]
+retry_join       = ["10.0.0.2", "10.0.0.3", "10.0.0.4"]
 
 advertise_addr = "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
-client_addr = "0.0.0.0"
+client_addr    = "0.0.0.0"
 
 node_meta {
   tailscale_ip = "{{ hostvars[inventory_hostname]['tailscale_ip'] }}"
@@ -20,5 +20,15 @@ connect {
 }
 
 ui_config {
-  enabled = true
+  enabled          = true
+  metrics_provider = "prometheus"
+  metrics_proxy {
+    base_url = "http://prometheus.service.consul:9090"
+  }
+}
+
+telemetry {
+  "disable_compat_1.9"      = true
+  disable_hostname          = true
+  prometheus_retention_time = "5m"
 }

@@ -14,7 +14,10 @@ job "prometheus" {
     }
 
     network {
-      port "http" {}
+      port "http" {
+        static = 9090
+        to     = 9090
+      }
     }
 
     service {
@@ -39,7 +42,7 @@ job "prometheus" {
       config {
         image        = "prom/prometheus@sha256:9fa25ec244e0109fdbeaff89496ac149c0539489f2f2126b9e38cf9837235be4"
         args         = [
-          "--web.listen-address=:${NOMAD_PORT_http}",
+          "--web.listen-address=:9090",
           "--config.file=${NOMAD_TASK_DIR}/prometheus.yml",
           "--storage.tsdb.path=/prometheus",
           "--web.console.libraries=/usr/share/prometheus/console_libraries",
@@ -68,6 +71,12 @@ job "prometheus" {
         read_only   = false
       }
 
+      vault {
+        policies      = ["prometheus"]
+        change_mode   = "signal"
+        change_signal = "SIGHUP"
+      }
+
       template {
         // language=YAML
         data          = <<EOF
@@ -78,13 +87,47 @@ global:
 alerting:
   alertmanagers:
     - consul_sd_configs:
-        - services:
-            - alertmanager
+        - services: [alertmanager]
 
 rule_files:
   - {{ env "NOMAD_TASK_DIR" }}/rules/*.yml
 
 scrape_configs:
+  - job_name: consul-agent
+    consul_sd_configs:
+      - services: [consul]
+    metrics_path: /v1/agent/metrics
+    params:
+      format: [prometheus]
+    relabel_configs:
+      - source_labels: [__meta_consul_address]
+        target_label: __address__
+        replacement: $1:8500
+      - source_labels: [__meta_consul_node]
+        target_label: node_name
+
+  - job_name: nomad-agent
+    consul_sd_configs:
+      - services: [nomad-client]
+    metrics_path: /v1/metrics
+    params:
+      format: [prometheus]
+    relabel_configs:
+      - source_labels: [__meta_consul_node]
+        target_label: node_name
+
+  - job_name: vault
+    consul_sd_configs:
+      - services: [vault]
+        tags: [active]  # metrics are only available from the active node
+    metrics_path: /v1/sys/metrics
+    params:
+      format: [prometheus]
+    bearer_token_file: {{ env "NOMAD_SECRETS_DIR" }}/vault_token
+    relabel_configs:
+      - source_labels: [__meta_consul_node]
+        target_label: node_name
+
   - job_name: consul-services
     consul_sd_configs:
       - {}
@@ -230,7 +273,7 @@ groups:
     rules:
       - alert: HomebaseBotServiceDown
         expr: sum(up{app="homebase-bot"}) < 1
-        for: 5m
+        for: 10m
         labels:
           severity: warning
         annotations:
@@ -241,7 +284,7 @@ groups:
 
       - alert: HomebaseBotNoLeader
         expr: sum(homebase_bot_is_leader) < 1
-        for: 5m
+        for: 10m
         labels:
           severity: warning
         annotations:

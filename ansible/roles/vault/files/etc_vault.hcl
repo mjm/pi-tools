@@ -1,7 +1,12 @@
 storage "consul" {}
+
 listener "tcp" {
-  address = "0.0.0.0:8200"
+  address     = "0.0.0.0:8200"
   tls_disable = true
 }
 
 ui = true
+
+telemetry {
+  disable_hostname = true
+}

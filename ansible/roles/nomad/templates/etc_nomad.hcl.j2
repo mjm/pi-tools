@@ -5,8 +5,36 @@ server {
   bootstrap_expect = 3
 }
 
+vault {
+  enabled = true
+  address = "http://127.0.0.1:8200"
+  create_from_role = "nomad-cluster"
+}
+
+telemetry {
+  prometheus_metrics = true
+  publish_allocation_metrics = true
+  publish_node_metrics = true
+}
+
+plugin "docker" {
+  config {
+    infra_image = "rancher/pause:3.2"
+    allow_privileged = true
+    allow_caps = ["CHOWN", "DAC_OVERRIDE", "FSETID", "FOWNER", "MKNOD", "NET_RAW", "NET_ADMIN", "SETGID", "SETUID", "SETFCAP", "SETPCAP", "NET_BIND_SERVICE", "SYS_CHROOT", "KILL", "AUDIT_WRITE"]
+
+    volumes {
+      enabled = true
+    }
+  }
+}
+
 client {
   enabled = true
+
+  meta {
+    "connect.sidecar_image" = "envoyproxy/envoy:v1.16.2"
+  }
 
   host_volume "postgresql_0" {
     path = "/srv/mnt/postgresql-0"
@@ -29,26 +57,4 @@ client {
     read_only = false
   }
 {% endif %}
-
-  meta {
-    "connect.sidecar_image" = "envoyproxy/envoy:v1.16.2"
-  }
-}
-
-vault {
-  enabled = true
-  address = "http://127.0.0.1:8200"
-  create_from_role = "nomad-cluster"
-}
-
-plugin "docker" {
-  config {
-    infra_image = "rancher/pause:3.2"
-    allow_privileged = true
-    allow_caps = ["CHOWN", "DAC_OVERRIDE", "FSETID", "FOWNER", "MKNOD", "NET_RAW", "NET_ADMIN", "SETGID", "SETUID", "SETFCAP", "SETPCAP", "NET_BIND_SERVICE", "SYS_CHROOT", "KILL", "AUDIT_WRITE"]
-
-    volumes {
-      enabled = true
-    }
-  }
 }

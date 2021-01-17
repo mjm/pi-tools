@@ -81,6 +81,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -123,17 +124,39 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "process_resident_memory_bytes{job=\"kubernetes-apiservers\"}",
+          "expr": "process_resident_memory_bytes{job=\"consul-agent\",node_name=~\".+\"}",
+          "hide": true,
+          "instant": false,
           "interval": "",
-          "legendFormat": "{{instance}}",
+          "legendFormat": "consul: {{node_name}}",
           "refId": "A"
+        },
+        {
+          "expr": "process_resident_memory_bytes{job=\"nomad-agent\",node_name=~\".+\"}",
+          "hide": true,
+          "interval": "",
+          "legendFormat": "nomad: {{node_name}}",
+          "refId": "B"
+        },
+        {
+          "expr": "process_resident_memory_bytes{job=\"vault\"}",
+          "hide": true,
+          "interval": "",
+          "legendFormat": "vault: {{node_name}}",
+          "refId": "C"
+        },
+        {
+          "expr": "sum by (node_name) (process_resident_memory_bytes{job=~\"(consul-agent|nomad-agent|vault)\",node_name=~\".+\"})",
+          "interval": "",
+          "legendFormat": "{{node_name}}",
+          "refId": "D"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Kube API server memory usage",
+      "title": "Cluster components memory usage",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -149,6 +172,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:62",
           "format": "decbytes",
           "label": null,
           "logBase": 1,
@@ -157,6 +181,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:63",
           "format": "short",
           "label": null,
           "logBase": 1,
