@@ -14,6 +14,9 @@ job "grafana" {
       port "http" {
         to = 3000
       }
+      port "envoy_metrics" {
+        to = 9102
+      }
     }
 
     service {
@@ -47,6 +50,15 @@ job "grafana" {
     service {
       name = "grafana-metrics"
       port = "http"
+
+      meta {
+        metrics_path = "/metrics"
+      }
+    }
+
+    service {
+      name = "grafana-metrics"
+      port = "envoy_metrics"
 
       meta {
         metrics_path = "/metrics"
@@ -169,6 +181,11 @@ EOF
 
       artifact {
         source = "https://raw.githubusercontent.com/mjm/pi-tools/nomad/monitoring/grafana/provisioning/dashboards/node.json"
+        destination = "local/dashboards"
+      }
+
+      artifact {
+        source = "https://raw.githubusercontent.com/mjm/pi-tools/nomad/monitoring/grafana/provisioning/dashboards/envoy.json"
         destination = "local/dashboards"
       }
     }

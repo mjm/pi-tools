@@ -11,6 +11,12 @@ job "go-links" {
       port "http" {
         to = 4240
       }
+      port "envoy_metrics_http" {
+        to = 9102
+      }
+      port "envoy_metrics_grpc" {
+        to = 9103
+      }
     }
 
     service {
@@ -52,6 +58,24 @@ job "go-links" {
     }
 
     service {
+      name = "go-links-metrics"
+      port = "envoy_metrics_http"
+
+      meta {
+        metrics_path = "/metrics"
+      }
+    }
+
+    service {
+      name = "go-links-metrics"
+      port = "envoy_metrics_grpc"
+
+      meta {
+        metrics_path = "/metrics"
+      }
+    }
+
+    service {
       name = "go-links-grpc"
       port = 4241
 
@@ -62,7 +86,13 @@ job "go-links" {
       //        success_before_passing = 3
       //      }
       connect {
-        sidecar_service {}
+        sidecar_service {
+          proxy {
+            config {
+              envoy_prometheus_bind_addr = "0.0.0.0:9103"
+            }
+          }
+        }
       }
     }
 

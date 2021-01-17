@@ -31,6 +31,10 @@ job "postgresql" {
         static = 5432
         to = 5432
       }
+
+      port "envoy_metrics" {
+        to = 9102
+      }
     }
 
     service {
@@ -39,6 +43,15 @@ job "postgresql" {
 
       connect {
         sidecar_service {}
+      }
+    }
+
+    service {
+      name = "postgresql-metrics"
+      port = "envoy_metrics"
+
+      meta {
+        metrics_path = "/metrics"
       }
     }
 

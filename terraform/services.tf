@@ -1,3 +1,14 @@
+resource "consul_config_entry" "global_proxy_defaults" {
+  kind = "proxy-defaults"
+  name = "global"
+
+  config_json = jsonencode({
+    Config = {
+      envoy_prometheus_bind_addr = "0.0.0.0:9102"
+    }
+  })
+}
+
 resource "consul_config_entry" "detect_presence_grpc_defaults" {
   kind = "service-defaults"
   name = "detect-presence-grpc"
@@ -337,18 +348,18 @@ resource "consul_config_entry" "jaeger_collector_intentions" {
   config_json = jsonencode({
     Sources = [
       {
-        Name = "*"
+        Name        = "*"
         Description = "Allow any service to send traces to the collector"
         Permissions = [
           {
             Action = "allow"
-            HTTP = {
+            HTTP   = {
               PathExact = "/api/traces"
             }
           },
           {
             Action = "deny"
-            HTTP = {
+            HTTP   = {
               PathPrefix = "/"
             }
           },

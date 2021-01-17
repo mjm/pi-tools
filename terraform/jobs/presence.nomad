@@ -14,6 +14,12 @@ job "presence" {
       port "grpc" {
         to = 2121
       }
+      port "envoy_metrics_http" {
+        to = 9102
+      }
+      port "envoy_metrics_grpc" {
+        to = 9103
+      }
     }
 
     service {
@@ -59,11 +65,35 @@ job "presence" {
     }
 
     service {
+      name = "detect-presence-metrics"
+      port = "envoy_metrics_http"
+
+      meta {
+        metrics_path = "/metrics"
+      }
+    }
+
+    service {
+      name = "detect-presence-metrics"
+      port = "envoy_metrics_grpc"
+
+      meta {
+        metrics_path = "/metrics"
+      }
+    }
+
+    service {
       name = "detect-presence-grpc"
       port = 2121
 
       connect {
-        sidecar_service {}
+        sidecar_service {
+          proxy {
+            config {
+              envoy_prometheus_bind_addr = "0.0.0.0:9103"
+            }
+          }
+        }
       }
     }
 

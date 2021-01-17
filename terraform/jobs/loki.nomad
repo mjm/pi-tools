@@ -14,6 +14,9 @@ job "loki" {
       port "http" {
         to = 3100
       }
+      port "envoy_metrics" {
+        to = 9102
+      }
     }
 
     service {
@@ -28,6 +31,15 @@ job "loki" {
     service {
       name = "loki-metrics"
       port = "http"
+
+      meta {
+        metrics_path = "/metrics"
+      }
+    }
+
+    service {
+      name = "loki-metrics"
+      port = "envoy_metrics"
 
       meta {
         metrics_path = "/metrics"

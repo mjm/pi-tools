@@ -19,6 +19,9 @@ job "jaeger" {
       port "query_http" {
         to = 16686
       }
+      port "envoy_metrics_collector" {
+        to = 9102
+      }
     }
 
     service {
@@ -37,6 +40,15 @@ job "jaeger" {
       // use connect for the collector to make it easier to connect to from services
       connect {
         sidecar_service {}
+      }
+    }
+
+    service {
+      name = "jaeger-collector-metrics"
+      port = "envoy_metrics_collector"
+
+      meta {
+        metrics_path = "/metrics"
       }
     }
 

@@ -57,6 +57,9 @@ job "homebase" {
       port "http" {
         to = 6460
       }
+      port "envoy_metrics" {
+        to = 9102
+      }
     }
 
     service {
@@ -92,6 +95,24 @@ job "homebase" {
       }
     }
 
+    service {
+      name = "homebase-api-metrics"
+      port = "http"
+
+      meta {
+        metrics_path = "/metrics"
+      }
+    }
+
+    service {
+      name = "homebase-api-metrics"
+      port = "envoy_metrics"
+
+      meta {
+        metrics_path = "/metrics"
+      }
+    }
+
     task "homebase-api-srv" {
       driver = "docker"
 
@@ -122,6 +143,12 @@ job "homebase" {
       }
       port "grpc" {
         to = 6361
+      }
+      port "envoy_metrics_http" {
+        to = 9102
+      }
+      port "envoy_metrics_grpc" {
+        to = 9103
       }
     }
 
@@ -168,11 +195,35 @@ job "homebase" {
     }
 
     service {
+      name = "homebase-bot-metrics"
+      port = "envoy_metrics_http"
+
+      meta {
+        metrics_path = "/metrics"
+      }
+    }
+
+    service {
+      name = "homebase-bot-metrics"
+      port = "envoy_metrics_grpc"
+
+      meta {
+        metrics_path = "/metrics"
+      }
+    }
+
+    service {
       name = "homebase-bot-grpc"
       port = 6361
 
       connect {
-        sidecar_service {}
+        sidecar_service {
+          proxy {
+            config {
+              envoy_prometheus_bind_addr = "0.0.0.0:9103"
+            }
+          }
+        }
       }
     }
 
