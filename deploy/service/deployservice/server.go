@@ -22,12 +22,8 @@ type Config struct {
 	// WorkflowName is the filename of the GitHub Actions workflow whose artifact should be used.
 	WorkflowName string
 
-	// ArtifactName is the name of the artifact in the build to download and deploy from.
-	ArtifactName string
-
-	// FileToApply is the basename (without extension) of the file in the artifact that contains Kubernetes
-	// YAML resources to apply.
-	FileToApply string
+	// TerraformPath is the path to the Terraform binary to use when planning and deploying
+	TerraformPath string
 }
 
 type Server struct {

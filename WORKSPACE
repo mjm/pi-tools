@@ -58,6 +58,15 @@ load("@io_bazel_rules_docker//repositories:pip_repositories.bzl", io_bazel_rules
 
 io_bazel_rules_docker_pip_deps()
 
+http_archive(
+    name = "terraform",
+    sha256 = "113cbde951cb888cffeebdd9a32e35dee51309ea27edbd358e046875aa77da23",
+    urls = ["https://releases.hashicorp.com/terraform/0.14.4/terraform_0.14.4_linux_arm64.zip"],
+    build_file_content = """
+exports_files(glob(["**/*"]))
+""",
+)
+
 load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
 
 container_pull(

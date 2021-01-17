@@ -23,16 +23,16 @@ import (
 )
 
 var (
-	githubRepo   = flag.String("repo", "mjm/pi-tools", "GitHub repository to pull down artifact from")
+	githubRepo   = flag.String("repo", "mjm/pi-tools", "GitHub repository to check for builds")
 	githubBranch = flag.String("branch", "main", "Git branch of builds that should be considered for deploying")
-	workflowName = flag.String("workflow", "k8s.yaml", "Filename of GitHub Actions workflow to pull artifact from")
-	artifactName = flag.String("artifact", "all_k8s", "Name of artifact to download from workflow run")
-	fileToApply  = flag.String("f", "k8s", "Extension-less name of the YAML file to apply")
+	workflowName = flag.String("workflow", "images.yaml", "Filename of GitHub Actions workflow to wait for")
 
-	githubTokenPath = flag.String("github-token-path", "/var/secrets/github-token", "Path to file containing GitHub PAT token")
+	githubTokenPath = flag.String("github-token-path", "/secrets/github-token", "Path to file containing GitHub PAT token")
 
-	pollInterval = flag.Duration("poll-interval", 2*time.Minute, "How often to check with GitHub for a new build artifact")
-	dryRun       = flag.Bool("dry-run", false, "Skip actually applying changes to the Kubernetes cluster")
+	terraformPath = flag.String("terraform", "/terraform", "Path to the Terraform binary")
+
+	pollInterval = flag.Duration("poll-interval", 2*time.Minute, "How often to check with GitHub for a new build")
+	dryRun       = flag.Bool("dry-run", false, "Skip actually applying changes to the cluster")
 )
 
 func main() {
@@ -54,12 +54,11 @@ func main() {
 	githubClient := github.NewClient(httpClient)
 
 	deploysSrv := deployservice.New(githubClient, deployservice.Config{
-		DryRun:       *dryRun,
-		GitHubRepo:   *githubRepo,
-		GitHubBranch: *githubBranch,
-		WorkflowName: *workflowName,
-		ArtifactName: *artifactName,
-		FileToApply:  *fileToApply,
+		DryRun:        *dryRun,
+		GitHubRepo:    *githubRepo,
+		GitHubBranch:  *githubBranch,
+		WorkflowName:  *workflowName,
+		TerraformPath: *terraformPath,
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())

@@ -52,6 +52,10 @@ resource "nomad_job" "grafana" {
   jobspec = file("${path.module}/jobs/grafana.nomad")
 }
 
+resource "nomad_job" "deploy" {
+  jobspec = replace(file("${path.module}/jobs/deploy.nomad"), "__DIGEST__", data.docker_registry_image.deploy_srv.sha256_digest)
+}
+
 resource "nomad_job" "beacon_srv" {
   jobspec = replace(file("${path.module}/jobs/beacon-srv.nomad"), "__DIGEST__", data.docker_registry_image.beacon_srv.sha256_digest)
 }

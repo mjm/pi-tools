@@ -1,20 +1,25 @@
 package deployservice
 
 import (
-	"archive/zip"
+	"archive/tar"
 	"bytes"
+	"compress/gzip"
 	"context"
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/google/go-github/v33/github"
 	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/pkg/spanerr"
 )
@@ -173,32 +178,19 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 	}
 
 	// Alright, on with the show.
-	artifacts, _, err := s.GitHubClient.Actions.ListWorkflowRunArtifacts(ctx, repoParts[0], repoParts[1], run.GetID(), nil)
+	archiveURL, _, err := s.GitHubClient.Repositories.GetArchiveLink(ctx, repoParts[0], repoParts[1], github.Tarball, &github.RepositoryContentGetOptions{
+		Ref: run.GetHeadCommit().GetID(),
+	}, true)
+
+	archiveDir, err := ioutil.TempDir("", "deploy-terraform-")
 	if err != nil {
 		return spanerr.RecordError(ctx, err)
 	}
+	defer os.RemoveAll(archiveDir)
 
-	span.SetAttributes(label.Int("workflow.run.artifact_count", len(artifacts.Artifacts)))
+	span.SetAttributes(label.String("archive.destination", archiveDir))
 
-	var artifact *github.Artifact
-	for _, a := range artifacts.Artifacts {
-		if a.GetName() == s.Config.ArtifactName {
-			artifact = a
-			break
-		}
-	}
-
-	if artifact == nil {
-		return spanerr.RecordError(ctx, fmt.Errorf("no artifact found named %q", s.Config.ArtifactName))
-	}
-	span.SetAttributes(label.Int64("workflow.run.artifact_id", artifact.GetID()))
-
-	downloadURL, _, err := s.GitHubClient.Actions.DownloadArtifact(ctx, repoParts[0], repoParts[1], artifact.GetID(), true)
-	if err != nil {
-		return spanerr.RecordError(ctx, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, downloadURL.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, archiveURL.String(), nil)
 	if err != nil {
 		return spanerr.RecordError(ctx, err)
 	}
@@ -213,67 +205,112 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 
 	span.SetAttributes(label.Int("archive.length", buf.Len()))
 
-	zipReader, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
+	gzipReader, err := gzip.NewReader(bytes.NewReader(buf.Bytes()))
+	if err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+	defer gzipReader.Close()
+
+	tarReader := tar.NewReader(gzipReader)
+
+	for {
+		h, err := tarReader.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return spanerr.RecordError(ctx, err)
+		}
+		if h == nil {
+			continue
+		}
+
+		// archive includes an extra directory at the start, so strip that off
+		splitPath := strings.SplitN(h.Name, "/", 2)
+		if len(splitPath) < 2 {
+			continue
+		}
+		strippedPath := splitPath[1]
+
+		// we're only interested in the terraform directory
+		if !strings.HasPrefix(strippedPath, "terraform/") {
+			continue
+		}
+
+		strippedPath = strippedPath[10:]
+		if strippedPath == "" {
+			// don't need to do anything for the root directory
+			continue
+		}
+
+		dstPath := filepath.Join(archiveDir, strippedPath)
+
+		switch h.Typeflag {
+		case tar.TypeDir:
+			log.Printf("Creating directory %s", dstPath)
+			if err := os.MkdirAll(dstPath, 0755); err != nil {
+				return spanerr.RecordError(ctx, err)
+			}
+
+		case tar.TypeReg:
+			log.Printf("Writing file %s", dstPath)
+			f, err := os.Create(dstPath)
+			if err != nil {
+				return spanerr.RecordError(ctx, err)
+			}
+
+			if _, err := io.Copy(f, tarReader); err != nil {
+				return spanerr.RecordError(ctx, err)
+			}
+
+			f.Close()
+		}
+	}
+
+	// At this point, we should have a valid terraform directory, so we can go ahead and try to apply the changes
+	if err := s.applyTerraformChanges(ctx, archiveDir); err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+
+	finalDeploymentStatus = "success"
+	return nil
+}
+
+func (s *Server) applyTerraformChanges(ctx context.Context, dir string) error {
+	ctx, span := tracer.Start(ctx, "Server.applyTerraformChanges",
+		trace.WithAttributes(
+			label.String("terraform.directory", dir)))
+	defer span.End()
+
+	span.SetAttributes(label.Bool("dry_run", s.Config.DryRun))
+
+	cmd := exec.CommandContext(ctx, s.Config.TerraformPath, "init")
+	cmd.Dir = dir
+	out, err := cmd.CombinedOutput()
+	log.Printf("%s", out)
 	if err != nil {
 		return spanerr.RecordError(ctx, err)
 	}
 
-	span.SetAttributes(label.Int("archive.file_count", len(zipReader.File)))
-
-	for _, f := range zipReader.File {
-		if f.Name != s.Config.FileToApply+".yaml" {
-			continue
-		}
-
-		span.SetAttributes(label.String("archive.file.name", f.Name))
-
-		rc, err := f.Open()
-		if err != nil {
-			return spanerr.RecordError(ctx, err)
-		}
-
-		if err := s.applyKubernetesResources(ctx, rc); err != nil {
-			return spanerr.RecordError(ctx, err)
-		}
-
-		finalDeploymentStatus = "success"
-		return nil
+	cmd = exec.CommandContext(ctx, s.Config.TerraformPath, "plan", "-out", "deploy.tfplan")
+	cmd.Dir = dir
+	out, err = cmd.CombinedOutput()
+	log.Printf("%s", out)
+	if err != nil {
+		return spanerr.RecordError(ctx, err)
 	}
 
-	return spanerr.RecordError(ctx, fmt.Errorf("no file found in archive named %s.yaml", s.Config.FileToApply))
-}
-
-func (s *Server) applyKubernetesResources(ctx context.Context, r io.ReadCloser) error {
-	ctx, span := tracer.Start(ctx, "Server.applyKubernetesResources")
-	defer span.End()
-
-	defer r.Close()
-
-	span.SetAttributes(label.Bool("dry_run", s.Config.DryRun))
+	// Bail before applying if this is a dry-run
 	if s.Config.DryRun {
 		return nil
 	}
 
-	cmd := exec.Command("kubectl", "apply", "--server-side", "-f", "-")
-	stdin, err := cmd.StdinPipe()
+	cmd = exec.CommandContext(ctx, s.Config.TerraformPath, "apply", "deploy.tfplan")
+	cmd.Dir = dir
+	out, err = cmd.CombinedOutput()
+	log.Printf("%s", out)
 	if err != nil {
 		return spanerr.RecordError(ctx, err)
-	}
-
-	var copyErr error
-	go func() {
-		defer stdin.Close()
-		_, copyErr = io.Copy(stdin, r)
-	}()
-
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Printf("%s", out)
-		return spanerr.RecordError(ctx, err)
-	}
-
-	if copyErr != nil {
-		return spanerr.RecordError(ctx, copyErr)
 	}
 
 	return nil

@@ -2,6 +2,10 @@ data "docker_registry_image" "beacon_srv" {
   name = "mmoriarity/beacon-srv:latest"
 }
 
+data "docker_registry_image" "deploy_srv" {
+  name = "mmoriarity/deploy-srv:latest"
+}
+
 data "docker_registry_image" "detect_presence_srv" {
   name = "mmoriarity/detect-presence-srv:latest"
 }
