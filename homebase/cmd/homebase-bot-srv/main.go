@@ -116,6 +116,7 @@ func main() {
 				})
 				if err != nil {
 					log.Printf("Error checking on leader key %q: %v", leaderKeyName, err)
+					waitIndex = 0
 					time.Sleep(10 * time.Second)
 					continue
 				}
@@ -134,9 +135,7 @@ func main() {
 						Session: sessionID,
 					}, nil)
 					if err != nil {
-						log.Printf("Error trying to acquire leadership: %v", err)
-						time.Sleep(10 * time.Second)
-						continue
+						log.Panicf("Error trying to acquire leadership: %v", err)
 					}
 				}
 			}
