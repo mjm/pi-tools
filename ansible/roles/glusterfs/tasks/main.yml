@@ -1,7 +1,34 @@
+- name: Create postgresql-0 volume mountpoint
+  file:
+    path: /srv/mnt/postgresql-0
+    state: directory
+    mode: 0700
+    owner: '70'
+    group: root
+  become: true
+
 - name: Mount postgresql-0 volume
   ansible.posix.mount:
     path: /srv/mnt/postgresql-0
     src: 127.0.0.1:/postgresql-0
+    fstype: glusterfs
+    opts: defaults,_netdev
+    state: mounted
+  become: true
+
+- name: Create pihole-data volume mountpoint
+  file:
+    path: /srv/mnt/pihole-data
+    state: directory
+    mode: 0700
+    owner: root
+    group: root
+  become: true
+
+- name: Mount pihole-data volume
+  ansible.posix.mount:
+    path: /srv/mnt/pihole-data
+    src: 127.0.0.1:/pihole-data
     fstype: glusterfs
     opts: defaults,_netdev
     state: mounted

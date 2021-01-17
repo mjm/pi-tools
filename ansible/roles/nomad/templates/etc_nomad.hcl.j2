@@ -41,6 +41,11 @@ client {
     read_only = false
   }
 
+  host_volume "pihole_data" {
+    path = "/srv/mnt/pihole-data"
+    read_only = false
+  }
+
   host_volume "promtail_run" {
     path = "/run/promtail"
     read_only = false

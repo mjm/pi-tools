@@ -3,18 +3,18 @@ job "ingress" {
     "dc1",
   ]
 
-  type = "system"
+  type     = "system"
   priority = 70
 
   group "ingress" {
     network {
       mode = "bridge"
       port "http" {
-        to = 80
+        to     = 80
         static = 80
       }
       port "https" {
-        to = 443
+        to     = 443
         static = 443
       }
     }
@@ -28,19 +28,19 @@ job "ingress" {
           proxy {
             upstreams {
               destination_name = "detect-presence-grpc"
-              local_bind_port = 2121
+              local_bind_port  = 2121
             }
             upstreams {
               destination_name = "go-links"
-              local_bind_port = 4240
+              local_bind_port  = 4240
             }
             upstreams {
               destination_name = "homebase-api"
-              local_bind_port = 6460
+              local_bind_port  = 6460
             }
             upstreams {
               destination_name = "grafana"
-              local_bind_port = 3000
+              local_bind_port  = 3000
             }
           }
         }
@@ -56,7 +56,7 @@ job "ingress" {
       driver = "docker"
 
       config {
-        image = "nginx@sha256:763d95e3db66d9bd1bb926c029e5659ee67eb49ff57f83d331de5f5af6d2ae0c"
+        image   = "nginx@sha256:763d95e3db66d9bd1bb926c029e5659ee67eb49ff57f83d331de5f5af6d2ae0c"
         volumes = [
           "local:/etc/nginx/conf.d",
           "secrets:/etc/nginx/ssl",
@@ -71,14 +71,14 @@ job "ingress" {
       }
 
       vault {
-        policies = [
+        policies    = [
           "ingress"
         ]
         change_mode = "noop"
       }
 
       template {
-        data = <<EOF
+        data          = <<EOF
 # https://github.com/envoyproxy/envoy/issues/2506#issuecomment-362558239
 proxy_http_version 1.1;
 
@@ -120,6 +120,13 @@ upstream homebase-api {
 
 upstream detect-presence-grpc {
   server 127.0.0.1:2121;
+}
+
+upstream pihole {
+{{ range service "http.pihole" }}
+  server {{ .Address }}:{{ .Port }};
+{{ else }}server 127.0.0.1:65535; # force a 502
+{{ end }}
 }
 
 upstream grafana {
@@ -269,6 +276,24 @@ server {
 
 server {
   listen 443 ssl;
+  server_name pihole.homelab;
+
+  ssl_certificate /etc/nginx/ssl/pihole.homelab.pem;
+  ssl_certificate_key /etc/nginx/ssl/pihole.homelab.pem;
+
+  __OAUTH_LOCATIONS_SNIPPET__
+
+  location / {
+    __OAUTH_REQUEST_SNIPPET__
+
+    # Needed to have pi-hole present the admin UI instead of a "you've been blocked" page
+    proxy_set_header Host $host;
+    proxy_pass http://pihole;
+  }
+}
+
+server {
+  listen 443 ssl;
   server_name prometheus.homelab;
 
   ssl_certificate /etc/nginx/ssl/prometheus.homelab.pem;
@@ -331,128 +356,140 @@ server {
   }
 }
 EOF
-        destination = "local/load-balancer.conf"
-        change_mode = "signal"
+        destination   = "local/load-balancer.conf"
+        change_mode   = "signal"
         change_signal = "SIGHUP"
       }
 
       template {
-        data = <<EOF
+        data          = <<EOF
 {{ with secret "pki-homelab/issue/homelab" "common_name=nomad.homelab" -}}
 {{ .Data.certificate }}
 {{ .Data.private_key }}
 {{ end }}
 EOF
-        destination = "secrets/nomad.homelab.pem"
-        change_mode = "signal"
+        destination   = "secrets/nomad.homelab.pem"
+        change_mode   = "signal"
         change_signal = "SIGHUP"
       }
 
       template {
-        data = <<EOF
+        data          = <<EOF
 {{ with secret "pki-homelab/issue/homelab" "common_name=consul.homelab" -}}
 {{ .Data.certificate }}
 {{ .Data.private_key }}
 {{ end }}
 EOF
-        destination = "secrets/consul.homelab.pem"
-        change_mode = "signal"
+        destination   = "secrets/consul.homelab.pem"
+        change_mode   = "signal"
         change_signal = "SIGHUP"
       }
 
       template {
-        data = <<EOF
+        data          = <<EOF
 {{ with secret "pki-homelab/issue/homelab" "common_name=vault.homelab" -}}
 {{ .Data.certificate }}
 {{ .Data.private_key }}
 {{ end }}
 EOF
-        destination = "secrets/vault.homelab.pem"
-        change_mode = "signal"
+        destination   = "secrets/vault.homelab.pem"
+        change_mode   = "signal"
         change_signal = "SIGHUP"
       }
 
       template {
-        data = <<EOF
+        data          = <<EOF
 {{ with secret "pki-homelab/issue/homelab" "common_name=go.homelab" -}}
 {{ .Data.certificate }}
 {{ .Data.private_key }}
 {{ end }}
 EOF
-        destination = "secrets/go.homelab.pem"
-        change_mode = "signal"
+        destination   = "secrets/go.homelab.pem"
+        change_mode   = "signal"
         change_signal = "SIGHUP"
       }
 
       template {
-        data = <<EOF
+        data          = <<EOF
 {{ with secret "pki-homelab/issue/homelab" "common_name=homebase.homelab" -}}
 {{ .Data.certificate }}
 {{ .Data.private_key }}
 {{ end }}
 EOF
-        destination = "secrets/homebase.homelab.pem"
-        change_mode = "signal"
+        destination   = "secrets/homebase.homelab.pem"
+        change_mode   = "signal"
         change_signal = "SIGHUP"
       }
 
       template {
-        data = <<EOF
+        data          = <<EOF
 {{ with secret "pki-homelab/issue/homelab" "common_name=detect-presence-grpc.homelab" -}}
 {{ .Data.certificate }}
 {{ .Data.private_key }}
 {{ end }}
 EOF
-        destination = "secrets/detect-presence-grpc.homelab.pem"
-        change_mode = "signal"
+        destination   = "secrets/detect-presence-grpc.homelab.pem"
+        change_mode   = "signal"
         change_signal = "SIGHUP"
       }
 
       template {
-        data = <<EOF
+        data          = <<EOF
+{{ with secret "pki-homelab/issue/homelab" "common_name=pihole.homelab" -}}
+{{ .Data.certificate }}
+{{ .Data.private_key }}
+{{ end }}
+EOF
+        destination   = "secrets/pihole.homelab.pem"
+        change_mode   = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        data          = <<EOF
 {{ with secret "pki-homelab/issue/homelab" "common_name=grafana.homelab" -}}
 {{ .Data.certificate }}
 {{ .Data.private_key }}
 {{ end }}
 EOF
-        destination = "secrets/grafana.homelab.pem"
-        change_mode = "signal"
+        destination   = "secrets/grafana.homelab.pem"
+        change_mode   = "signal"
         change_signal = "SIGHUP"
       }
 
       template {
-        data = <<EOF
+        data          = <<EOF
 {{ with secret "pki-homelab/issue/homelab" "common_name=prometheus.homelab" -}}
 {{ .Data.certificate }}
 {{ .Data.private_key }}
 {{ end }}
 EOF
-        destination = "secrets/prometheus.homelab.pem"
-        change_mode = "signal"
+        destination   = "secrets/prometheus.homelab.pem"
+        change_mode   = "signal"
         change_signal = "SIGHUP"
       }
 
       template {
-        data = <<EOF
+        data          = <<EOF
 {{ with secret "pki-homelab/issue/homelab" "common_name=alertmanager.homelab" -}}
 {{ .Data.certificate }}
 {{ .Data.private_key }}
 {{ end }}
 EOF
-        destination = "secrets/alertmanager.homelab.pem"
-        change_mode = "signal"
+        destination   = "secrets/alertmanager.homelab.pem"
+        change_mode   = "signal"
         change_signal = "SIGHUP"
       }
 
       template {
-        data = <<EOF
+        data          = <<EOF
 {{ with secret "pki-homelab/issue/homelab" "common_name=jaeger.homelab" -}}
 {{ .Data.certificate }}
 {{ .Data.private_key }}
 {{ end }}
 EOF
-        destination = "secrets/jaeger.homelab.pem"
-        change_mode = "signal"
+        destination   = "secrets/jaeger.homelab.pem"
+        change_mode   = "signal"
         change_signal = "SIGHUP"
       }
     }

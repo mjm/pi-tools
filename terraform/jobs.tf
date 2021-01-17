@@ -8,6 +8,10 @@ resource "nomad_job" "named" {
   jobspec = file("${path.module}/jobs/named.nomad")
 }
 
+resource "nomad_job" "pihole" {
+  jobspec = file("${path.module}/jobs/pihole.nomad")
+}
+
 resource "nomad_job" "prometheus" {
   jobspec = file("${path.module}/jobs/prometheus.nomad")
 }
