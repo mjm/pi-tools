@@ -44,7 +44,7 @@ job "pihole" {
       driver = "docker"
 
       config {
-        image = "pihole/pihole@sha256:d899e498cb7beb5784aef9d62e1bb7f28b4ec3306cf96f4d1bc6cd62e26bf599"
+        image = "pihole/pihole@sha256:af7f4f5bbb876c194e0a2882267c092c34a547820729ebf325ef14177d1a7a65"
         ports = ["dns", "http", "https"]
 
         logging {
