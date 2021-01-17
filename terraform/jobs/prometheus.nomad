@@ -136,15 +136,15 @@ scrape_configs:
         action: keep
         regex: (.+)
       - source_labels: [__meta_consul_service_metadata_metrics_path]
-        action: replace
         target_label: __metrics_path__
         regex: (.+)
       - source_labels: [__meta_consul_service]
-        action: replace
         target_label: service_name
         regex: (.+)
+      - source_labels: [service_name]
+        target_label: service_name
+        regex: (.+)-metrics
       - source_labels: [__meta_consul_node]
-        action: replace
         target_label: node_name
         regex: (.+)
 
