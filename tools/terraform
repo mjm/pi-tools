@@ -1,6 +1,0 @@
-#!/bin/bash
-
-export CONSUL_HTTP_ADDR=10.0.0.2:8500
-export TF_VAR_nomad_address=http://10.0.0.2:4646
-export TF_VAR_consul_address=$CONSUL_HTTP_ADDR
-terraform "$@"
