@@ -158,17 +158,17 @@ EOF
       }
 
       artifact {
-        source = "https://raw.githubusercontent.com/mjm/pi-tools/main/monitoring/grafana/provisioning/dashboards/cluster.json"
+        source = "https://raw.githubusercontent.com/mjm/pi-tools/nomad/monitoring/grafana/provisioning/dashboards/cluster.json"
         destination = "local/dashboards"
       }
 
       artifact {
-        source = "https://raw.githubusercontent.com/mjm/pi-tools/main/monitoring/grafana/provisioning/dashboards/home.json"
+        source = "https://raw.githubusercontent.com/mjm/pi-tools/nomad/monitoring/grafana/provisioning/dashboards/home.json"
         destination = "local/dashboards"
       }
 
       artifact {
-        source = "https://raw.githubusercontent.com/mjm/pi-tools/main/monitoring/grafana/provisioning/dashboards/node.json"
+        source = "https://raw.githubusercontent.com/mjm/pi-tools/nomad/monitoring/grafana/provisioning/dashboards/node.json"
         destination = "local/dashboards"
       }
     }
