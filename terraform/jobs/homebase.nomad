@@ -177,6 +177,10 @@ job "homebase" {
               local_bind_port  = 2121
             }
             upstreams {
+              destination_name = "deploy-grpc"
+              local_bind_port  = 8481
+            }
+            upstreams {
               destination_name = "jaeger-collector"
               local_bind_port  = 14268
             }
