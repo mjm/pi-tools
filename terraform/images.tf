@@ -21,3 +21,7 @@ data "docker_registry_image" "homebase_api_srv" {
 data "docker_registry_image" "homebase_bot_srv" {
   name = "mmoriarity/homebase-bot-srv:latest"
 }
+
+data "docker_registry_image" "tripplite_exporter" {
+  name = "mmoriarity/tripplite-exporter:latest"
+}
