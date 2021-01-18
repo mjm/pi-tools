@@ -1,8 +1,8 @@
 job "tripplite-exporter" {
   datacenters = ["dc1"]
 
-  type     = "service"
-  priority = 30
+  type     = "system"
+  priority = 70
 
   group "tripplite-exporter" {
     count = 1

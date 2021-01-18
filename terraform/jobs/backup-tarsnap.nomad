@@ -3,6 +3,10 @@ job "backup-tarsnap" {
 
   type = "batch"
 
+  // Backups should be able to preempt normal service workloads, since they have to run on one node
+  // and thus are likely to get stuck otherwise.
+  priority = 70
+
   periodic {
     cron             = "0 12 * * *"
     prohibit_overlap = true

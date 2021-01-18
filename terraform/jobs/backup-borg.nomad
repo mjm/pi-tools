@@ -3,6 +3,10 @@ job "backup-borg" {
 
   type = "batch"
 
+  // Backups should be able to preempt normal service workloads, since they have to run on one node
+  // and thus are likely to get stuck otherwise.
+  priority = 70
+
   periodic {
     cron             = "30 */4 * * *"
     prohibit_overlap = true
