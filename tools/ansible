@@ -1,0 +1,18 @@
+#!/bin/bash
+
+cd "$(git rev-parse --show-toplevel)/ansible" || exit
+
+tmpdir="$(mktemp -d)"
+keypath="$tmpdir/signed-cert.pub"
+
+function finish {
+  echo "Cleaning up key in $tmpdir" >&2
+  rm -rf "$tmpdir"
+}
+trap finish EXIT
+
+../tools/vssh -no-exec -field=signed_key placeholder > "$keypath"
+echo "Generated temporary certificate key at $keypath" >&2
+
+ansible-playbook --ssh-common-args="-i $HOME/.ssh/id_ed25519 -i $keypath" --inventory=hosts.ini "$@" site.yml
+

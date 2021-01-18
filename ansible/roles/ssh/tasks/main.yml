@@ -1,0 +1,24 @@
+- name: Install SSH trusted user CA key
+  get_url:
+    url: http://127.0.0.1:8200/v1/ssh-client-signer/public_key
+    dest: /etc/ssh/trusted-user-ca-keys.pem
+  become: true
+
+- name: Install custom sshd config
+  copy:
+    src: etc_ssh_sshd_config.d_vault.conf
+    dest: /etc/ssh/sshd_config.d/vault.conf
+    mode: 0755
+    owner: root
+    group: root
+  become: true
+  register: sshd_config
+
+- name: Restart sshd if needed
+  systemd:
+    name: ssh
+    enabled: true
+    state: restarted
+  become: true
+  when: sshd_config.changed
+

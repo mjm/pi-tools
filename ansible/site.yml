@@ -4,4 +4,5 @@
     - role: volumes
     - role: consul
     - role: vault
+    - role: ssh
     - role: nomad
