@@ -79,7 +79,7 @@ modules:
         - NOERROR
       validate_answer_rrs:
         fail_if_not_matches_regexp:
-          - "homebase.homelab.\t.*\tIN\tCNAME\traspberrypi[2-3]?\\.homelab\\."
+          - "homebase.homelab.\t.*\tIN\tCNAME\tingress-http\\.service\\.consul\\."
 EOF
         destination = "local/blackbox.yml"
       }
