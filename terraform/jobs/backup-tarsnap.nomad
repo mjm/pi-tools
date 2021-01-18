@@ -243,21 +243,10 @@ EOF
 
       config {
         image    = "mmoriarity/tarsnap@sha256:4deeb35783541c160a09cb7a58489a7bf57bb456f4efab83e0cbd663a60bbf50"
-        command  = "tarsnap"
+        command  = "sh"
         args     = [
           "-c",
-          "--keyfile",
-          "${NOMAD_SECRETS_DIR}/tarsnap.key",
-          "--cachedir",
-          "/var/lib/tarsnap/cache",
-          "-f",
-          "daily-backup-${NOMAD_ALLOC_ID}",
-          "--no-default-config",
-          "--checkpoint-bytes",
-          "1G",
-          "--print-stats",
-          "-v",
-          "data",
+          "tarsnap -c --keyfile ${NOMAD_SECRETS_DIR}/tarsnap.key --cachedir /var/lib/tarsnap/cache -f daily-backup-$(date +'%Y-%m-%d_%H-%M-%S') --no-default-config --checkpoint-bytes 1G --print-stats -v data",
         ]
         work_dir = "${NOMAD_ALLOC_DIR}"
 
