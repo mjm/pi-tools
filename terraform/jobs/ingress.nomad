@@ -3,7 +3,8 @@ job "ingress" {
     "dc1",
   ]
 
-  type     = "system"
+  //  type     = "system"
+  type     = "service"
   priority = 70
 
   update {
@@ -12,6 +13,8 @@ job "ingress" {
   }
 
   group "ingress" {
+    count = 2
+
     network {
       mode = "bridge"
       port "http" {

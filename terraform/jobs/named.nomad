@@ -52,8 +52,8 @@ EOF
       }
 
       template {
-        destination = "local/bind/etc/named.conf.options"
-        data        = <<EOF
+        destination   = "local/bind/etc/named.conf.options"
+        data          = <<EOF
 acl tailscale {
   100.64.0.0/10; // range of tailscale IPs
 };
@@ -89,6 +89,8 @@ statistics-channels {
   inet 127.0.0.1 port 8053 allow { 127.0.0.1; };
 };
 EOF
+        change_mode   = "signal"
+        change_signal = "SIGHUP"
       }
 
       template {
@@ -246,15 +248,15 @@ $TTL  1m
 @   IN  NS  localhost.
 ;{{ range nodes }}
 {{ .Node }} IN  A {{ .Address }}{{ end }}
-*.homelab.  IN  CNAME {{ env "node.unique.name" }}.homelab.
+*.homelab.  IN  CNAME ingress-http.service.consul.
 unifi	IN  A 10.0.0.1
 nas	IN  A 10.0.0.10
 EOF
       }
 
       template {
-        destination = "local/bind/etc/db.homelab.tailscale"
-        data        = <<EOF
+        destination   = "local/bind/etc/db.homelab.tailscale"
+        data          = <<EOF
 ; BIND data file for homelab zone, when served from a Tailscale IP
 $TTL  1m
 @   IN  SOA localhost. matt.mattmoriarity.com. (
@@ -266,10 +268,14 @@ $TTL  1m
 @   IN  NS  localhost.
 ;{{ range nodes }}
 {{ .Node }} IN  A {{ .Meta.tailscale_ip }}{{ end }}
-*.homelab.  IN  CNAME {{ env "node.unique.name" }}.homelab.
-unifi	IN  A 10.0.0.1
-nas	IN  A 10.0.0.10
+;*.homelab.  IN  CNAME {{ env "node.unique.name" }}.homelab.
+;{{ range service "ingress-http" }}
+*.homelab.  0  IN  A {{ .NodeMeta.tailscale_ip }}{{ end }}
+unifi       IN  A 10.0.0.1
+nas	        IN  A 10.0.0.10
 EOF
+        change_mode   = "signal"
+        change_signal = "SIGHUP"
       }
     }
   }
