@@ -101,11 +101,6 @@ job "deploy" {
       config {
         image   = "mmoriarity/deploy-srv@__DIGEST__"
         command = "/deploy-srv"
-        args = [
-          // TODO remove after merging this branch to main
-          "-branch",
-          "nomad",
-        ]
 
         logging {
           type = "journald"

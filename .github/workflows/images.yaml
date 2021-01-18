@@ -2,7 +2,7 @@ name: Test and push images
 
 on:
   push:
-    branches: [main, nomad]
+    branches: [main]
 
 jobs:
   build:
