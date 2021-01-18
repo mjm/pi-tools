@@ -170,7 +170,7 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: {{ range service "blackbox-exporter" }}{{ .Address }}:{{ .Port }} {{ end }}
+        replacement: {{ with service "blackbox-exporter" }}{{ with index . 0 }}{{ .Address }}:{{ .Port }}{{ end }}{{ end }}
 
   - job_name: 'blackbox-dns-private'
     metrics_path: /probe
@@ -190,7 +190,7 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: {{ range service "blackbox-exporter" }}{{ .Address }}:{{ .Port }} {{ end }}
+        replacement: {{ with service "blackbox-exporter" }}{{ with index . 0 }}{{ .Address }}:{{ .Port }}{{ end }}{{ end }}
 
   - job_name: 'blackbox-dns-private-cname'
     metrics_path: /probe
@@ -210,7 +210,7 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: {{ range service "blackbox-exporter" }}{{ .Address }}:{{ .Port }} {{ end }}
+        replacement: {{ with service "blackbox-exporter" }}{{ with index . 0 }}{{ .Address }}:{{ .Port }}{{ end }}{{ end }}
 EOF
         destination   = "local/prometheus.yml"
         change_mode   = "signal"

@@ -125,6 +125,7 @@ EOF
       }
 
       template {
+        // language=YAML
         data = <<EOF
 apiVersion: 1
 
@@ -132,7 +133,7 @@ datasources:
   - name: Prometheus
     type: prometheus
     access: proxy
-    url: {{ range service "prometheus" }}http://{{ .Address }}:{{ .Port }} {{ end }}
+    url: {{ with service "prometheus" }}{{ with index . 0 }}http://{{ .Address }}:{{ .Port }}{{ end }}{{ end }}
     isDefault: true
     version: 1
     editable: false
@@ -147,7 +148,7 @@ datasources:
   - name: Jaeger
     type: jaeger
     access: proxy
-    url: {{ range service "jaeger-query" }}http://{{ .Address }}:{{ .Port }} {{ end }}
+    url: {{ with service "jaeger-query" }}{{ with index . 0 }}http://{{ .Address }}:{{ .Port }}{{ end }}{{ end }}
     version: 1
     editable: false
 EOF
