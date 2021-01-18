@@ -64,10 +64,17 @@
       "targets": [
         {
           "expr": "count by (service_name) (up{service_name=~\"(detect-presence|homebase|go-links|homebase-bot)\",job=\"consul-services\"})",
+          "hide": true,
           "instant": true,
           "interval": "",
           "legendFormat": "{{app}}",
           "refId": "A"
+        },
+        {
+          "expr": "sum by (task_group) (nomad_nomad_job_summary_running{exported_job=~\"(presence|homebase|go-links)\"})",
+          "interval": "",
+          "legendFormat": "{{exported_job}}",
+          "refId": "B"
         }
       ],
       "timeFrom": null,
@@ -628,5 +635,5 @@
   "timezone": "",
   "title": "Cluster",
   "uid": "3frfw9AMz",
-  "version": 2
+  "version": 3
 }
