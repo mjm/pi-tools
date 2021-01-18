@@ -27,6 +27,10 @@ job "ingress" {
         sidecar_service {
           proxy {
             upstreams {
+              destination_name = "detect-presence"
+              local_bind_port  = 2120
+            }
+            upstreams {
               destination_name = "detect-presence-grpc"
               local_bind_port  = 2121
             }
@@ -117,6 +121,10 @@ upstream homebase {
 
 upstream homebase-api {
   server 127.0.0.1:6460;
+}
+
+upstream detect-presence {
+  server 127.0.0.1:2120;
 }
 
 upstream detect-presence-grpc {
@@ -275,6 +283,12 @@ server {
     __OAUTH_REQUEST_SNIPPET__
 
     proxy_pass http://homebase-api;
+  }
+
+  location /download_app {
+    __OAUTH_REQUEST_SNIPPET__
+
+    proxy_pass http://detect-presence;
   }
 
   location / {
