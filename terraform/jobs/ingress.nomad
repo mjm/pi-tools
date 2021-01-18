@@ -6,6 +6,11 @@ job "ingress" {
   type     = "system"
   priority = 70
 
+  update {
+    max_parallel = 1
+    stagger      = "30s"
+  }
+
   group "ingress" {
     network {
       mode = "bridge"
