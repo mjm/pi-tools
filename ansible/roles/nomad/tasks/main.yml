@@ -45,7 +45,7 @@
 
 - name: Ensure Promtail run directory exists
   file:
-    path: /run/promtail
+    path: /var/lib/promtail
     state: directory
     mode: 0755
     owner: root

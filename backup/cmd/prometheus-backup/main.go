@@ -16,9 +16,8 @@ import (
 var (
 	prometheusURL      = flag.String("prometheus-url", "", "Base URL for accessing prometheus")
 	prometheusDataPath = flag.String("prometheus-data-path", "", "Path to directory where Prometheus is storing its data")
+	backupPath         = flag.String("backup-path", "", "Path to where to place the backed up snapshot")
 )
-
-const destPath = "/backup/prometheus"
 
 func main() {
 	flag.Parse()
@@ -31,16 +30,16 @@ func main() {
 		log.Panicf("Failed to take snapshot: %v", err)
 	}
 
-	if err := os.MkdirAll(destPath, 0755); err != nil {
-		log.Panicf("Failed to create directory at %s: %v", destPath, err)
+	if err := os.MkdirAll(*backupPath, 0755); err != nil {
+		log.Panicf("Failed to create directory at %s: %v", *backupPath, err)
 	}
 
 	snapshotPath := filepath.Join(*prometheusDataPath, "snapshots", backupName)
-	if err := exec.CommandContext(ctx, "rsync", "-av", snapshotPath+"/", destPath).Run(); err != nil {
+	if err := exec.CommandContext(ctx, "rsync", "-av", snapshotPath+"/", *backupPath).Run(); err != nil {
 		log.Panicf("Failed to copy snapshot to backup destination: %v", err)
 	}
 
-	log.Printf("Successfully copied snapshot from %s to %s", snapshotPath, destPath)
+	log.Printf("Successfully copied snapshot from %s to %s", snapshotPath, *backupPath)
 
 	if err := os.RemoveAll(snapshotPath); err != nil {
 		log.Printf("Warning: Failed to remove snapshot at %s: %v", snapshotPath, err)

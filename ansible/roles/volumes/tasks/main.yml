@@ -33,3 +33,22 @@
     opts: defaults,_netdev
     state: mounted
   become: true
+
+- name: Create homelab NFS mountpoint
+  file:
+    path: /srv/mnt/homelab
+    state: directory
+    mode: 0777
+    owner: root
+    group: root
+  become: true
+  when: inventory_hostname == '10.0.0.2'
+
+- name: Mount homelab NFS volume
+  ansible.posix.mount:
+    path: /srv/mnt/homelab
+    src: 10.0.0.10:/volume1/homelab
+    fstype: nfs
+    state: mounted
+  become: true
+  when: inventory_hostname == '10.0.0.2'

@@ -47,7 +47,7 @@ client {
   }
 
   host_volume "promtail_run" {
-    path = "/run/promtail"
+    path = "/var/lib/promtail"
     read_only = false
   }
 
@@ -59,6 +59,11 @@ client {
 
   host_volume "alertmanager_data" {
     path = "/var/lib/alertmanager"
+    read_only = false
+  }
+
+  host_volume "homelab_nfs" {
+    path = "/srv/mnt/homelab"
     read_only = false
   }
 {% endif %}

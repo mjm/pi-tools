@@ -1,3 +1,6 @@
+// These datasources let the Nomad job templates specify the latest digest
+// for the images that we build ourselves.
+
 data "docker_registry_image" "beacon_srv" {
   name = "mmoriarity/beacon-srv:latest"
 }
@@ -24,6 +27,10 @@ data "docker_registry_image" "homebase_api_srv" {
 
 data "docker_registry_image" "homebase_bot_srv" {
   name = "mmoriarity/homebase-bot-srv:latest"
+}
+
+data "docker_registry_image" "prometheus_backup" {
+  name = "mmoriarity/prometheus-backup:latest"
 }
 
 data "docker_registry_image" "tripplite_exporter" {

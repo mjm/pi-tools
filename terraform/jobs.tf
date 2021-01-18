@@ -83,3 +83,10 @@ resource "nomad_job" "ingress" {
   "__OAUTH_REQUEST_SNIPPET__", local.oauth_request_snippet)
 }
 
+resource "nomad_job" "backup_tarsnap" {
+  jobspec = replace(file("${path.module}/jobs/backup-tarsnap.nomad"), "__PROMETHEUS_BACKUP_DIGEST__", data.docker_registry_image.prometheus_backup.sha256_digest)
+}
+
+resource "nomad_job" "backup_borg" {
+  jobspec = replace(file("${path.module}/jobs/backup-borg.nomad"), "__PROMETHEUS_BACKUP_DIGEST__", data.docker_registry_image.prometheus_backup.sha256_digest)
+}
