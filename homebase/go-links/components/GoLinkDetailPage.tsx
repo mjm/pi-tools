@@ -39,8 +39,6 @@ export function GoLinkDetailPage() {
                                 go/{link ? link.shortURL : "…"}
                             </h3>
                         </div>
-                        <div className="ml-4 mt-2 flex-shrink-0 flex">
-                        </div>
                     </div>
                 </div>
                 {link ? (

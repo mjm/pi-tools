@@ -7,6 +7,7 @@ interface State {
 
 export class ErrorBoundary extends React.Component<{
     children: React.ReactNode;
+    fallback?: (error: Error) => React.ReactNode;
 }, State> {
     state: State = {};
 
@@ -16,14 +17,14 @@ export class ErrorBoundary extends React.Component<{
 
     render() {
         if (this.state.error) {
+            if (this.props.fallback) {
+                return this.props.fallback(this.state.error);
+            }
+
             return (
-                <main className="mb-8">
-                    <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                        <Alert title="An error occurred" severity="error">
-                            {this.state.error.toString()}
-                        </Alert>
-                    </div>
-                </main>
+                <Alert title="An error occurred" severity="error">
+                    {this.state.error.toString()}
+                </Alert>
             );
         }
 

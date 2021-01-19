@@ -7,7 +7,6 @@ import {GoLinkRoutes} from "com_github_mjm_pi_tools/homebase/go-links/components
 import {HomePage} from "com_github_mjm_pi_tools/homebase/homepage/components/HomePage";
 import {RelayEnvironmentProvider} from "react-relay/hooks";
 import RelayEnvironment from "com_github_mjm_pi_tools/homebase/lib/environment";
-import {ErrorBoundary} from "com_github_mjm_pi_tools/homebase/components/ErrorBoundary";
 
 export function App() {
     return (
@@ -23,22 +22,20 @@ export function App() {
                         <NavigationBar/>
 
                         <React.Suspense fallback={"Loading..."}>
-                            <ErrorBoundary>
-                                <Switch>
-                                    <Route exact path="/">
-                                        <HomePage/>
-                                    </Route>
-                                    <Route path="/trips">
-                                        <TripRoutes/>
-                                    </Route>
-                                    <Route path="/go">
-                                        <GoLinkRoutes/>
-                                    </Route>
-                                    <Route path="*">
-                                        <NoMatch/>
-                                    </Route>
-                                </Switch>
-                            </ErrorBoundary>
+                            <Switch>
+                                <Route exact path="/">
+                                    <HomePage/>
+                                </Route>
+                                <Route path="/trips">
+                                    <TripRoutes/>
+                                </Route>
+                                <Route path="/go">
+                                    <GoLinkRoutes/>
+                                </Route>
+                                <Route path="*">
+                                    <NoMatch/>
+                                </Route>
+                            </Switch>
                         </React.Suspense>
                     </div>
                 </Router>

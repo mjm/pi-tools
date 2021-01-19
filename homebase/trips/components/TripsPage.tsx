@@ -5,29 +5,9 @@ import {PageHeader} from "com_github_mjm_pi_tools/homebase/components/PageHeader
 import {TagFilters} from "com_github_mjm_pi_tools/homebase/trips/components/TagFilters";
 import {graphql, useLazyLoadQuery} from "react-relay/hooks";
 import {TripsPageQuery} from "com_github_mjm_pi_tools/homebase/api/__generated__/TripsPageQuery.graphql";
+import {ErrorBoundary} from "com_github_mjm_pi_tools/homebase/components/ErrorBoundary";
 
 export function TripsPage() {
-    const data = useLazyLoadQuery<TripsPageQuery>(
-        graphql`
-            query TripsPageQuery {
-                viewer {
-                    ...TagFilters_tags
-                    trips(first: 30) @connection(key: "TripsPageQuery_trips") {
-                        edges {
-                            node {
-                                id
-                                ...TripRow_trip
-                            }
-                        }
-                    }
-                }
-            }
-        `,
-        {},
-    );
-
-    const tripNodes = data.viewer.trips.edges.map(e => e.node);
-
     return (
         <main className="mb-8">
             <Helmet>
@@ -48,49 +28,75 @@ export function TripsPage() {
                 Your trips
             </PageHeader>
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                {/*{error && (*/}
-                {/*    <Alert severity="error" title="Couldn't load your trips">*/}
-                {/*        {error.toString()}*/}
-                {/*    </Alert>*/}
-                {/*)}*/}
-                {data && (
-                    <div className="flex flex-col">
-                        <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                            <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                                <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                                    <table className="min-w-full divide-y divide-gray-200">
-                                        <thead>
-                                        <tr>
-                                            <td colSpan={4}
-                                                className="px-6 py-3 bg-gray-50 text-xs leading-4 text-gray-500 border-b border-gray-200">
-                                                <TagFilters tags={data.viewer}/>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                Left at
-                                            </th>
-                                            <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                Duration
-                                            </th>
-                                            <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                Tags
-                                            </th>
-                                            <th className="px-6 py-3 bg-gray-50"></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
-                                        {tripNodes.map(trip => (
-                                            <TripRow key={trip.id} trip={trip}/>
-                                        ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                <ErrorBoundary>
+                    <TripsPageInner/>
+                </ErrorBoundary>
             </div>
         </main>
+    );
+}
+
+function TripsPageInner() {
+    const data = useLazyLoadQuery<TripsPageQuery>(
+        graphql`
+            query TripsPageQuery {
+                viewer {
+                    ...TagFilters_tags
+                    trips(first: 30) @connection(key: "TripsPageQuery_trips") {
+                        edges {
+                            node {
+                                id
+                                ...TripRow_trip
+                            }
+                        }
+                    }
+                }
+            }
+        `,
+        {},
+    );
+
+    if (!data) {
+        return null;
+    }
+
+    const tripNodes = data.viewer.trips.edges.map(e => e.node);
+
+    return (
+        <div className="flex flex-col">
+            <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                    <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead>
+                            <tr>
+                                <td colSpan={4}
+                                    className="px-6 py-3 bg-gray-50 text-xs leading-4 text-gray-500 border-b border-gray-200">
+                                    <TagFilters tags={data.viewer}/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                    Left at
+                                </th>
+                                <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                    Duration
+                                </th>
+                                <th className="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                    Tags
+                                </th>
+                                <th className="px-6 py-3 bg-gray-50"/>
+                            </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                            {tripNodes.map(trip => (
+                                <TripRow key={trip.id} trip={trip}/>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }
