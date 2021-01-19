@@ -91,12 +91,14 @@
   register: template_systemd
 
 - name: Install consul-template config file
-  copy:
-    src: etc_consul-template.hcl
+  template:
+    src: etc_consul-template.hcl.j2
     dest: /etc/consul-template.d/config.hcl
     mode: 0644
     owner: root
     group: root
+    variable_start_string: "[["
+    variable_end_string: "]]"
   become: true
   register: template_config
 

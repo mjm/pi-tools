@@ -112,6 +112,11 @@ scrape_configs:
     metrics_path: /v1/metrics
     params:
       format: [prometheus]
+    scheme: https
+    tls_config:
+      ca_file: {{ env "NOMAD_SECRETS_DIR" }}/nomad.ca.crt
+      cert_file: {{ env "NOMAD_SECRETS_DIR" }}/nomad.crt
+      key_file: {{ env "NOMAD_SECRETS_DIR" }}/nomad.key
     relabel_configs:
       - source_labels: [__meta_consul_node]
         target_label: node_name
@@ -367,6 +372,39 @@ groups:
         expr: (presence_last_return_timestamp < bool presence_last_leave_timestamp) * (time() - presence_last_leave_timestamp) > 0
 EOF
         destination = "local/rules/presence.yml"
+      }
+
+      template {
+        data          = <<EOF
+{{ with secret "pki-int/issue/nomad-cluster" "ttl=24h" -}}
+{{ .Data.certificate }}
+{{ end }}
+EOF
+        destination   = "secrets/nomad.crt"
+        change_mode   = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        data          = <<EOF
+{{ with secret "pki-int/issue/nomad-cluster" "ttl=24h" -}}
+{{ .Data.private_key }}
+{{ end }}
+EOF
+        destination   = "secrets/nomad.key"
+        change_mode   = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        data          = <<EOF
+{{ with secret "pki-int/issue/nomad-cluster" "ttl=24h" -}}
+{{ .Data.issuing_ca }}
+{{ end }}
+EOF
+        destination   = "secrets/nomad.ca.crt"
+        change_mode   = "signal"
+        change_signal = "SIGHUP"
       }
     }
   }
