@@ -38,9 +38,10 @@ job "oauth-proxy" {
           "--github-org=mmoriarity",
           "--upstream=file:///dev/null",
           "--http-address=0.0.0.0:4180",
-          "--cookie-secure=false",
+          "--cookie-secure=true",
           "--cookie-domain=.homelab",
           "--redirect-url=https://homebase.homelab/oauth2/callback",
+          "--whitelist-domain=.homelab",
           "--set-xauthrequest",
           "--pass-access-token",
         ]
