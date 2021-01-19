@@ -42,7 +42,7 @@
     owner: root
     group: root
   become: true
-  when: inventory_hostname == '10.0.0.2'
+  when: inventory_hostname == 'raspberrypi.homelab'
 
 - name: Mount homelab NFS volume
   ansible.posix.mount:
@@ -51,4 +51,4 @@
     fstype: nfs
     state: mounted
   become: true
-  when: inventory_hostname == '10.0.0.2'
+  when: inventory_hostname == 'raspberrypi.homelab'

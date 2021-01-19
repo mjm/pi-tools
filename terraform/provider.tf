@@ -23,11 +23,9 @@ terraform {
 }
 
 provider "nomad" {
-  address = var.nomad_address
 }
 
 provider "consul" {
-  address = var.consul_address
 }
 
 provider "docker" {

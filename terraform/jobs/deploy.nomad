@@ -109,8 +109,10 @@ job "deploy" {
           }
         }
 
+        // We use the Docker Terraform provider, which means to run Terraform, we need to be able to talk
+        // to Docker on the host.
         mount {
-          type = "bind"
+          type   = "bind"
           target = "/var/run/docker.sock"
           source = "/var/run/docker.sock"
         }
@@ -118,15 +120,15 @@ job "deploy" {
 
       resources {
         cpu    = 50
-        memory = 200
+        memory = 100
       }
 
       env {
-        CONSUL_HTTP_ADDR      = "${attr.unique.network.ip-address}:8500"
-        TF_VAR_consul_address = "${attr.unique.network.ip-address}:8500"
-
-        NOMAD_ADDR           = "http://${attr.unique.network.ip-address}:4646"
-        TF_VAR_nomad_address = "http://${attr.unique.network.ip-address}:4646"
+        CONSUL_HTTP_ADDR  = "${attr.unique.network.ip-address}:8500"
+        NOMAD_ADDR        = "https://nomad.service.consul:4646"
+        NOMAD_CACERT      = "${NOMAD_SECRETS_DIR}/nomad.ca.crt"
+        NOMAD_CLIENT_CERT = "${NOMAD_SECRETS_DIR}/nomad.crt"
+        NOMAD_CLIENT_KEY  = "${NOMAD_SECRETS_DIR}/nomad.key"
 
         HOSTNAME        = "${attr.unique.hostname}"
         NOMAD_CLIENT_ID = "${node.unique.id}"
@@ -142,6 +144,33 @@ job "deploy" {
 EOF
         destination = "secrets/github-token"
         change_mode = "restart"
+      }
+
+      template {
+        data        = <<EOF
+{{ with secret "pki-int/issue/nomad-cluster" "ttl=24h" -}}
+{{ .Data.certificate }}
+{{ end }}
+EOF
+        destination = "secrets/nomad.crt"
+      }
+
+      template {
+        data        = <<EOF
+{{ with secret "pki-int/issue/nomad-cluster" "ttl=24h" -}}
+{{ .Data.private_key }}
+{{ end }}
+EOF
+        destination = "secrets/nomad.key"
+      }
+
+      template {
+        data        = <<EOF
+{{ with secret "pki-int/issue/nomad-cluster" "ttl=24h" -}}
+{{ .Data.issuing_ca }}
+{{ end }}
+EOF
+        destination = "secrets/nomad.ca.crt"
       }
     }
   }

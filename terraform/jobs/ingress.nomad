@@ -197,8 +197,12 @@ server {
   location / {
     __OAUTH_REQUEST_SNIPPET__
 
-    proxy_pass http://nomad;
+    proxy_pass https://nomad;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    proxy_ssl_certificate /etc/nginx/ssl/nomad.pem;
+    proxy_ssl_certificate_key /etc/nginx/ssl/nomad.pem;
+    proxy_ssl_trusted_certificate /etc/nginx/ssl/nomad.ca.crt;
 
     # Nomad blocking queries will remain open for a default of 5 minutes.
     # Increase the proxy timeout to accommodate this timeout with an
@@ -533,6 +537,29 @@ EOF
 {{ end }}
 EOF
         destination   = "secrets/jaeger.homelab.pem"
+        change_mode   = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        data          = <<EOF
+{{ with secret "pki-int/issue/nomad-cluster" "ttl=24h" -}}
+{{ .Data.certificate }}
+{{ .Data.private_key }}
+{{ end }}
+EOF
+        destination   = "secrets/nomad.pem"
+        change_mode   = "signal"
+        change_signal = "SIGHUP"
+      }
+
+      template {
+        data          = <<EOF
+{{ with secret "pki-int/issue/nomad-cluster" "ttl=24h" -}}
+{{ .Data.issuing_ca }}
+{{ end }}
+EOF
+        destination   = "secrets/nomad.ca.crt"
         change_mode   = "signal"
         change_signal = "SIGHUP"
       }

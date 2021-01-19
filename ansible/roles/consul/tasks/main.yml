@@ -57,3 +57,68 @@
     enabled: true
     state: started
   become: true
+
+- name: Check if consul-template is already installed
+  stat:
+    path: /usr/local/bin/consul-template
+  register: consul_template_installed
+
+- name: Install consul-template binary
+  unarchive:
+    src: https://releases.hashicorp.com/consul-template/0.25.1/consul-template_0.25.1_linux_arm64.tgz
+    dest: /usr/local/bin
+    remote_src: true
+  become: true
+  when: consul_template_installed.stat.exists == false
+
+- name: Create consul-template.d directory
+  file:
+    path: /etc/consul-template.d
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+  become: true
+
+- name: Install consul-template systemd unit
+  copy:
+    src: consul-template.service
+    dest: /usr/lib/systemd/system/consul-template.service
+    mode: 0644
+    owner: root
+    group: root
+  become: true
+  register: template_systemd
+
+- name: Install consul-template config file
+  copy:
+    src: etc_consul-template.hcl
+    dest: /etc/consul-template.d/config.hcl
+    mode: 0644
+    owner: root
+    group: root
+  become: true
+  register: template_config
+
+- name: Restart consul-template service if needed
+  systemd:
+    name: consul-template
+    daemon_reload: true
+    enabled: true
+    state: restarted
+  become: true
+  when: template_systemd.changed
+
+- name: Reload consul-template service if needed
+  systemd:
+    name: consul-template
+    state: reloaded
+  become: true
+  when: template_config.changed
+
+- name: Ensure consul-template service is started
+  systemd:
+    name: consul-template
+    enabled: true
+    state: started
+  become: true
