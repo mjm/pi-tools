@@ -292,8 +292,20 @@ server {
   __OAUTH_LOCATIONS_SNIPPET__
 
   location /graphql {
-    __OAUTH_REQUEST_SNIPPET__
+    auth_request /oauth2/auth;
+    error_page 401 = @graphql_fallback;
 
+    auth_request_set $user   $upstream_http_x_auth_request_user;
+    auth_request_set $email  $upstream_http_x_auth_request_email;
+    proxy_set_header X-Auth-Request-User  $user;
+    proxy_set_header X-Auth-Request-Email $email;
+
+    proxy_pass http://homebase-api;
+  }
+
+  # The GraphQL API can handle receiving requests that weren't authorized, and will check for
+  # the X-Auth-* headers itself to determine permissions.
+  location @graphql_fallback {
     proxy_pass http://homebase-api;
   }
 
