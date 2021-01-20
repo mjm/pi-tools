@@ -10,6 +10,7 @@ swift_library(
         "Sources/BackoffExecutor.swift",
         "Sources/BeaconObserver.swift",
         "Sources/ContentView.swift",
+        "Sources/Network.swift",
         "Sources/State.swift",
         "Sources/TripRecorder.swift",
         "Sources/TripsController.swift",
@@ -17,17 +18,10 @@ swift_library(
     deps = [
         "//detect-presence/proto/trips:trips_swift_proto",
         "//detect-presence/proto/trips:trips_swift_proto_grpc_client",
+        "@com_github_relay_tools_relay_swift//:Relay",
+        "@com_github_relay_tools_relay_swift//:RelaySwiftUI",
     ],
 )
-
-_common_args = {
-    "bundle_id": "com.mattmoriarity.Presence",
-    "bundle_name": "Presence",
-    "families": ["iphone"],
-    "infoplists": [":Info.plist"],
-    "minimum_os_version": "14.0",
-    "deps": [":app-lib"],
-}
 
 presence_app(
     name = "ios",

@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import RelaySwiftUI
 
 private let beaconObserver = BeaconObserver()
 private let tripsController = TripsController(events: beaconObserver.eventsPublisher())
@@ -19,6 +20,7 @@ struct PresenceApp: App {
             NavigationView {
                 ContentView(model: model)
                     .environmentObject(beaconObserver)
+                    .relayEnvironment(environment)
             }
         }
     }
