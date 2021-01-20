@@ -101,7 +101,7 @@ job "presence" {
       driver = "docker"
 
       config {
-        image   = "mmoriarity/detect-presence-srv@__DIGEST__"
+        image   = "mmoriarity/detect-presence-srv@${image_digests.detect_presence_srv}"
         command = "/detect-presence-srv"
         args    = [
           "-db",
@@ -124,8 +124,8 @@ job "presence" {
       }
 
       env {
-        HOSTNAME        = "${attr.unique.hostname}"
-        NOMAD_CLIENT_ID = "${node.unique.id}"
+        HOSTNAME        = "$${attr.unique.hostname}"
+        NOMAD_CLIENT_ID = "$${node.unique.id}"
       }
 
       vault {

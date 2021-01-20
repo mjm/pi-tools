@@ -100,7 +100,7 @@ job "go-links" {
       driver = "docker"
 
       config {
-        image   = "mmoriarity/go-links-srv@__DIGEST__"
+        image   = "mmoriarity/go-links-srv@${image_digests.go_links_srv}"
         command = "/go-links"
         args    = [
           "-db",
@@ -121,8 +121,8 @@ job "go-links" {
       }
 
       env {
-        HOSTNAME        = "${attr.unique.hostname}"
-        NOMAD_CLIENT_ID = "${node.unique.id}"
+        HOSTNAME        = "$${attr.unique.hostname}"
+        NOMAD_CLIENT_ID = "$${node.unique.id}"
       }
 
       vault {

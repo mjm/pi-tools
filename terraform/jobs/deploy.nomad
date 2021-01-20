@@ -99,7 +99,7 @@ job "deploy" {
       driver = "docker"
 
       config {
-        image   = "mmoriarity/deploy-srv@__DIGEST__"
+        image   = "mmoriarity/deploy-srv@${image_digests.deploy_srv}"
         command = "/deploy-srv"
 
         logging {
@@ -124,14 +124,14 @@ job "deploy" {
       }
 
       env {
-        CONSUL_HTTP_ADDR  = "${attr.unique.network.ip-address}:8500"
+        CONSUL_HTTP_ADDR  = "$${attr.unique.network.ip-address}:8500"
         NOMAD_ADDR        = "https://nomad.service.consul:4646"
-        NOMAD_CACERT      = "${NOMAD_SECRETS_DIR}/nomad.ca.crt"
-        NOMAD_CLIENT_CERT = "${NOMAD_SECRETS_DIR}/nomad.crt"
-        NOMAD_CLIENT_KEY  = "${NOMAD_SECRETS_DIR}/nomad.key"
+        NOMAD_CACERT      = "$${NOMAD_SECRETS_DIR}/nomad.ca.crt"
+        NOMAD_CLIENT_CERT = "$${NOMAD_SECRETS_DIR}/nomad.crt"
+        NOMAD_CLIENT_KEY  = "$${NOMAD_SECRETS_DIR}/nomad.key"
 
-        HOSTNAME        = "${attr.unique.hostname}"
-        NOMAD_CLIENT_ID = "${node.unique.id}"
+        HOSTNAME        = "$${attr.unique.hostname}"
+        NOMAD_CLIENT_ID = "$${node.unique.id}"
       }
 
       vault {

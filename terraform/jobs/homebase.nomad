@@ -21,7 +21,7 @@ job "homebase" {
       driver = "docker"
 
       config {
-        image   = "mmoriarity/homebase-srv@__HOMEBASE_SRV_DIGEST__"
+        image   = "mmoriarity/homebase-srv@${image_digests.homebase_srv}"
         command = "caddy"
         args    = [
           "run",
@@ -121,7 +121,7 @@ job "homebase" {
       driver = "docker"
 
       config {
-        image   = "mmoriarity/homebase-api-srv@__HOMEBASE_API_DIGEST__"
+        image   = "mmoriarity/homebase-api-srv@${image_digests.homebase_api}"
         command = "/homebase-api-srv"
         args = [
           "-prometheus-url",
@@ -135,8 +135,8 @@ job "homebase" {
       }
 
       env {
-        HOSTNAME        = "${attr.unique.hostname}"
-        NOMAD_CLIENT_ID = "${node.unique.id}"
+        HOSTNAME        = "$${attr.unique.hostname}"
+        NOMAD_CLIENT_ID = "$${node.unique.id}"
       }
     }
   }
@@ -239,7 +239,7 @@ job "homebase" {
       driver = "docker"
 
       config {
-        image   = "mmoriarity/homebase-bot-srv@__HOMEBASE_BOT_DIGEST__"
+        image   = "mmoriarity/homebase-bot-srv@${image_digests.homebase_bot}"
         command = "/homebase-bot-srv"
         args    = [
           "-db",
@@ -261,9 +261,9 @@ job "homebase" {
       }
 
       env {
-        CONSUL_HTTP_ADDR = "${attr.unique.network.ip-address}:8500"
-        HOSTNAME         = "${attr.unique.hostname}"
-        NOMAD_CLIENT_ID  = "${node.unique.id}"
+        CONSUL_HTTP_ADDR = "$${attr.unique.network.ip-address}:8500"
+        HOSTNAME         = "$${attr.unique.hostname}"
+        NOMAD_CLIENT_ID  = "$${node.unique.id}"
       }
 
       vault {

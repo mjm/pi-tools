@@ -30,7 +30,7 @@ job "backup-tarsnap" {
       config {
         image   = "consul@sha256:7b878010be55876f2dd419e0e95aad54cd87ae078d5de54e232e4135eb1069c6"
         command = "/bin/sh"
-        args    = ["-c", "consul snapshot save ${NOMAD_ALLOC_DIR}/data/consul.snap"]
+        args    = ["-c", "consul snapshot save $${NOMAD_ALLOC_DIR}/data/consul.snap"]
 
         network_mode = "host"
       }
@@ -49,7 +49,7 @@ job "backup-tarsnap" {
       driver = "docker"
 
       config {
-        image   = "mmoriarity/prometheus-backup@__PROMETHEUS_BACKUP_DIGEST__"
+        image   = "mmoriarity/prometheus-backup@${image_digests.prometheus_backup}"
         command = "/prometheus-backup"
         args    = [
           "-prometheus-url",
@@ -57,7 +57,7 @@ job "backup-tarsnap" {
           "-prometheus-data-path",
           "/prometheus",
           "-backup-path",
-          "${NOMAD_ALLOC_DIR}/data/prometheus",
+          "$${NOMAD_ALLOC_DIR}/data/prometheus",
         ]
 
         network_mode = "host"
@@ -87,7 +87,7 @@ job "backup-tarsnap" {
         args    = [
           "--host=postgresql.service.consul",
           "--dbname=presence",
-          "--file=${NOMAD_ALLOC_DIR}/data/presence.sql",
+          "--file=$${NOMAD_ALLOC_DIR}/data/presence.sql",
         ]
 
         network_mode = "host"
@@ -128,7 +128,7 @@ EOF
         args    = [
           "--host=postgresql.service.consul",
           "--dbname=golinks",
-          "--file=${NOMAD_ALLOC_DIR}/data/golinks.sql",
+          "--file=$${NOMAD_ALLOC_DIR}/data/golinks.sql",
         ]
 
         network_mode = "host"
@@ -169,7 +169,7 @@ EOF
         args    = [
           "--host=postgresql.service.consul",
           "--dbname=homebase_bot",
-          "--file=${NOMAD_ALLOC_DIR}/data/homebase_bot.sql",
+          "--file=$${NOMAD_ALLOC_DIR}/data/homebase_bot.sql",
         ]
 
         network_mode = "host"
@@ -210,7 +210,7 @@ EOF
         args    = [
           "--host=postgresql.service.consul",
           "--dbname=grafana",
-          "--file=${NOMAD_ALLOC_DIR}/data/grafana.sql",
+          "--file=$${NOMAD_ALLOC_DIR}/data/grafana.sql",
         ]
 
         network_mode = "host"
@@ -246,9 +246,9 @@ EOF
         command  = "sh"
         args     = [
           "-c",
-          "tarsnap -c --keyfile ${NOMAD_SECRETS_DIR}/tarsnap.key --cachedir /var/lib/tarsnap/cache -f daily-backup-$(date +'%Y-%m-%d_%H-%M-%S') --no-default-config --checkpoint-bytes 1G --print-stats -v data",
+          "tarsnap -c --keyfile $${NOMAD_SECRETS_DIR}/tarsnap.key --cachedir /var/lib/tarsnap/cache -f daily-backup-$(date +'%Y-%m-%d_%H-%M-%S') --no-default-config --checkpoint-bytes 1G --print-stats -v data",
         ]
-        work_dir = "${NOMAD_ALLOC_DIR}"
+        work_dir = "$${NOMAD_ALLOC_DIR}"
 
         mount {
           type   = "bind"

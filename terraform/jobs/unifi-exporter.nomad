@@ -26,9 +26,9 @@ job "unifi-exporter" {
       driver = "docker"
 
       config {
-        image   = "mmoriarity/unifi_exporter@__DIGEST__"
+        image   = "mmoriarity/unifi_exporter@${image_digests.unifi_exporter}"
         command = "/unifi_exporter"
-        args    = ["-config.file=${NOMAD_SECRETS_DIR}/config.yml"]
+        args    = ["-config.file=$${NOMAD_SECRETS_DIR}/config.yml"]
         ports   = ["http"]
 
         logging {

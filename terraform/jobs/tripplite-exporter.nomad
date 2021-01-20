@@ -10,7 +10,7 @@ job "tripplite-exporter" {
     // this needs to connect to the Tripplite UPS over USB,
     // and it's only plugged in to this machine.
     constraint {
-      attribute = "${node.unique.name}"
+      attribute = "$${node.unique.name}"
       value     = "raspberrypi"
     }
 
@@ -33,7 +33,7 @@ job "tripplite-exporter" {
       driver = "docker"
 
       config {
-        image   = "mmoriarity/tripplite-exporter@__DIGEST__"
+        image   = "mmoriarity/tripplite-exporter@${image_digests.tripplite_exporter}"
         command = "/tripplite_exporter"
         ports   = ["http"]
 

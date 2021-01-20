@@ -8,13 +8,13 @@ job "beacon" {
       driver = "docker"
 
       config {
-        image   = "mmoriarity/beacon-srv@__DIGEST__"
+        image   = "mmoriarity/beacon-srv@${image_digests.beacon_srv}"
         command = "/beacon-srv"
         args    = [
           "-proximity-uuid",
           "7298c12b-f658-445f-b1f2-5d6d582f0fb0",
           "-node-name",
-          "${node.unique.name}",
+          "$${node.unique.name}",
         ]
 
         network_mode = "host"
@@ -34,8 +34,8 @@ job "beacon" {
       }
 
       env {
-        HOSTNAME        = "${attr.unique.hostname}"
-        NOMAD_CLIENT_ID = "${node.unique.id}"
+        HOSTNAME        = "$${attr.unique.hostname}"
+        NOMAD_CLIENT_ID = "$${node.unique.id}"
       }
     }
   }

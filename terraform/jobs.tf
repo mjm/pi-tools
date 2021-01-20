@@ -27,11 +27,15 @@ resource "nomad_job" "blackbox_exporter" {
 }
 
 resource "nomad_job" "tripplite_exporter" {
-  jobspec = replace(file("${path.module}/jobs/tripplite-exporter.nomad"), "__DIGEST__", data.docker_registry_image.tripplite_exporter.sha256_digest)
+  jobspec = templatefile("${path.module}/jobs/tripplite-exporter.nomad", {
+    image_digests = local.image_digests
+  })
 }
 
 resource "nomad_job" "unifi_exporter" {
-  jobspec = replace(file("${path.module}/jobs/unifi-exporter.nomad"), "__DIGEST__", data.docker_registry_image.unifi_exporter.sha256_digest)
+  jobspec = templatefile("${path.module}/jobs/unifi-exporter.nomad", {
+    image_digests = local.image_digests
+  })
 }
 
 resource "nomad_job" "jaeger" {
@@ -47,25 +51,33 @@ resource "nomad_job" "grafana" {
 }
 
 resource "nomad_job" "deploy" {
-  jobspec = replace(file("${path.module}/jobs/deploy.nomad"), "__DIGEST__", data.docker_registry_image.deploy_srv.sha256_digest)
+  jobspec = templatefile("${path.module}/jobs/deploy.nomad", {
+    image_digests = local.image_digests
+  })
 }
 
 resource "nomad_job" "beacon_srv" {
-  jobspec = replace(file("${path.module}/jobs/beacon-srv.nomad"), "__DIGEST__", data.docker_registry_image.beacon_srv.sha256_digest)
+  jobspec = templatefile("${path.module}/jobs/beacon-srv.nomad", {
+    image_digests = local.image_digests
+  })
 }
 
 resource "nomad_job" "presence" {
-  jobspec = replace(file("${path.module}/jobs/presence.nomad"), "__DIGEST__", data.docker_registry_image.detect_presence_srv.sha256_digest)
+  jobspec = templatefile("${path.module}/jobs/presence.nomad", {
+    image_digests = local.image_digests
+  })
 }
 
 resource "nomad_job" "go_links_srv" {
-  jobspec = replace(file("${path.module}/jobs/go-links-srv.nomad"), "__DIGEST__", data.docker_registry_image.go_links_srv.sha256_digest)
+  jobspec = templatefile("${path.module}/jobs/go-links-srv.nomad", {
+    image_digests = local.image_digests
+  })
 }
 
 resource "nomad_job" "homebase" {
-  jobspec = replace(replace(replace(file("${path.module}/jobs/homebase.nomad"), "__HOMEBASE_SRV_DIGEST__", data.docker_registry_image.homebase_srv.sha256_digest),
-  "__HOMEBASE_API_DIGEST__", data.docker_registry_image.homebase_api_srv.sha256_digest),
-  "__HOMEBASE_BOT_DIGEST__", data.docker_registry_image.homebase_bot_srv.sha256_digest)
+  jobspec = templatefile("${path.module}/jobs/homebase.nomad", {
+    image_digests = local.image_digests
+  })
 }
 
 resource "nomad_job" "oauth_proxy" {
@@ -80,9 +92,13 @@ resource "nomad_job" "ingress" {
 }
 
 resource "nomad_job" "backup_tarsnap" {
-  jobspec = replace(file("${path.module}/jobs/backup-tarsnap.nomad"), "__PROMETHEUS_BACKUP_DIGEST__", data.docker_registry_image.prometheus_backup.sha256_digest)
+  jobspec = templatefile("${path.module}/jobs/backup-tarsnap.nomad", {
+    image_digests = local.image_digests
+  })
 }
 
 resource "nomad_job" "backup_borg" {
-  jobspec = replace(file("${path.module}/jobs/backup-borg.nomad"), "__PROMETHEUS_BACKUP_DIGEST__", data.docker_registry_image.prometheus_backup.sha256_digest)
+  jobspec = templatefile("${path.module}/jobs/backup-borg.nomad", {
+    image_digests = local.image_digests
+  })
 }
