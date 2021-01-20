@@ -25,10 +25,6 @@ resource "consul_config_entry" "detect_presence_grpc_intentions" {
   config_json = jsonencode({
     Sources = [
       {
-        Name   = "*"
-        Action = "deny"
-      },
-      {
         Name        = "ingress-http"
         Permissions = [
           {
@@ -84,6 +80,10 @@ resource "consul_config_entry" "detect_presence_grpc_intentions" {
             }
           },
         ],
+      },
+      {
+        Name   = "*"
+        Action = "deny"
       },
     ]
   })
