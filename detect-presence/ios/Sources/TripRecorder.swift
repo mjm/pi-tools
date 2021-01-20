@@ -2,8 +2,6 @@ import Foundation
 import Combine
 import Relay
 import detect_presence_ios_relay_generated
-import detect_presence_proto_trips_trips_proto
-import detect_presence_proto_trips_trips_swift_proto_grpc_client
 
 class TripRecorder {
     enum Event {
@@ -11,7 +9,6 @@ class TripRecorder {
         case recordFailed(String)
     }
 
-    private var client: TripsServiceService!
     private var environment: Environment!
     private let eventsSubject = PassthroughSubject<Event, Never>()
     private var cancellables = Set<AnyCancellable>()

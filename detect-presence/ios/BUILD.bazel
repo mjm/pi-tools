@@ -18,8 +18,6 @@ swift_library(
     ],
     deps = [
         ":relay-generated",
-        "//detect-presence/proto/trips:trips_swift_proto",
-        "//detect-presence/proto/trips:trips_swift_proto_grpc_client",
         "@com_github_relay_tools_relay_swift//:Relay",
         "@com_github_relay_tools_relay_swift//:RelaySwiftUI",
     ],
