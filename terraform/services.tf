@@ -26,6 +26,8 @@ resource "consul_config_entry" "detect_presence_grpc_intentions" {
     Sources = [
       {
         Name        = "ingress-http"
+        Precedence  = 9
+        Type        = "consul"
         Permissions = [
           {
             Action = "allow"
@@ -49,6 +51,8 @@ resource "consul_config_entry" "detect_presence_grpc_intentions" {
       },
       {
         Name        = "homebase-bot"
+        Precedence  = 9
+        Type        = "consul"
         Permissions = [
           {
             Action = "deny"
@@ -66,6 +70,8 @@ resource "consul_config_entry" "detect_presence_grpc_intentions" {
       },
       {
         Name        = "homebase-api"
+        Precedence  = 9
+        Type        = "consul"
         Permissions = [
           {
             Action = "deny"
@@ -82,8 +88,10 @@ resource "consul_config_entry" "detect_presence_grpc_intentions" {
         ],
       },
       {
-        Name   = "*"
-        Action = "deny"
+        Name       = "*"
+        Action     = "deny"
+        Precedence = 8
+        Type       = "consul"
       },
     ]
   })
@@ -115,6 +123,8 @@ resource "consul_config_entry" "deploy_grpc_intentions" {
     Sources = [
       {
         Name        = "homebase-api"
+        Precedence  = 9
+        Type        = "consul"
         Permissions = [
           {
             Action = "allow"
@@ -131,8 +141,10 @@ resource "consul_config_entry" "deploy_grpc_intentions" {
         ]
       },
       {
-        Action = "deny"
-        Name   = "*"
+        Action     = "deny"
+        Name       = "*"
+        Precedence = 8
+        Type       = "consul"
       },
     ]
   })
@@ -155,6 +167,8 @@ resource "consul_config_entry" "go_links_grpc_intentions" {
     Sources = [
       {
         Name        = "homebase-api"
+        Precedence  = 9
+        Type        = "consul"
         Permissions = [
           {
             Action = "allow"
@@ -171,8 +185,10 @@ resource "consul_config_entry" "go_links_grpc_intentions" {
         ]
       },
       {
-        Action = "deny"
-        Name   = "*"
+        Action     = "deny"
+        Name       = "*"
+        Precedence = 8
+        Type       = "consul"
       },
     ]
   })
@@ -194,12 +210,16 @@ resource "consul_config_entry" "go_links_intentions" {
   config_json = jsonencode({
     Sources = [
       {
-        Name   = "ingress-http",
-        Action = "allow"
+        Name       = "ingress-http",
+        Action     = "allow"
+        Precedence = 9
+        Type       = "consul"
       },
       {
-        Name   = "*"
-        Action = "deny"
+        Name       = "*"
+        Action     = "deny"
+        Precedence = 8
+        Type       = "consul"
       },
     ]
   })
@@ -222,6 +242,8 @@ resource "consul_config_entry" "homebase_bot_grpc_intentions" {
     Sources = [
       {
         Name        = "detect-presence"
+        Precedence  = 9
+        Type        = "consul"
         Permissions = [
           {
             Action = "allow"
@@ -238,8 +260,10 @@ resource "consul_config_entry" "homebase_bot_grpc_intentions" {
         ]
       },
       {
-        Action = "deny"
-        Name   = "*"
+        Action     = "deny"
+        Name       = "*"
+        Precedence = 8
+        Type       = "consul"
       },
     ]
   })
@@ -261,8 +285,10 @@ resource "consul_config_entry" "homebase_bot_intentions" {
   config_json = jsonencode({
     Sources = [
       {
-        Action = "deny"
-        Name   = "*"
+        Action     = "deny"
+        Name       = "*"
+        Precedence = 8
+        Type       = "consul"
       },
     ]
   })
@@ -285,6 +311,8 @@ resource "consul_config_entry" "homebase_api_intentions" {
     Sources = [
       {
         Name        = "ingress-http"
+        Precedence  = 9
+        Type        = "consul"
         Permissions = [
           {
             Action = "allow"
@@ -301,8 +329,10 @@ resource "consul_config_entry" "homebase_api_intentions" {
         ]
       },
       {
-        Action = "deny"
-        Name   = "*"
+        Action     = "deny"
+        Name       = "*"
+        Precedence = 8
+        Type       = "consul"
       },
     ]
   })
@@ -326,8 +356,10 @@ resource "consul_config_entry" "ingress_http_intentions" {
   config_json = jsonencode({
     Sources = [
       {
-        Action = "deny"
-        Name   = "*"
+        Action     = "deny"
+        Name       = "*"
+        Precedence = 8
+        Type       = "consul"
       }
     ]
   })
@@ -349,24 +381,34 @@ resource "consul_config_entry" "postgresql_intentions" {
   config_json = jsonencode({
     Sources = [
       {
-        Action = "allow"
-        Name   = "detect-presence"
+        Action     = "allow"
+        Name       = "detect-presence"
+        Precedence = 9
+        Type       = "consul"
       },
       {
-        Action = "allow"
-        Name   = "go-links"
+        Action     = "allow"
+        Name       = "go-links"
+        Precedence = 9
+        Type       = "consul"
       },
       {
-        Action = "allow"
-        Name   = "grafana"
+        Action     = "allow"
+        Name       = "grafana"
+        Precedence = 9
+        Type       = "consul"
       },
       {
-        Action = "allow"
-        Name   = "homebase-bot"
+        Action     = "allow"
+        Name       = "homebase-bot"
+        Precedence = 9
+        Type       = "consul"
       },
       {
-        Action = "deny"
-        Name   = "*"
+        Action     = "deny"
+        Name       = "*"
+        Precedence = 8
+        Type       = "consul"
       },
     ]
   })
@@ -390,6 +432,8 @@ resource "consul_config_entry" "jaeger_collector_intentions" {
       {
         Name        = "*"
         Description = "Allow any service to send traces to the collector"
+        Precedence  = 8
+        Type        = "consul"
         Permissions = [
           {
             Action = "allow"
