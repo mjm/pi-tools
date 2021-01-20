@@ -1,9 +1,3 @@
-// TODO move these into the job spec as soon as that's possible
-locals {
-  oauth_locations_snippet = file("${path.module}/templates/oauth_locations.conf")
-  oauth_request_snippet = file("${path.module}/templates/oauth_request.conf")
-}
-
 resource "nomad_job" "named" {
   jobspec = file("${path.module}/jobs/named.nomad")
 }
@@ -79,8 +73,10 @@ resource "nomad_job" "oauth_proxy" {
 }
 
 resource "nomad_job" "ingress" {
-  jobspec = replace(replace(file("${path.module}/jobs/ingress.nomad"), "__OAUTH_LOCATIONS_SNIPPET__", local.oauth_locations_snippet),
-  "__OAUTH_REQUEST_SNIPPET__", local.oauth_request_snippet)
+  jobspec = file("${path.module}/jobs/ingress.nomad")
+  hcl2 {
+    enabled = true
+  }
 }
 
 resource "nomad_job" "backup_tarsnap" {

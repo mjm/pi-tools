@@ -1,9 +1,45 @@
+locals {
+  oauth_locations_snippet = <<EOF
+  location /oauth2/ {
+    proxy_pass       http://oauth-proxy;
+    proxy_set_header Host                    $host;
+    proxy_set_header X-Real-IP               $remote_addr;
+    proxy_set_header X-Scheme                $scheme;
+    proxy_set_header X-Auth-Request-Redirect $scheme://$host$request_uri;
+  }
+
+  location /oauth2/auth {
+    proxy_pass       http://oauth-proxy;
+    proxy_set_header Host             $host;
+    proxy_set_header X-Real-IP        $remote_addr;
+    proxy_set_header X-Scheme         $scheme;
+    # nginx auth_request includes headers but not body
+    proxy_set_header Content-Length   "";
+    proxy_pass_request_body           off;
+  }
+EOF
+  oauth_request_snippet = <<EOF
+    auth_request /oauth2/auth;
+    error_page 401 = /oauth2/sign_in;
+
+    # pass information via X-User and X-Email headers to backend,
+    # requires running with --set-xauthrequest flag
+    auth_request_set $user   $upstream_http_x_auth_request_user;
+    auth_request_set $email  $upstream_http_x_auth_request_email;
+    proxy_set_header X-Auth-Request-User  $user;
+    proxy_set_header X-Auth-Request-Email $email;
+
+    # if you enabled --cookie-refresh, this is needed for it to work with auth_request
+    auth_request_set $auth_cookie $upstream_http_set_cookie;
+    add_header Set-Cookie $auth_cookie;
+EOF
+}
+
 job "ingress" {
   datacenters = [
     "dc1",
   ]
 
-  //  type     = "system"
   type     = "service"
   priority = 70
 
@@ -192,10 +228,10 @@ server {
   ssl_certificate /etc/nginx/ssl/nomad.homelab.pem;
   ssl_certificate_key /etc/nginx/ssl/nomad.homelab.pem;
 
-  __OAUTH_LOCATIONS_SNIPPET__
+  ${local.oauth_locations_snippet}
 
   location / {
-    __OAUTH_REQUEST_SNIPPET__
+    ${local.oauth_request_snippet}
 
     proxy_pass https://nomad;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -233,10 +269,10 @@ server {
   ssl_certificate /etc/nginx/ssl/consul.homelab.pem;
   ssl_certificate_key /etc/nginx/ssl/consul.homelab.pem;
 
-  __OAUTH_LOCATIONS_SNIPPET__
+  ${local.oauth_locations_snippet}
 
   location / {
-    __OAUTH_REQUEST_SNIPPET__
+    ${local.oauth_request_snippet}
 
     proxy_pass http://consul;
   }
@@ -249,10 +285,10 @@ server {
   ssl_certificate /etc/nginx/ssl/vault.homelab.pem;
   ssl_certificate_key /etc/nginx/ssl/vault.homelab.pem;
 
-  __OAUTH_LOCATIONS_SNIPPET__
+  ${local.oauth_locations_snippet}
 
   location / {
-    __OAUTH_REQUEST_SNIPPET__
+    ${local.oauth_request_snippet}
 
     proxy_pass http://vault;
   }
@@ -266,10 +302,10 @@ server {
   ssl_certificate_key /etc/nginx/ssl/go.homelab.pem;
   add_header Strict-Transport-Security "max-age=2628000" always;
 
-  __OAUTH_LOCATIONS_SNIPPET__
+  ${local.oauth_locations_snippet}
 
   location / {
-    __OAUTH_REQUEST_SNIPPET__
+    ${local.oauth_request_snippet}
 
     proxy_pass http://go-links;
   }
@@ -289,7 +325,7 @@ server {
   ssl_certificate /etc/nginx/ssl/homebase.homelab.pem;
   ssl_certificate_key /etc/nginx/ssl/homebase.homelab.pem;
 
-  __OAUTH_LOCATIONS_SNIPPET__
+  ${local.oauth_locations_snippet}
 
   location /graphql {
     auth_request /oauth2/auth;
@@ -310,13 +346,13 @@ server {
   }
 
   location /download_app {
-    __OAUTH_REQUEST_SNIPPET__
+    ${local.oauth_request_snippet}
 
     proxy_pass http://detect-presence;
   }
 
   location / {
-    __OAUTH_REQUEST_SNIPPET__
+    ${local.oauth_request_snippet}
 
     proxy_pass http://homebase;
   }
@@ -341,10 +377,10 @@ server {
   ssl_certificate /etc/nginx/ssl/pihole.homelab.pem;
   ssl_certificate_key /etc/nginx/ssl/pihole.homelab.pem;
 
-  __OAUTH_LOCATIONS_SNIPPET__
+  ${local.oauth_locations_snippet}
 
   location / {
-    __OAUTH_REQUEST_SNIPPET__
+    ${local.oauth_request_snippet}
 
     # Needed to have pi-hole present the admin UI instead of a "you've been blocked" page
     proxy_set_header Host $host;
@@ -359,10 +395,10 @@ server {
   ssl_certificate /etc/nginx/ssl/prometheus.homelab.pem;
   ssl_certificate_key /etc/nginx/ssl/prometheus.homelab.pem;
 
-  __OAUTH_LOCATIONS_SNIPPET__
+  ${local.oauth_locations_snippet}
 
   location / {
-    __OAUTH_REQUEST_SNIPPET__
+    ${local.oauth_request_snippet}
 
     proxy_pass http://prometheus;
   }
@@ -375,10 +411,10 @@ server {
   ssl_certificate /etc/nginx/ssl/alertmanager.homelab.pem;
   ssl_certificate_key /etc/nginx/ssl/alertmanager.homelab.pem;
 
-  __OAUTH_LOCATIONS_SNIPPET__
+  ${local.oauth_locations_snippet}
 
   location / {
-    __OAUTH_REQUEST_SNIPPET__
+    ${local.oauth_request_snippet}
 
     proxy_pass http://alertmanager;
   }
@@ -391,10 +427,10 @@ server {
   ssl_certificate /etc/nginx/ssl/grafana.homelab.pem;
   ssl_certificate_key /etc/nginx/ssl/grafana.homelab.pem;
 
-  __OAUTH_LOCATIONS_SNIPPET__
+  ${local.oauth_locations_snippet}
 
   location / {
-    __OAUTH_REQUEST_SNIPPET__
+    ${local.oauth_request_snippet}
 
     proxy_pass http://grafana;
   }
@@ -407,10 +443,10 @@ server {
   ssl_certificate /etc/nginx/ssl/jaeger.homelab.pem;
   ssl_certificate_key /etc/nginx/ssl/jaeger.homelab.pem;
 
-  __OAUTH_LOCATIONS_SNIPPET__
+  ${local.oauth_locations_snippet}
 
   location / {
-    __OAUTH_REQUEST_SNIPPET__
+    ${local.oauth_request_snippet}
 
     proxy_pass http://jaeger-query;
   }
