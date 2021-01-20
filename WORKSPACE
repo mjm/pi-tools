@@ -205,10 +205,10 @@ load(
 
 apple_support_dependencies()
 
-# TODO change this to an http_archive once I've pushed a version I know works
-local_repository(
+http_archive(
     name = "com_github_relay_tools_relay_swift",
-    path = "../Relay.swift",
+    strip_prefix = "Relay.swift-24fc5dd91ba0900e0f511abb73f065bfc9634174",
+    urls = ["https://github.com/relay-tools/Relay.swift/archive/24fc5dd91ba0900e0f511abb73f065bfc9634174.zip"],
 )
 
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
