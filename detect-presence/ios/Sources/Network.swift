@@ -2,12 +2,12 @@ import Relay
 import Foundation
 import Combine
 
-let environment = Environment(
+let myRelayEnvironment = Environment(
     network: MyNetwork(),
     store: Store()
 )
 
-private let graphqlURL = URL(string: "https://homebase.homelab/graphql")!
+private let graphqlURL = URL(string: "http://100.117.39.47:8080/graphql")!
 
 struct RequestPayload: Encodable {
     var query: String

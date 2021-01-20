@@ -13,6 +13,7 @@ type Query {
 type Mutation {
     ignoreTrip(input: IgnoreTripInput!): IgnoreTripPayload!
     updateTripTags(input: UpdateTripTagsInput!): UpdateTripTagsPayload!
+    recordTrips(input: RecordTripsInput!): RecordTripsPayload!
 
     createLink(input: CreateLinkInput!): CreateLinkPayload!
     updateLink(input: UpdateLinkInput!): UpdateLinkPayload!
@@ -143,6 +144,26 @@ input UpdateTripTagsInput {
 
 type UpdateTripTagsPayload {
     trip: Trip
+}
+
+input RecordTripsInput {
+    trips: [NewTripInput!]!
+}
+
+input NewTripInput {
+    id: String!
+    leftAt: Time!
+    returnedAt: Time!
+}
+
+type RecordTripsPayload {
+    recordedTrips: [Trip!]!
+    failures: [TripRecordingFailure!]!
+}
+
+type TripRecordingFailure {
+    tripID: String! # Use a String instead of an ID, as this should match the input that was given to us
+    message: String!
 }
 
 input CreateLinkInput {

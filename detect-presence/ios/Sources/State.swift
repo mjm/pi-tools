@@ -1,5 +1,5 @@
 import Foundation
-import detect_presence_proto_trips_trips_proto
+import detect_presence_ios_relay_generated
 
 struct State: Codable {
     var currentTrip: Trip?
@@ -11,14 +11,12 @@ struct Trip: Codable {
     var leftAt: Date = Date()
     var returnedAt: Date?
 
-    var asProto: detect_presence_proto_trips_trips_proto.Trip {
-        .with { trip in
-            trip.id = id.uuidString
-            trip.leftAt = dateFormatter.string(from: leftAt)
-            if let returnedAt = returnedAt {
-                trip.returnedAt = dateFormatter.string(from: returnedAt)
-            }
-        }
+    var asInput: NewTripInput {
+        NewTripInput(
+            id: id.uuidString,
+            leftAt: dateFormatter.string(from: leftAt),
+            returnedAt: dateFormatter.string(from: returnedAt!)
+        )
     }
 }
 

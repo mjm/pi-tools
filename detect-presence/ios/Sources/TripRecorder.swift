@@ -1,5 +1,7 @@
 import Foundation
 import Combine
+import Relay
+import detect_presence_ios_relay_generated
 import detect_presence_proto_trips_trips_proto
 import detect_presence_proto_trips_trips_swift_proto_grpc_client
 
@@ -10,6 +12,7 @@ class TripRecorder {
     }
 
     private var client: TripsServiceService!
+    private var environment: Environment!
     private let eventsSubject = PassthroughSubject<Event, Never>()
     private var cancellables = Set<AnyCancellable>()
     private let backoff = BackoffExecutor()
@@ -34,41 +37,41 @@ class TripRecorder {
     }
 
     func recordTrips(_ trips: [Trip]) {
-        let request = RecordTripsRequest.with {
-            $0.trips = trips.map(\.asProto)
-        }
+        let op = RecordTripsMutation(
+            input: .init(trips: trips.map(\.asInput))
+        )
 
-        backoff.enqueue(initialDelay: 30) { completion in
-            do {
-                try self.client.recordTrips(request) { _, result in
-                    DispatchQueue.main.sync {
-                        if result.success && result.statusCode == .ok {
-                            NSLog("successfully recorded trip")
-                            self.eventsSubject.send(.recorded(trips))
-                            completion(true)
-                        } else {
-                            NSLog("failed to record trip: \(result)")
-                            self.eventsSubject.send(.recordFailed(result.description))
-                            completion(false)
+        backoff.enqueue(initialDelay: 30) { done in
+            DispatchQueue.main.async {
+                self.environment.commitMutation(op)
+                    .sink { completion in
+                        if case .failure(let error) = completion {
+                            self.eventsSubject.send(.recordFailed(error.localizedDescription))
+                            done(false)
                         }
+                    } receiveValue: { data in
+                        self.eventsSubject.send(.recorded(trips))
+                        if let failures = data?.recordTrips.failures, !failures.isEmpty {
+                            // TODO represent these in the event
+                            NSLog("Got some failures: \(failures)")
+                        }
+                        done(true)
                     }
-                }
-            } catch {
-                NSLog("error trying to record trips: \(error)")
-                self.eventsSubject.send(.recordFailed(error.localizedDescription))
-                completion(false)
+                    .store(in: &self.cancellables)
             }
         }
     }
 
     func setUpClient(useDevServer: Bool = false) {
-        if useDevServer {
-            NSLog("creating dev server client")
-            client = TripsServiceServiceClient(address: "100.117.39.47:2121", secure: false)
-        } else {
-            NSLog("creating real client")
-            client = TripsServiceServiceClient(address: "detect-presence-grpc.homelab", certificates: homelabCA)
-        }
+        // TODO make environment respond to changes in useDevServer
+        self.environment = myRelayEnvironment
+//        if useDevServer {
+//            NSLog("creating dev server client")
+//            client = TripsServiceServiceClient(address: "100.117.39.47:2121", secure: false)
+//        } else {
+//            NSLog("creating real client")
+//            client = TripsServiceServiceClient(address: "detect-presence-grpc.homelab", certificates: homelabCA)
+//        }
     }
 }
 

@@ -11,13 +11,24 @@ swift_library(
         "Sources/BeaconObserver.swift",
         "Sources/ContentView.swift",
         "Sources/Network.swift",
+        "Sources/RecordTripsMutation.swift",
         "Sources/State.swift",
         "Sources/TripRecorder.swift",
         "Sources/TripsController.swift",
     ],
     deps = [
+        ":relay-generated",
         "//detect-presence/proto/trips:trips_swift_proto",
         "//detect-presence/proto/trips:trips_swift_proto_grpc_client",
+        "@com_github_relay_tools_relay_swift//:Relay",
+        "@com_github_relay_tools_relay_swift//:RelaySwiftUI",
+    ],
+)
+
+swift_library(
+    name = "relay-generated",
+    srcs = glob(["__generated__/*.graphql.swift"]),
+    deps = [
         "@com_github_relay_tools_relay_swift//:Relay",
         "@com_github_relay_tools_relay_swift//:RelaySwiftUI",
     ],

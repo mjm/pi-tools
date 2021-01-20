@@ -2,6 +2,7 @@ package apiservice
 
 import (
 	"context"
+	"time"
 
 	"github.com/mjm/graphql-go"
 	"github.com/mjm/graphql-go/relay"
@@ -59,4 +60,58 @@ func (r *Resolver) UpdateTripTags(ctx context.Context, args struct {
 
 	resp.Trip, err = r.Trip(ctx, struct{ ID graphql.ID }{ID: args.Input.TripID}) // oof
 	return
+}
+
+func (r *Resolver) RecordTrips(ctx context.Context, args struct {
+	Input struct {
+		Trips []struct {
+			ID         string
+			LeftAt     graphql.Time
+			ReturnedAt graphql.Time
+		}
+	}
+}) (
+	resp struct {
+		RecordedTrips []*Trip
+		Failures      []TripRecordingFailure
+	},
+	err error,
+) {
+	req := &tripspb.RecordTripsRequest{}
+	for _, t := range args.Input.Trips {
+		req.Trips = append(req.Trips, &tripspb.Trip{
+			Id:         t.ID,
+			LeftAt:     t.LeftAt.Format(time.RFC3339),
+			ReturnedAt: t.ReturnedAt.Format(time.RFC3339),
+		})
+	}
+
+	var res *tripspb.RecordTripsResponse
+	res, err = r.tripsClient.RecordTrips(ctx, req)
+	if err != nil {
+		return
+	}
+
+	failedIDs := map[string]struct{}{}
+	for _, failure := range res.GetFailures() {
+		failedIDs[failure.GetTripId()] = struct{}{}
+		resp.Failures = append(resp.Failures, TripRecordingFailure{
+			TripID:  failure.GetTripId(),
+			Message: failure.GetMessage(),
+		})
+	}
+
+	for _, t := range req.Trips {
+		if _, ok := failedIDs[t.GetId()]; ok {
+			continue
+		}
+
+		resp.RecordedTrips = append(resp.RecordedTrips, &Trip{t})
+	}
+	return
+}
+
+type TripRecordingFailure struct {
+	TripID  string
+	Message string
 }
