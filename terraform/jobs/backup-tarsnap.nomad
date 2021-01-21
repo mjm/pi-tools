@@ -1,3 +1,24 @@
+locals {
+  databases = {
+    presence       = {
+      db_name    = "presence"
+      vault_role = "presence"
+    }
+    golinks        = {
+      db_name    = "golinks"
+      vault_role = "go-links"
+    }
+    "homebase-bot" = {
+      db_name    = "homebase_bot"
+      vault_role = "homebase-bot"
+    }
+    grafana        = {
+      db_name    = "grafana"
+      vault_role = "grafana"
+    }
+  }
+}
+
 job "backup-tarsnap" {
   datacenters = ["dc1"]
 
@@ -74,167 +95,51 @@ job "backup-tarsnap" {
       }
     }
 
-    task "dump-presence-db" {
-      lifecycle {
-        hook = "prestart"
-      }
+    dynamic "task" {
+      for_each = local.databases
 
-      driver = "docker"
+      labels = ["dump-$${task.key}-db"]
 
-      config {
-        image   = "postgres@sha256:b6399aef923e0529a4f2a5874e8860d29cef3726ab7079883f3368aaa2a9f29c"
-        command = "pg_dump"
-        args    = [
-          "--host=postgresql.service.consul",
-          "--dbname=presence",
-          "--file=$${NOMAD_ALLOC_DIR}/data/presence.sql",
-        ]
+      content {
+        lifecycle {
+          hook = "prestart"
+        }
 
-        network_mode = "host"
-      }
+        driver = "docker"
 
-      resources {
-        cpu    = 50
-        memory = 50
-      }
+        config {
+          image   = "postgres@sha256:b6399aef923e0529a4f2a5874e8860d29cef3726ab7079883f3368aaa2a9f29c"
+          command = "pg_dump"
+          args    = [
+            "--host=postgresql.service.consul",
+            "--dbname=$${DB_NAME}",
+            "--file=$${NOMAD_ALLOC_DIR}/data/$${DB_NAME}.sql",
+          ]
 
-      vault {
-        policies = ["presence"]
-      }
+          network_mode = "host"
+        }
 
-      template {
-        // language=GoTemplate
-        data        = <<EOF
-{{ with secret "database/creds/presence" }}
+        resources {
+          cpu    = 50
+          memory = 50
+        }
+
+        vault {
+          policies = [task.value.vault_role]
+        }
+
+        template {
+          // language=GoTemplate
+          data        = <<EOF
+{{ with secret "database/creds/$${task.value.vault_role}" }}
+DB_NAME=$${task.value.db_name}
 PGUSER="{{ .Data.username }}"
 PGPASSWORD={{ .Data.password | toJSON }}
 {{ end }}
 EOF
-        destination = "secrets/db.env"
-        env         = true
-      }
-    }
-
-    task "dump-golinks-db" {
-      lifecycle {
-        hook = "prestart"
-      }
-
-      driver = "docker"
-
-      config {
-        image   = "postgres@sha256:b6399aef923e0529a4f2a5874e8860d29cef3726ab7079883f3368aaa2a9f29c"
-        command = "pg_dump"
-        args    = [
-          "--host=postgresql.service.consul",
-          "--dbname=golinks",
-          "--file=$${NOMAD_ALLOC_DIR}/data/golinks.sql",
-        ]
-
-        network_mode = "host"
-      }
-
-      resources {
-        cpu    = 50
-        memory = 50
-      }
-
-      vault {
-        policies = ["go-links"]
-      }
-
-      template {
-        // language=GoTemplate
-        data        = <<EOF
-{{ with secret "database/creds/go-links" }}
-PGUSER="{{ .Data.username }}"
-PGPASSWORD={{ .Data.password | toJSON }}
-{{ end }}
-EOF
-        destination = "secrets/db.env"
-        env         = true
-      }
-    }
-
-    task "dump-homebase-bot-db" {
-      lifecycle {
-        hook = "prestart"
-      }
-
-      driver = "docker"
-
-      config {
-        image   = "postgres@sha256:b6399aef923e0529a4f2a5874e8860d29cef3726ab7079883f3368aaa2a9f29c"
-        command = "pg_dump"
-        args    = [
-          "--host=postgresql.service.consul",
-          "--dbname=homebase_bot",
-          "--file=$${NOMAD_ALLOC_DIR}/data/homebase_bot.sql",
-        ]
-
-        network_mode = "host"
-      }
-
-      resources {
-        cpu    = 50
-        memory = 50
-      }
-
-      vault {
-        policies = ["homebase-bot"]
-      }
-
-      template {
-        // language=GoTemplate
-        data        = <<EOF
-{{ with secret "database/creds/homebase-bot" }}
-PGUSER="{{ .Data.username }}"
-PGPASSWORD={{ .Data.password | toJSON }}
-{{ end }}
-EOF
-        destination = "secrets/db.env"
-        env         = true
-      }
-    }
-
-    task "dump-grafana-db" {
-      lifecycle {
-        hook = "prestart"
-      }
-
-      driver = "docker"
-
-      config {
-        image   = "postgres@sha256:b6399aef923e0529a4f2a5874e8860d29cef3726ab7079883f3368aaa2a9f29c"
-        command = "pg_dump"
-        args    = [
-          "--host=postgresql.service.consul",
-          "--dbname=grafana",
-          "--file=$${NOMAD_ALLOC_DIR}/data/grafana.sql",
-        ]
-
-        network_mode = "host"
-      }
-
-      resources {
-        cpu    = 50
-        memory = 50
-      }
-
-      vault {
-        policies = ["grafana"]
-      }
-
-      template {
-        // language=GoTemplate
-        data        = <<EOF
-{{ with secret "database/creds/grafana" }}
-PGUSER="{{ .Data.username }}"
-PGPASSWORD={{ .Data.password | toJSON }}
-{{ end }}
-EOF
-        destination = "secrets/db.env"
-        env         = true
+          destination = "secrets/db.env"
+          env         = true
+        }
       }
     }
 

@@ -95,10 +95,16 @@ resource "nomad_job" "backup_tarsnap" {
   jobspec = templatefile("${path.module}/jobs/backup-tarsnap.nomad", {
     image_digests = local.image_digests
   })
+  hcl2 {
+    enabled = true
+  }
 }
 
 resource "nomad_job" "backup_borg" {
   jobspec = templatefile("${path.module}/jobs/backup-borg.nomad", {
     image_digests = local.image_digests
   })
+  hcl2 {
+    enabled = true
+  }
 }
