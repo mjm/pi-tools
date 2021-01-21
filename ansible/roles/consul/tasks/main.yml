@@ -1,20 +1,17 @@
-- name: Check if Consul is installed
-  stat:
-    path: /usr/local/bin/consul
-  register: consul_installed
+- name: Check current Consul version
+  shell:
+    cmd: consul version -format json || echo '{"Version":"none"}'
+  register: installed_consul_version
+  changed_when: false
 
-- name: Download Consul
-  get_url:
-    url: https://releases.hashicorp.com/consul/1.9.1/consul_1.9.1_linux_arm64.zip
-    dest: /tmp/consul.zip
-  when: consul_installed.stat.exists == false
-
-- name: Unzip Consul into install location
-  command:
-    cmd: unzip /tmp/consul.zip
-    chdir: /usr/local/bin
+- name: Install Consul {{ consul_version }}
+  unarchive:
+    src: https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_arm64.zip
+    dest: /usr/local/bin
+    remote_src: true
   become: true
-  when: consul_installed.stat.exists == false
+  when: (installed_consul_version.stdout | from_json).Version != consul_version
+  register: install_consul
 
 - name: Ensure Consul data directory exists
   file:
@@ -49,7 +46,7 @@
     enabled: true
     state: restarted
   become: true
-  when: systemd.changed or config_file.changed
+  when: install_consul.changed or systemd.changed or config_file.changed
 
 - name: Ensure Consul service is started
   systemd:
@@ -58,18 +55,20 @@
     state: started
   become: true
 
-- name: Check if consul-template is already installed
-  stat:
-    path: /usr/local/bin/consul-template
-  register: consul_template_installed
+- name: Check current consul-template version
+  shell:
+    cmd: consul-template -version 2>&1 | grep -oP '(?<=consul-template v)([^ ]+)' || echo "none"
+  register: installed_consul_template_version
+  changed_when: false
 
-- name: Install consul-template binary
+- name: Install consul-template {{ consul_template_version }}
   unarchive:
-    src: https://releases.hashicorp.com/consul-template/0.25.1/consul-template_0.25.1_linux_arm64.tgz
+    src: https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/consul-template_{{ consul_template_version }}_linux_arm64.tgz
     dest: /usr/local/bin
     remote_src: true
   become: true
-  when: consul_template_installed.stat.exists == false
+  when: installed_consul_template_version.stdout != consul_template_version
+  register: install_consul_template
 
 - name: Create consul-template.d directory
   file:
@@ -109,7 +108,7 @@
     enabled: true
     state: restarted
   become: true
-  when: template_systemd.changed
+  when: install_consul_template.changed or template_systemd.changed
 
 - name: Reload consul-template service if needed
   systemd:

@@ -21,18 +21,20 @@
   become: true
   when: cni_installed.stat.exists == false
 
-- name: Check if Nomad is installed
-  stat:
-    path: /usr/local/bin/nomad
-  register: nomad_installed
+- name: Check current Nomad version
+  shell:
+    cmd: nomad version | grep -oP '(?<=Nomad v)([^ ]+)' || echo "none"
+  register: installed_nomad_version
+  changed_when: false
 
-- name: Install Nomad
+- name: Install Nomad {{ nomad_version }}
   unarchive:
-    src: https://releases.hashicorp.com/nomad/1.0.2/nomad_1.0.2_linux_arm64.zip
+    src: https://releases.hashicorp.com/nomad/{{ nomad_version }}/nomad_{{ nomad_version }}_linux_arm64.zip
     dest: /usr/local/bin
     remote_src: true
   become: true
-  when: nomad_installed.stat.exists == false
+  when: installed_nomad_version.stdout != nomad_version
+  register: install_nomad
 
 - name: Ensure Nomad data directory exists
   file:
@@ -76,7 +78,7 @@
     enabled: true
     state: restarted
   become: true
-  when: systemd.changed or config_file.changed
+  when: install_nomad.changed or systemd.changed or config_file.changed
 
 - name: Ensure Nomad service is started
   systemd:

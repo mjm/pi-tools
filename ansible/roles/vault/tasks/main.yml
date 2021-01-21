@@ -1,20 +1,17 @@
-- name: Check if Vault is installed
-  stat:
-    path: /usr/local/bin/vault
-  register: vault_installed
+- name: Check current Vault version
+  shell:
+    cmd: vault version | grep -oP '(?<=Vault v)([^ ]+)' || echo "none"
+  register: installed_vault_version
+  changed_when: false
 
-- name: Download Vault
-  get_url:
-    url: https://releases.hashicorp.com/vault/1.6.1/vault_1.6.1_linux_arm64.zip
-    dest: /tmp/vault.zip
-  when: vault_installed.stat.exists == false
-
-- name: Unzip Vault into install location
-  command:
-    cmd: unzip /tmp/vault.zip
-    chdir: /usr/local/bin
+- name: Install Vault {{ vault_version }}
+  unarchive:
+    src: https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_arm64.zip
+    dest: /usr/local/bin
+    remote_src: true
   become: true
-  when: vault_installed.stat.exists == false
+  when: installed_vault_version.stdout != vault_version
+  register: install_vault
 
 - name: Install Vault config file
   copy:
@@ -40,7 +37,7 @@
     enabled: true
     state: restarted
   become: true
-  when: systemd.changed or config_file.changed
+  when: install_vault.changed or systemd.changed or config_file.changed
 
 - name: Ensure Vault service is started
   systemd:
