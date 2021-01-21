@@ -81,7 +81,7 @@ job "prometheus" {
         // language=YAML
         data          = <<EOF
 global:
-  scrape_interval: 30s
+  scrape_interval: 60s
   evaluation_interval: 30s
 
 alerting:
