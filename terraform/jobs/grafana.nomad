@@ -1,9 +1,7 @@
 job "grafana" {
-  datacenters = [
-    "dc1",
-  ]
+  datacenters = ["dc1"]
 
-  type = "service"
+  type     = "service"
   priority = 70
 
   group "grafana" {
@@ -24,11 +22,11 @@ job "grafana" {
       port = 3000
 
       check {
-        expose = true
-        path = "/api/health"
-        type = "http"
+        expose   = true
+        path     = "/api/health"
+        type     = "http"
         interval = "15s"
-        timeout = "3s"
+        timeout  = "3s"
       }
 
       connect {
@@ -36,11 +34,11 @@ job "grafana" {
           proxy {
             upstreams {
               destination_name = "postgresql"
-              local_bind_port = 5432
+              local_bind_port  = 5432
             }
             upstreams {
               destination_name = "loki"
-              local_bind_port = 3100
+              local_bind_port  = 3100
             }
           }
         }
@@ -80,23 +78,21 @@ job "grafana" {
       }
 
       resources {
-        cpu = 100
+        cpu    = 100
         memory = 150
       }
 
       env {
-        GF_PATHS_CONFIG = "${NOMAD_SECRETS_DIR}/grafana.ini"
-        GF_PATHS_PROVISIONING = "${NOMAD_TASK_DIR}/provisioning"
+        GF_PATHS_CONFIG       = "$${NOMAD_SECRETS_DIR}/grafana.ini"
+        GF_PATHS_PROVISIONING = "$${NOMAD_TASK_DIR}/provisioning"
       }
 
       vault {
-        policies = [
-          "grafana"
-        ]
+        policies = ["grafana"]
       }
 
       template {
-        data = <<EOF
+        data        = <<EOF
 [log]
 level = info
 
@@ -126,7 +122,7 @@ EOF
 
       template {
         // language=YAML
-        data = <<EOF
+        data        = <<EOF
 apiVersion: 1
 
 datasources:
@@ -156,7 +152,8 @@ EOF
       }
 
       template {
-        data = <<EOF
+        // language=YAML
+        data        = <<EOF
 apiVersion: 1
 
 providers:
@@ -170,24 +167,36 @@ EOF
         destination = "local/provisioning/dashboards/dashboards.yaml"
       }
 
-      artifact {
-        source = "https://raw.githubusercontent.com/mjm/pi-tools/main/monitoring/grafana/provisioning/dashboards/cluster.json"
-        destination = "local/dashboards"
+      template {
+        data           = <<EOF
+${dashboards.cluster}
+EOF
+        destination    = "local/dashboards/cluster.json"
+        left_delimiter = "do_not_substitute"
       }
 
-      artifact {
-        source = "https://raw.githubusercontent.com/mjm/pi-tools/main/monitoring/grafana/provisioning/dashboards/home.json"
-        destination = "local/dashboards"
+      template {
+        data           = <<EOF
+${dashboards.envoy}
+EOF
+        destination    = "local/dashboards/envoy.json"
+        left_delimiter = "do_not_substitute"
       }
 
-      artifact {
-        source = "https://raw.githubusercontent.com/mjm/pi-tools/main/monitoring/grafana/provisioning/dashboards/node.json"
-        destination = "local/dashboards"
+      template {
+        data           = <<EOF
+${dashboards.home}
+EOF
+        destination    = "local/dashboards/home.json"
+        left_delimiter = "do_not_substitute"
       }
 
-      artifact {
-        source = "https://raw.githubusercontent.com/mjm/pi-tools/main/monitoring/grafana/provisioning/dashboards/envoy.json"
-        destination = "local/dashboards"
+      template {
+        data           = <<EOF
+${dashboards.node}
+EOF
+        destination    = "local/dashboards/node.json"
+        left_delimiter = "do_not_substitute"
       }
     }
   }

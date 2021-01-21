@@ -47,7 +47,14 @@ resource "nomad_job" "postgresql" {
 }
 
 resource "nomad_job" "grafana" {
-  jobspec = file("${path.module}/jobs/grafana.nomad")
+  jobspec = templatefile("${path.module}/jobs/grafana.nomad", {
+    dashboards = {
+      cluster = data.local_file.dashboard_cluster.content
+      envoy   = data.local_file.dashboard_envoy.content
+      home    = data.local_file.dashboard_home.content
+      node    = data.local_file.dashboard_node.content
+    }
+  })
 }
 
 resource "nomad_job" "deploy" {
@@ -107,4 +114,21 @@ resource "nomad_job" "backup_borg" {
   hcl2 {
     enabled = true
   }
+}
+
+
+data "local_file" "dashboard_cluster" {
+  filename = "${path.module}/dashboards/cluster.json"
+}
+
+data "local_file" "dashboard_envoy" {
+  filename = "${path.module}/dashboards/envoy.json"
+}
+
+data "local_file" "dashboard_home" {
+  filename = "${path.module}/dashboards/home.json"
+}
+
+data "local_file" "dashboard_node" {
+  filename = "${path.module}/dashboards/node.json"
 }
