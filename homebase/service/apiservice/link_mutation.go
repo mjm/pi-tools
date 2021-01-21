@@ -21,6 +21,10 @@ func (r *Resolver) CreateLink(ctx context.Context, args struct {
 	},
 	err error,
 ) {
+	if err = requireAuthorizedUser(ctx); err != nil {
+		return
+	}
+
 	var res *linkspb.CreateLinkResponse
 	res, err = r.linksClient.CreateLink(ctx, &linkspb.CreateLinkRequest{
 		ShortUrl:       args.Input.ShortURL,
@@ -48,6 +52,10 @@ func (r *Resolver) UpdateLink(ctx context.Context, args struct {
 	},
 	err error,
 ) {
+	if err = requireAuthorizedUser(ctx); err != nil {
+		return
+	}
+
 	var id string
 	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
 		return

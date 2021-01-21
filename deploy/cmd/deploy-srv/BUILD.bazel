@@ -30,7 +30,7 @@ go_binary(
 container_layer(
     name = "image-terraform-layer",
     files = [
-        "@terraform//:terraform",
+        "@terraform",
     ],
     mode = "0755",
     tags = ["no-cache"],
@@ -39,10 +39,10 @@ container_layer(
 container_image(
     name = "image",
     base = "@distroless_base//image",
-    layers = [":image-terraform-layer"],
     files = [
         ":deploy-srv",
     ],
+    layers = [":image-terraform-layer"],
     mode = "0755",
     tags = ["no-cache"],
 )

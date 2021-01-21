@@ -34,6 +34,10 @@ func (r *Resolver) Trips(ctx context.Context, args struct {
 	First *int32
 	After *Cursor
 }) (*TripConnection, error) {
+	if err := requireAuthorizedUser(ctx); err != nil {
+		return nil, err
+	}
+
 	// TODO actually support paging
 
 	var limit int32 = 30
@@ -50,6 +54,10 @@ func (r *Resolver) Trips(ctx context.Context, args struct {
 func (r *Resolver) Trip(ctx context.Context, args struct {
 	ID graphql.ID
 }) (*Trip, error) {
+	if err := requireAuthorizedUser(ctx); err != nil {
+		return nil, err
+	}
+
 	var id string
 	if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
 		return nil, err
@@ -66,6 +74,10 @@ func (r *Resolver) Tags(ctx context.Context, args struct {
 	First *int32
 	After *Cursor
 }) (*TagConnection, error) {
+	if err := requireAuthorizedUser(ctx); err != nil {
+		return nil, err
+	}
+
 	// TODO actually support paging
 
 	var limit int32 = 30
@@ -83,6 +95,10 @@ func (r *Resolver) Links(ctx context.Context, args struct {
 	First *int32
 	After *Cursor
 }) (*LinkConnection, error) {
+	if err := requireAuthorizedUser(ctx); err != nil {
+		return nil, err
+	}
+
 	// TODO actually support paging
 
 	//var limit int32 = 30
@@ -99,6 +115,10 @@ func (r *Resolver) Links(ctx context.Context, args struct {
 func (r *Resolver) Link(ctx context.Context, args struct {
 	ID graphql.ID
 }) (*Link, error) {
+	if err := requireAuthorizedUser(ctx); err != nil {
+		return nil, err
+	}
+
 	var id string
 	if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
 		return nil, err
@@ -112,6 +132,10 @@ func (r *Resolver) Link(ctx context.Context, args struct {
 }
 
 func (r *Resolver) MostRecentDeploy(ctx context.Context) (*Deploy, error) {
+	if err := requireAuthorizedUser(ctx); err != nil {
+		return nil, err
+	}
+
 	res, err := r.deployClient.GetMostRecentDeploy(ctx, &deploypb.GetMostRecentDeployRequest{})
 	if err != nil {
 		return nil, err
@@ -121,6 +145,10 @@ func (r *Resolver) MostRecentDeploy(ctx context.Context) (*Deploy, error) {
 }
 
 func (r *Resolver) Alerts(ctx context.Context) ([]*Alert, error) {
+	if err := requireAuthorizedUser(ctx); err != nil {
+		return nil, err
+	}
+
 	promClient, err := r.newPromClient(ctx)
 	if err != nil {
 		return nil, err

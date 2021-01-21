@@ -19,6 +19,7 @@ go_library(
     importpath = "github.com/mjm/pi-tools/homebase/service/apiservice",
     visibility = ["//visibility:public"],
     deps = [
+        "//debug",
         "//deploy/proto/deploy",
         "//detect-presence/proto/trips",
         "//go-links/proto/links",

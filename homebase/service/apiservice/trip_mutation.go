@@ -20,6 +20,10 @@ func (r *Resolver) IgnoreTrip(ctx context.Context, args struct {
 	},
 	err error,
 ) {
+	if err = requireAuthorizedUser(ctx); err != nil {
+		return
+	}
+
 	var id string
 	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
 		return
@@ -45,6 +49,10 @@ func (r *Resolver) UpdateTripTags(ctx context.Context, args struct {
 	},
 	err error,
 ) {
+	if err = requireAuthorizedUser(ctx); err != nil {
+		return
+	}
+
 	var id string
 	if err = relay.UnmarshalSpec(args.Input.TripID, &id); err != nil {
 		return
@@ -77,6 +85,8 @@ func (r *Resolver) RecordTrips(ctx context.Context, args struct {
 	},
 	err error,
 ) {
+	// don't require an authorized user for this, at least not for now
+
 	req := &tripspb.RecordTripsRequest{}
 	for _, t := range args.Input.Trips {
 		req.Trips = append(req.Trips, &tripspb.Trip{
