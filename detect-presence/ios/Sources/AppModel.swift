@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import Relay
 
 class AppModel: ObservableObject {
     let tripsController: TripsController
@@ -7,6 +8,7 @@ class AppModel: ObservableObject {
     @Published var allEvents: [AppEvent] = []
     @Published var currentTrip: Trip?
     @Published var queuedTripCount: Int = 0
+    @Published var environment: Relay.Environment?
 
     init(
         beaconObserver: BeaconObserver,
@@ -37,7 +39,12 @@ class AppModel: ObservableObject {
     }
 
     func setRecordToDevServer(_ useDev: Bool) {
-        tripRecorder.setUpClient(useDevServer: useDev)
+        self.objectWillChange.send()
+        self.environment = Relay.Environment(
+            network: Network(isDevServer: useDev),
+            store: Store()
+        )
+        self.tripRecorder.environment = self.environment
     }
 
     func recordQueuedTrips() {

@@ -9,7 +9,7 @@ class TripRecorder {
         case recordFailed(String)
     }
 
-    private var environment: Environment!
+    var environment: Environment!
     private let eventsSubject = PassthroughSubject<Event, Never>()
     private var cancellables = Set<AnyCancellable>()
     private let backoff = BackoffExecutor()
@@ -57,18 +57,6 @@ class TripRecorder {
                     .store(in: &self.cancellables)
             }
         }
-    }
-
-    func setUpClient(useDevServer: Bool = false) {
-        // TODO make environment respond to changes in useDevServer
-        self.environment = myRelayEnvironment
-//        if useDevServer {
-//            NSLog("creating dev server client")
-//            client = TripsServiceServiceClient(address: "100.117.39.47:2121", secure: false)
-//        } else {
-//            NSLog("creating real client")
-//            client = TripsServiceServiceClient(address: "detect-presence-grpc.homelab", certificates: homelabCA)
-//        }
     }
 }
 

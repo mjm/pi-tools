@@ -2,11 +2,6 @@ import Relay
 import Foundation
 import Combine
 
-let myRelayEnvironment = Environment(
-    network: MyNetwork(),
-    store: Store()
-)
-
 private let graphqlURL = URL(string: "http://100.117.39.47:8080/graphql")!
 
 struct RequestPayload: Encodable {
@@ -15,7 +10,19 @@ struct RequestPayload: Encodable {
     var variables: VariableData
 }
 
-class MyNetwork: Network {
+class Network: Relay.Network {
+    let url: URL
+
+    init(isDevServer: Bool) {
+        if isDevServer {
+            NSLog("creating dev server network")
+            self.url = URL(string: "http://100.117.39.47:8080/graphql")!
+        } else {
+            NSLog("creating real network")
+            self.url = URL(string: "https://homebase.homelab/graphql")!
+        }
+    }
+
     func execute(request: RequestParameters, variables: VariableData, cacheConfig: CacheConfig) -> AnyPublisher<Data, Error> {
         var req = URLRequest(url: graphqlURL)
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")

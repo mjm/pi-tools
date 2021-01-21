@@ -20,7 +20,6 @@ struct PresenceApp: App {
             NavigationView {
                 ContentView(model: model)
                     .environmentObject(beaconObserver)
-                    .relayEnvironment(myRelayEnvironment)
             }
         }
     }
