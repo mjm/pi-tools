@@ -250,9 +250,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg by (instance) (node_memory_MemFree_bytes + node_memory_Cached_bytes + node_memory_Buffers_bytes)",
+          "expr": "avg by (node_name) (node_memory_MemFree_bytes + node_memory_Cached_bytes + node_memory_Buffers_bytes)",
           "interval": "",
-          "legendFormat": "{{instance}}",
+          "legendFormat": "{{node_name}}",
           "refId": "A"
         }
       ],
@@ -276,6 +276,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:37",
           "format": "decbytes",
           "label": null,
           "logBase": 1,
@@ -284,6 +285,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:38",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -345,14 +347,15 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "max by (instance) (node_hwmon_temp_celsius)",
+          "expr": "max by (node_name) (node_hwmon_temp_celsius)",
           "interval": "",
-          "legendFormat": "{{instance}}",
+          "legendFormat": "{{node_name}}",
           "refId": "A"
         }
       ],
       "thresholds": [
         {
+          "$$hashKey": "object:117",
           "colorMode": "critical",
           "fill": false,
           "line": true,
@@ -380,6 +383,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:99",
           "format": "celsius",
           "label": null,
           "logBase": 1,
@@ -388,6 +392,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:100",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -407,7 +412,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
-      "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -421,103 +425,6 @@
         "w": 12,
         "x": 12,
         "y": 10
-      },
-      "hiddenSeries": false,
-      "id": 12,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.2.1",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "max by (instance) (irate(node_network_transmit_bytes_total{device=\"eth0\"}[5m])*8)",
-          "interval": "",
-          "legendFormat": "{{instance}}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Who is the leader?",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:37",
-          "format": "bps",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:38",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 0,
-        "y": 17
       },
       "hiddenSeries": false,
       "id": 6,
@@ -618,6 +525,104 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 17
+      },
+      "hiddenSeries": false,
+      "id": 12,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.1",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "max by (node_name) (irate(node_network_transmit_bytes_total{device=\"eth0\"}[5m])*8)",
+          "interval": "",
+          "legendFormat": "{{node_name}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Ethernet egress rate",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:37",
+          "format": "bps",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:38",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
   "refresh": "1m",
@@ -635,5 +640,5 @@
   "timezone": "",
   "title": "Cluster",
   "uid": "3frfw9AMz",
-  "version": 3
+  "version": 5
 }
