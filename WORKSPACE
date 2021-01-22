@@ -4454,4 +4454,18 @@ go_repository(
     version = "v1.1.10",
 )
 
+go_repository(
+    name = "com_github_jessevdk_go_flags",
+    importpath = "github.com/jessevdk/go-flags",
+    sum = "h1:4IU2WS7AumrZ/40jfhf4QVDMsQwqA7VEHozFRrGARJA=",
+    version = "v1.4.0",
+)
+
+go_repository(
+    name = "net_howett_plist",
+    importpath = "howett.net/plist",
+    sum = "h1:QDxUo/w2COstK1wIBYpzQlHX/NqaQTcf9jyz347nI58=",
+    version = "v0.0.0-20201203080718-1454fab16a06",
+)
+
 gazelle_dependencies()

@@ -1,33 +1,18 @@
 package appservice
 
 import (
+	"fmt"
 	"net/http"
-
-	"go.opentelemetry.io/otel/label"
-	"go.opentelemetry.io/otel/trace"
-
-	"github.com/mjm/pi-tools/pkg/spanerr"
+	"strings"
 )
 
 func (s *Server) DownloadApp(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	span := trace.SpanFromContext(ctx)
-
-	artifact, err := s.getWorkflowArtifact(ctx, "Presence.ipa")
-	if err != nil {
-		err = spanerr.RecordError(ctx, err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	userAgent := r.Header.Get("User-Agent")
+	if strings.Contains(userAgent, "iPhone") {
+		installURL := fmt.Sprintf("https://%s/app/install_manifest", r.Host)
+		http.Redirect(w, r, "itms-services://?action=download-manifest&url="+installURL, http.StatusTemporaryRedirect)
 		return
 	}
 
-	span.SetAttributes(label.Int64("github.artifact_id", artifact.GetID()))
-
-	downloadURL, _, err := s.GithubClient.Actions.DownloadArtifact(ctx, owner, repo, artifact.GetID(), true)
-	if err != nil {
-		err = spanerr.RecordError(ctx, err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	http.Redirect(w, r, downloadURL.String(), http.StatusTemporaryRedirect)
+	s.InstallApp(w, r)
 }

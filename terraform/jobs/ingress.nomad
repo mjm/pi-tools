@@ -346,8 +346,10 @@ server {
   }
 
   location /download_app {
-    ${local.oauth_request_snippet}
+    proxy_pass http://detect-presence;
+  }
 
+  location /app {
     proxy_pass http://detect-presence;
   }
 

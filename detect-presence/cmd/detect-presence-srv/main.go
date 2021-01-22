@@ -108,6 +108,12 @@ func main() {
 	appService := appservice.New(githubClient)
 	http.Handle("/download_app",
 		otelhttp.WithRouteTag("DownloadApp", http.HandlerFunc(appService.DownloadApp)))
+	http.Handle("/app/download",
+		otelhttp.WithRouteTag("DownloadApp", http.HandlerFunc(appService.DownloadApp)))
+	http.Handle("/app/install",
+		otelhttp.WithRouteTag("InstallApp", http.HandlerFunc(appService.InstallApp)))
+	http.Handle("/app/install_manifest",
+		otelhttp.WithRouteTag("InstallManifest", http.HandlerFunc(appService.InstallManifest)))
 	http.Handle("/healthz",
 		otelhttp.WithRouteTag("CheckHealth", healthcheck.Handler(
 			healthcheck.WithTimeout(3*time.Second),
