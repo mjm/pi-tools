@@ -249,8 +249,9 @@ $TTL  1m
 ;{{ range nodes }}
 {{ .Node }} IN  A {{ .Address }}{{ end }}
 *.homelab.  IN  CNAME ingress-http.service.consul.
-unifi	IN  A 10.0.0.1
-nas	IN  A 10.0.0.10
+unifi       IN  A 10.0.0.1
+nas         IN  A 10.0.0.10
+mars        IN  A 10.0.0.50
 EOF
       }
 
@@ -273,6 +274,7 @@ $TTL  1m
 *.homelab.  0  IN  A {{ .NodeMeta.tailscale_ip }}{{ end }}
 unifi       IN  A 10.0.0.1
 nas	        IN  A 10.0.0.10
+mars        IN  A 100.117.39.47
 EOF
         change_mode   = "signal"
         change_signal = "SIGHUP"
