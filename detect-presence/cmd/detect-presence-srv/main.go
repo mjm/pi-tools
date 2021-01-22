@@ -3,12 +3,16 @@ package main
 import (
 	"context"
 	"flag"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/etherlabsio/healthcheck"
+	"github.com/google/go-github/v33/github"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 
 	"github.com/mjm/pi-tools/detect-presence/checker"
@@ -27,11 +31,12 @@ import (
 )
 
 var (
-	pingInterval = flag.Duration("ping-interval", 30*time.Second, "How often to check for nearby devices")
-	deviceFile   = flag.String("device-file", "", "JSON file to check for device presence instead of using Bluetooth")
-	deviceName   = flag.String("device-name", "hci0", "Local Bluetooth device name")
-	messagesURL  = flag.String("messages-url", "localhost:6361", "URL for messages service to use to send chat messages")
-	mode         = flag.String("mode", "server", "Mode (server or client) to use to detect presence")
+	pingInterval    = flag.Duration("ping-interval", 30*time.Second, "How often to check for nearby devices")
+	deviceFile      = flag.String("device-file", "", "JSON file to check for device presence instead of using Bluetooth")
+	deviceName      = flag.String("device-name", "hci0", "Local Bluetooth device name")
+	messagesURL     = flag.String("messages-url", "localhost:6361", "URL for messages service to use to send chat messages")
+	mode            = flag.String("mode", "server", "Mode (server or client) to use to detect presence")
+	githubTokenPath = flag.String("github-token-path", "/secrets/github-token", "Path to file containing GitHub PAT token")
 )
 
 var devices = []presence.Device{
@@ -90,7 +95,17 @@ func main() {
 		go c.Run(context.Background(), nil)
 	}
 
-	appService := appservice.New()
+	tokenData, err := ioutil.ReadFile(*githubTokenPath)
+	if err != nil {
+		log.Panicf("reading github token: %v", err)
+	}
+
+	token := &oauth2.Token{AccessToken: strings.TrimSpace(string(tokenData))}
+	httpClient := oauth2.NewClient(context.Background(), oauth2.StaticTokenSource(token))
+	httpClient.Transport = otelhttp.NewTransport(httpClient.Transport)
+	githubClient := github.NewClient(httpClient)
+
+	appService := appservice.New(githubClient)
 	http.Handle("/download_app",
 		otelhttp.WithRouteTag("DownloadApp", http.HandlerFunc(appService.DownloadApp)))
 	http.Handle("/healthz",

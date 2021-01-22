@@ -51,5 +51,6 @@ require (
 	google.golang.org/grpc v1.33.2
 	google.golang.org/protobuf v1.25.0
 	gotest.tools v2.2.0+incompatible // indirect
+	howett.net/plist v0.0.0-20201203080718-1454fab16a06 // indirect
 	zombiezen.com/go/postgrestest v1.0.0
 )
