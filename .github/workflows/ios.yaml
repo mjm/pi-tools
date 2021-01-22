@@ -39,9 +39,17 @@ jobs:
         run: bazel build --config=ci --apple_platform_type=ios --cpu=ios_arm64 --xcode_version=12.2 //detect-presence/ios:ios_ad_hoc
       - name: Stage IPA for upload
         run: cp bazel-out/applebin_ios-ios_arm64-opt-*/bin/detect-presence/ios/ios_ad_hoc.ipa $RUNNER_TEMP/Presence.ipa
+      - name: Stage Info.plist for upload
+        run: cp bazel-out/applebin_ios-ios_arm64-opt-*/bin/detect-presence/ios/ios_ad_hoc-intermediates/Info.plist $RUNNER_TEMP/Info.plist
       - name: Store IPA
         uses: actions/upload-artifact@v2
         with:
           name: Presence.ipa
           path: ${{ runner.temp }}/Presence.ipa
+          if-no-files-found: error
+      - name: Store Info.plist
+        uses: actions/upload-artifact@v2
+        with:
+          name: Info.plist
+          path: ${{ runner.temp }}/Info.plist
           if-no-files-found: error
