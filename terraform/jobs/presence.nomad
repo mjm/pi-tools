@@ -133,6 +133,14 @@ job "presence" {
       }
 
       template {
+        data        = <<EOF
+{{ with secret "kv/deploy" }}{{ .Data.data.github_token }}{{ end }}
+EOF
+        destination = "secrets/github-token"
+        change_mode = "restart"
+      }
+
+      template {
         // language=GoTemplate
         data        = <<EOF
 {{ with secret "database/creds/presence" }}

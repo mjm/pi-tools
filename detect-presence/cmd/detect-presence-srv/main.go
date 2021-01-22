@@ -106,8 +106,6 @@ func main() {
 	githubClient := github.NewClient(httpClient)
 
 	appService := appservice.New(githubClient)
-	http.Handle("/download_app",
-		otelhttp.WithRouteTag("DownloadApp", http.HandlerFunc(appService.DownloadApp)))
 	http.Handle("/app/download",
 		otelhttp.WithRouteTag("DownloadApp", http.HandlerFunc(appService.DownloadApp)))
 	http.Handle("/app/install",

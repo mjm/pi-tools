@@ -345,12 +345,9 @@ server {
     proxy_pass http://homebase-api;
   }
 
-  location /download_app {
-    proxy_pass http://detect-presence;
-  }
-
   location /app {
     proxy_pass http://detect-presence;
+    proxy_set_header Host $host;
   }
 
   location / {
