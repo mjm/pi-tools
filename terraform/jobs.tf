@@ -57,11 +57,11 @@ resource "nomad_job" "grafana" {
   })
 }
 
-resource "nomad_job" "deploy" {
-  jobspec = templatefile("${path.module}/jobs/deploy.nomad", {
-    image_digests = local.image_digests
-  })
-}
+//resource "nomad_job" "deploy" {
+//  jobspec = templatefile("${path.module}/jobs/deploy.nomad", {
+//    image_digests = local.image_digests
+//  })
+//}
 
 resource "nomad_job" "beacon_srv" {
   jobspec = templatefile("${path.module}/jobs/beacon-srv.nomad", {
