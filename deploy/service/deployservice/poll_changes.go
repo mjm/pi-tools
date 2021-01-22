@@ -286,17 +286,17 @@ func (s *Server) applyTerraformChanges(ctx context.Context, dir string) error {
 
 	cmd := exec.CommandContext(ctx, s.Config.TerraformPath, "init")
 	cmd.Dir = dir
-	out, err := cmd.CombinedOutput()
-	log.Printf("%s", out)
-	if err != nil {
+	cmd.Stdout = os.Stderr
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
 		return spanerr.RecordError(ctx, err)
 	}
 
 	cmd = exec.CommandContext(ctx, s.Config.TerraformPath, "plan", "-out", "deploy.tfplan")
 	cmd.Dir = dir
-	out, err = cmd.CombinedOutput()
-	log.Printf("%s", out)
-	if err != nil {
+	cmd.Stdout = os.Stderr
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
 		return spanerr.RecordError(ctx, err)
 	}
 
@@ -307,9 +307,9 @@ func (s *Server) applyTerraformChanges(ctx context.Context, dir string) error {
 
 	cmd = exec.CommandContext(ctx, s.Config.TerraformPath, "apply", "deploy.tfplan")
 	cmd.Dir = dir
-	out, err = cmd.CombinedOutput()
-	log.Printf("%s", out)
-	if err != nil {
+	cmd.Stdout = os.Stderr
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
 		return spanerr.RecordError(ctx, err)
 	}
 
