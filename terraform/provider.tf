@@ -15,6 +15,10 @@ terraform {
       source = "hashicorp/consul"
       version = "2.11.0"
     }
+    vault = {
+      source = "hashicorp/vault"
+      version = "2.18.0"
+    }
     local = {
       source = "hashicorp/local"
       version = "2.0.0"
@@ -30,6 +34,9 @@ provider "nomad" {
 }
 
 provider "consul" {
+}
+
+provider "vault" {
 }
 
 provider "docker" {
