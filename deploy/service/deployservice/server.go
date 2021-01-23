@@ -1,6 +1,8 @@
 package deployservice
 
 import (
+	"sync"
+
 	"github.com/google/go-github/v33/github"
 	nomadapi "github.com/hashicorp/nomad/api"
 	"go.opentelemetry.io/otel"
@@ -41,6 +43,8 @@ type Server struct {
 	lastSuccessfulCommit string
 	deployChecksTotal    metric.Int64Counter
 	deployCheckDuration  metric.Float64ValueRecorder
+
+	lock sync.Mutex
 }
 
 func New(gh *github.Client, nomad *nomadapi.Client, cfg Config) *Server {
@@ -54,4 +58,11 @@ func New(gh *github.Client, nomad *nomadapi.Client, cfg Config) *Server {
 		deployCheckDuration: m.NewFloat64ValueRecorder("deploy.check.duration.seconds",
 			metric.WithDescription("Records the amount of time spent checking for and applying new changes")),
 	}
+}
+
+func (s *Server) Shutdown() {
+	// take the lock so that we block until a current deploy is complete
+	s.lock.Lock()
+
+	// intentionally never unlock here, we don't want any more deploys to start after this
 }

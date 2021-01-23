@@ -70,6 +70,7 @@ func main() {
 	defer cancel()
 
 	go deploysSrv.PollForChanges(ctx, *pollInterval)
+	defer deploysSrv.Shutdown()
 
 	http.Handle("/healthz",
 		otelhttp.WithRouteTag("CheckHealth", healthcheck.Handler(

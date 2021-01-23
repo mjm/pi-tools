@@ -39,6 +39,10 @@ func (s *Server) PollForChanges(ctx context.Context, interval time.Duration) {
 }
 
 func (s *Server) performCheck(ctx context.Context) {
+	// used to ensure that we run our deploy to completion before exiting
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
 	startTime := time.Now()
 	status := "succeeded"
 	if err := s.checkForChanges(ctx); err != nil {
