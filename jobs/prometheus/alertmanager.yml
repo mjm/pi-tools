@@ -1,0 +1,24 @@
+global:
+  resolve_timeout: 5m
+
+templates:
+  - << env "NOMAD_TASK_DIR" >>/templates/*.tpl
+
+route:
+  group_by: ['alertname', 'severity']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'push.phone.matt'
+
+receivers:
+  - name: 'push.phone.matt'
+    pushover_configs:
+<<- with secret "kv/alertmanager/pushover" >>
+      - user_key: << .Data.data.user_key >>
+        token: << .Data.data.token >>
+<<- end >>
+        title: '{{ template "pushover.title" . }}'
+        priority: '{{ template "pushover.priority" . }}'
+
+inhibit_rules: []

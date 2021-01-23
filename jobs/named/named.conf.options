@@ -1,0 +1,34 @@
+acl tailscale {
+  100.64.0.0/10; // range of tailscale IPs
+};
+acl local {
+  10.0.0.0/8;    // everything inside the cluster, and in the local network;
+};
+
+options {
+  directory "/var/cache/bind";
+  recursion yes;
+  forwarders {
+    {{ range service "dns.pihole" }}
+    {{ .Address }} port {{ .Port }};
+    {{ else }}
+    8.8.8.8;
+    8.8.4.4;
+    {{ end }}
+  };
+
+  auth-nxdomain no;
+
+  dnssec-enable no;
+  dnssec-validation no;
+
+  listen-on-v6 { any; };
+
+  zero-no-soa-ttl-cache yes;
+  max-ncache-ttl 15;
+};
+
+// let the bind-exporter get stats
+statistics-channels {
+  inet 127.0.0.1 port 8053 allow { 127.0.0.1; };
+};

@@ -1,0 +1,130 @@
+groups:
+
+  - name: dns_alerts
+    rules:
+      - alert: ExternalDNSFailing
+        expr: probe_success{probe_type="dns",instance!~"10.0.0.[2-4]"} < 0.5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: External DNS queries are failing
+          description: >
+            One or more external DNS servers are unable to look up Google's home page.
+            This might mean your internet is down, though I'm not sure how you're getting this alert
+            in that case.
+
+      - alert: DNSFailingExternalSite
+        expr: (min(probe_success{probe_type="dns",instance!~"10.0.0.[2-4]"}) > 0.5) and (min(probe_success{probe_type="dns",probe_scope="public",instance=~"10.0.0.[2-4]"}) < 0.5)
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: DNS queries for external sites are failing
+          description: >
+            The PiHole is unable to look up Google's home page, but external DNS is able to look it up
+            without issue. Something is probably wrong with PiHole's configuration.
+
+      - alert: DNSFailingInternalNode
+        expr: probe_success{probe_type="dns",probe_scope="private"} < 0.5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: DNS queries for Raspberry Pi nodes are failing
+          description: >
+            A DNS server is unable to look up the address for the raspberrypi node, or it's not giving
+            the expected IP address.
+
+      - alert: DNSFailingInternalSite
+        expr: probe_success{probe_type="dns",probe_scope="private-cname"} < 0.5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: DNS queries for internal sites are failing
+          description: >
+            The PiHole is unable to look up the address for Homebase, or it's not returning a CNAME to a
+            Raspberry Pi node.
+
+  - name: homebase_bot_alerts
+    rules:
+      - alert: HomebaseBotServiceDown
+        expr: sum(up{app="homebase-bot"}) < 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: No homebase-bot-srv instances are running
+          description: >
+            There don't seem to be any running pods of homebase-bot-srv. The Telegram bot won't work until
+            this is addressed.
+
+      - alert: HomebaseBotNoLeader
+        expr: sum(homebase_bot_is_leader) < 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: homebase-bot-srv has no leader
+          description: >
+            There are no homebase-bot-srv pods acting as leader. The Telegram bot won't be able to respond to
+            incoming messages until there is a leader.
+
+  - name: node_alerts
+    rules:
+      - alert: NodeExporterDown
+        expr: up{app="node-exporter"} < 0.5
+        for: 5m
+        labels:
+          severity: notice
+        annotations:
+          summary: Node exporter is down
+          annotations: >
+            One or more of the node-exporters can't be scraped by Prometheus. You should look into this, as you're
+            probably missing some metrics you'd like to have.
+
+      - alert: NodeTemperatureTooHigh
+        expr: node_hwmon_temp_celsius > 80
+        for: 5m
+        labels:
+          severity: notice
+        annotations:
+          summary: Raspberry Pi temperature is close to throttling
+          description: >
+            One or more Raspberry Pis are approaching a temperature that will cause the CPU to start
+            throttling.
+
+      - alert: LowDiskSpace
+        expr: (node_filesystem_avail_bytes{device!~'rootfs',mountpoint="/"} / node_filesystem_size_bytes{device!~'rootfs',mountpoint="/"}) < 0.05
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Raspberry Pi is running out of disk space
+          description: >
+            One or more Raspberry Pis have less than 5% space available on their root volume.
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemFree_bytes + node_memory_Cached_bytes + node_memory_Buffers_bytes) < 300000000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Raspberry Pi is using too much memory
+          description: >
+            One or more Raspberry Pis is using a lot of memory. Some process on the machine probably needs to
+            be restarted.
+
+  - name: presence_alerts
+    rules:
+      - alert: PresenceServiceDown
+        expr: sum(up{app="detect-presence"}) < 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: No detect-presence-srv instances are running
+          description: >
+            There don't seem to be any running pods of detect-presence-srv. Trips won't be able to recorded until this
+            is addressed.

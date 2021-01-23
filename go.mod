@@ -3,13 +3,12 @@ module github.com/mjm/pi-tools
 go 1.14
 
 require (
-	github.com/Microsoft/go-winio v0.4.15-0.20190919025122-fc70bd9a86b5 // indirect
 	github.com/armon/go-metrics v0.3.5-0.20201104215618-6fd5a4ddf425 // indirect
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
-	github.com/docker/docker v1.4.2-0.20200309214505-aa6a9891b09c // indirect
 	github.com/etherlabsio/healthcheck v0.0.0-20191224061800-dd3d2fd8c3f6
 	github.com/golang-migrate/migrate/v4 v4.13.0
 	github.com/golang/protobuf v1.4.3
+	github.com/google/go-containerregistry v0.4.0 // indirect
 	github.com/google/go-github/v33 v33.0.0
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/google/uuid v1.1.2
@@ -18,10 +17,11 @@ require (
 	github.com/hashicorp/consul/api v1.8.1
 	github.com/hashicorp/go-hclog v0.14.1 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.0 // indirect
-	github.com/hashicorp/go-msgpack v0.5.5 // indirect
 	github.com/hashicorp/go-sockaddr v1.0.2 // indirect
 	github.com/hashicorp/go-uuid v1.0.2 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
+	github.com/hashicorp/nomad v1.0.2 // indirect
+	github.com/hashicorp/nomad/api v0.0.0-20210115191909-bcd4752fc902 // indirect
 	github.com/improbable-eng/grpc-web v0.13.0
 	github.com/jonboulle/clockwork v0.2.2
 	github.com/kr/pretty v0.2.1 // indirect
@@ -45,7 +45,6 @@ require (
 	go.opentelemetry.io/otel/exporters/metric/prometheus v0.14.0
 	go.opentelemetry.io/otel/exporters/trace/jaeger v0.14.0
 	golang.org/x/crypto v0.0.0-20200930160638-afb6bcd081ae // indirect
-	golang.org/x/net v0.0.0-20200930145003-4acb6c075d10 // indirect
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	golang.org/x/sys v0.0.0-20201024232916-9f70ab9862d5 // indirect
 	google.golang.org/grpc v1.33.2

@@ -1,0 +1,37 @@
+modules:
+
+  dns_public:
+    prober: dns
+    timeout: 5s
+    dns:
+      query_name: "www.google.com"
+      query_type: "A"
+      valid_rcodes:
+        - NOERROR
+      validate_answer_rrs:
+        fail_if_not_matches_regexp:
+          - "www.google.com.\t.*\tIN\tA\t.*"
+
+  dns_private:
+    prober: dns
+    timeout: 5s
+    dns:
+      query_name: "raspberrypi.homelab"
+      query_type: "A"
+      valid_rcodes:
+        - NOERROR
+      validate_answer_rrs:
+        fail_if_not_matches_regexp:
+          - "raspberrypi.homelab.\t.*\tIN\tA\t10\\.0\\.0\\.2"
+
+  dns_private_cname:
+    prober: dns
+    timeout: 5s
+    dns:
+      query_name: "homebase.homelab"
+      query_type: "CNAME"
+      valid_rcodes:
+        - NOERROR
+      validate_answer_rrs:
+        fail_if_not_matches_regexp:
+          - "homebase.homelab.\t.*\tIN\tCNAME\tingress-http\\.service\\.consul\\."
