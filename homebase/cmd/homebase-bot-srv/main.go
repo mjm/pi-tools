@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/etherlabsio/healthcheck"
-	"github.com/hashicorp/consul/api"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/metric"
@@ -21,20 +20,18 @@ import (
 	"github.com/mjm/pi-tools/homebase/bot/service/messagesservice"
 	"github.com/mjm/pi-tools/homebase/bot/telegram"
 	"github.com/mjm/pi-tools/observability"
+	"github.com/mjm/pi-tools/pkg/leader"
 	"github.com/mjm/pi-tools/pkg/signal"
 	"github.com/mjm/pi-tools/rpc"
 	"github.com/mjm/pi-tools/storage"
 )
 
 var (
-	tripsURL    = flag.String("trips-url", "localhost:2121", "URL for trips service to lookup and update trip information")
-	chatID      = flag.Int("chat-id", 223272201, "Chat ID to send messages to")
-	leaderElect = flag.Bool("leader-elect", false, "Enable leader election using Consul")
+	tripsURL = flag.String("trips-url", "localhost:2121", "URL for trips service to lookup and update trip information")
+	chatID   = flag.Int("chat-id", 223272201, "Chat ID to send messages to")
 )
 
 const instrumentationName = "github.com/mjm/pi-tools/homebase/cmd/homebase-bot-srv"
-
-const leaderKeyName = "service/homebase-bot/leader"
 
 func main() {
 	storage.SetDefaultDBName("homebase_bot_dev")
@@ -67,124 +64,30 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	var isLeader int64
+	election, err := leader.NewElection(leader.Config{
+		Key: "service/homebase-bot/leader",
+		OnAcquireLeader: func() {
+			if err := messagesService.RegisterCommands(ctx); err != nil {
+				log.Panicf("Error registering bot commands: %v", err)
+			}
+
+			go messagesService.WatchUpdates(ctx)
+		},
+	})
+	if err != nil {
+		log.Panicf("Error creating leader election: %v", err)
+	}
+
 	metric.Must(otel.Meter(instrumentationName)).NewInt64ValueObserver("homebase.bot.is_leader", func(ctx context.Context, result metric.Int64ObserverResult) {
+		var isLeader int64
+		if election.IsLeader() {
+			isLeader = 1
+		}
 		result.Observe(isLeader)
 	}, metric.WithDescription("Indicates if the instance is the leader and is responsible for watching for incoming messages"))
 
-	stopLeader := func() {}
-	if !*leaderElect {
-		log.Printf("No leader election desired.")
-
-		isLeader = 1
-		if err := messagesService.RegisterCommands(ctx); err != nil {
-			log.Panicf("Error registering bot commands: %v", err)
-		}
-
-		go messagesService.WatchUpdates(ctx)
-	} else {
-		client, err := api.NewClient(api.DefaultConfig())
-		if err != nil {
-			log.Panicf("Error creating Consul client: %v", err)
-		}
-
-		log.Printf("Creating Consul session for key %s", leaderKeyName)
-		sessionID, _, err := client.Session().Create(&api.SessionEntry{
-			Name: leaderKeyName,
-			TTL:  "15s",
-		}, nil)
-		if err != nil {
-			log.Panicf("Error creating Consul session: %v", err)
-		}
-		go client.Session().RenewPeriodic("15s", sessionID, nil, ctx.Done())
-
-		go func() {
-			gotLeader, _, err := client.KV().Acquire(&api.KVPair{
-				Key:     leaderKeyName,
-				Value:   []byte(sessionID),
-				Session: sessionID,
-			}, nil)
-			if err != nil {
-				log.Panicf("Error trying to acquire leadership: %v", err)
-			}
-
-			var waitIndex uint64
-			for !gotLeader {
-				// Watch for the key to change to not have a session anymore, and try to grab leader
-				kvPair, meta, err := client.KV().Get(leaderKeyName, &api.QueryOptions{
-					WaitIndex: waitIndex,
-				})
-				if err != nil {
-					log.Printf("Error checking on leader key %q: %v", leaderKeyName, err)
-					waitIndex = 0
-					time.Sleep(10 * time.Second)
-					continue
-				}
-
-				if meta.LastIndex < waitIndex {
-					waitIndex = 0
-				} else {
-					waitIndex = meta.LastIndex
-				}
-
-				if kvPair == nil || kvPair.Session == "" {
-					// There's no longer a session, so try to acquire leadership
-					gotLeader, _, err = client.KV().Acquire(&api.KVPair{
-						Key:     leaderKeyName,
-						Value:   []byte(sessionID),
-						Session: sessionID,
-					}, nil)
-					if err != nil {
-						log.Panicf("Error trying to acquire leadership: %v", err)
-					}
-				}
-			}
-
-			// Once we get here, we are the leader
-			isLeader = 1
-
-			go func() {
-				log.Printf("Started leading")
-				if err := messagesService.RegisterCommands(ctx); err != nil {
-					log.Printf("Error registering bot commands: %v", err)
-				}
-
-				messagesService.WatchUpdates(ctx)
-			}()
-
-			stopLeader = func() {
-				log.Printf("Releasing leadership voluntarily")
-				_, _, err = client.KV().Release(&api.KVPair{
-					Key:     leaderKeyName,
-					Value:   []byte{},
-					Session: sessionID,
-				}, nil)
-				if err != nil {
-					log.Printf("Failed to release lock: %v", err)
-				}
-			}
-
-			for {
-				// Watch to see if our leadership gets revoked
-				kvPair, meta, err := client.KV().Get(leaderKeyName, &api.QueryOptions{
-					WaitIndex: waitIndex,
-				})
-				if err != nil {
-					log.Panicf("Error checking on leader key %q: %v", leaderKeyName, err)
-				}
-
-				if meta.LastIndex < waitIndex {
-					waitIndex = 0
-				} else {
-					waitIndex = meta.LastIndex
-				}
-
-				if kvPair.Session != sessionID {
-					log.Fatalf("Lost leadership")
-				}
-			}
-		}()
-	}
+	go election.Run(ctx)
+	defer election.Stop()
 
 	http.Handle("/healthz",
 		otelhttp.WithRouteTag("CheckHealth", healthcheck.Handler(
@@ -196,5 +99,4 @@ func main() {
 	}))
 
 	signal.Wait()
-	stopLeader()
 }
