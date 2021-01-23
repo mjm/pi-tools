@@ -21,7 +21,7 @@ require (
 	github.com/hashicorp/go-uuid v1.0.2 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/hashicorp/nomad v1.0.2 // indirect
-	github.com/hashicorp/nomad/api v0.0.0-20210115191909-bcd4752fc902 // indirect
+	github.com/hashicorp/nomad/api v0.0.0-20210115191909-bcd4752fc902
 	github.com/improbable-eng/grpc-web v0.13.0
 	github.com/jonboulle/clockwork v0.2.2
 	github.com/kr/pretty v0.2.1 // indirect
