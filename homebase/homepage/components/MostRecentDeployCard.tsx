@@ -20,6 +20,9 @@ export function MostRecentDeployCard({viewer}: { viewer: MostRecentDeployCard_vi
     );
 
     const deploy = data.mostRecentDeploy;
+    if (!deploy) {
+        return null;
+    }
 
     return (
         <HomePageCard
