@@ -1,4 +1,4 @@
-name: Test and push images
+name: Build Nomad jobs
 
 on:
   push:
@@ -36,3 +36,11 @@ jobs:
         run: |
           bazel query 'kind(container_push, //...)' \
             | xargs -n1 bazel run --config=ci --platforms @io_bazel_rules_go//go/toolchain:linux_arm64
+      - name: Resolve Nomad jobs
+        run: bazel run //deploy/cmd/job-resolver -- -root $PWD/jobs -out $RUNNER_TEMP/jobs $PWD/jobs/*.nomad
+      - name: Store Nomad jobs
+        uses: actions/upload-artifact@v2
+        with:
+          name: jobs
+          path: ${{ runner.temp }}/jobs/
+          if-no-files-found: error
