@@ -2,6 +2,7 @@ package deployservice
 
 import (
 	"github.com/google/go-github/v33/github"
+	nomadapi "github.com/hashicorp/nomad/api"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/metric"
 )
@@ -22,8 +23,9 @@ type Config struct {
 	// WorkflowName is the filename of the GitHub Actions workflow whose artifact should be used.
 	WorkflowName string
 
-	// TerraformPath is the path to the Terraform binary to use when planning and deploying
-	TerraformPath string
+	// ArtifactName is the name of the artifact in the workflow that contains the JSON files for
+	// the Nomad jobs to deploy.
+	ArtifactName string
 }
 
 type Server struct {
@@ -33,16 +35,20 @@ type Server struct {
 	// GitHubClient is the client to use to make API requests to GitHub.
 	GitHubClient *github.Client
 
+	// NomadClient is the client to use to submit jobs to Nomad
+	NomadClient *nomadapi.Client
+
 	lastSuccessfulCommit string
 	deployChecksTotal    metric.Int64Counter
 	deployCheckDuration  metric.Float64ValueRecorder
 }
 
-func New(gh *github.Client, cfg Config) *Server {
+func New(gh *github.Client, nomad *nomadapi.Client, cfg Config) *Server {
 	m := metric.Must(otel.Meter(instrumentationName))
 	return &Server{
 		Config:       cfg,
 		GitHubClient: gh,
+		NomadClient:  nomad,
 		deployChecksTotal: m.NewInt64Counter("deploy.check.total",
 			metric.WithDescription("Counts the number of times that the service checked for a new version to deploy")),
 		deployCheckDuration: m.NewFloat64ValueRecorder("deploy.check.duration.seconds",

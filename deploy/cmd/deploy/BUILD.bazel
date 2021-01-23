@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "deploy_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mjm/pi-tools/deploy/cmd/deploy",
+    visibility = ["//visibility:private"],
+    deps = ["@com_github_hashicorp_nomad_api//:api"],
+)
+
+go_binary(
+    name = "deploy",
+    embed = [":deploy_lib"],
+    visibility = ["//visibility:public"],
+)

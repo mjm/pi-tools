@@ -11,6 +11,7 @@ import (
 
 	"github.com/etherlabsio/healthcheck"
 	"github.com/google/go-github/v33/github"
+	nomadapi "github.com/hashicorp/nomad/api"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
@@ -25,11 +26,10 @@ import (
 var (
 	githubRepo   = flag.String("repo", "mjm/pi-tools", "GitHub repository to check for builds")
 	githubBranch = flag.String("branch", "main", "Git branch of builds that should be considered for deploying")
-	workflowName = flag.String("workflow", "images.yaml", "Filename of GitHub Actions workflow to wait for")
+	workflowName = flag.String("workflow", "nomad.yaml", "Filename of GitHub Actions workflow to wait for")
+	artifactName = flag.String("artifact", "jobs", "Name of artifact containing Nomad job JSON files")
 
 	githubTokenPath = flag.String("github-token-path", "/secrets/github-token", "Path to file containing GitHub PAT token")
-
-	terraformPath = flag.String("terraform", "/terraform", "Path to the Terraform binary")
 
 	pollInterval = flag.Duration("poll-interval", 2*time.Minute, "How often to check with GitHub for a new build")
 	dryRun       = flag.Bool("dry-run", false, "Skip actually applying changes to the cluster")
@@ -53,12 +53,17 @@ func main() {
 	httpClient.Transport = otelhttp.NewTransport(httpClient.Transport)
 	githubClient := github.NewClient(httpClient)
 
-	deploysSrv := deployservice.New(githubClient, deployservice.Config{
-		DryRun:        *dryRun,
-		GitHubRepo:    *githubRepo,
-		GitHubBranch:  *githubBranch,
-		WorkflowName:  *workflowName,
-		TerraformPath: *terraformPath,
+	nomadClient, err := nomadapi.NewClient(nomadapi.DefaultConfig())
+	if err != nil {
+		log.Panicf("creating nomad client: %v", err)
+	}
+
+	deploysSrv := deployservice.New(githubClient, nomadClient, deployservice.Config{
+		DryRun:       *dryRun,
+		GitHubRepo:   *githubRepo,
+		GitHubBranch: *githubBranch,
+		WorkflowName: *workflowName,
+		ArtifactName: *artifactName,
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())

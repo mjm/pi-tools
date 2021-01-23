@@ -14,6 +14,7 @@ go_library(
         "//deploy/proto/deploy",
         "//pkg/spanerr",
         "@com_github_google_go_github_v33//github",
+        "@com_github_hashicorp_nomad_api//:api",
         "@io_opentelemetry_go_otel//:otel",
         "@io_opentelemetry_go_otel//label",
         "@io_opentelemetry_go_otel//metric",
