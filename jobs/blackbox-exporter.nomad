@@ -26,13 +26,6 @@ job "blackbox-exporter" {
         ports = ["http"]
 
         network_mode = "host"
-
-        logging {
-          type = "journald"
-          config {
-            tag = "blackbox-exporter"
-          }
-        }
       }
 
       resources {

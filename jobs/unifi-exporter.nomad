@@ -30,13 +30,6 @@ job "unifi-exporter" {
         command = "/unifi_exporter"
         args    = ["-config.file=${NOMAD_SECRETS_DIR}/config.yml"]
         ports   = ["http"]
-
-        logging {
-          type = "journald"
-          config {
-            tag = "unifi-exporter"
-          }
-        }
       }
 
       resources {

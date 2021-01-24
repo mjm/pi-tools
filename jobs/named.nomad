@@ -28,13 +28,6 @@ job "named" {
         image        = "eafxx/bind@sha256:9c15e971a7a358a4ba248e02154b7d5a6b37803bdf65371325364f3cbae9dd43"
         ports        = ["dns"]
         network_mode = "host"
-
-        logging {
-          type = "journald"
-          config {
-            tag = "named"
-          }
-        }
       }
 
       env {

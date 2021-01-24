@@ -49,16 +49,7 @@ job "loki" {
 
       config {
         image = "grafana/loki@sha256:6afc0da6995fecf15307762d378242b65cab20d4a35b4a39397d67cad48fb7fb"
-        args  = [
-          "-config.file=${NOMAD_TASK_DIR}/loki.yml",
-        ]
-
-        logging {
-          type = "journald"
-          config {
-            tag = "loki"
-          }
-        }
+        args  = ["-config.file=${NOMAD_TASK_DIR}/loki.yml"]
       }
 
       resources {

@@ -33,6 +33,10 @@ job "backup-tarsnap" {
     prohibit_overlap = true
   }
 
+  meta {
+    logging_tag = "backup-tarsnap"
+  }
+
   group "backup" {
     count = 1
 

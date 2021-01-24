@@ -103,13 +103,6 @@ job "deploy" {
         args = [
           "-leader-elect",
         ]
-
-        logging {
-          type = "journald"
-          config {
-            tag = "deploy-srv"
-          }
-        }
       }
 
       resources {
@@ -123,9 +116,6 @@ job "deploy" {
         NOMAD_CACERT      = "${NOMAD_SECRETS_DIR}/nomad.ca.crt"
         NOMAD_CLIENT_CERT = "${NOMAD_SECRETS_DIR}/nomad.crt"
         NOMAD_CLIENT_KEY  = "${NOMAD_SECRETS_DIR}/nomad.key"
-
-        HOSTNAME        = "${attr.unique.hostname}"
-        NOMAD_CLIENT_ID = "${node.unique.id}"
       }
 
       vault {

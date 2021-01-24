@@ -46,13 +46,6 @@ job "oauth-proxy" {
           "--pass-access-token",
         ]
         ports = ["http"]
-
-        logging {
-          type = "journald"
-          config {
-            tag = "oauth-proxy"
-          }
-        }
       }
 
       env {

@@ -106,23 +106,11 @@ job "go-links" {
           "-db",
           "dbname=golinks host=localhost sslmode=disable",
         ]
-
-        logging {
-          type = "journald"
-          config {
-            tag = "go-links-srv"
-          }
-        }
       }
 
       resources {
         cpu    = 50
         memory = 50
-      }
-
-      env {
-        HOSTNAME        = "${attr.unique.hostname}"
-        NOMAD_CLIENT_ID = "${node.unique.id}"
       }
 
       vault {

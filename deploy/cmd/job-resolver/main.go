@@ -11,6 +11,7 @@ import (
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
+	"github.com/hashicorp/nomad/api"
 	"github.com/hashicorp/nomad/jobspec2"
 )
 
@@ -63,9 +64,19 @@ func main() {
 
 		for _, group := range parsedJob.TaskGroups {
 			for _, task := range group.Tasks {
+				// set common environment variables we expect to have for tracing
+				if task.Env == nil {
+					task.Env = map[string]string{}
+				}
+				task.Env["HOSTNAME"] = "${attr.unique.hostname}"
+				task.Env["NOMAD_CLIENT_ID"] = "${node.unique.id}"
+
+				// remaining modifications are only for Docker tasks
 				if task.Driver != "docker" {
 					continue
 				}
+
+				updateTaskLoggingConfig(parsedJob, group, task)
 
 				configImage := task.Config["image"].(string)
 				imgName, err := name.ParseReference(configImage)
@@ -118,4 +129,78 @@ func main() {
 		f.Close()
 		fmt.Fprintf(os.Stderr, "info: wrote job JSON to %s\n", destPath)
 	}
+}
+
+func updateTaskLoggingConfig(job *api.Job, group *api.TaskGroup, task *api.Task) {
+	// inject logging configuration so that all our tasks get logged to the systemd journal
+	// with an appropriate tag
+	var logging map[string]interface{}
+	if loggingInt, ok := task.Config["logging"]; ok {
+		loggings, ok := loggingInt.([]map[string]interface{})
+		if !ok {
+			fmt.Fprintf(os.Stderr, "error: logging config for task %s/%s/%s is a %T, not an array of maps\n", *job.Name, *group.Name, task.Name, loggingInt)
+			os.Exit(1)
+		}
+
+		if len(loggings) < 1 {
+			logging = map[string]interface{}{}
+			task.Config["logging"] = logging
+		} else {
+			logging = loggings[0]
+		}
+	} else {
+		logging = map[string]interface{}{}
+		task.Config["logging"] = logging
+	}
+
+	var loggingType string
+	if loggingTypeInt, ok := logging["type"]; ok {
+		loggingType, ok = loggingTypeInt.(string)
+		if !ok {
+			fmt.Fprintf(os.Stderr, "error: logging type for task %s/%s/%s is not a string\n", *job.Name, *group.Name, task.Name)
+			os.Exit(1)
+		}
+	} else {
+		loggingType = "journald"
+		logging["type"] = loggingType
+	}
+
+	var loggingCfg map[string]interface{}
+	if loggingCfgInt, ok := logging["config"]; ok {
+		loggingCfgs, ok := loggingCfgInt.([]map[string]interface{})
+		if !ok {
+			fmt.Fprintf(os.Stderr, "error: logging config for task %s/%s/%s is a %T, not an array of maps\n", *job.Name, *group.Name, task.Name, loggingCfgInt)
+			os.Exit(1)
+		}
+
+		if len(loggingCfgs) < 1 {
+			loggingCfg = map[string]interface{}{}
+			logging["config"] = []map[string]interface{}{
+				loggingCfg,
+			}
+		} else {
+			loggingCfg = loggingCfgs[0]
+		}
+	} else {
+		loggingCfg = map[string]interface{}{}
+		logging["config"] = []map[string]interface{}{
+			loggingCfg,
+		}
+	}
+
+	if _, ok := loggingCfg["tag"]; ok {
+		return
+	}
+
+	logTag := task.Name
+	if jobTag, ok := job.Meta["logging_tag"]; ok {
+		logTag = jobTag
+	}
+	if groupTag, ok := group.Meta["logging_tag"]; ok {
+		logTag = groupTag
+	}
+	if taskTag, ok := task.Meta["logging_tag"]; ok {
+		logTag = taskTag
+	}
+	loggingCfg["tag"] = logTag
 }

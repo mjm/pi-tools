@@ -52,13 +52,6 @@ job "promtail" {
           "-config.file=${NOMAD_TASK_DIR}/promtail.yml",
         ]
 
-        logging {
-          type = "journald"
-          config {
-            tag = "promtail"
-          }
-        }
-
         mount {
           type   = "bind"
           target = "/var/log/journal"

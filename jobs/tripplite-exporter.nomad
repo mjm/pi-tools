@@ -37,13 +37,6 @@ job "tripplite-exporter" {
         command = "/tripplite_exporter"
         ports   = ["http"]
 
-        logging {
-          type = "journald"
-          config {
-            tag = "tripplite-exporter"
-          }
-        }
-
         privileged = true
 
         mount {

@@ -37,13 +37,6 @@ job "node-exporter" {
           "--collector.netdev.device-exclude=^veth",
         ]
 
-        logging {
-          type = "journald"
-          config {
-            tag = "node-exporter"
-          }
-        }
-
         privileged   = true
         pid_mode     = "host"
         network_mode = "host"

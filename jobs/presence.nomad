@@ -109,23 +109,11 @@ job "presence" {
           "-mode",
           "client",
         ]
-
-        logging {
-          type = "journald"
-          config {
-            tag = "detect-presence-srv"
-          }
-        }
       }
 
       resources {
         cpu    = 50
         memory = 50
-      }
-
-      env {
-        HOSTNAME        = "${attr.unique.hostname}"
-        NOMAD_CLIENT_ID = "${node.unique.id}"
       }
 
       vault {

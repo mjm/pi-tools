@@ -1,7 +1,5 @@
 job "jaeger" {
-  datacenters = [
-    "dc1",
-  ]
+  datacenters = ["dc1"]
 
   type = "service"
 
@@ -63,13 +61,6 @@ job "jaeger" {
       config {
         image = "querycapistio/all-in-one@sha256:ad4552a9facb5e71ea2ca296fb92cf510e97783ad5068f5d23a6b169edb4a9dd"
         ports = ["admin-http", "query-http"]
-
-        logging {
-          type = "journald"
-          config {
-            tag = "jaeger"
-          }
-        }
       }
     }
   }

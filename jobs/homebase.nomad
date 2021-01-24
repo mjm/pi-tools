@@ -31,13 +31,6 @@ job "homebase" {
           "caddyfile",
         ]
         ports   = ["http"]
-
-        logging {
-          type = "journald"
-          config {
-            tag = "homebase-srv"
-          }
-        }
       }
 
       resources {
@@ -130,11 +123,6 @@ job "homebase" {
       resources {
         cpu    = 50
         memory = 50
-      }
-
-      env {
-        HOSTNAME        = "${attr.unique.hostname}"
-        NOMAD_CLIENT_ID = "${node.unique.id}"
       }
     }
   }
@@ -244,13 +232,6 @@ job "homebase" {
           "dbname=homebase_bot host=localhost sslmode=disable",
           "-leader-elect",
         ]
-
-        logging {
-          type = "journald"
-          config {
-            tag = "homebase-bot-srv"
-          }
-        }
       }
 
       resources {
@@ -260,8 +241,6 @@ job "homebase" {
 
       env {
         CONSUL_HTTP_ADDR = "${attr.unique.network.ip-address}:8500"
-        HOSTNAME         = "${attr.unique.hostname}"
-        NOMAD_CLIENT_ID  = "${node.unique.id}"
       }
 
       vault {

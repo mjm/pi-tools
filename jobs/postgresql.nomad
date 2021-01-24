@@ -59,13 +59,6 @@ job "postgresql" {
       config {
         image = "postgres@sha256:b6399aef923e0529a4f2a5874e8860d29cef3726ab7079883f3368aaa2a9f29c"
         ports = ["db"]
-
-        logging {
-          type = "journald"
-          config {
-            tag = "postgresql"
-          }
-        }
       }
 
       env {

@@ -51,13 +51,6 @@ job "prometheus" {
           "--web.enable-admin-api",
         ]
         network_mode = "host"
-
-        logging {
-          type = "journald"
-          config {
-            tag = "prometheus"
-          }
-        }
       }
 
       resources {
@@ -171,13 +164,6 @@ EOF
           "--web.external-url=https://alertmanager.homelab/",
         ]
         ports = ["http"]
-
-        logging {
-          type = "journald"
-          config {
-            tag = "alertmanager"
-          }
-        }
       }
 
       resources {

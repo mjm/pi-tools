@@ -33,6 +33,10 @@ job "backup-borg" {
     prohibit_overlap = true
   }
 
+  meta {
+    logging_tag = "backup-borg"
+  }
+
   group "backup" {
     count = 1
 

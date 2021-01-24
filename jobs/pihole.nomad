@@ -47,13 +47,6 @@ job "pihole" {
         image = "pihole/pihole@sha256:af7f4f5bbb876c194e0a2882267c092c34a547820729ebf325ef14177d1a7a65"
         ports = ["dns", "http", "https"]
 
-        logging {
-          type = "journald"
-          config {
-            tag = "pihole"
-          }
-        }
-
         mount {
           type = "bind"
           target = "/etc/dnsmasq.d"

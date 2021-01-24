@@ -19,23 +19,11 @@ job "beacon" {
 
         network_mode = "host"
         cap_add      = ["NET_ADMIN", "NET_RAW"]
-
-        logging {
-          type = "journald"
-          config {
-            tag = "beacon-srv"
-          }
-        }
       }
 
       resources {
         cpu    = 50
         memory = 40
-      }
-
-      env {
-        HOSTNAME        = "${attr.unique.hostname}"
-        NOMAD_CLIENT_ID = "${node.unique.id}"
       }
     }
   }
