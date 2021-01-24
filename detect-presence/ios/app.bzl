@@ -10,5 +10,6 @@ def presence_app(name, bundle_name, provisioning_profile):
         infoplists = [":Info.plist"],
         minimum_os_version = "14.0",
         provisioning_profile = provisioning_profile,
+        version = ":build_label_version",
         deps = [":app-lib"],
     )

@@ -1,5 +1,18 @@
 load("@build_bazel_rules_swift//swift:swift.bzl", "swift_library")
+load("@build_bazel_rules_apple//apple:versioning.bzl", "apple_bundle_version")
 load("//detect-presence/ios:app.bzl", "presence_app")
+
+apple_bundle_version(
+    name = "build_label_version",
+    build_label_pattern = "Presence_{version}_build_{build}",
+    build_version = "{version}.{build}",
+    capture_groups = {
+        "version": "\\d+\\.\\d+",
+        "build": "\\d+",
+    },
+    short_version_string = "{version}",
+    fallback_build_label = "Presence_99.99_build_99",
+)
 
 swift_library(
     name = "app-lib",

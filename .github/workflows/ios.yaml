@@ -36,7 +36,7 @@ jobs:
           security default-keychain -s $RUNNER_TEMP/build.keychain
           security set-key-partition-list -S apple-tool:,apple: -s -k "" $RUNNER_TEMP/build.keychain
       - name: Build Presence app
-        run: bazel build --config=ci --apple_platform_type=ios --cpu=ios_arm64 --xcode_version=12.2 //detect-presence/ios:ios_ad_hoc
+        run: bazel build --config=ci --apple_platform_type=ios --cpu=ios_arm64 --xcode_version=12.2 --embed_label=Presence_1.0_build_${GITHUB_RUN_NUMBER} //detect-presence/ios:ios_ad_hoc
       - name: Stage IPA for upload
         run: cp bazel-out/applebin_ios-ios_arm64-opt-*/bin/detect-presence/ios/ios_ad_hoc.ipa $RUNNER_TEMP/Presence.ipa
       - name: Stage Info.plist for upload
