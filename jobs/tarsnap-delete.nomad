@@ -13,7 +13,7 @@ job "tarsnap-delete" {
     logging_tag = "backup-tarsnap"
   }
 
-  group "backup" {
+  group "tarsnap-delete" {
     count = 1
 
     constraint {
@@ -40,8 +40,8 @@ job "tarsnap-delete" {
       }
 
       resources {
-        cpu    = 100
-        memory = 100
+        cpu    = 200
+        memory = 30
       }
 
       dispatch_payload {

@@ -91,6 +91,15 @@ container_pull(
 )
 
 container_pull(
+    name = "tarsnap",
+    architecture = "arm64",
+    digest = "sha256:4deeb35783541c160a09cb7a58489a7bf57bb456f4efab83e0cbd663a60bbf50",
+    os = "linux",
+    registry = "index.docker.io",
+    repository = "mmoriarity/tarsnap",
+)
+
+container_pull(
     name = "kubectl",
     architecture = "arm64",
     digest = "sha256:508d34eaafc48dda8b372aa44ce598104899f065603261ade3abcd7f4234b43a",
@@ -5371,6 +5380,13 @@ go_repository(
     importpath = "go.uber.org/tools",
     sum = "h1:0mgffUl7nfd+FpvXMVz4IDEaUSmT1ysygQC7qYo7sG4=",
     version = "v0.0.0-20190618225709-2cfd321de3ee",
+)
+
+go_repository(
+    name = "ht_sr_git_apreiml_prunef",
+    importpath = "git.sr.ht/~apreiml/prunef",
+    sum = "h1:2srkQb23j/5UgzvnHOz9joJdkxHybq8pOckP+RnyuRk=",
+    version = "v0.2.0",
 )
 
 gazelle_dependencies()

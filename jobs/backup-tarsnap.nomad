@@ -182,5 +182,46 @@ EOF
         destination = "secrets/tarsnap.key"
       }
     }
+
+    task "prune" {
+      lifecycle {
+        hook = "poststop"
+      }
+
+      driver = "docker"
+
+      config {
+        image   = "mmoriarity/tarsnap-prunef"
+        command = "${NOMAD_TASK_DIR}/prune.sh"
+
+        mount {
+          type   = "bind"
+          target = "/var/lib/tarsnap/cache"
+          source = "/var/lib/tarsnap/cache"
+        }
+      }
+
+      resources {
+        cpu    = 200
+        memory = 30
+      }
+
+      vault {
+        policies = ["backup"]
+      }
+
+      template {
+        data        = <<EOF
+{{ with secret "kv/tarsnap" }}{{ .Data.data.key | base64Decode }}{{ end }}
+EOF
+        destination = "secrets/tarsnap.key"
+      }
+
+      template {
+        data        = file("backup-tarsnap/prune.sh")
+        destination = "local/prune.sh"
+        perms       = "0755"
+      }
+    }
   }
 }

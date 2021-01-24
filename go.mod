@@ -3,6 +3,7 @@ module github.com/mjm/pi-tools
 go 1.14
 
 require (
+	git.sr.ht/~apreiml/prunef v0.2.0 // indirect
 	github.com/armon/go-metrics v0.3.5-0.20201104215618-6fd5a4ddf425 // indirect
 	github.com/etherlabsio/healthcheck v0.0.0-20191224061800-dd3d2fd8c3f6
 	github.com/golang-migrate/migrate/v4 v4.13.0
