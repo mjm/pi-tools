@@ -19,6 +19,7 @@ import (
 	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
 	"github.com/mjm/pi-tools/deploy/service/deployservice"
 	"github.com/mjm/pi-tools/observability"
+	"github.com/mjm/pi-tools/pkg/leader"
 	"github.com/mjm/pi-tools/pkg/signal"
 	"github.com/mjm/pi-tools/rpc"
 )
@@ -69,7 +70,20 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go deploysSrv.PollForChanges(ctx, *pollInterval)
+	election, err := leader.NewElection(leader.Config{
+		Key: "service/deploy/leader",
+		OnAcquireLeader: func() {
+			deploysSrv.PollForChanges(ctx, *pollInterval)
+		},
+	})
+	if err != nil {
+		log.Panicf("Error creating leader election: %v", err)
+	}
+
+	go election.Run(ctx)
+	defer election.Stop()
+
+	// Ensure the current deploy, if any, is complete before shutting down and giving up leadership
 	defer deploysSrv.Shutdown()
 
 	http.Handle("/healthz",

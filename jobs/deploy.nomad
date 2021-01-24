@@ -5,8 +5,7 @@ job "deploy" {
   priority = "60"
 
   group "deploy" {
-    count = 1
-    // TODO add more and introduce leader election
+    count = 2
 
     update {
       max_parallel = 1
@@ -101,6 +100,9 @@ job "deploy" {
       config {
         image   = "mmoriarity/deploy-srv"
         command = "/deploy-srv"
+        args = [
+          "-leader-elect",
+        ]
 
         logging {
           type = "journald"

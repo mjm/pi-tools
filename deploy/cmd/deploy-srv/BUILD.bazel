@@ -10,6 +10,7 @@ go_library(
         "//deploy/proto/deploy",
         "//deploy/service/deployservice",
         "//observability",
+        "//pkg/leader",
         "//pkg/signal",
         "//rpc",
         "@com_github_etherlabsio_healthcheck//:healthcheck",
