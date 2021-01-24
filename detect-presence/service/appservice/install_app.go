@@ -1,6 +1,7 @@
 package appservice
 
 import (
+	"io"
 	"net/http"
 
 	"go.opentelemetry.io/otel/label"
@@ -29,5 +30,24 @@ func (s *Server) InstallApp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, downloadURL.String(), http.StatusTemporaryRedirect)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, downloadURL.String(), nil)
+	if err != nil {
+		err = spanerr.RecordError(ctx, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	res, err := s.HTTPClient.Do(req)
+	if err != nil {
+		err = spanerr.RecordError(ctx, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer res.Body.Close()
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/octet-stream")
+	if _, err := io.Copy(w, res.Body); err != nil {
+		_ = spanerr.RecordError(ctx, err)
+	}
 }
