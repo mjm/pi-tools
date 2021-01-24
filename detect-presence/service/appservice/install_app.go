@@ -45,8 +45,8 @@ func (s *Server) InstallApp(w http.ResponseWriter, r *http.Request) {
 	}
 	defer res.Body.Close()
 
-	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/octet-stream")
+	w.WriteHeader(http.StatusOK)
 	if _, err := io.Copy(w, res.Body); err != nil {
 		_ = spanerr.RecordError(ctx, err)
 	}
