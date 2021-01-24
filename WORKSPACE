@@ -1749,13 +1749,6 @@ go_repository(
 )
 
 go_repository(
-    name = "com_github_improbable_eng_grpc_web",
-    importpath = "github.com/improbable-eng/grpc-web",
-    sum = "h1:7XqtaBWaOCH0cVGKHyvhtcuo6fgW32Y10yRKrDHFHOc=",
-    version = "v0.13.0",
-)
-
-go_repository(
     name = "com_github_rs_cors",
     importpath = "github.com/rs/cors",
     sum = "h1:+88SsELBHx5r+hZ8TCkggzSstaWNbDvThkVK8H6f9ik=",

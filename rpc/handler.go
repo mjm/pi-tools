@@ -7,15 +7,11 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"strings"
 
-	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-
-	"github.com/mjm/pi-tools/debug"
 )
 
 var (
@@ -93,29 +89,8 @@ func newHandler(opts ...Option) (http.Handler, *grpc.Server) {
 		cfg.registerFn(grpcServer)
 	}
 
-	wrappedGrpc := grpcweb.WrapServer(grpcServer, grpcweb.WithOriginFunc(func(origin string) bool {
-		if debug.IsEnabled() {
-			return true
-		}
-
-		log.Printf("Rejecting unknown origin: %s. Requests in production should be proxied by Homebase.", origin)
-		return false
-	}))
-
 	handler := otelhttp.NewHandler(
-		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if wrappedGrpc.IsAcceptableGrpcCorsRequest(r) || wrappedGrpc.IsGrpcWebRequest(r) {
-				wrappedGrpc.ServeHTTP(w, r)
-				return
-			}
-
-			if strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
-				grpcServer.ServeHTTP(w, r)
-				return
-			}
-
-			http.DefaultServeMux.ServeHTTP(w, r)
-		}),
+		http.DefaultServeMux,
 		"Server",
 		otelhttp.WithMessageEvents(otelhttp.ReadEvents, otelhttp.WriteEvents),
 		otelhttp.WithFilter(func(r *http.Request) bool {

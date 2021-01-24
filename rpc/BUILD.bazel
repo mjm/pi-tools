@@ -9,8 +9,6 @@ go_library(
     importpath = "github.com/mjm/pi-tools/rpc",
     visibility = ["//visibility:public"],
     deps = [
-        "//debug",
-        "@com_github_improbable_eng_grpc_web//go/grpcweb",
         "@io_opentelemetry_go_contrib_instrumentation_google_golang_org_grpc_otelgrpc//:otelgrpc",
         "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
         "@org_golang_google_grpc//:go_default_library",
