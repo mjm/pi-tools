@@ -1,6 +1,8 @@
 package appservice
 
 import (
+	"archive/zip"
+	"bytes"
 	"io"
 	"net/http"
 
@@ -37,17 +39,34 @@ func (s *Server) InstallApp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := s.HTTPClient.Do(req)
+	var buf bytes.Buffer
+	if _, err := s.GithubClient.Do(ctx, req, &buf); err != nil {
+		err = spanerr.RecordError(ctx, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	span.SetAttributes(label.Int("archive.length", buf.Len()))
+
+	zipReader, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
 	if err != nil {
 		err = spanerr.RecordError(ctx, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer res.Body.Close()
+
+	zipFile := zipReader.File[0]
+	f, err := zipFile.Open()
+	if err != nil {
+		err = spanerr.RecordError(ctx, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer f.Close()
 
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.WriteHeader(http.StatusOK)
-	if _, err := io.Copy(w, res.Body); err != nil {
+	if _, err := io.Copy(w, f); err != nil {
 		_ = spanerr.RecordError(ctx, err)
 	}
 }
