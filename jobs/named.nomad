@@ -8,6 +8,11 @@ job "named" {
   type     = "system"
   priority = 90
 
+  update {
+    max_parallel = 1
+    stagger      = "30s"
+  }
+
   group "named" {
     network {
       mode = "host"
