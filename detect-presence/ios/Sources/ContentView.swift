@@ -1,4 +1,5 @@
 import SwiftUI
+import RelaySwiftUI
 
 struct ContentView: View {
     @ObservedObject var model: AppModel
@@ -57,13 +58,5 @@ struct ContentView: View {
             }
         }
         .navigationTitle("Presence")
-        .onAppear {
-            NSLog("setting record to dev server to \(recordToDevServer)")
-            model.setRecordToDevServer(recordToDevServer)
-        }
-        .onChange(of: recordToDevServer) { useDev in
-            NSLog("setting record to dev server to \(useDev)")
-            model.setRecordToDevServer(useDev)
-        }
     }
 }

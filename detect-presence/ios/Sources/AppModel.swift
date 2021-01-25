@@ -8,7 +8,7 @@ class AppModel: ObservableObject {
     @Published var allEvents: [AppEvent] = []
     @Published var currentTrip: Trip?
     @Published var queuedTripCount: Int = 0
-    @Published var environment: Relay.Environment?
+    @Published var environment: Relay.Environment!
 
     init(
         beaconObserver: BeaconObserver,
@@ -17,6 +17,8 @@ class AppModel: ObservableObject {
     ) {
         self.tripsController = tripsController
         self.tripRecorder = tripRecorder
+
+        self.setRecordToDevServer(false)
 
         let wrappedBeaconEvents = beaconObserver.eventsPublisher().map(AppEvent.init)
         let wrappedTripsEvents = tripsController.eventsPublisher().map(AppEvent.init)

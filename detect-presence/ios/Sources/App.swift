@@ -9,6 +9,8 @@ private let tripRecorder = TripRecorder(events: tripsController.eventsPublisher(
 @main
 struct PresenceApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
+    @AppStorage("recordToDevServer") private var recordToDevServer: Bool = false
     @StateObject var model = AppModel(
         beaconObserver: beaconObserver,
         tripsController: tripsController,
@@ -19,7 +21,10 @@ struct PresenceApp: App {
         WindowGroup {
             NavigationView {
                 ContentView(model: model)
-                    .environmentObject(beaconObserver)
+                    .relayEnvironment(model.environment)
+            }
+            .onChange(of: recordToDevServer) { value in
+                model.setRecordToDevServer(value)
             }
         }
     }
