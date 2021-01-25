@@ -6,7 +6,6 @@ locals {
   homelab_certs = [
     "alertmanager",
     "consul",
-    "detect-presence-grpc",
     "go",
     "grafana",
     "homebase",

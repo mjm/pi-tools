@@ -25,31 +25,6 @@ resource "consul_config_entry" "detect_presence_grpc_intentions" {
   config_json = jsonencode({
     Sources = [
       {
-        Name        = "ingress-http"
-        Precedence  = 9
-        Type        = "consul"
-        Permissions = [
-          {
-            Action = "allow"
-            HTTP   = {
-              PathExact = "/TripsService/RecordTrips"
-            }
-          },
-          {
-            Action = "allow"
-            HTTP   = {
-              PathPrefix = "/grpc.reflection.v1alpha.ServerReflection/"
-            }
-          },
-          {
-            Action = "deny"
-            HTTP   = {
-              PathPrefix = "/"
-            }
-          }
-        ]
-      },
-      {
         Name        = "homebase-bot"
         Precedence  = 9
         Type        = "consul"
