@@ -24,7 +24,7 @@ class Network: Relay.Network {
     }
 
     func execute(request: RequestParameters, variables: VariableData, cacheConfig: CacheConfig) -> AnyPublisher<Data, Error> {
-        var req = URLRequest(url: graphqlURL)
+        var req = URLRequest(url: self.url)
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "POST"
 
