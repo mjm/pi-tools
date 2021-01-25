@@ -25,9 +25,12 @@ swift_library(
         "Sources/ContentView.swift",
         "Sources/Network.swift",
         "Sources/RecordTripsMutation.swift",
+        "Sources/RecordingTab.swift",
         "Sources/State.swift",
         "Sources/TripRecorder.swift",
+        "Sources/TripRow.swift",
         "Sources/TripsController.swift",
+        "Sources/TripsTab.swift",
     ],
     deps = [
         ":relay-generated",

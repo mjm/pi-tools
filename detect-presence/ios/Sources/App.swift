@@ -19,13 +19,11 @@ struct PresenceApp: App {
 
     var body: some Scene {
         WindowGroup {
-            NavigationView {
-                ContentView(model: model)
-                    .relayEnvironment(model.environment)
-            }
-            .onChange(of: recordToDevServer) { value in
-                model.setRecordToDevServer(value)
-            }
+            ContentView(model: model)
+                .relayEnvironment(model.environment)
+                .onChange(of: recordToDevServer) { value in
+                    model.setRecordToDevServer(value)
+                }
         }
     }
 }
