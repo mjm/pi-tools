@@ -74,15 +74,15 @@ resource "consul_config_entry" "detect_presence_grpc_intentions" {
         Type        = "consul"
         Permissions = [
           {
-            Action = "deny"
-            HTTP   = {
-              PathExact = "/TripsService/RecordTrips"
-            }
-          },
-          {
             Action = "allow"
             HTTP   = {
               PathPrefix = "/TripsService/"
+            }
+          },
+          {
+            Action = "deny"
+            HTTP   = {
+              PathPrefix = "/"
             }
           },
         ],
