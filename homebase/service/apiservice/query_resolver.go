@@ -34,10 +34,6 @@ func (r *Resolver) Trips(ctx context.Context, args struct {
 	First *int32
 	After *Cursor
 }) (*TripConnection, error) {
-	if err := requireAuthorizedUser(ctx); err != nil {
-		return nil, err
-	}
-
 	// TODO actually support paging
 
 	var limit int32 = 30
