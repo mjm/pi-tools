@@ -1,7 +1,7 @@
 import Foundation
 import detect_presence_ios_relay_generated
 
-struct State: Codable {
+struct AppState: Codable {
     var currentTrip: Trip?
     var queuedTrips: [Trip] = []
 }

@@ -1,23 +1,38 @@
 import SwiftUI
 
 struct ContentView: View {
+    enum Tab: Hashable {
+        case trips
+        case recording
+    }
+
     @ObservedObject var model: AppModel
+    @State private var selectedItem: Tab = .trips
+    @State private var fetchKey = UUID()
 
     var body: some View {
-        TabView {
+        TabView(selection: $selectedItem) {
             NavigationView {
-                TripsTab()
+                TripsTab(fetchKey: fetchKey)
             }
             .tabItem {
                 Image(systemName: "figure.walk")
                 Text("Trips")
             }
+            .tag(Tab.trips)
+
             NavigationView {
                 RecordingTab(model: model)
             }
             .tabItem {
                 Image(systemName: "antenna.radiowaves.left.and.right")
                 Text("Recording")
+            }
+            .tag(Tab.recording)
+        }
+        .onChange(of: selectedItem) { newValue in
+            if newValue == .trips {
+                fetchKey = UUID()
             }
         }
     }

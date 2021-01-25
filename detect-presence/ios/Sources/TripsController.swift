@@ -11,7 +11,7 @@ class TripsController {
     @Published var currentTrip: Trip?
     @Published var queuedTrips: [Trip] = []
 
-    @Published private var state = State()
+    @Published private var state = AppState()
     private let eventsSubject = PassthroughSubject<Event, Never>()
     private var cancellables = Set<AnyCancellable>()
 
@@ -41,7 +41,7 @@ class TripsController {
         do {
             let stateFileURL = try savedStateURL()
             let savedStateData = try Data(contentsOf: stateFileURL)
-            state = try PropertyListDecoder().decode(State.self, from: savedStateData)
+            state = try PropertyListDecoder().decode(AppState.self, from: savedStateData)
             NSLog("Restored state: \(state)")
         } catch {
             NSLog("Could not restore state: \(error.localizedDescription)")

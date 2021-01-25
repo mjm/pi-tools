@@ -18,11 +18,13 @@ query TripsTabQuery {
 """)
 
 struct TripsTab: View {
-    @Query<TripsTabQuery> var query
+    @Query<TripsTabQuery> private var query
+
+    var fetchKey: UUID
 
     var body: some View {
         Group {
-            switch query.get() {
+            switch query.get(fetchKey: fetchKey) {
             case .loading:
                 Text("Loading…")
             case .failure(let error):
