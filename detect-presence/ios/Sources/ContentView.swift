@@ -10,6 +10,8 @@ struct ContentView: View {
     @State private var selectedItem: Tab = .trips
     @State private var fetchKey = UUID()
 
+    @Environment(\.scenePhase) var scenePhase
+
     var body: some View {
         TabView(selection: $selectedItem) {
             NavigationView {
@@ -32,6 +34,11 @@ struct ContentView: View {
         }
         .onChange(of: selectedItem) { newValue in
             if newValue == .trips {
+                fetchKey = UUID()
+            }
+        }
+        .onChange(of: scenePhase) { newValue in
+            if newValue == .active {
                 fetchKey = UUID()
             }
         }

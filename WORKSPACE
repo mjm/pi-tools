@@ -210,9 +210,9 @@ apple_support_dependencies()
 
 http_archive(
     name = "com_github_relay_tools_relay_swift",
-    sha256 = "70ae4523d834aa3c6023116e35121b3845c798ee5da5d3fbd91320d8fec47bb4",
-    strip_prefix = "Relay.swift-24fc5dd91ba0900e0f511abb73f065bfc9634174",
-    urls = ["https://github.com/relay-tools/Relay.swift/archive/24fc5dd91ba0900e0f511abb73f065bfc9634174.zip"],
+    sha256 = "44079a7c940668b194fc7e50c404abedb9d9450839207a6fd8194c2531daf7a4",
+    strip_prefix = "Relay.swift-c2c1720cc04e724e8ad368ca42ddfdd468b7a677",
+    urls = ["https://github.com/relay-tools/Relay.swift/archive/c2c1720cc04e724e8ad368ca42ddfdd468b7a677.zip"],
 )
 
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
