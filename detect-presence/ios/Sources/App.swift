@@ -24,6 +24,9 @@ struct PresenceApp: App {
                 .onChange(of: recordToDevServer) { value in
                     model.setRecordToDevServer(value)
                 }
+                .onAppear {
+                    model.setRecordToDevServer(recordToDevServer)
+                }
         }
     }
 }
