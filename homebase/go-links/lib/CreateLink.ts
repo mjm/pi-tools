@@ -1,13 +1,16 @@
 import {graphql, useMutation} from "react-relay/hooks";
-import {CreateLinkInput} from "com_github_mjm_pi_tools/homebase/api/__generated__/CreateLinkMutation.graphql";
+import {
+    CreateLinkInput,
+    CreateLinkMutation,
+} from "com_github_mjm_pi_tools/homebase/api/__generated__/CreateLinkMutation.graphql";
 
 export function useCreateLink() {
-    const [commit, isInFlight] = useMutation(
+    const [commit, isInFlight] = useMutation<CreateLinkMutation>(
         graphql`
-            mutation CreateLinkMutation($input: CreateLinkInput!) {
+            mutation CreateLinkMutation($input: CreateLinkInput!, $connections: [ID!]!) {
                 createLink(input: $input) {
                     link @prependNode(
-                        connections: ["client:root:viewer:__RecentLinksList_links_connection"]
+                        connections: $connections
                         edgeTypeName: "LinkEdge"
                     ) {
                         id
@@ -18,10 +21,10 @@ export function useCreateLink() {
         `,
     );
 
-    async function myCommit(input: CreateLinkInput) {
+    async function myCommit(input: CreateLinkInput, connections: string[]) {
         return new Promise((resolve, reject) => {
             commit({
-                variables: {input},
+                variables: {input, connections},
                 onCompleted: resolve,
                 onError: reject,
             });

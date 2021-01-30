@@ -26,7 +26,15 @@ function GoLinksHomePageInner() {
         graphql`
             query GoLinksHomePageQuery {
                 viewer {
-                    ...RecentLinksList_viewer
+                    links(first: 30) @connection(key: "RecentLinksList_links") {
+                        __id
+                        ...RecentLinksList_links
+                        
+                        # Not used here but it keeps the relay-compiler happy
+                        edges {
+                            __id
+                        }
+                    }
                 }
             }
         `,
@@ -35,8 +43,8 @@ function GoLinksHomePageInner() {
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-            <div><NewLinkCard/></div>
-            <div><RecentLinksList viewer={data.viewer}/></div>
+            <div><NewLinkCard connections={[data.viewer.links.__id]}/></div>
+            <div><RecentLinksList links={data.viewer.links}/></div>
         </div>
     );
 }

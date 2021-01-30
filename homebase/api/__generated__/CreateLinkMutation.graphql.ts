@@ -11,6 +11,7 @@ export type CreateLinkInput = {
 };
 export type CreateLinkMutationVariables = {
     input: CreateLinkInput;
+    connections: Array<string>;
 };
 export type CreateLinkMutationResponse = {
     readonly createLink: {
@@ -47,21 +48,24 @@ fragment LinkRow_link on Link {
 */
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "input"
-  }
-],
-v1 = [
+var v0 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "connections"
+},
+v1 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "input"
+},
+v2 = [
   {
     "kind": "Variable",
     "name": "input",
     "variableName": "input"
   }
 ],
-v2 = {
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -70,14 +74,17 @@ v2 = {
 };
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "CreateLinkMutation",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v2/*: any*/),
         "concreteType": "CreateLinkPayload",
         "kind": "LinkedField",
         "name": "createLink",
@@ -91,7 +98,7 @@ return {
             "name": "link",
             "plural": false,
             "selections": [
-              (v2/*: any*/),
+              (v3/*: any*/),
               {
                 "args": null,
                 "kind": "FragmentSpread",
@@ -109,13 +116,16 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v1/*: any*/),
+      (v0/*: any*/)
+    ],
     "kind": "Operation",
     "name": "CreateLinkMutation",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v2/*: any*/),
         "concreteType": "CreateLinkPayload",
         "kind": "LinkedField",
         "name": "createLink",
@@ -129,7 +139,7 @@ return {
             "name": "link",
             "plural": false,
             "selections": [
-              (v2/*: any*/),
+              (v3/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -157,11 +167,9 @@ return {
             "name": "link",
             "handleArgs": [
               {
-                "kind": "Literal",
+                "kind": "Variable",
                 "name": "connections",
-                "value": [
-                  "client:root:viewer:__RecentLinksList_links_connection"
-                ]
+                "variableName": "connections"
               },
               {
                 "kind": "Literal",
@@ -185,5 +193,5 @@ return {
   }
 };
 })();
-(node as any).hash = 'f516a8eae288761cb8bbdac2506d6017';
+(node as any).hash = '23b6e7e5203801e0f05ee222cc77e939';
 export default node;

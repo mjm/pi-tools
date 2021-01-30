@@ -7,13 +7,13 @@ import {DescriptionField} from "com_github_mjm_pi_tools/homebase/go-links/compon
 import {useCreateLink} from "com_github_mjm_pi_tools/homebase/go-links/lib/CreateLink";
 import {CreateLinkInput} from "com_github_mjm_pi_tools/homebase/api/__generated__/CreateLinkMutation.graphql";
 
-export function NewLinkCard() {
+export function NewLinkCard({connections}: {connections: string[]}) {
     const [commit] = useCreateLink();
 
     async function onSubmit(values: CreateLinkInput, actions: FormikHelpers<CreateLinkInput>) {
         actions.setStatus(null);
         try {
-            await commit(values);
+            await commit(values, connections);
             actions.resetForm();
         } catch (err) {
             actions.setStatus({error: err});
