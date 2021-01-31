@@ -1,6 +1,7 @@
 import SwiftUI
 import Combine
 import Relay
+import detect_presence_ios_relay_generated
 
 class AppModel: ObservableObject {
     let tripsController: TripsController
@@ -51,6 +52,9 @@ class AppModel: ObservableObject {
             network: Network(isDevServer: useDev),
             store: Store()
         )
+        // Ensure that the garbage collector doesn't delete our client-only records
+        self.environment.retain(operation: AppModelPreventGCQuery().createDescriptor()).store(in: &cancellables)
+
         self.environment.commitUpdate { store in
             store.root.setLinkedRecords("appEvents", records: [])
         }
@@ -163,3 +167,43 @@ extension RecordSourceProxy {
         root.setLinkedRecords("appEvents", records: events)
     }
 }
+
+// Retain this operation for the lifetime of the environment, so that we hang on to any
+// records that may are being used for client-only data.
+private let preventGCQuery = graphql("""
+query AppModelPreventGCQuery {
+    # workaround for the relay compiler, it needs some kind of server field present
+    # in the query.
+    ...on Query { __typename }
+
+    currentTrip {
+        id
+    }
+    queuedTrips {
+        id
+    }
+    appEvents {
+        id
+        ...on TripBeganEvent {
+            trip {
+                id
+            }
+        }
+        ...on TripEndedEvent {
+            queuedTrips {
+                id
+            }
+        }
+        ...on TripDiscardedEvent {
+            trip {
+                id
+            }
+        }
+        ...on RecordedTripsEvent {
+            recordedTrips {
+                id
+            }
+        }
+    }
+}
+""")
