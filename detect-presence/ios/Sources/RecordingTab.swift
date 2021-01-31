@@ -11,6 +11,9 @@ query RecordingTabQuery {
     currentTrip {
         leftAt
     }
+    queuedTrips {
+        id
+    }
     appEvents {
         id
         ...AppEventRow_event
@@ -56,11 +59,11 @@ struct RecordingTab: View {
                             Text("Not currently on a trip")
                         }
 
-                        if model.queuedTripCount > 0 {
+                        if !data.queuedTrips.isEmpty {
                             Button {
                                 model.recordQueuedTrips()
                             } label: {
-                                Label("Record \(model.queuedTripCount) queued trips", systemImage: "icloud.and.arrow.up.fill")
+                                Label("Record \(data.queuedTrips.count) queued trips", systemImage: "icloud.and.arrow.up.fill")
                             }
 
                             Button {
@@ -72,7 +75,7 @@ struct RecordingTab: View {
                     }
 
                     Section(header: Text("All Events")) {
-                        ForEach(data.appEvents ?? []) { event in
+                        ForEach(data.appEvents) { event in
                             AppEventRow(event: event.asFragment())
                         }
                     }

@@ -31,6 +31,16 @@ public struct RecordingTabQuery {
                                 ]
                             )),
                             .field(ReaderLinkedField(
+                                name: "queuedTrips",
+                                concreteType: "Trip",
+                                plural: true,
+                                selections: [
+                                    .field(ReaderScalarField(
+                                        name: "id"
+                                    ))
+                                ]
+                            )),
+                            .field(ReaderLinkedField(
                                 name: "appEvents",
                                 plural: true,
                                 selections: [
@@ -62,6 +72,16 @@ public struct RecordingTabQuery {
                                     .field(NormalizationScalarField(
                                         name: "leftAt"
                                     )),
+                                    .field(NormalizationScalarField(
+                                        name: "id"
+                                    ))
+                                ]
+                            )),
+                            .field(NormalizationLinkedField(
+                                name: "queuedTrips",
+                                concreteType: "Trip",
+                                plural: true,
+                                selections: [
                                     .field(NormalizationScalarField(
                                         name: "id"
                                     ))
@@ -190,10 +210,15 @@ extension RecordingTabQuery {
 extension RecordingTabQuery {
     public struct Data: Decodable {
         public var currentTrip: Trip_currentTrip?
-        public var appEvents: [AppEvent_appEvents]?
+        public var queuedTrips: [Trip_queuedTrips]
+        public var appEvents: [AppEvent_appEvents]
 
         public struct Trip_currentTrip: Decodable {
             public var leftAt: String
+        }
+
+        public struct Trip_queuedTrips: Decodable, Identifiable {
+            public var id: String
         }
 
         public struct AppEvent_appEvents: Decodable, Identifiable, AppEventRow_event_Key {

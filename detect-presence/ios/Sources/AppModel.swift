@@ -5,7 +5,6 @@ import Relay
 class AppModel: ObservableObject {
     let tripsController: TripsController
     let tripRecorder: TripRecorder
-    @Published var queuedTripCount: Int = 0
     @Published var environment: Relay.Environment!
 
     private var cancellables = Set<AnyCancellable>()
@@ -33,8 +32,9 @@ class AppModel: ObservableObject {
         tripsController.$currentTrip.sink { [weak self] trip in
             self?.setCurrentTrip(trip)
         }.store(in: &cancellables)
-
-        tripsController.$queuedTrips.map(\.count).assign(to: &$queuedTripCount)
+        tripsController.$queuedTrips.sink { [weak self] trips in
+            self?.setQueuedTrips(trips)
+        }.store(in: &cancellables)
     }
 
     func beginTrip() {
@@ -52,9 +52,10 @@ class AppModel: ObservableObject {
             store: Store()
         )
         self.environment.commitUpdate { store in
-            store.root.setLinkedRecords("queuedTrips", records: [])
             store.root.setLinkedRecords("appEvents", records: [])
         }
+        self.setQueuedTrips(tripsController.queuedTrips)
+        self.setCurrentTrip(tripsController.currentTrip)
 
         self.tripRecorder.environment = self.environment
     }
@@ -128,9 +129,15 @@ class AppModel: ObservableObject {
             }
         }
     }
+
+    private func setQueuedTrips(_ trips: [Trip]) {
+        environment.commitUpdate { store in
+            store.root.setLinkedRecords("queuedTrips", records: trips.map { store.upsert($0) })
+        }
+    }
 }
 
-private extension RecordSourceProxy {
+extension RecordSourceProxy {
     mutating func createEvent(typeName: String) -> RecordProxy {
         let eventID = UUID().uuidString
         let event = create(dataID: DataID(eventID), typeName: typeName)
