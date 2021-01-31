@@ -1,8 +1,23 @@
 import SwiftUI
 import RelaySwiftUI
+import detect_presence_ios_relay_generated
+
+private let query = graphql("""
+query RecordingTabQuery {
+    # workaround for the relay compiler, it needs some kind of server field present
+    # in the query.
+    ...on Query { __typename }
+
+    appEvents {
+        id
+        ...AppEventRow_event
+    }
+}
+""")
 
 struct RecordingTab: View {
     @ObservedObject var model: AppModel
+    @Query<RecordingTabQuery>(fetchPolicy: .storeOnly) var query
     @AppStorage("recordToDevServer") private var recordToDevServer: Bool = false
 
     var body: some View {
@@ -45,15 +60,20 @@ struct RecordingTab: View {
                 }
             }
 
-            Section(header: Text("All Events")) {
-                ForEach(model.allEvents) { event in
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(event.description)
-                            .font(.body)
-                        (Text(event.timestamp, style: .relative) + Text(" ago"))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+            switch query.get() {
+            case .loading:
+                Text("Loading (this shouldn't happen)")
+            case .failure(let error):
+                Text("Error: \(error.localizedDescription)")
+            case .success(let data):
+                if let data = data {
+                    Section(header: Text("All Events")) {
+                        ForEach(data.appEvents ?? []) { event in
+                            AppEventRow(event: event.asFragment())
+                        }
                     }
+                } else {
+                    Text("No data")
                 }
             }
         }

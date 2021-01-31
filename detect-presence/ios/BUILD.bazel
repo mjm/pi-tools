@@ -16,22 +16,7 @@ apple_bundle_version(
 
 swift_library(
     name = "app-lib",
-    srcs = [
-        "Sources/App.swift",
-        "Sources/AppEvent.swift",
-        "Sources/AppModel.swift",
-        "Sources/BackoffExecutor.swift",
-        "Sources/BeaconObserver.swift",
-        "Sources/ContentView.swift",
-        "Sources/Network.swift",
-        "Sources/RecordTripsMutation.swift",
-        "Sources/RecordingTab.swift",
-        "Sources/State.swift",
-        "Sources/TripRecorder.swift",
-        "Sources/TripRow.swift",
-        "Sources/TripsController.swift",
-        "Sources/TripsTab.swift",
-    ],
+    srcs = glob(["Sources/*.swift"]),
     deps = [
         ":relay-generated",
         "@com_github_relay_tools_relay_swift//:Relay",

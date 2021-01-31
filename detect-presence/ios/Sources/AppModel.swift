@@ -5,10 +5,11 @@ import Relay
 class AppModel: ObservableObject {
     let tripsController: TripsController
     let tripRecorder: TripRecorder
-    @Published var allEvents: [AppEvent] = []
     @Published var currentTrip: Trip?
     @Published var queuedTripCount: Int = 0
     @Published var environment: Relay.Environment!
+
+    private var cancellables = Set<AnyCancellable>()
 
     init(
         beaconObserver: BeaconObserver,
@@ -20,13 +21,15 @@ class AppModel: ObservableObject {
 
         self.setRecordToDevServer(false)
 
-        let wrappedBeaconEvents = beaconObserver.eventsPublisher().map(AppEvent.init)
-        let wrappedTripsEvents = tripsController.eventsPublisher().map(AppEvent.init)
-        let wrappedRecorderEvents = tripRecorder.eventsPublisher().map(AppEvent.init)
-
-        wrappedBeaconEvents.merge(with: wrappedTripsEvents, wrappedRecorderEvents).scan([]) { events, nextEvent in
-            [nextEvent] + events
-        }.assign(to: &$allEvents)
+        beaconObserver.eventsPublisher().sink { [weak self] event in
+            self?.record(event)
+        }.store(in: &cancellables)
+        tripsController.eventsPublisher().sink { [weak self] event in
+            self?.record(event)
+        }.store(in: &cancellables)
+        tripRecorder.eventsPublisher().sink { [weak self] event in
+            self?.record(event)
+        }.store(in: &cancellables)
 
         tripsController.$currentTrip.assign(to: &$currentTrip)
         tripsController.$queuedTrips.map(\.count).assign(to: &$queuedTripCount)
@@ -46,6 +49,11 @@ class AppModel: ObservableObject {
             network: Network(isDevServer: useDev),
             store: Store()
         )
+        self.environment.commitUpdate { store in
+            store.root.setLinkedRecords("queuedTrips", records: [])
+            store.root.setLinkedRecords("appEvents", records: [])
+        }
+
         self.tripRecorder.environment = self.environment
     }
 
@@ -55,5 +63,84 @@ class AppModel: ObservableObject {
 
     func clearQueuedTrips() {
         tripsController.clearQueue()
+    }
+
+    func record(_ beaconEvent: BeaconObserver.Event) {
+        environment.commitUpdate { store in
+            let event = store.createEvent(typeName: "BeaconEvent")
+            switch beaconEvent {
+            case .entered:
+                event["action"] = "ENTERED"
+            case .exited:
+                event["action"] = "EXITED"
+            }
+            store.prependEvent(event)
+        }
+    }
+
+    func record(_ tripsEvent: TripsController.Event) {
+        environment.commitUpdate { store in
+            let event: RecordProxy
+
+            switch tripsEvent {
+            case .tripBegan(let trip):
+                event = store.createEvent(typeName: "TripBeganEvent")
+                event.setLinkedRecord("trip", record: store.upsert(trip))
+            case .tripEnded(let queuedTrips):
+                event = store.createEvent(typeName: "TripEndedEvent")
+                event.setLinkedRecords("queuedTrips", records: queuedTrips.map {
+                    store.upsert($0)
+                })
+            case .tripDiscarded(let trip):
+                event = store.createEvent(typeName: "TripDiscardedEvent")
+                event.setLinkedRecord("trip", record: store.upsert(trip))
+            }
+
+            store.prependEvent(event)
+        }
+    }
+
+    func record(_ recordEvent: TripRecorder.Event) {
+        environment.commitUpdate { store in
+            let event: RecordProxy
+
+            switch recordEvent {
+            case .recorded(let trips):
+                event = store.createEvent(typeName: "RecordedTripsEvent")
+                event.setLinkedRecords("recordedTrips", records: trips.map { store.upsert($0) })
+            case .recordFailed(let message):
+                event = store.createEvent(typeName: "RecordFailedEvent")
+                event["message"] = message
+            }
+
+            store.prependEvent(event)
+        }
+    }
+}
+
+private extension RecordSourceProxy {
+    mutating func createEvent(typeName: String) -> RecordProxy {
+        let eventID = UUID().uuidString
+        let event = create(dataID: DataID(eventID), typeName: typeName)
+        event["id"] = eventID
+        event["timestamp"] = Date().asString
+        return event
+    }
+
+    mutating func upsert(_ trip: Trip) -> RecordProxy {
+        let tripID = trip.id.uuidString
+        let tripRecord = self[DataID(tripID)] ?? create(dataID: DataID(tripID), typeName: "Trip")
+        tripRecord["id"] = trip.id.uuidString
+        tripRecord["leftAt"] = trip.leftAt.asString
+        if let returnedAt = trip.returnedAt?.asString {
+            tripRecord["returnedAt"] = returnedAt
+        }
+        return tripRecord
+    }
+
+    mutating func prependEvent(_ event: RecordProxy) {
+        var events = root.getLinkedRecords("appEvents") ?? []
+        events.insert(event, at: 0)
+        root.setLinkedRecords("appEvents", records: events)
     }
 }

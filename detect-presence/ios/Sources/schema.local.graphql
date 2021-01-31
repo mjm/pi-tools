@@ -1,0 +1,50 @@
+extend type Query {
+    queuedTrips: [Trip!]
+    appEvents: [AppEvent!]
+}
+
+interface AppEvent implements Node {
+    id: ID!
+    timestamp: Time!
+}
+
+type BeaconEvent implements Node & AppEvent {
+    id: ID!
+    timestamp: Time!
+    action: BeaconAction!
+}
+
+enum BeaconAction {
+    ENTERED
+    EXITED
+}
+
+type TripBeganEvent implements Node & AppEvent {
+    id: ID!
+    timestamp: Time!
+    trip: Trip!
+}
+
+type TripEndedEvent implements Node & AppEvent {
+    id: ID!
+    timestamp: Time!
+    queuedTrips: [Trip!]!
+}
+
+type TripDiscardedEvent implements Node & AppEvent {
+    id: ID!
+    timestamp: Time!
+    trip: Trip!
+}
+
+type RecordedTripsEvent implements Node & AppEvent {
+    id: ID!
+    timestamp: Time!
+    recordedTrips: [Trip!]!
+}
+
+type RecordFailedEvent implements Node & AppEvent {
+    id: ID!
+    timestamp: Time!
+    message: String!
+}

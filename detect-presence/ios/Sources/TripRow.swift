@@ -31,14 +31,6 @@ struct TripRow: View {
     }
 }
 
-private let dateFormatter = ISO8601DateFormatter()
-
-private extension String {
-    var asDate: Date? {
-        dateFormatter.date(from: self)
-    }
-}
-
 private let dateIntervalFormatter: DateIntervalFormatter = {
     let formatter = DateIntervalFormatter()
     formatter.dateStyle = .medium
