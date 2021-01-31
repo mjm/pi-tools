@@ -21,6 +21,16 @@ public struct RecordingTabQuery {
                     .clientExtension(ReaderClientExtension(
                         selections: [
                             .field(ReaderLinkedField(
+                                name: "currentTrip",
+                                concreteType: "Trip",
+                                plural: false,
+                                selections: [
+                                    .field(ReaderScalarField(
+                                        name: "leftAt"
+                                    ))
+                                ]
+                            )),
+                            .field(ReaderLinkedField(
                                 name: "appEvents",
                                 plural: true,
                                 selections: [
@@ -44,6 +54,19 @@ public struct RecordingTabQuery {
                     )),
                     .clientExtension(NormalizationClientExtension(
                         selections: [
+                            .field(NormalizationLinkedField(
+                                name: "currentTrip",
+                                concreteType: "Trip",
+                                plural: false,
+                                selections: [
+                                    .field(NormalizationScalarField(
+                                        name: "leftAt"
+                                    )),
+                                    .field(NormalizationScalarField(
+                                        name: "id"
+                                    ))
+                                ]
+                            )),
                             .field(NormalizationLinkedField(
                                 name: "appEvents",
                                 plural: true,
@@ -166,7 +189,12 @@ extension RecordingTabQuery {
 
 extension RecordingTabQuery {
     public struct Data: Decodable {
+        public var currentTrip: Trip_currentTrip?
         public var appEvents: [AppEvent_appEvents]?
+
+        public struct Trip_currentTrip: Decodable {
+            public var leftAt: String
+        }
 
         public struct AppEvent_appEvents: Decodable, Identifiable, AppEventRow_event_Key {
             public var id: String

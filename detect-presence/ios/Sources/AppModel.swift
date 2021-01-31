@@ -5,7 +5,6 @@ import Relay
 class AppModel: ObservableObject {
     let tripsController: TripsController
     let tripRecorder: TripRecorder
-    @Published var currentTrip: Trip?
     @Published var queuedTripCount: Int = 0
     @Published var environment: Relay.Environment!
 
@@ -31,7 +30,10 @@ class AppModel: ObservableObject {
             self?.record(event)
         }.store(in: &cancellables)
 
-        tripsController.$currentTrip.assign(to: &$currentTrip)
+        tripsController.$currentTrip.sink { [weak self] trip in
+            self?.setCurrentTrip(trip)
+        }.store(in: &cancellables)
+
         tripsController.$queuedTrips.map(\.count).assign(to: &$queuedTripCount)
     }
 
@@ -65,7 +67,7 @@ class AppModel: ObservableObject {
         tripsController.clearQueue()
     }
 
-    func record(_ beaconEvent: BeaconObserver.Event) {
+    private func record(_ beaconEvent: BeaconObserver.Event) {
         environment.commitUpdate { store in
             let event = store.createEvent(typeName: "BeaconEvent")
             switch beaconEvent {
@@ -78,7 +80,7 @@ class AppModel: ObservableObject {
         }
     }
 
-    func record(_ tripsEvent: TripsController.Event) {
+    private func record(_ tripsEvent: TripsController.Event) {
         environment.commitUpdate { store in
             let event: RecordProxy
 
@@ -100,7 +102,7 @@ class AppModel: ObservableObject {
         }
     }
 
-    func record(_ recordEvent: TripRecorder.Event) {
+    private func record(_ recordEvent: TripRecorder.Event) {
         environment.commitUpdate { store in
             let event: RecordProxy
 
@@ -114,6 +116,16 @@ class AppModel: ObservableObject {
             }
 
             store.prependEvent(event)
+        }
+    }
+
+    private func setCurrentTrip(_ trip: Trip?) {
+        environment.commitUpdate { store in
+            if let trip = trip {
+                store.root.setLinkedRecord("currentTrip", record: store.upsert(trip))
+            } else {
+                store.root["currentTrip"] = NSNull()
+            }
         }
     }
 }
