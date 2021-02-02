@@ -5,6 +5,7 @@ locals {
   // .homelab certificates that need to be issued from Vault
   homelab_certs = [
     "alertmanager",
+    "auth",
     "consul",
     "go",
     "grafana",

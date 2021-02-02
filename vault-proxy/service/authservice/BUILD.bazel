@@ -1,0 +1,17 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "authservice",
+    srcs = [
+        "auth.go",
+        "callback.go",
+        "server.go",
+        "start.go",
+    ],
+    importpath = "github.com/mjm/pi-tools/vault-proxy/service/authservice",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_hashicorp_vault_api//:api",
+        "@org_golang_x_oauth2//:oauth2",
+    ],
+)

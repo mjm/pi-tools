@@ -1,0 +1,44 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
+
+go_library(
+    name = "vault-proxy_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mjm/pi-tools/vault-proxy/cmd/vault-proxy",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//observability",
+        "//pkg/signal",
+        "//rpc",
+        "//vault-proxy/service/authservice",
+        "@com_github_etherlabsio_healthcheck//:healthcheck",
+        "@com_github_hashicorp_vault_api//:api",
+        "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
+        "@org_golang_x_oauth2//:oauth2",
+        "@org_golang_x_oauth2//endpoints",
+    ],
+)
+
+go_binary(
+    name = "vault-proxy",
+    embed = [":vault-proxy_lib"],
+    visibility = ["//visibility:public"],
+)
+
+container_image(
+    name = "image",
+    base = "@distroless_base//image",
+    files = [
+        ":vault-proxy",
+    ],
+    mode = "0755",
+    tags = ["no-cache"],
+)
+
+container_push(
+    name = "image-push",
+    format = "Docker",
+    image = ":image",
+    registry = "index.docker.io",
+    repository = "mmoriarity/vault-proxy",
+)

@@ -10,8 +10,8 @@ apple_bundle_version(
         "version": "\\d+\\.\\d+",
         "build": "\\d+",
     },
-    short_version_string = "{version}",
     fallback_build_label = "Presence_99.99_build_99",
+    short_version_string = "{version}",
 )
 
 swift_library(
