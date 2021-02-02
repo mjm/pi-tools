@@ -17,6 +17,7 @@ require (
 	github.com/hashicorp/go-uuid v1.0.2 // indirect
 	github.com/hashicorp/nomad v1.0.2
 	github.com/hashicorp/nomad/api v0.0.0-20210115191909-bcd4752fc902
+	github.com/hashicorp/vault/api v1.0.5-0.20190730042357-746c0b111519
 	github.com/jonboulle/clockwork v0.2.2
 	github.com/kr/pretty v0.2.1 // indirect
 	github.com/lib/pq v1.8.0
