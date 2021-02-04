@@ -1,6 +1,7 @@
 package vaultwebauthn
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"strings"
@@ -83,8 +84,17 @@ func (b *backend) pathLogin(ctx context.Context, req *logical.Request, d *framew
 		return nil, logical.ErrPermissionDenied
 	}
 
-	// TODO update sign count on the corresponding credential entry
-	b.Logger().Info("validated login", "cred_id", usedCred.ID)
+	for _, credEntry := range creds {
+		if !bytes.Equal(credEntry.ID, usedCred.ID) {
+			continue
+		}
+
+		credEntry.Authenticator.SignCount = usedCred.Authenticator.SignCount
+		if err := b.setCredential(ctx, req.Storage, username, credEntry); err != nil {
+			return nil, err
+		}
+		break
+	}
 
 	cfg, err := b.Config(ctx, req.Storage)
 	if err != nil {
