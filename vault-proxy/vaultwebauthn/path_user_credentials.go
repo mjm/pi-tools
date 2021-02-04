@@ -120,16 +120,30 @@ func (b *backend) pathUserCredentialRequest(ctx context.Context, req *logical.Re
 		return logical.ErrorResponse("no such user"), logical.ErrInvalidRequest
 	}
 
+	creds, err := b.userCredentials(ctx, req.Storage, username)
+	if err != nil {
+		return nil, err
+	}
+
 	userWithCreds := &userWithCredentials{
 		UserEntry: *user,
 		name:      username,
+		creds:     creds,
 	}
 	wa, err := b.WebAuthn(ctx, req.Storage)
 	if err != nil {
 		return nil, err
 	}
 
-	creationResponse, sessionData, err := wa.BeginRegistration(userWithCreds)
+	var excludeList []protocol.CredentialDescriptor
+	for _, existingCred := range creds {
+		excludeList = append(excludeList, protocol.CredentialDescriptor{
+			Type:         protocol.PublicKeyCredentialType,
+			CredentialID: existingCred.ID,
+		})
+	}
+
+	creationResponse, sessionData, err := wa.BeginRegistration(userWithCreds, webauthn.WithExclusions(excludeList))
 	if err != nil {
 		return nil, err
 	}
