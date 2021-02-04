@@ -86,6 +86,30 @@ func pathUserCredentialsList(b *backend) *framework.Path {
 	}
 }
 
+func pathUserCredentials(b *backend) *framework.Path {
+	return &framework.Path{
+		Pattern: "users/" + framework.GenericNameRegex("name") + "/credentials/(?P<id>[A-Za-z0-9\\-_=]+)",
+		Fields: map[string]*framework.FieldSchema{
+			"name": {
+				Type:        framework.TypeNameString,
+				Description: "Name of the user.",
+			},
+			"id": {
+				Type:        framework.TypeString,
+				Description: "ID of the credential.",
+			},
+		},
+		Operations: map[logical.Operation]framework.OperationHandler{
+			logical.ReadOperation: &framework.PathOperation{
+				Callback: b.pathUserCredentialRead,
+			},
+			logical.DeleteOperation: &framework.PathOperation{
+				Callback: b.pathUserCredentialDelete,
+			},
+		},
+	}
+}
+
 func (b *backend) pathUserCredentialRequest(ctx context.Context, req *logical.Request, d *framework.FieldData) (*logical.Response, error) {
 	username := strings.ToLower(d.Get("name").(string))
 	user, err := b.user(ctx, req.Storage, username)
@@ -190,6 +214,43 @@ func (b *backend) pathUserCredentialsList(ctx context.Context, req *logical.Requ
 		return nil, err
 	}
 	return logical.ListResponse(creds), nil
+}
+
+func (b *backend) pathUserCredentialRead(ctx context.Context, req *logical.Request, d *framework.FieldData) (*logical.Response, error) {
+	username := strings.ToLower(d.Get("name").(string))
+	credIDRaw := d.Get("id").(string)
+
+	entry, err := req.Storage.Get(ctx, "user/"+username+"/credential/"+credIDRaw)
+	if err != nil {
+		return nil, err
+	}
+
+	var credEntry CredentialEntry
+	if err := entry.DecodeJSON(&credEntry); err != nil {
+		return nil, err
+	}
+
+	data := map[string]interface{}{
+		"id":                       credIDRaw,
+		"public_key":               base64.URLEncoding.EncodeToString(credEntry.PublicKey),
+		"attestation_type":         credEntry.AttestationType,
+		"authenticator_aaguid":     credEntry.Authenticator.AAGUID,
+		"authenticator_sign_count": credEntry.Authenticator.SignCount,
+	}
+	return &logical.Response{
+		Data: data,
+	}, nil
+}
+
+func (b *backend) pathUserCredentialDelete(ctx context.Context, req *logical.Request, d *framework.FieldData) (*logical.Response, error) {
+	username := strings.ToLower(d.Get("name").(string))
+	credIDRaw := d.Get("id").(string)
+
+	if err := req.Storage.Delete(ctx, "user/"+username+"/credential/"+credIDRaw); err != nil {
+		return nil, err
+	}
+
+	return nil, nil
 }
 
 func (b *backend) userCredentials(ctx context.Context, s logical.Storage, username string) ([]*CredentialEntry, error) {

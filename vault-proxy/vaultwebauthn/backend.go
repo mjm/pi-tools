@@ -41,6 +41,7 @@ func Backend() *backend {
 			pathUserCredentialsList(&b),
 			pathUserCredentialsRequest(&b),
 			pathUserCredentialsCreate(&b),
+			pathUserCredentials(&b),
 			pathUserAssertion(&b),
 		}),
 	}
