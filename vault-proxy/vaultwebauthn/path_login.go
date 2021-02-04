@@ -3,7 +3,9 @@ package vaultwebauthn
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/duo-labs/webauthn/protocol"
@@ -103,7 +105,7 @@ func (b *backend) pathLogin(ctx context.Context, req *logical.Request, d *framew
 
 	auth := &logical.Auth{
 		InternalData: map[string]interface{}{
-			"credential_id": usedCred.ID,
+			"credential_id": base64.URLEncoding.EncodeToString(usedCred.ID),
 		},
 		Metadata: map[string]string{
 			"username": username,
@@ -119,4 +121,55 @@ func (b *backend) pathLogin(ctx context.Context, req *logical.Request, d *framew
 	return &logical.Response{
 		Auth: auth,
 	}, nil
+}
+
+func (b *backend) pathLoginRenew(ctx context.Context, req *logical.Request, d *framework.FieldData) (*logical.Response, error) {
+	if req.Auth == nil {
+		return nil, fmt.Errorf("request auth was nil")
+	}
+
+	credentialIDRaw, ok := req.Auth.InternalData["credential_id"]
+	if !ok {
+		return nil, fmt.Errorf("no credential ID associated with token")
+	}
+	credentialID, err := base64.URLEncoding.DecodeString(credentialIDRaw.(string))
+	if err != nil {
+		return nil, err
+	}
+
+	// verify that this credential is still present for the user
+	username, ok := req.Auth.Metadata["username"]
+	if !ok {
+		return nil, fmt.Errorf("no username associated with token")
+	}
+	creds, err := b.userCredentials(ctx, req.Storage, username)
+	if err != nil {
+		return nil, err
+	}
+
+	var foundCred *CredentialEntry
+	for _, cred := range creds {
+		if !bytes.Equal(cred.ID, credentialID) {
+			continue
+		}
+
+		foundCred = cred
+		break
+	}
+
+	if foundCred == nil {
+		return nil, fmt.Errorf("credential used to obtain token is no longer registered to user")
+	}
+
+	cfg, err := b.Config(ctx, req.Storage)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &logical.Response{Auth: req.Auth}
+	resp.Auth.Period = cfg.TokenPeriod
+	resp.Auth.TTL = cfg.TokenTTL
+	resp.Auth.MaxTTL = cfg.TokenMaxTTL
+
+	return resp, nil
 }

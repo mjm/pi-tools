@@ -25,8 +25,8 @@ func Backend() *backend {
 	var b backend
 	b.Backend = &framework.Backend{
 		BackendType: logical.TypeCredential,
-		//AuthRenew:   b.pathLoginRenew,
-		Help: "",
+		AuthRenew:   b.pathLoginRenew,
+		Help:        "",
 		PathsSpecial: &logical.Paths{
 			Unauthenticated: []string{
 				"assertion",
