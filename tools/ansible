@@ -1,6 +1,14 @@
 #!/bin/bash
 
+set -e
+
 cd "$(git rev-parse --show-toplevel)/ansible" || exit
+
+echo "Building Vault WebAuthn plugin" >&2
+bazel build --platforms @io_bazel_rules_go//go/toolchain:linux_arm64 //vault-proxy/cmd/vault-plugin-auth-webauthn
+echo "Copying Vault WebAuthn plugin into place" >&2
+rm -f ./roles/vault/files/vault-plugin-auth-webauthn
+cp ../bazel-bin/vault-proxy/cmd/vault-plugin-auth-webauthn/vault-plugin-auth-webauthn_/vault-plugin-auth-webauthn ./roles/vault/files/vault-plugin-auth-webauthn
 
 tmpdir="$(mktemp -d)"
 keypath="$tmpdir/signed-cert.pub"

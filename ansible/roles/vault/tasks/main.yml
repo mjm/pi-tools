@@ -13,6 +13,24 @@
   when: installed_vault_version.stdout != vault_version
   register: install_vault
 
+- name: Create Vault plugin directory
+  file:
+    state: directory
+    path: /usr/local/libexec/vault
+    owner: root
+    group: root
+    mode: 0755
+  become: true
+
+- name: Install Vault WebAuthn plugin
+  copy:
+    src: vault-plugin-auth-webauthn
+    dest: /usr/local/libexec/vault/vault-plugin-auth-webauthn
+    owner: root
+    group: root
+    mode: 0755
+  become: true
+
 - name: Install Vault config file
   copy:
     src: etc_vault.hcl
@@ -37,7 +55,14 @@
     enabled: true
     state: restarted
   become: true
-  when: install_vault.changed or systemd.changed or config_file.changed
+  when: install_vault.changed or systemd.changed
+
+- name: Reload Vault service if needed
+  systemd:
+    name: vault
+    state: reloaded
+  become: true
+  when: config_file.changed
 
 - name: Ensure Vault service is started
   systemd:

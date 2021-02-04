@@ -1,0 +1,4 @@
+alias(
+    name = "vault-plugin-auth-u2f",
+    actual = "@com_github_bruj0_vault_plugin_auth_u2f//cmd/vault-plugin-auth-u2f",
+)

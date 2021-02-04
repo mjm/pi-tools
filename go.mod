@@ -5,6 +5,8 @@ go 1.14
 require (
 	git.sr.ht/~apreiml/prunef v0.2.0 // indirect
 	github.com/armon/go-metrics v0.3.5-0.20201104215618-6fd5a4ddf425 // indirect
+	github.com/bruj0/vault-plugin-auth-u2f v0.0.0-20201021131703-3455d429e361 // indirect
+	github.com/duo-labs/webauthn v0.0.0-20200714211715-1daaee874e43
 	github.com/etherlabsio/healthcheck v0.0.0-20191224061800-dd3d2fd8c3f6
 	github.com/golang-migrate/migrate/v4 v4.13.0
 	github.com/golang/protobuf v1.4.3
@@ -13,11 +15,13 @@ require (
 	github.com/google/uuid v1.1.2
 	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026
 	github.com/hashicorp/consul/api v1.8.1
+	github.com/hashicorp/errwrap v1.0.0
 	github.com/hashicorp/go-hclog v0.14.1 // indirect
-	github.com/hashicorp/go-uuid v1.0.2 // indirect
+	github.com/hashicorp/go-uuid v1.0.2
 	github.com/hashicorp/nomad v1.0.2
 	github.com/hashicorp/nomad/api v0.0.0-20210115191909-bcd4752fc902
 	github.com/hashicorp/vault/api v1.0.5-0.20190730042357-746c0b111519
+	github.com/hashicorp/vault/sdk v0.1.14-0.20190730042320-0dc007d98cc8
 	github.com/jonboulle/clockwork v0.2.2
 	github.com/kr/pretty v0.2.1 // indirect
 	github.com/lib/pq v1.8.0

@@ -4206,6 +4206,7 @@ go_repository(
 
 go_repository(
     name = "com_github_hashicorp_vault_sdk",
+    build_file_proto_mode = "disable",
     importpath = "github.com/hashicorp/vault/sdk",
     sum = "h1:fLUoZ8cI/pqlVCk09r88cVoY7ggKEl1A4e6Mujr3RvU=",
     version = "v0.1.14-0.20190730042320-0dc007d98cc8",
@@ -5392,6 +5393,55 @@ go_repository(
     importpath = "git.sr.ht/~apreiml/prunef",
     sum = "h1:2srkQb23j/5UgzvnHOz9joJdkxHybq8pOckP+RnyuRk=",
     version = "v0.2.0",
+)
+
+go_repository(
+    name = "com_github_bruj0_vault_plugin_auth_u2f",
+    importpath = "github.com/bruj0/vault-plugin-auth-u2f",
+    sum = "h1:iNmRVI+y2FPt0LHrLcUPwNoM2iiwJs99m8Lg98S196o=",
+    version = "v0.0.0-20201021131703-3455d429e361",
+)
+
+go_repository(
+    name = "com_github_ryankurte_go_u2f",
+    importpath = "github.com/ryankurte/go-u2f",
+    sum = "h1:TbsDz1r7FrSqdEUH9tbVlDHz39P1w2v3ydvu0EtZu3w=",
+    version = "v0.1.4",
+)
+
+go_repository(
+    name = "com_github_cloudflare_cfssl",
+    importpath = "github.com/cloudflare/cfssl",
+    sum = "h1:Puu1hUwfps3+1CUzYdAZXijuvLuRMirgiXdf3zsM2Ig=",
+    version = "v0.0.0-20190726000631-633726f6bcb7",
+)
+
+go_repository(
+    name = "com_github_duo_labs_webauthn",
+    importpath = "github.com/duo-labs/webauthn",
+    sum = "h1:eEEfwrmEwl0LVuWz/VkAefdgtPbX174Huu5dxxceihI=",
+    version = "v0.0.0-20200714211715-1daaee874e43",
+)
+
+go_repository(
+    name = "com_github_fxamacker_cbor_v2",
+    importpath = "github.com/fxamacker/cbor/v2",
+    sum = "h1:6eXqdDDe588rSYAi1HfZKbx6YYQO4mxQ9eC6xYpU/JQ=",
+    version = "v2.2.0",
+)
+
+go_repository(
+    name = "com_github_google_certificate_transparency_go",
+    importpath = "github.com/google/certificate-transparency-go",
+    sum = "h1:Yf1aXowfZ2nuboBsg7iYGLmwsOARdV86pfH3g95wXmE=",
+    version = "v1.0.21",
+)
+
+go_repository(
+    name = "com_github_x448_float16",
+    importpath = "github.com/x448/float16",
+    sum = "h1:qLwI1I70+NjRFUR3zs1JPUCgaCXSh3SW62uAKT1mSBM=",
+    version = "v0.8.4",
 )
 
 gazelle_dependencies()

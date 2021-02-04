@@ -7,6 +7,8 @@ listener "tcp" {
 
 ui = true
 
+plugin_directory = "/usr/local/libexec/vault"
+
 telemetry {
   disable_hostname = true
 }

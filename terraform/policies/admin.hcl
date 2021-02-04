@@ -82,3 +82,8 @@ path "sys/mounts/*" {
 path "sys/mounts" {
   capabilities = ["read"]
 }
+
+# Manage plugin catalog
+path "sys/plugins/catalog/*" {
+  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+}

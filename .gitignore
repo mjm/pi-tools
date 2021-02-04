@@ -29,3 +29,6 @@ xcuserdata
 tulsigen-*
 /secrets.yaml
 /terraform/.terraform/
+vault-plugin-auth-u2f
+vault-plugin-auth-webauthn
+.DS_Store

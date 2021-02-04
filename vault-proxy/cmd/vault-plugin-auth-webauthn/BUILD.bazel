@@ -1,0 +1,20 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "vault-plugin-auth-webauthn_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mjm/pi-tools/vault-proxy/cmd/vault-plugin-auth-webauthn",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//vault-proxy/vaultwebauthn",
+        "@com_github_hashicorp_go_hclog//:go-hclog",
+        "@com_github_hashicorp_vault_api//:api",
+        "@com_github_hashicorp_vault_sdk//plugin",
+    ],
+)
+
+go_binary(
+    name = "vault-plugin-auth-webauthn",
+    embed = [":vault-plugin-auth-webauthn_lib"],
+    visibility = ["//visibility:public"],
+)
