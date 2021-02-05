@@ -5,13 +5,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/etherlabsio/healthcheck"
 	vaultapi "github.com/hashicorp/vault/api"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/endpoints"
 
 	"github.com/mjm/pi-tools/observability"
 	"github.com/mjm/pi-tools/pkg/signal"
@@ -20,7 +19,9 @@ import (
 )
 
 var (
+	authPath     = flag.String("auth-path", "webauthn", "Path of webauthn auth method in Vault")
 	cookieDomain = flag.String("cookie-domain", "homelab", "Domain to use for cookies, must be common base between callback and app hostnames")
+	staticDir    = flag.String("static-dir", "/static", "Path to static assets")
 )
 
 func main() {
@@ -35,19 +36,14 @@ func main() {
 		log.Panicf("Error creating Vault client: %v", err)
 	}
 
-	oauth := &oauth2.Config{
-		ClientID:     os.Getenv("OAUTH2_PROXY_CLIENT_ID"),
-		ClientSecret: os.Getenv("OAUTH2_PROXY_CLIENT_SECRET"),
-		Scopes:       []string{"read:org"},
-		Endpoint:     endpoints.GitHub,
-	}
-
 	http.Handle("/healthz",
 		otelhttp.WithRouteTag("CheckHealth", healthcheck.Handler(
 			healthcheck.WithTimeout(3*time.Second))))
 
-	authService, err := authservice.New(vault, oauth, authservice.Config{
+	authService, err := authservice.New(vault, authservice.Config{
+		AuthPath:     *authPath,
 		CookieDomain: *cookieDomain,
+		CookieKey:    os.Getenv("COOKIE_KEY"),
 	})
 	if err != nil {
 		log.Panicf("Error creating auth service: %v", err)
@@ -55,11 +51,28 @@ func main() {
 
 	http.Handle("/auth",
 		otelhttp.WithRouteTag("HandleAuthRequest", http.HandlerFunc(authService.HandleAuthRequest)))
-	http.Handle("/oauth/start",
-		otelhttp.WithRouteTag("StartOAuth", http.HandlerFunc(authService.StartOAuth)))
-	http.Handle("/oauth/callback",
-		otelhttp.WithRouteTag("HandleOAuthCallback", http.HandlerFunc(authService.HandleOAuthCallback)))
+
+	http.Handle("/webauthn/registration/start",
+		otelhttp.WithRouteTag("StartRegistration", http.HandlerFunc(authService.StartRegistration)))
+	http.Handle("/webauthn/registration/finish",
+		otelhttp.WithRouteTag("FinishRegistration", http.HandlerFunc(authService.FinishRegistration)))
+	http.Handle("/webauthn/login/start",
+		otelhttp.WithRouteTag("StartLogin", http.HandlerFunc(authService.StartLogin)))
+	http.Handle("/webauthn/login/finish",
+		otelhttp.WithRouteTag("FinishLogin", http.HandlerFunc(authService.FinishLogin)))
+
+	http.Handle("/webauthn/register",
+		otelhttp.WithRouteTag("Register", serveStaticFile("register.html")))
+	http.Handle("/webauthn/login",
+		otelhttp.WithRouteTag("Login", serveStaticFile("login.html")))
 
 	go rpc.ListenAndServe()
 	signal.Wait()
+}
+
+func serveStaticFile(name string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		p := filepath.Join(*staticDir, name)
+		http.ServeFile(w, r, p)
+	})
 }

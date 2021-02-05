@@ -35,8 +35,7 @@ job "vault-proxy" {
       }
 
       env {
-        OAUTH2_PROXY_CLIENT_ID = "18da98312638f7ea59f2"
-        VAULT_ADDR             = "http://active.vault.service.consul:8200"
+        VAULT_ADDR = "http://active.vault.service.consul:8200"
       }
 
       vault {
@@ -46,8 +45,7 @@ job "vault-proxy" {
       template {
         data        = <<EOF
 {{ with secret "kv/oauth-proxy" }}
-OAUTH2_PROXY_CLIENT_SECRET={{ .Data.data.client_secret }}
-OAUTH2_PROXY_COOKIE_SECRET={{ .Data.data.cookie_secret }}
+COOKIE_KEY={{ .Data.data.cookie_secret }}
 {{ end }}
 EOF
         destination = "secrets/proxy.env"
