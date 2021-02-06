@@ -427,3 +427,130 @@ resource "consul_config_entry" "jaeger_collector_intentions" {
     ]
   })
 }
+
+resource "consul_config_entry" "grafana_defaults" {
+  kind = "service-defaults"
+  name = "grafana"
+
+  config_json = jsonencode({
+    Protocol = "http"
+  })
+}
+
+resource "consul_config_entry" "grafana_intentions" {
+  kind = "service-intentions"
+  name = "grafana"
+
+  config_json = jsonencode({
+    Sources = [
+      {
+        Name        = "ingress-http"
+        Precedence  = 9
+        Type        = "consul"
+        Permissions = [
+          {
+            Action = "allow"
+            HTTP   = {
+              PathPrefix = "/"
+            }
+          },
+        ]
+      },
+      {
+        Action     = "deny"
+        Name       = "*"
+        Precedence = 8
+        Type       = "consul"
+      },
+    ]
+  })
+}
+
+resource "consul_config_entry" "loki_defaults" {
+  kind = "service-defaults"
+  name = "loki"
+
+  config_json = jsonencode({
+    Protocol = "http"
+  })
+}
+
+resource "consul_config_entry" "loki_intentions" {
+  kind = "service-intentions"
+  name = "loki"
+
+  config_json = jsonencode({
+    Sources = [
+      {
+        Name        = "grafana"
+        Precedence  = 9
+        Type        = "consul"
+        Permissions = [
+          {
+            Action = "allow"
+            HTTP   = {
+              PathPrefix = "/"
+            }
+          },
+        ]
+      },
+      {
+        Name        = "promtail"
+        Precedence  = 9
+        Type        = "consul"
+        Permissions = [
+          {
+            Action = "allow"
+            HTTP   = {
+              PathPrefix = "/"
+            }
+          },
+        ]
+      },
+      {
+        Action     = "deny"
+        Name       = "*"
+        Precedence = 8
+        Type       = "consul"
+      },
+    ]
+  })
+}
+
+resource "consul_config_entry" "vault_proxy_defaults" {
+  kind = "service-defaults"
+  name = "vault-proxy"
+
+  config_json = jsonencode({
+    Protocol = "http"
+  })
+}
+
+resource "consul_config_entry" "vault_proxy_intentions" {
+  kind = "service-intentions"
+  name = "vault-proxy"
+
+  config_json = jsonencode({
+    Sources = [
+      {
+        Name        = "ingress-http"
+        Precedence  = 9
+        Type        = "consul"
+        Permissions = [
+          {
+            Action = "allow"
+            HTTP   = {
+              PathPrefix = "/"
+            }
+          },
+        ]
+      },
+      {
+        Action     = "deny"
+        Name       = "*"
+        Precedence = 8
+        Type       = "consul"
+      },
+    ]
+  })
+}

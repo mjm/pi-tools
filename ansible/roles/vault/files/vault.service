@@ -17,6 +17,7 @@ AmbientCapabilities=CAP_IPC_LOCK
 Capabilities=CAP_IPC_LOCK+ep
 CapabilityBoundingSet=CAP_SYSLOG CAP_IPC_LOCK
 NoNewPrivileges=yes
+EnvironmentFile=/etc/vault.env
 ExecStart=/usr/local/bin/vault server -config=/etc/vault.hcl
 ExecReload=/bin/kill --signal HUP $MAINPID
 KillMode=process

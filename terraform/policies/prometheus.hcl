@@ -7,3 +7,8 @@ path "sys/metrics" {
 path "pki-int/issue/nomad-cluster" {
   capabilities = ["update"]
 }
+
+# Allow Prometheus to get a Consul token for reading service configs for discovery
+path "consul/creds/prometheus" {
+  capabilities = ["read"]
+}

@@ -6,6 +6,7 @@ alerting:
   alertmanagers:
     - consul_sd_configs:
         - services: [alertmanager]
+          token: {{ with secret "consul/creds/prometheus" }}{{ .Data.token }}{{ end }}
 
 rule_files:
   - {{ env "NOMAD_TASK_DIR" }}/rules/*.yml
@@ -14,6 +15,8 @@ scrape_configs:
   - job_name: consul-agent
     consul_sd_configs:
       - services: [consul]
+        token: {{ with secret "consul/creds/prometheus" }}{{ .Data.token }}{{ end }}
+    bearer_token: {{ with secret "consul/creds/prometheus" }}{{ .Data.token }}{{ end }}
     metrics_path: /v1/agent/metrics
     params:
       format: [prometheus]
@@ -27,6 +30,7 @@ scrape_configs:
   - job_name: nomad-agent
     consul_sd_configs:
       - services: [nomad-client]
+        token: {{ with secret "consul/creds/prometheus" }}{{ .Data.token }}{{ end }}
     metrics_path: /v1/metrics
     params:
       format: [prometheus]
@@ -43,6 +47,7 @@ scrape_configs:
     consul_sd_configs:
       - services: [vault]
         tags: [active]  # metrics are only available from the active node
+        token: {{ with secret "consul/creds/prometheus" }}{{ .Data.token }}{{ end }}
     metrics_path: /v1/sys/metrics
     params:
       format: [prometheus]
@@ -53,7 +58,7 @@ scrape_configs:
 
   - job_name: consul-services
     consul_sd_configs:
-      - {}
+      - token: {{ with secret "consul/creds/prometheus" }}{{ .Data.token }}{{ end }}
     relabel_configs:
       - source_labels: [__meta_consul_service_metadata_metrics_path]
         action: keep

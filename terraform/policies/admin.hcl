@@ -73,6 +73,10 @@ path "identity/*" {
   capabilities = ["create", "read", "update", "delete", "list", "sudo"]
 }
 
+path "consul/*" {
+  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+}
+
 # Manage secrets engines
 path "sys/mounts/*" {
   capabilities = ["create", "read", "update", "delete", "list", "sudo"]

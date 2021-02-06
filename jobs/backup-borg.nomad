@@ -69,6 +69,18 @@ job "backup-borg" {
         cpu    = 50
         memory = 50
       }
+
+      vault {
+        policies = ["backup"]
+      }
+
+      template {
+        data        = <<EOF
+CONSUL_HTTP_TOKEN={{ with secret "consul/creds/backup" }}{{ .Data.token }}{{ end }}
+EOF
+        destination = "secrets/consul.env"
+        env         = true
+      }
     }
 
     task "prometheus-snapshot" {

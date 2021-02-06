@@ -257,6 +257,9 @@ PGPASSWORD={{ .Data.password | toJSON }}
 {{ with secret "kv/homebase-bot" }}
 TELEGRAM_TOKEN={{ .Data.data.telegram_token | toJSON }}
 {{ end }}
+{{ with secret "consul/creds/homebase-bot" }}
+CONSUL_HTTP_TOKEN={{ .Data.token }}
+{{ end }}
 EOF
         destination = "secrets/secrets.env"
         env         = true

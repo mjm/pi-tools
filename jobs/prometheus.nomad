@@ -43,7 +43,7 @@ job "prometheus" {
         image        = "prom/prometheus@sha256:9fa25ec244e0109fdbeaff89496ac149c0539489f2f2126b9e38cf9837235be4"
         args         = [
           "--web.listen-address=:9090",
-          "--config.file=${NOMAD_TASK_DIR}/prometheus.yml",
+          "--config.file=${NOMAD_SECRETS_DIR}/prometheus.yml",
           "--storage.tsdb.path=/prometheus",
           "--web.console.libraries=/usr/share/prometheus/console_libraries",
           "--web.console.templates=/usr/share/prometheus/consoles",
@@ -72,7 +72,7 @@ job "prometheus" {
 
       template {
         data          = file("prometheus/prometheus.yml")
-        destination   = "local/prometheus.yml"
+        destination   = "secrets/prometheus.yml"
         change_mode   = "signal"
         change_signal = "SIGHUP"
       }

@@ -35,7 +35,6 @@ EOF
   command     = "systemctl reload nomad"
 }
 
-
 template {
   contents    = <<EOF
 {{ with secret "pki-int/issue/nomad-cluster" "ttl=24h"}}
@@ -52,4 +51,17 @@ template {
 {{ end }}
 EOF
   destination = "/etc/nomad/cli.key"
+}
+
+template {
+  contents    = <<EOF
+{{ with secret "consul/creds/nomad-client-server" }}
+consul {
+  token = "{{ .Data.token }}"
+}
+{{ end }}
+EOF
+  destination = "/etc/nomad.tokens.hcl"
+  perms       = 0600
+  command     = "systemctl reload nomad"
 }

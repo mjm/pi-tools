@@ -7,3 +7,8 @@ path "kv/data/deploy" {
 path "pki-int/issue/nomad-cluster" {
   capabilities = ["update"]
 }
+
+# Allow using Consul for leader-election
+path "consul/creds/deploy" {
+  capabilities = ["read"]
+}

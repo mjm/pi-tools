@@ -100,7 +100,7 @@ job "deploy" {
       config {
         image   = "mmoriarity/deploy-srv"
         command = "/deploy-srv"
-        args = [
+        args    = [
           "-leader-elect",
         ]
       }
@@ -155,6 +155,17 @@ EOF
 {{ end }}
 EOF
         destination = "secrets/nomad.ca.crt"
+      }
+
+      template {
+        data        = <<EOF
+{{ with secret "consul/creds/deploy" }}
+CONSUL_HTTP_TOKEN={{ .Data.token }}
+{{ end }}
+EOF
+        destination = "secrets/deploy.env"
+        env         = true
+        change_mode = "restart"
       }
     }
   }
