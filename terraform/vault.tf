@@ -8,6 +8,35 @@ resource "vault_github_user" "mjm" {
   policies = ["admin"]
 }
 
+resource "vault_auth_backend" "webauthn" {
+  type = "webauthn"
+}
+
+resource "vault_generic_endpoint" "webauthn_config" {
+  path = "auth/webauthn/config"
+
+  data_json = jsonencode({
+    display_name = "Matt's Homelab"
+    id           = "homelab"
+    origin       = "https://auth.homelab"
+    token_ttl    = 259200
+  })
+
+  disable_delete       = true
+  ignore_absent_fields = true
+}
+
+resource "vault_generic_endpoint" "webauthn_user_mjm" {
+  path = "auth/webauthn/users/mjm"
+
+  data_json = jsonencode({
+    display_name   = "Matt Moriarity"
+    token_policies = ["admin"]
+  })
+
+  ignore_absent_fields = true
+}
+
 resource "vault_mount" "kv" {
   path    = "kv"
   type    = "kv"
