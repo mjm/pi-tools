@@ -8,6 +8,11 @@ path "pki-int/issue/nomad-cluster" {
   capabilities = ["update"]
 }
 
+# Allow submitting jobs to Nomad
+path "nomad/creds/deploy" {
+  capabilities = ["read"]
+}
+
 # Allow using Consul for leader-election
 path "consul/creds/deploy" {
   capabilities = ["read"]

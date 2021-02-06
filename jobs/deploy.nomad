@@ -162,6 +162,9 @@ EOF
 {{ with secret "consul/creds/deploy" }}
 CONSUL_HTTP_TOKEN={{ .Data.token }}
 {{ end }}
+{{ with secret "nomad/creds/deploy" }}
+NOMAD_TOKEN={{ .Data.secret_id }}
+{{ end }}
 EOF
         destination = "secrets/deploy.env"
         env         = true

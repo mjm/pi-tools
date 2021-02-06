@@ -154,6 +154,29 @@ resource "vault_consul_secret_backend_role" "deploy" {
   policies = [consul_acl_policy.deploy.name]
 }
 
+resource "vault_mount" "nomad" {
+  path = "nomad"
+  type = "nomad"
+}
+
+resource "vault_generic_endpoint" "nomad_role_deploy" {
+  path      = "nomad/role/deploy"
+  data_json = jsonencode({
+    policies = ["deploy"]
+  })
+
+  ignore_absent_fields = true
+}
+
+resource "vault_generic_endpoint" "nomad_lease_config" {
+  path      = "nomad/config/lease"
+  data_json = jsonencode({
+    ttl = 86400
+  })
+
+  ignore_absent_fields = true
+}
+
 locals {
   vault_policies_path = "${path.module}/policies/vault"
 }
