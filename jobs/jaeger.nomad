@@ -29,6 +29,14 @@ job "jaeger" {
       meta {
         metrics_path = "/metrics"
       }
+
+      check {
+        type                   = "http"
+        path                   = "/"
+        timeout                = "3s"
+        interval               = "15s"
+        success_before_passing = 3
+      }
     }
 
     service {
