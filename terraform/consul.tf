@@ -1,116 +1,51 @@
-resource "consul_acl_policy" "agent" {
-  name  = "agent"
-  rules = <<EOF
-service_prefix "" {
-  policy = "write"
+locals {
+  consul_policies_path = "${path.module}/policies/consul"
 }
-EOF
+
+resource "consul_acl_policy" "agent" {
+  name        = "agent"
+  description = "Allow Consul agents to make necessary internal requests"
+  rules       = file("${local.consul_policies_path}/agent.hcl")
+}
+
+resource "consul_acl_policy" "dns" {
+  name        = "dns"
+  description = "Allow Consul DNS queries to read service and node info"
+  rules       = file("${local.consul_policies_path}/dns.hcl")
 }
 
 resource "consul_acl_policy" "nomad_server" {
-  name  = "nomad-server"
-  rules = <<EOF
-agent_prefix "" {
-  policy = "read"
-}
-
-node_prefix "" {
-  policy = "read"
-}
-
-service_prefix "" {
-  policy = "write"
-}
-
-acl = "write"
-EOF
+  name        = "nomad-server"
+  description = "Allow Nomad servers to register services and create service identity tokens"
+  rules       = file("${local.consul_policies_path}/nomad-server.hcl")
 }
 
 resource "consul_acl_policy" "nomad_client" {
-  name  = "nomad-client"
-  rules = <<EOF
-agent_prefix "" {
-  policy = "read"
-}
-
-node_prefix "" {
-  policy = "read"
-}
-
-service_prefix "" {
-  policy = "write"
-}
-EOF
+  name        = "nomad-client"
+  description = "Allow Nomad clients to register services"
+  rules       = file("${local.consul_policies_path}/nomad-client.hcl")
 }
 
 resource "consul_acl_policy" "vault" {
-  name  = "vault"
-  rules = <<EOF
-key_prefix "vault/" {
-  policy = "write"
-}
-
-node_prefix "" {
-  policy = "write"
-}
-
-service "vault" {
-  policy = "write"
-}
-
-agent_prefix "" {
-  policy = "write"
-}
-
-session_prefix "" {
-  policy = "write"
-}
-EOF
+  name        = "vault"
+  description = "Allow Vault to use Consul as its backing data store"
+  rules       = file("${local.consul_policies_path}/vault.hcl")
 }
 
 resource "consul_acl_policy" "prometheus" {
   name        = "prometheus"
   description = "Allow Prometheus to use Consul service discovery to find metrics endpoints"
-
-  rules = <<EOF
-service_prefix "" {
-  policy = "read"
-}
-
-node_prefix "" {
-  policy = "read"
-}
-
-agent_prefix "" {
-  policy = "read"
-}
-EOF
+  rules       = file("${local.consul_policies_path}/prometheus.hcl")
 }
 
 resource "consul_acl_policy" "homebase_bot" {
-  name = "homebase-bot"
-
-  rules = <<EOF
-key "service/homebase-bot/leader" {
-  policy = "write"
-}
-
-session_prefix "" {
-  policy = "write"
-}
-EOF
+  name        = "homebase-bot"
+  description = "Allow homebase-bot to use Consul for leader election"
+  rules       = file("${local.consul_policies_path}/homebase-bot.hcl")
 }
 
 resource "consul_acl_policy" "deploy" {
-  name = "deploy"
-
-  rules = <<EOF
-key "service/deploy/leader" {
-  policy = "write"
-}
-
-session_prefix "" {
-  policy = "write"
-}
-EOF
+  name        = "deploy"
+  description = "Allow deploy-srv to use Consul for leader election"
+  rules       = file("${local.consul_policies_path}/deploy.hcl")
 }

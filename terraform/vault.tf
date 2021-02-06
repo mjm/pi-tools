@@ -154,82 +154,86 @@ resource "vault_consul_secret_backend_role" "deploy" {
   policies = [consul_acl_policy.deploy.name]
 }
 
+locals {
+  vault_policies_path = "${path.module}/policies/vault"
+}
+
 resource "vault_policy" "admin" {
   name   = "admin"
-  policy = file("${path.module}/policies/admin.hcl")
+  policy = file("${local.vault_policies_path}/admin.hcl")
 }
 
 resource "vault_policy" "alertmanager" {
   name   = "alertmanager"
-  policy = file("${path.module}/policies/alertmanager.hcl")
+  policy = file("${local.vault_policies_path}/alertmanager.hcl")
 }
 
 resource "vault_policy" "backup" {
   name   = "backup"
-  policy = file("${path.module}/policies/backup.hcl")
+  policy = file("${local.vault_policies_path}/backup.hcl")
 }
 
 resource "vault_policy" "consul_template" {
   name   = "consul-template"
-  policy = file("${path.module}/policies/consul-template.hcl")
+  policy = file("${local.vault_policies_path}/consul-template.hcl")
 }
 
 resource "vault_policy" "deploy" {
   name   = "deploy"
-  policy = file("${path.module}/policies/deploy.hcl")
+  policy = file("${local.vault_policies_path}/deploy.hcl")
 }
 
 resource "vault_policy" "go_links" {
   name   = "go-links"
-  policy = file("${path.module}/policies/go-links.hcl")
+  policy = file("${local.vault_policies_path}/go-links.hcl")
 }
 
 resource "vault_policy" "grafana" {
   name   = "grafana"
-  policy = file("${path.module}/policies/grafana.hcl")
+  policy = file("${local.vault_policies_path}/grafana.hcl")
 }
 
 resource "vault_policy" "homebase_bot" {
   name   = "homebase-bot"
-  policy = file("${path.module}/policies/homebase-bot.hcl")
+  policy = file("${local.vault_policies_path}/homebase-bot.hcl")
 }
 
 resource "vault_policy" "ingress" {
   name   = "ingress"
-  policy = file("${path.module}/policies/ingress.hcl")
+  policy = file("${local.vault_policies_path}/ingress.hcl")
 }
 
 resource "vault_policy" "nomad_server" {
   name   = "nomad-server"
-  policy = file("${path.module}/policies/nomad-server.hcl")
+  policy = file("${local.vault_policies_path}/nomad-server.hcl")
 }
 
 resource "vault_policy" "vault_proxy" {
   name   = "vault-proxy"
-  policy = file("${path.module}/policies/vault-proxy.hcl")
+  policy = file("${local.vault_policies_path}/vault-proxy.hcl")
 }
 
 resource "vault_policy" "presence" {
   name   = "presence"
-  policy = file("${path.module}/policies/presence.hcl")
+  policy = file("${local.vault_policies_path}/presence.hcl")
 }
 
 resource "vault_policy" "prometheus" {
   name   = "prometheus"
-  policy = file("${path.module}/policies/prometheus.hcl")
+  policy = file("${local.vault_policies_path}/prometheus.hcl")
 }
 
 resource "vault_policy" "storage_readers" {
   name   = "storage-readers"
-  policy = file("${path.module}/policies/storage-readers.hcl")
+  policy = file("${local.vault_policies_path}/storage-readers.hcl")
 }
 
 resource "vault_policy" "tarsnap" {
   name   = "tarsnap"
-  policy = file("${path.module}/policies/tarsnap.hcl")
+  policy = file("${local.vault_policies_path}/tarsnap.hcl")
 }
 
 resource "vault_policy" "unifi_exporter" {
   name   = "unifi-exporter"
-  policy = file("${path.module}/policies/unifi-exporter.hcl")
+  policy = file("${local.vault_policies_path}/unifi-exporter.hcl")
 }
