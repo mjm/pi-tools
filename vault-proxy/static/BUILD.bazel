@@ -1,5 +1,8 @@
 filegroup(
     name = "static",
-    srcs = glob(["*.html", "*.css"]),
+    srcs = glob([
+        "*.html",
+        "*.css",
+    ]),
     visibility = ["//visibility:public"],
 )

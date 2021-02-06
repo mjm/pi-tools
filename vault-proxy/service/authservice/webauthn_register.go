@@ -4,16 +4,26 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/trace"
+
+	"github.com/mjm/pi-tools/pkg/spanerr"
 )
 
 func (s *Server) StartRegistration(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	span := trace.SpanFromContext(ctx)
+
 	var body struct {
 		Name string `json:"name"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusBadRequest)
 		return
 	}
+
+	span.SetAttributes(label.String("auth.username", body.Name))
 
 	token := r.Header.Get("X-Vault-Token")
 	if token == "" {
@@ -23,20 +33,20 @@ func (s *Server) StartRegistration(w http.ResponseWriter, r *http.Request) {
 
 	vault, err := s.Vault.Clone()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
 		return
 	}
 	vault.SetToken(token)
 
 	resp, err := vault.Logical().Read(fmt.Sprintf("auth/%s/users/%s/credentials/request", s.AuthPath, body.Name))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
 		return
 	}
 
 	sess, err := s.Store.Get(r, "vault-proxy")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -44,7 +54,7 @@ func (s *Server) StartRegistration(w http.ResponseWriter, r *http.Request) {
 	sess.Options.MaxAge = 300
 	sess.Values["registration_data"] = resp.Data["session_data"]
 	if err := sess.Save(r, w); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -53,14 +63,19 @@ func (s *Server) StartRegistration(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) FinishRegistration(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	span := trace.SpanFromContext(ctx)
+
 	var body struct {
 		Name        string          `json:"name"`
 		Attestation json.RawMessage `json:"attestation"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusBadRequest)
 		return
 	}
+
+	span.SetAttributes(label.String("auth.username", body.Name))
 
 	token := r.Header.Get("X-Vault-Token")
 	if token == "" {
@@ -70,7 +85,7 @@ func (s *Server) FinishRegistration(w http.ResponseWriter, r *http.Request) {
 
 	sess, err := s.Store.Get(r, "vault-proxy")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -84,13 +99,13 @@ func (s *Server) FinishRegistration(w http.ResponseWriter, r *http.Request) {
 	// delete the session
 	sess.Options.MaxAge = -1
 	if err := sess.Save(r, w); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusBadRequest)
 		return
 	}
 
 	vault, err := s.Vault.Clone()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
 		return
 	}
 	vault.SetToken(token)
@@ -100,7 +115,7 @@ func (s *Server) FinishRegistration(w http.ResponseWriter, r *http.Request) {
 		"attestation_response": string(body.Attestation),
 	})
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusForbidden)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusForbidden)
 		return
 	}
 

@@ -4,29 +4,38 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
+
+	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/trace"
+
+	"github.com/mjm/pi-tools/pkg/spanerr"
 )
 
 func (s *Server) StartLogin(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	span := trace.SpanFromContext(ctx)
+
 	var body struct {
 		Name string `json:"name"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusBadRequest)
 		return
 	}
+
+	span.SetAttributes(label.String("auth.username", body.Name))
 
 	resp, err := s.Vault.Logical().Write(fmt.Sprintf("auth/%s/assertion", s.AuthPath), map[string]interface{}{
 		"name": body.Name,
 	})
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
 		return
 	}
 
 	sess, err := s.Store.Get(r, "vault-proxy")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -34,7 +43,7 @@ func (s *Server) StartLogin(w http.ResponseWriter, r *http.Request) {
 	sess.Options.MaxAge = 300
 	sess.Values["login_data"] = resp.Data["session_data"]
 	if err := sess.Save(r, w); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -43,17 +52,23 @@ func (s *Server) StartLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) FinishLogin(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	span := trace.SpanFromContext(ctx)
+
 	var body struct {
 		Name      string          `json:"name"`
 		Assertion json.RawMessage `json:"assertion"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusBadRequest)
 		return
 	}
+
+	span.SetAttributes(label.String("auth.username", body.Name))
+
 	sess, err := s.Store.Get(r, "vault-proxy")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -67,7 +82,7 @@ func (s *Server) FinishLogin(w http.ResponseWriter, r *http.Request) {
 	// delete the session
 	sess.Options.MaxAge = -1
 	if err := sess.Save(r, w); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -77,7 +92,7 @@ func (s *Server) FinishLogin(w http.ResponseWriter, r *http.Request) {
 		"assertion_response": string(body.Assertion),
 	})
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusForbidden)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusForbidden)
 		return
 	}
 
@@ -88,22 +103,29 @@ func (s *Server) FinishLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	tokenTTL, err := secret.TokenTTL()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusForbidden)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusForbidden)
 		return
+	}
+	span.SetAttributes(label.Float64("auth.token_ttl", tokenTTL.Seconds()))
+	tokenAccessor, err := secret.TokenAccessor()
+	if err != nil {
+		span.RecordError(err)
+	} else {
+		span.SetAttributes(label.String("auth.token_accessor", tokenAccessor))
 	}
 
 	sess, err = s.Store.Get(r, "vault-token")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
 		return
 	}
-	sess.Options.MaxAge = int(tokenTTL / time.Second)
+	sess.Options.MaxAge = int(tokenTTL.Seconds())
 	sess.Options.Domain = s.CookieDomain
 	sess.Options.Path = "/"
 	sess.Values["token"] = vaultToken
 
 	if err := sess.Save(r, w); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
 		return
 	}
 

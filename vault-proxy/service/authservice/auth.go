@@ -1,35 +1,47 @@
 package authservice
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gorilla/sessions"
-	vaultapi "github.com/hashicorp/vault/api"
+	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/trace"
+
+	"github.com/mjm/pi-tools/pkg/spanerr"
 )
 
 func (s *Server) HandleAuthRequest(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	span := trace.SpanFromContext(ctx)
+
 	vaultTokenHeader := r.Header.Get("X-Vault-Token")
 	if vaultTokenHeader != "" {
-		s.handleVaultToken(w, vaultTokenHeader, nil)
+		span.SetAttributes(label.String("auth.token_source", "header"))
+		s.handleVaultToken(ctx, w, vaultTokenHeader, nil)
 		return
 	}
 
 	sess, err := s.Store.Get(r, "vault-token")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
 		return
 	}
 	if vaultTokenRaw, ok := sess.Values["token"]; ok {
-		s.handleVaultToken(w, vaultTokenRaw.(string), sess)
+		span.SetAttributes(label.String("auth.token_source", "session"))
+		s.handleVaultToken(ctx, w, vaultTokenRaw.(string), sess)
 		return
 	}
 
 	http.Error(w, "no credentials present", http.StatusUnauthorized)
 }
 
-func (s *Server) handleVaultToken(w http.ResponseWriter, token string, sess *sessions.Session) {
+func (s *Server) handleVaultToken(ctx context.Context, w http.ResponseWriter, token string, sess *sessions.Session) {
+	span := trace.SpanFromContext(ctx)
+
 	vault, err := s.Vault.Clone()
 	if err != nil {
+		spanerr.RecordError(ctx, err)
 		http.Error(w, "failed to clone vault client", http.StatusInternalServerError)
 		return
 	}
@@ -37,16 +49,20 @@ func (s *Server) handleVaultToken(w http.ResponseWriter, token string, sess *ses
 	vault.SetToken(token)
 	secret, err := vault.Auth().Token().LookupSelf()
 	if err != nil {
+		spanerr.RecordError(ctx, err)
 		http.Error(w, "invalid vault token", http.StatusForbidden)
 		return
 	}
 
+	tokenAccessor, err := secret.TokenAccessor()
+	if err != nil {
+		span.RecordError(err)
+	} else {
+		span.SetAttributes(label.String("auth.token_accessor", tokenAccessor))
+	}
+
 	// TODO renew token if needed
 
-	s.writeAuthResponse(w, secret)
-}
-
-func (s *Server) writeAuthResponse(w http.ResponseWriter, secret *vaultapi.Secret) {
 	vaultToken, err := secret.TokenID()
 	if err != nil {
 		http.Error(w, "no vault token", http.StatusForbidden)
@@ -58,6 +74,8 @@ func (s *Server) writeAuthResponse(w http.ResponseWriter, secret *vaultapi.Secre
 		http.Error(w, "no token metadata", http.StatusForbidden)
 		return
 	}
+
+	span.SetAttributes(label.String("auth.username", tokenMeta["username"]))
 
 	w.Header().Set("X-Auth-Request-Token", vaultToken)
 	w.Header().Set("X-Auth-Request-User", tokenMeta["username"])
