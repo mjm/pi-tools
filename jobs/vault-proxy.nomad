@@ -8,20 +8,55 @@ job "vault-proxy" {
     count = 2
 
     network {
+      mode = "bridge"
       port "http" {
-        to = "2220"
+        to = 2220
+      }
+      port "envoy_metrics_http" {
+        to = 9102
       }
     }
 
     service {
       name = "vault-proxy"
-      port = "http"
+      port = 2220
 
       check {
-        type     = "http"
-        path     = "/healthz"
-        interval = "15s"
-        timeout  = "3s"
+        type                   = "http"
+        port                   = "http"
+        path                   = "/healthz"
+        timeout                = "3s"
+        interval               = "15s"
+        success_before_passing = 3
+      }
+
+      connect {
+        sidecar_service {
+          proxy {
+            upstreams {
+              destination_name = "jaeger-collector"
+              local_bind_port  = 14268
+            }
+          }
+        }
+      }
+    }
+
+    service {
+      name = "deploy-metrics"
+      port = "http"
+
+      meta {
+        metrics_path = "/metrics"
+      }
+    }
+
+    service {
+      name = "deploy-metrics"
+      port = "envoy_metrics_http"
+
+      meta {
+        metrics_path = "/metrics"
       }
     }
 
@@ -31,7 +66,6 @@ job "vault-proxy" {
       config {
         image   = "mmoriarity/vault-proxy"
         command = "/vault-proxy"
-        ports   = ["http"]
       }
 
       env {
