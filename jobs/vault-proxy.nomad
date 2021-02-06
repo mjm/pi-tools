@@ -73,12 +73,12 @@ job "vault-proxy" {
       }
 
       vault {
-        policies = ["oauth-proxy"]
+        policies = ["vault-proxy"]
       }
 
       template {
         data        = <<EOF
-{{ with secret "kv/oauth-proxy" }}
+{{ with secret "kv/vault-proxy" }}
 COOKIE_KEY={{ .Data.data.cookie_secret }}
 {{ end }}
 EOF

@@ -204,9 +204,9 @@ resource "vault_policy" "nomad_server" {
   policy = file("${path.module}/policies/nomad-server.hcl")
 }
 
-resource "vault_policy" "oauth_proxy" {
-  name   = "oauth-proxy"
-  policy = file("${path.module}/policies/oauth-proxy.hcl")
+resource "vault_policy" "vault_proxy" {
+  name   = "vault-proxy"
+  policy = file("${path.module}/policies/vault-proxy.hcl")
 }
 
 resource "vault_policy" "presence" {
@@ -222,6 +222,11 @@ resource "vault_policy" "prometheus" {
 resource "vault_policy" "storage_readers" {
   name   = "storage-readers"
   policy = file("${path.module}/policies/storage-readers.hcl")
+}
+
+resource "vault_policy" "tarsnap" {
+  name   = "tarsnap"
+  policy = file("${path.module}/policies/tarsnap.hcl")
 }
 
 resource "vault_policy" "unifi_exporter" {

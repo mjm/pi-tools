@@ -4,7 +4,7 @@ listen:
 unifi:
   address: https://10.0.0.1
   username: mmoriarity
-  password: {{ with secret "kv/unifi-exporter" }}{{ .Data.data.unifi_password }}{{ end }}
+  password: {{ with secret "kv/unifi" }}{{ .Data.data.password }}{{ end }}
   site: Default
   insecure: true
   timeout: 10s
