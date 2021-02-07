@@ -65,6 +65,8 @@ func main() {
 		otelhttp.WithRouteTag("Register", serveStaticFile("register.html")))
 	http.Handle("/webauthn/login",
 		otelhttp.WithRouteTag("Login", serveStaticFile("login.html")))
+	http.Handle("/webauthn/login_app",
+		otelhttp.WithRouteTag("Login", serveStaticFile("login.html")))
 
 	http.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
 		p := filepath.Join(*staticDir, r.URL.Path[8:])

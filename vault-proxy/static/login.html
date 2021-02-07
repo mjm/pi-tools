@@ -277,8 +277,20 @@
         });
 
         if (finishResponse.ok) {
-            const urlParams = new URLSearchParams(window.location.search);
-            window.location.href = urlParams.get('redirect_uri') || "/";
+            // Handle the authentication differently if this login is for an app
+            if (window.location.pathname === "/webauthn/login_app") {
+                const cookies = document.cookie.split(';').map(s => s.trim());
+                const vaultTokenCookie = cookies.find(c => c.startsWith('vault-token='));
+                if (!vaultTokenCookie) {
+                    console.error("Login succeeded but did not set the expected cookie");
+                    return;
+                }
+
+                window.location.href = `x-presence-app:///login-succeeded?cookie=${encodeURIComponent(vaultTokenCookie)}`;
+            } else {
+                const urlParams = new URLSearchParams(window.location.search);
+                window.location.href = urlParams.get('redirect_uri') || "/";
+            }
         } else {
             const responseText = await finishResponse.text();
             alert(`Login failed!\n\n${responseText}`);
