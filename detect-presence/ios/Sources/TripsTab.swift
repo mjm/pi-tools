@@ -20,6 +20,9 @@ query TripsTabQuery {
 struct TripsTab: View {
     @Query<TripsTabQuery> private var query
 
+    @State private var isLoginPresented = false
+
+    var model: AppModel
     var fetchKey: UUID
 
     var body: some View {
@@ -34,11 +37,22 @@ struct TripsTab: View {
                     List(trips) { trip in
                         TripRow(trip: trip.asFragment())
                     }
+                    .listStyle(PlainListStyle())
                 } else {
                     Text("No trips found")
                 }
             }
         }
         .navigationTitle("Your Trips")
+        .navigationBarItems(trailing: Group {
+            Button {
+                isLoginPresented = true
+            } label: {
+                Text("Log In")
+            }
+            .sheet(isPresented: $isLoginPresented) {
+                LoginView(model: model)
+            }
+        })
     }
 }

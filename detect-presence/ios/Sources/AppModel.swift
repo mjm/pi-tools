@@ -6,6 +6,7 @@ import detect_presence_ios_relay_generated
 class AppModel: ObservableObject {
     let tripsController: TripsController
     let tripRecorder: TripRecorder
+    let authenticator: Authenticator
     @Published var environment: Relay.Environment!
 
     private var cancellables = Set<AnyCancellable>()
@@ -17,6 +18,7 @@ class AppModel: ObservableObject {
     ) {
         self.tripsController = tripsController
         self.tripRecorder = tripRecorder
+        self.authenticator = Authenticator()
 
         self.setRecordToDevServer(false)
 

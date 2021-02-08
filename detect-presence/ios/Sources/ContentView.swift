@@ -15,7 +15,7 @@ struct ContentView: View {
     var body: some View {
         TabView(selection: $selectedItem) {
             NavigationView {
-                TripsTab(fetchKey: fetchKey)
+                TripsTab(model: model, fetchKey: fetchKey)
             }
             .tabItem {
                 Image(systemName: "figure.walk")

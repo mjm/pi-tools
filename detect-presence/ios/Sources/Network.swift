@@ -16,7 +16,7 @@ class Network: Relay.Network {
     init(isDevServer: Bool) {
         if isDevServer {
             NSLog("creating dev server network")
-            self.url = URL(string: "http://100.117.39.47:8080/graphql")!
+            self.url = URL(string: "http://mars.homelab:8080/graphql")!
         } else {
             NSLog("creating real network")
             self.url = URL(string: "https://homebase.homelab/graphql")!
