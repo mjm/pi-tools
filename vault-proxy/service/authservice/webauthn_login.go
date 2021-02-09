@@ -123,6 +123,7 @@ func (s *Server) FinishLogin(w http.ResponseWriter, r *http.Request) {
 	sess.Options.Domain = s.CookieDomain
 	sess.Options.Path = "/"
 	sess.Values["token"] = vaultToken
+	sess.Values["creation_ttl"] = int(tokenTTL.Seconds())
 
 	if err := sess.Save(r, w); err != nil {
 		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)

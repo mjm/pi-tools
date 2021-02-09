@@ -3,6 +3,7 @@ package authservice
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/sessions"
 	"go.opentelemetry.io/otel/label"
@@ -61,7 +62,32 @@ func (s *Server) handleVaultToken(ctx context.Context, w http.ResponseWriter, to
 		span.SetAttributes(label.String("auth.token_accessor", tokenAccessor))
 	}
 
-	// TODO renew token if needed
+	tokenTTL, err := secret.TokenTTL()
+	if err != nil {
+		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
+		return
+	}
+	span.SetAttributes(label.Stringer("auth.token_ttl", tokenTTL))
+
+	// TODO maybe parameterize this
+	if sess != nil && tokenTTL < (24*time.Hour) {
+		creationTTL, ok := sess.Values["creation_ttl"]
+		if !ok {
+			creationTTL = 48 * 3600
+		}
+
+		secret, err = vault.Auth().Token().RenewSelf(creationTTL.(int))
+		if err != nil {
+			http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
+			return
+		}
+		tokenTTL, err = secret.TokenTTL()
+		if err != nil {
+			http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
+			return
+		}
+		span.SetAttributes(label.Stringer("auth.token_ttl_renewed", tokenTTL))
+	}
 
 	vaultToken, err := secret.TokenID()
 	if err != nil {
