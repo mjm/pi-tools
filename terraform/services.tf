@@ -81,6 +81,41 @@ resource "consul_config_entry" "detect_presence_defaults" {
   })
 }
 
+resource "consul_config_entry" "detect_presence_intentions" {
+  kind = "service-intentions"
+  name = "detect-presence"
+
+  config_json = jsonencode({
+    Sources = [
+      {
+        Name        = "ingress-http"
+        Precedence  = 9
+        Type        = "consul"
+        Permissions = [
+          {
+            Action = "allow"
+            HTTP   = {
+              PathPrefix = "/app/"
+            }
+          },
+          {
+            Action = "deny"
+            HTTP   = {
+              PathPrefix = "/"
+            }
+          },
+        ]
+      },
+      {
+        Name       = "*",
+        Precedence = 8
+        Type       = "consul"
+        Action     = "deny"
+      }
+    ]
+  })
+}
+
 resource "consul_config_entry" "deploy_grpc_defaults" {
   kind = "service-defaults"
   name = "deploy-grpc"

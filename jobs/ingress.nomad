@@ -56,10 +56,6 @@ job "ingress" {
               local_bind_port  = 2120
             }
             upstreams {
-              destination_name = "detect-presence-grpc"
-              local_bind_port  = 2121
-            }
-            upstreams {
               destination_name = "vault-proxy"
               local_bind_port  = 2220
             }
