@@ -164,14 +164,6 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 		}
 		span.SetAttributes(label.Int64("deployment.in_progress_status_id", inProgressStatus.GetID()))
 
-		// Send a notification about the deploy starting
-		if _, err := s.Pushover.SendMessage(&pushover.Message{
-			Title:   "Deployment started",
-			Message: run.GetHeadCommit().GetMessage(),
-		}, s.Config.PushoverRecipient); err != nil {
-			return spanerr.RecordError(ctx, err)
-		}
-
 		defer func(deployID int64) {
 			span.SetAttributes(label.String("deployment.status", finalDeploymentStatus))
 
