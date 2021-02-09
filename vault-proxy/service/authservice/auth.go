@@ -19,7 +19,7 @@ func (s *Server) HandleAuthRequest(w http.ResponseWriter, r *http.Request) {
 	vaultTokenHeader := r.Header.Get("X-Vault-Token")
 	if vaultTokenHeader != "" {
 		span.SetAttributes(label.String("auth.token_source", "header"))
-		s.handleVaultToken(ctx, w, vaultTokenHeader, nil)
+		s.handleVaultToken(ctx, r, w, vaultTokenHeader, nil)
 		return
 	}
 
@@ -30,14 +30,14 @@ func (s *Server) HandleAuthRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	if vaultTokenRaw, ok := sess.Values["token"]; ok {
 		span.SetAttributes(label.String("auth.token_source", "session"))
-		s.handleVaultToken(ctx, w, vaultTokenRaw.(string), sess)
+		s.handleVaultToken(ctx, r, w, vaultTokenRaw.(string), sess)
 		return
 	}
 
 	http.Error(w, "no credentials present", http.StatusUnauthorized)
 }
 
-func (s *Server) handleVaultToken(ctx context.Context, w http.ResponseWriter, token string, sess *sessions.Session) {
+func (s *Server) handleVaultToken(ctx context.Context, r *http.Request, w http.ResponseWriter, token string, sess *sessions.Session) {
 	span := trace.SpanFromContext(ctx)
 
 	vault, err := s.Vault.Clone()
@@ -87,6 +87,12 @@ func (s *Server) handleVaultToken(ctx context.Context, w http.ResponseWriter, to
 			return
 		}
 		span.SetAttributes(label.Stringer("auth.token_ttl_renewed", tokenTTL))
+
+		sess.Options.MaxAge = int(tokenTTL.Seconds())
+		if err := sess.Save(r, w); err != nil {
+			http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	vaultToken, err := secret.TokenID()
