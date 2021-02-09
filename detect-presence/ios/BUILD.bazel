@@ -22,6 +22,9 @@ swift_library(
         "@com_github_relay_tools_relay_swift//:Relay",
         "@com_github_relay_tools_relay_swift//:RelaySwiftUI",
     ],
+    data = [
+        "//detect-presence/ios/Resources:assets",
+    ],
 )
 
 swift_library(

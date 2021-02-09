@@ -3,3 +3,9 @@ filegroup(
     srcs = glob(["AppIcon.xcassets/**/*"]),
     visibility = ["//detect-presence/ios:__pkg__"],
 )
+
+filegroup(
+    name = "assets",
+    srcs = glob(["Assets.xcassets/**/*"]),
+    visibility = ["//detect-presence/ios:__pkg__"],
+)
