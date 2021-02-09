@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/google/go-github/v33/github"
+	"github.com/gregdel/pushover"
 	nomadapi "github.com/hashicorp/nomad/api"
 	"go.opentelemetry.io/otel/label"
 	"go.opentelemetry.io/otel/trace"
@@ -163,6 +164,14 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 		}
 		span.SetAttributes(label.Int64("deployment.in_progress_status_id", inProgressStatus.GetID()))
 
+		// Send a notification about the deploy starting
+		if _, err := s.Pushover.SendMessage(&pushover.Message{
+			Title:   "Deployment started",
+			Message: run.GetHeadCommit().GetMessage(),
+		}, s.Config.PushoverRecipient); err != nil {
+			return spanerr.RecordError(ctx, err)
+		}
+
 		defer func(deployID int64) {
 			span.SetAttributes(label.String("deployment.status", finalDeploymentStatus))
 
@@ -176,6 +185,20 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 			}
 
 			span.SetAttributes(label.Int64("deployment.final_status_id", finalStatus.GetID()))
+
+			// Send a notification about the deploy ending
+			var title string
+			if finalDeploymentStatus == "failure" {
+				title = "Deployment failed"
+			} else {
+				title = "Deployment completed"
+			}
+			if _, err := s.Pushover.SendMessage(&pushover.Message{
+				Title:   title,
+				Message: run.GetHeadCommit().GetMessage(),
+			}, s.Config.PushoverRecipient); err != nil {
+				span.RecordError(err)
+			}
 		}(deploy.GetID())
 	}
 

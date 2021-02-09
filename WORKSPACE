@@ -5458,4 +5458,11 @@ go_repository(
     version = "v1.2.1",
 )
 
+go_repository(
+    name = "com_github_gregdel_pushover",
+    importpath = "github.com/gregdel/pushover",
+    sum = "h1:jb9bDQ07E8YdegHcvFJ6r0JAQhSxT6BQjDLn/xAMu64=",
+    version = "v0.0.0-20201104094836-ddbe0c1d3a38",
+)
+
 gazelle_dependencies()

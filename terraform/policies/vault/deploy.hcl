@@ -3,6 +3,11 @@ path "kv/data/deploy" {
   capabilities = ["read"]
 }
 
+# Allow sending push notifications about deploys
+path "kv/data/pushover" {
+  capabilities = ["read"]
+}
+
 # Allow issuing client certs for accessing the Nomad API over mTLS
 path "pki-int/issue/nomad-cluster" {
   capabilities = ["update"]

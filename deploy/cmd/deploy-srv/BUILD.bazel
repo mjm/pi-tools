@@ -15,6 +15,7 @@ go_library(
         "//rpc",
         "@com_github_etherlabsio_healthcheck//:healthcheck",
         "@com_github_google_go_github_v33//github",
+        "@com_github_gregdel_pushover//:pushover",
         "@com_github_hashicorp_nomad_api//:api",
         "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
         "@org_golang_google_grpc//:go_default_library",

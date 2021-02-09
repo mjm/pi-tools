@@ -165,6 +165,10 @@ CONSUL_HTTP_TOKEN={{ .Data.token }}
 {{ with secret "nomad/creds/deploy" }}
 NOMAD_TOKEN={{ .Data.secret_id }}
 {{ end }}
+{{ with secret "kv/pushover" }}
+PUSHOVER_USER_KEY={{ .Data.data.user_key }}
+PUSHOVER_TOKEN={{ .Data.data.token }}
+{{ end }}
 EOF
         destination = "secrets/deploy.env"
         env         = true

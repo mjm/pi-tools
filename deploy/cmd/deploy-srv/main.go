@@ -6,11 +6,13 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/etherlabsio/healthcheck"
 	"github.com/google/go-github/v33/github"
+	"github.com/gregdel/pushover"
 	nomadapi "github.com/hashicorp/nomad/api"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"golang.org/x/oauth2"
@@ -59,12 +61,16 @@ func main() {
 		log.Panicf("creating nomad client: %v", err)
 	}
 
-	deploysSrv := deployservice.New(githubClient, nomadClient, deployservice.Config{
-		DryRun:       *dryRun,
-		GitHubRepo:   *githubRepo,
-		GitHubBranch: *githubBranch,
-		WorkflowName: *workflowName,
-		ArtifactName: *artifactName,
+	pushoverClient := pushover.New(os.Getenv("PUSHOVER_TOKEN"))
+	pushoverRecipient := pushover.NewRecipient(os.Getenv("PUSHOVER_USER_KEY"))
+
+	deploysSrv := deployservice.New(githubClient, nomadClient, pushoverClient, deployservice.Config{
+		DryRun:            *dryRun,
+		GitHubRepo:        *githubRepo,
+		GitHubBranch:      *githubBranch,
+		WorkflowName:      *workflowName,
+		ArtifactName:      *artifactName,
+		PushoverRecipient: pushoverRecipient,
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())

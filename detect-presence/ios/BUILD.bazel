@@ -17,13 +17,13 @@ apple_bundle_version(
 swift_library(
     name = "app-lib",
     srcs = glob(["Sources/*.swift"]),
+    data = [
+        "//detect-presence/ios/Resources:assets",
+    ],
     deps = [
         ":relay-generated",
         "@com_github_relay_tools_relay_swift//:Relay",
         "@com_github_relay_tools_relay_swift//:RelaySwiftUI",
-    ],
-    data = [
-        "//detect-presence/ios/Resources:assets",
     ],
 )
 

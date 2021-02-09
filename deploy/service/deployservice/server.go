@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/google/go-github/v33/github"
+	"github.com/gregdel/pushover"
 	nomadapi "github.com/hashicorp/nomad/api"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/metric"
@@ -28,6 +29,8 @@ type Config struct {
 	// ArtifactName is the name of the artifact in the workflow that contains the JSON files for
 	// the Nomad jobs to deploy.
 	ArtifactName string
+
+	PushoverRecipient *pushover.Recipient
 }
 
 type Server struct {
@@ -40,6 +43,8 @@ type Server struct {
 	// NomadClient is the client to use to submit jobs to Nomad
 	NomadClient *nomadapi.Client
 
+	Pushover *pushover.Pushover
+
 	lastSuccessfulCommit string
 	deployChecksTotal    metric.Int64Counter
 	deployCheckDuration  metric.Float64ValueRecorder
@@ -47,12 +52,13 @@ type Server struct {
 	lock sync.Mutex
 }
 
-func New(gh *github.Client, nomad *nomadapi.Client, cfg Config) *Server {
+func New(gh *github.Client, nomad *nomadapi.Client, po *pushover.Pushover, cfg Config) *Server {
 	m := metric.Must(otel.Meter(instrumentationName))
 	return &Server{
 		Config:       cfg,
 		GitHubClient: gh,
 		NomadClient:  nomad,
+		Pushover:     po,
 		deployChecksTotal: m.NewInt64Counter("deploy.check.total",
 			metric.WithDescription("Counts the number of times that the service checked for a new version to deploy")),
 		deployCheckDuration: m.NewFloat64ValueRecorder("deploy.check.duration.seconds",
