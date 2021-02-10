@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "backupservice",
+    srcs = [
+        "list_archives.go",
+        "server.go",
+    ],
+    importpath = "github.com/mjm/pi-tools/backup/service/backupservice",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//backup/borgbackup",
+        "//backup/proto/backup",
+        "@com_github_golang_protobuf//ptypes:go_default_library_gen",
+    ],
+)

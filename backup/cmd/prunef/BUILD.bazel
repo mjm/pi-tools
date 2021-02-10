@@ -2,7 +2,7 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_image", "cont
 
 container_image(
     name = "image",
-    base = "@tarsnap//image",
+    base = "@backup//image",
     directory = "/usr/bin",
     files = [
         "@ht_sr_git_apreiml_prunef//:prunef",

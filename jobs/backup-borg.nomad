@@ -168,7 +168,7 @@ EOF
       driver = "docker"
 
       config {
-        image    = "mmoriarity/borgbackup@sha256:66a6c3f35b441b35f111ef7817605be03a3a45e9be58d0186fc100a7e65abf65"
+        image    = "mmoriarity/backup@sha256:73e2c402a567638429fa106183db17f84c78a8879617c2d563c3db925c7ff084"
         command  = "borg"
         args     = [
           "create",

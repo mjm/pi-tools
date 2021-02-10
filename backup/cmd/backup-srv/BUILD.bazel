@@ -1,0 +1,23 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "backup-srv_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mjm/pi-tools/backup/cmd/backup-srv",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//backup/borgbackup",
+        "//backup/proto/backup",
+        "//backup/service/backupservice",
+        "//observability",
+        "//pkg/signal",
+        "//rpc",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "backup-srv",
+    embed = [":backup-srv_lib"],
+    visibility = ["//visibility:public"],
+)

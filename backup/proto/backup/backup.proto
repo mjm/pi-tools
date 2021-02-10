@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+service BackupService {
+    rpc ListArchives (ListArchivesRequest) returns (ListArchivesResponse);
+}
+
+message ListArchivesRequest {
+}
+
+message ListArchivesResponse {
+    repeated Archive archives = 1;
+}
+
+message Archive {
+    enum Kind {
+        UNKNOWN = 0;
+        BORG = 1;
+    }
+
+    Kind kind = 1;
+    string id = 2;
+    string name = 3;
+    google.protobuf.Timestamp time = 4;
+}

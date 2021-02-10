@@ -91,12 +91,12 @@ container_pull(
 )
 
 container_pull(
-    name = "tarsnap",
+    name = "backup",
     architecture = "arm64",
-    digest = "sha256:4deeb35783541c160a09cb7a58489a7bf57bb456f4efab83e0cbd663a60bbf50",
+    digest = "sha256:73e2c402a567638429fa106183db17f84c78a8879617c2d563c3db925c7ff084",
     os = "linux",
     registry = "index.docker.io",
-    repository = "mmoriarity/tarsnap",
+    repository = "mmoriarity/backup",
 )
 
 container_pull(
