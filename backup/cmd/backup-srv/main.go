@@ -2,7 +2,11 @@ package main
 
 import (
 	"flag"
+	"net/http"
+	"time"
 
+	"github.com/etherlabsio/healthcheck"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"google.golang.org/grpc"
 
 	"github.com/mjm/pi-tools/backup/borgbackup"
@@ -16,7 +20,7 @@ import (
 var (
 	//tarsnapKeyPath = flag.String("tarsnap-keyfile", "", "Path to the Tarsnap key for the backups")
 	borgPath     = flag.String("borg-path", "borg", "Path to the Borg binary")
-	borgRepoPath = flag.String("borg-repo-path", "/backup/borg", "Path to the Borg backup repository")
+	borgRepoPath = flag.String("borg-repo-path", "/backup/borg/backup", "Path to the Borg backup repository")
 )
 
 func main() {
@@ -31,6 +35,10 @@ func main() {
 	backupService := backupservice.New(b, backupservice.Config{
 		BorgRepoPath: *borgRepoPath,
 	})
+
+	http.Handle("/healthz",
+		otelhttp.WithRouteTag("CheckHealth", healthcheck.Handler(
+			healthcheck.WithTimeout(3*time.Second))))
 
 	rpc.ListenAndServe(rpc.WithRegisteredServices(func(server *grpc.Server) {
 		backuppb.RegisterBackupServiceServer(server, backupService)

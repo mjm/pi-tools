@@ -1,4 +1,5 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
 
 go_library(
     name = "backup-srv_lib",
@@ -12,6 +13,8 @@ go_library(
         "//observability",
         "//pkg/signal",
         "//rpc",
+        "@com_github_etherlabsio_healthcheck//:healthcheck",
+        "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
         "@org_golang_google_grpc//:go_default_library",
     ],
 )
@@ -20,4 +23,22 @@ go_binary(
     name = "backup-srv",
     embed = [":backup-srv_lib"],
     visibility = ["//visibility:public"],
+)
+
+container_image(
+    name = "image",
+    base = "@backup//image",
+    files = [
+        ":backup-srv",
+    ],
+    mode = "0755",
+    tags = ["no-cache"],
+)
+
+container_push(
+    name = "image-push",
+    format = "Docker",
+    image = ":image",
+    registry = "index.docker.io",
+    repository = "mmoriarity/backup-srv",
 )
