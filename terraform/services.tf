@@ -9,6 +9,50 @@ resource "consul_config_entry" "global_proxy_defaults" {
   })
 }
 
+resource "consul_config_entry" "backup_grpc_defaults" {
+  kind = "service-defaults"
+  name = "backup-grpc"
+
+  config_json = jsonencode({
+    Protocol = "grpc"
+  })
+}
+
+resource "consul_config_entry" "backup_grpc_intentions" {
+  kind = "service-intentions"
+  name = "backup-grpc"
+
+  config_json = jsonencode({
+    Sources = [
+      {
+        Name        = "homebase-api"
+        Precedence  = 9
+        Type        = "consul"
+        Permissions = [
+          {
+            Action = "allow"
+            HTTP   = {
+              PathPrefix = "/BackupService/"
+            }
+          },
+          {
+            Action = "deny"
+            HTTP   = {
+              PathPrefix = "/"
+            }
+          },
+        ],
+      },
+      {
+        Name       = "*"
+        Action     = "deny"
+        Precedence = 8
+        Type       = "consul"
+      },
+    ]
+  })
+}
+
 resource "consul_config_entry" "detect_presence_grpc_defaults" {
   kind = "service-defaults"
   name = "detect-presence-grpc"

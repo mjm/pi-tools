@@ -82,6 +82,10 @@ job "homebase" {
               local_bind_port  = 8481
             }
             upstreams {
+              destination_name = "backup-grpc"
+              local_bind_port  = 2321
+            }
+            upstreams {
               destination_name = "jaeger-collector"
               local_bind_port  = 14268
             }
