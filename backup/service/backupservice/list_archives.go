@@ -15,7 +15,8 @@ func (s *Server) ListArchives(ctx context.Context, req *backuppb.ListArchivesReq
 	}
 
 	resp := &backuppb.ListArchivesResponse{}
-	for _, archive := range archives {
+	for i := len(archives) - 1; i >= 0; i-- {
+		archive := archives[i]
 		ts, err := ptypes.TimestampProto(archive.Time.Time)
 		if err != nil {
 			return nil, err

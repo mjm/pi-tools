@@ -27,6 +27,9 @@ export function NavigationBar() {
                                 <NavLink to="/go">
                                     Go Links
                                 </NavLink>
+                                <NavLink to="/backups">
+                                    Backups
+                                </NavLink>
                             </div>
                         </div>
                     </div>
@@ -56,6 +59,9 @@ export function NavigationBar() {
                     </MobileNavLink>
                     <MobileNavLink to="/go">
                         Go Links
+                    </MobileNavLink>
+                    <MobileNavLink to="/backups">
+                        Backups
                     </MobileNavLink>
                 </div>
             </div>

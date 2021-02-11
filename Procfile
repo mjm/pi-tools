@@ -8,3 +8,4 @@ vault-proxy: ibazel run //vault-proxy/cmd/vault-proxy -- -debug -auth-path webau
 backup: ibazel run //backup/cmd/backup-srv -- -debug -borg-repo-path /Volumes/homelab/backup
 jaeger: /usr/local/bin/jaeger-all-in-one
 tests: ibazel test --keep_going //detect-presence/... //go-links/... //homebase/bot/...
+relay-web: cd homebase && npx relay-compiler --watch

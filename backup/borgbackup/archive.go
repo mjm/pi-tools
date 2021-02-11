@@ -16,7 +16,7 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	t.Time, err = time.Parse("2006-01-02T15:04:05.999999", s)
+	t.Time, err = time.ParseInLocation("2006-01-02T15:04:05.999999", s, time.Local)
 	if err != nil {
 		return err
 	}

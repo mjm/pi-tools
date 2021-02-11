@@ -19,6 +19,7 @@ ts_library(
     ],
     tsconfig = "//homebase:tsconfig.json",
     deps = [
+        "//homebase/backups/components",
         "//homebase/components",
         "//homebase/go-links/components",
         "//homebase/homepage/components",

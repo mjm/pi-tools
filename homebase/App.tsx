@@ -7,6 +7,7 @@ import {GoLinkRoutes} from "com_github_mjm_pi_tools/homebase/go-links/components
 import {HomePage} from "com_github_mjm_pi_tools/homebase/homepage/components/HomePage";
 import {RelayEnvironmentProvider} from "react-relay/hooks";
 import RelayEnvironment from "com_github_mjm_pi_tools/homebase/lib/environment";
+import {BackupRoutes} from "com_github_mjm_pi_tools/homebase/backups/components/BackupRoutes";
 
 export function App() {
     return (
@@ -31,6 +32,9 @@ export function App() {
                                 </Route>
                                 <Route path="/go">
                                     <GoLinkRoutes/>
+                                </Route>
+                                <Route path="/backups">
+                                    <BackupRoutes/>
                                 </Route>
                                 <Route path="*">
                                     <NoMatch/>
