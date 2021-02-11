@@ -11,6 +11,7 @@ import (
 	"github.com/etherlabsio/healthcheck"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
+	backuppb "github.com/mjm/pi-tools/backup/proto/backup"
 	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
 	linkspb "github.com/mjm/pi-tools/go-links/proto/links"
@@ -24,6 +25,7 @@ var (
 	tripsURL      = flag.String("trips-url", "localhost:2121", "URL for trips service")
 	linksURL      = flag.String("links-url", "localhost:4241", "URL for links service")
 	deployURL     = flag.String("deploy-url", "localhost:8481", "URL for deploy service")
+	backupURL     = flag.String("backup-url", "localhost:2321", "URL for backup service")
 	prometheusURL = flag.String("prometheus-url", "https://prometheus.homelab", "URL for Prometheus for querying alerts")
 	schemaPath    = flag.String("schema-path", "/schema.graphql", "Path to the file with the GraphQL schema")
 )
@@ -57,7 +59,12 @@ func main() {
 
 	deploy := deploypb.NewDeployServiceClient(deployConn)
 
-	apiService, err := apiservice.New(string(schema), trips, links, deploy, *prometheusURL)
+	backupConn := rpc.MustDial(ctx, *backupURL)
+	defer backupConn.Close()
+
+	backup := backuppb.NewBackupServiceClient(backupConn)
+
+	apiService, err := apiservice.New(string(schema), trips, links, deploy, backup, *prometheusURL)
 	if err != nil {
 		log.Panicf("creating API service: %v", err)
 	}

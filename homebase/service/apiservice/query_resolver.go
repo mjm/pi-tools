@@ -10,6 +10,7 @@ import (
 	"github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 
+	backuppb "github.com/mjm/pi-tools/backup/proto/backup"
 	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
 	linkspb "github.com/mjm/pi-tools/go-links/proto/links"
@@ -19,6 +20,7 @@ type Resolver struct {
 	tripsClient   tripspb.TripsServiceClient
 	linksClient   linkspb.LinksServiceClient
 	deployClient  deploypb.DeployServiceClient
+	backupClient  backuppb.BackupServiceClient
 	prometheusURL string
 }
 
@@ -160,6 +162,19 @@ func (r *Resolver) Alerts(ctx context.Context) ([]*Alert, error) {
 		res = append(res, &Alert{Alert: a})
 	}
 	return res, nil
+}
+
+func (r *Resolver) BackupArchives(ctx context.Context, args struct {
+	First *int32
+	After *Cursor
+	Kind  *string
+}) (*ArchiveConnection, error) {
+	res, err := r.backupClient.ListArchives(ctx, &backuppb.ListArchivesRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	return &ArchiveConnection{res: res}, nil
 }
 
 func (r *Resolver) newPromClient(ctx context.Context) (v1.API, error) {

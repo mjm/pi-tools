@@ -8,6 +8,7 @@ import (
 	"github.com/mjm/graphql-go"
 	"github.com/mjm/graphql-go/relay"
 
+	backuppb "github.com/mjm/pi-tools/backup/proto/backup"
 	"github.com/mjm/pi-tools/debug"
 	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
@@ -23,12 +24,14 @@ func New(
 	trips tripspb.TripsServiceClient,
 	links linkspb.LinksServiceClient,
 	deploys deploypb.DeployServiceClient,
+	backups backuppb.BackupServiceClient,
 	prometheusURL string,
 ) (*Server, error) {
 	r := &Resolver{
 		tripsClient:   trips,
 		linksClient:   links,
 		deployClient:  deploys,
+		backupClient:  backups,
 		prometheusURL: prometheusURL,
 	}
 	schema, err := graphql.ParseSchema(schemaString, r, graphql.UseFieldResolvers())

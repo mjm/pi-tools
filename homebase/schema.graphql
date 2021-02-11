@@ -42,6 +42,12 @@ type Viewer {
     mostRecentDeploy: Deploy
 
     alerts: [Alert!]!
+
+    backupArchives(
+        first: Int
+        after: Cursor
+        kind: ArchiveKind
+    ): ArchiveConnection
 }
 
 type PageInfo {
@@ -126,6 +132,29 @@ enum DeployState {
 type Alert {
     activeAt: Time!
     value: String!
+}
+
+type ArchiveConnection {
+    edges: [ArchiveEdge!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
+}
+
+type ArchiveEdge {
+    node: Archive!
+    cursor: Cursor!
+}
+
+type Archive implements Node {
+    id: ID!
+    kind: ArchiveKind!
+    name: String!
+    createdAt: Time!
+}
+
+enum ArchiveKind {
+    UNKNOWN,
+    BORG,
 }
 
 input IgnoreTripInput {

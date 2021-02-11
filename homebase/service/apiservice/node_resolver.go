@@ -18,3 +18,7 @@ func (n *Node) ToTrip() (*Trip, bool) {
 func (n *Node) ToLink() (*Link, bool) {
 	return nil, false
 }
+
+func (n *Node) ToArchive() (*Archive, bool) {
+	return nil, false
+}

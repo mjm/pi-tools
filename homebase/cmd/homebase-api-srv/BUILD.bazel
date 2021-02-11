@@ -7,6 +7,7 @@ go_library(
     importpath = "github.com/mjm/pi-tools/homebase/cmd/homebase-api-srv",
     visibility = ["//visibility:private"],
     deps = [
+        "//backup/proto/backup",
         "//deploy/proto/deploy",
         "//detect-presence/proto/trips",
         "//go-links/proto/links",

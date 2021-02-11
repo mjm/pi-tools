@@ -4,6 +4,7 @@ go_library(
     name = "apiservice",
     srcs = [
         "alert_resolver.go",
+        "archive_resolver.go",
         "cursor.go",
         "deploy_resolver.go",
         "link_mutation.go",
@@ -19,10 +20,12 @@ go_library(
     importpath = "github.com/mjm/pi-tools/homebase/service/apiservice",
     visibility = ["//visibility:public"],
     deps = [
+        "//backup/proto/backup",
         "//debug",
         "//deploy/proto/deploy",
         "//detect-presence/proto/trips",
         "//go-links/proto/links",
+        "@com_github_golang_protobuf//ptypes:go_default_library_gen",
         "@com_github_mjm_graphql_go//:graphql-go",
         "@com_github_mjm_graphql_go//relay",
         "@com_github_prometheus_client_golang//api",
