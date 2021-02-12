@@ -184,7 +184,7 @@ EOF
       }
 
       vault {
-        policies = ["backup"]
+        policies = ["tarsnap"]
       }
 
       template {
