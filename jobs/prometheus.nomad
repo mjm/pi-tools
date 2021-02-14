@@ -196,6 +196,13 @@ EOF
         left_delimiter  = "<<"
         right_delimiter = ">>"
       }
+
+      template {
+        data            = file("prometheus/pagerduty.tpl")
+        destination     = "local/templates/pagerduty.tpl"
+        left_delimiter  = "<<"
+        right_delimiter = ">>"
+      }
     }
   }
 }
