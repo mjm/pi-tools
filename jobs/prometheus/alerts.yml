@@ -128,3 +128,30 @@ groups:
           description: >
             There don't seem to be any running pods of detect-presence-srv. Trips won't be able to recorded until this
             is addressed.
+
+  - name: consul_alerts
+    rules:
+      - alert: ServiceUnhealthy
+        expr: min(consul_catalog_service_node_healthy) by (exported_service_name) < 1
+        for: 5m
+        labels:
+          severity: notice
+        annotations:
+          summary: Service {{ $labels.exported_service_name }} has unhealthy instances
+          description: >
+            There is at least one unhealthy instance of {{ $labels.exported_service_name }} in Consul.
+
+            https://consul.homelab/ui/dc1/services/{{ $labels.exported_service_name }}/instances
+
+      - alert: ConsulDown
+        expr: consul_up < 1
+        for: 5m
+        labels:
+          severity: notice
+        annotations:
+          summary: Consul is down
+          annotations: >
+            The Consul exporter is not able to connect to Consul, so it won't be able to report whether
+            services are healthy.
+
+            https://grafana.homelab/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%22expr%22:%22%7Bsyslog_identifier%3D%5C%22consul-exporter%5C%22%7D%22%7D,%7B%22ui%22:%5Btrue,true,true,%22none%22%5D%7D%5D

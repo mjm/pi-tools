@@ -78,8 +78,10 @@ job "prometheus" {
       }
 
       template {
-        data        = file("prometheus/alerts.yml")
-        destination = "local/rules/alerts.yml"
+        data            = file("prometheus/alerts.yml")
+        destination     = "local/rules/alerts.yml"
+        left_delimiter  = "<<"
+        right_delimiter = ">>"
       }
 
       template {
