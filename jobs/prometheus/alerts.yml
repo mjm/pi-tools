@@ -150,8 +150,47 @@ groups:
           severity: notice
         annotations:
           summary: Consul is down
-          annotations: >
+          description: >
             The Consul exporter is not able to connect to Consul, so it won't be able to report whether
             services are healthy.
 
             https://grafana.homelab/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%22expr%22:%22%7Bsyslog_identifier%3D%5C%22consul-exporter%5C%22%7D%22%7D,%7B%22ui%22:%5Btrue,true,true,%22none%22%5D%7D%5D
+
+  - name: backup_alerts
+    rules:
+
+      - alert: BackupFailed
+        expr: backup_last_success_time - backup_last_completion_time < 0
+        for: 1m
+        labels:
+          severity: notice
+        annotations:
+          summary: '{{ $labels.kind }} backup failed'
+          description: >
+            The last {{ $labels.kind }} backup did not succeed.
+
+            https://grafana.homelab/explore?orgId=1&left=%5B%22now-24h%22,%22now%22,%22Loki%22,%7B%22expr%22:%22%7Bsyslog_identifier%3D%5C%22backup-{{ $labels.kind }}%5C%22%7D%22%7D,%7B%22ui%22:%5Btrue,true,true,%22none%22%5D%7D%5D
+
+      - alert: BorgNotBackingUp
+        expr: time() - backup_last_success_time{kind="borg"} > 16200
+        for: 1m
+        labels:
+          severity: notice
+        annotations:
+          summary: Borg backup is overdue
+          description: >
+            A Borg backup hasn't completed successfully in four and a half hours, something may be wrong.
+
+            https://grafana.homelab/explore?orgId=1&left=%5B%22now-24h%22,%22now%22,%22Loki%22,%7B%22expr%22:%22%7Bsyslog_identifier%3D%5C%22backup-borg%5C%22%7D%22%7D,%7B%22ui%22:%5Btrue,true,true,%22none%22%5D%7D%5D
+
+      - alert: TarsnapNotBackingUp
+        expr: time() - backup_last_success_time{kind="tarsnap"} > 100800
+        for: 1m
+        labels:
+          severity: notice
+        annotations:
+          summary: Tarsnap backup is overdue
+          description: >
+            A Tarsnap backup hasn't completed successfully in twenty-eight hours, something may be wrong.
+
+            https://grafana.homelab/explore?orgId=1&left=%5B%22now-24h%22,%22now%22,%22Loki%22,%7B%22expr%22:%22%7Bsyslog_identifier%3D%5C%22backup-tarsnap%5C%22%7D%22%7D,%7B%22ui%22:%5Btrue,true,true,%22none%22%5D%7D%5D
