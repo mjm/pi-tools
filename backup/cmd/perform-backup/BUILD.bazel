@@ -1,0 +1,18 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "perform-backup_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mjm/pi-tools/backup/cmd/perform-backup",
+    visibility = ["//visibility:private"],
+    deps = [
+        "@com_github_prometheus_client_golang//prometheus",
+        "@com_github_prometheus_client_golang//prometheus/push",
+    ],
+)
+
+go_binary(
+    name = "perform-backup",
+    embed = [":perform-backup_lib"],
+    visibility = ["//visibility:public"],
+)

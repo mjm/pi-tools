@@ -30,12 +30,17 @@ func main() {
 		log.Panicf("Failed to take snapshot: %v", err)
 	}
 
+	log.Printf("Took Prometheus snapshot %s", backupName)
+
 	if err := os.MkdirAll(*backupPath, 0755); err != nil {
 		log.Panicf("Failed to create directory at %s: %v", *backupPath, err)
 	}
 
 	snapshotPath := filepath.Join(*prometheusDataPath, "snapshots", backupName)
-	if err := exec.CommandContext(ctx, "rsync", "-av", snapshotPath+"/", *backupPath).Run(); err != nil {
+	cmd := exec.CommandContext(ctx, "rsync", "-av", snapshotPath+"/", *backupPath)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
 		log.Panicf("Failed to copy snapshot to backup destination: %v", err)
 	}
 

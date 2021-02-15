@@ -168,19 +168,9 @@ EOF
       driver = "docker"
 
       config {
-        image    = "mmoriarity/backup@sha256:73e2c402a567638429fa106183db17f84c78a8879617c2d563c3db925c7ff084"
-        command  = "borg"
-        args     = [
-          "create",
-          "--stats",
-          "/dest/backup::backup-${NOMAD_ALLOC_ID}",
-          "data",
-        ]
-        work_dir = "${NOMAD_ALLOC_DIR}"
-      }
-
-      env {
-        BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK = "yes"
+        image   = "mmoriarity/perform-backup"
+        command = "/usr/bin/perform-backup"
+        args    = ["-kind", "borg"]
       }
 
       resources {
@@ -191,6 +181,15 @@ EOF
       volume_mount {
         volume      = "homelab_nfs"
         destination = "/dest"
+      }
+
+      template {
+        // language=GoTemplate
+        data        = <<EOF
+PUSHGATEWAY_URL={{ with service "pushgateway" }}{{ with index . 0 }}http://{{ .Address }}:{{ .Port }}{{ end }}{{ end }}
+EOF
+        destination = "local/backup.env"
+        env         = true
       }
     }
   }

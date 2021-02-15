@@ -163,13 +163,9 @@ EOF
       driver = "docker"
 
       config {
-        image    = "mmoriarity/tarsnap@sha256:4deeb35783541c160a09cb7a58489a7bf57bb456f4efab83e0cbd663a60bbf50"
-        command  = "sh"
-        args     = [
-          "-c",
-          "tarsnap -c --keyfile ${NOMAD_SECRETS_DIR}/tarsnap.key --cachedir /var/lib/tarsnap/cache -f daily-backup-$(date +'%Y-%m-%d_%H-%M-%S') --no-default-config --checkpoint-bytes 1G --print-stats -v data",
-        ]
-        work_dir = "${NOMAD_ALLOC_DIR}"
+        image    = "mmoriarity/perform-backup"
+        command  = "/usr/bin/perform-backup"
+        args     = ["-kind", "tarsnap"]
 
         mount {
           type   = "bind"
@@ -193,6 +189,15 @@ EOF
 EOF
         destination = "secrets/tarsnap.key"
       }
+
+      template {
+        // language=GoTemplate
+        data        = <<EOF
+PUSHGATEWAY_URL={{ with service "pushgateway" }}{{ with index . 0 }}http://{{ .Address }}:{{ .Port }}{{ end }}{{ end }}
+EOF
+        destination = "local/backup.env"
+        env         = true
+      }
     }
 
     task "prune" {
@@ -203,7 +208,7 @@ EOF
       driver = "docker"
 
       config {
-        image   = "mmoriarity/tarsnap-prunef"
+        image   = "mmoriarity/perform-backup"
         command = "${NOMAD_TASK_DIR}/prune.sh"
 
         mount {

@@ -76,6 +76,12 @@ scrape_configs:
         target_label: node_name
         regex: (.+)
 
+  - job_name: pushgateway
+    consul_sd_configs:
+      - services: [pushgateway]
+        token: {{ with secret "consul/creds/prometheus" }}{{ .Data.token }}{{ end }}
+    honor_labels: true
+
   - job_name: 'blackbox-dns-public'
     metrics_path: /probe
     params:

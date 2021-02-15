@@ -5,6 +5,7 @@ container_image(
     base = "@backup//image",
     directory = "/usr/bin",
     files = [
+        "//backup/cmd/perform-backup",
         "@ht_sr_git_apreiml_prunef//:prunef",
     ],
     mode = "0755",
@@ -16,5 +17,5 @@ container_push(
     format = "Docker",
     image = ":image",
     registry = "index.docker.io",
-    repository = "mmoriarity/tarsnap-prunef",
+    repository = "mmoriarity/perform-backup",
 )
