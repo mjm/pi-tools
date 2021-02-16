@@ -105,7 +105,7 @@ job "presence" {
         command = "/detect-presence-srv"
         args    = [
           "-db",
-          "dbname=presence host=localhost sslmode=disable",
+          "dbname=presence host=127.0.0.1 sslmode=disable",
           "-mode",
           "client",
         ]

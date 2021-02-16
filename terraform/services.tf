@@ -9,6 +9,15 @@ resource "consul_config_entry" "global_proxy_defaults" {
   })
 }
 
+resource "consul_config_entry" "backup_defaults" {
+  kind = "service-defaults"
+  name = "backup"
+
+  config_json = jsonencode({
+    Protocol = "http"
+  })
+}
+
 resource "consul_config_entry" "backup_grpc_defaults" {
   kind = "service-defaults"
   name = "backup-grpc"

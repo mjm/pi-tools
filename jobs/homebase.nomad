@@ -233,7 +233,7 @@ job "homebase" {
         command = "/homebase-bot-srv"
         args    = [
           "-db",
-          "dbname=homebase_bot host=localhost sslmode=disable",
+          "dbname=homebase_bot host=127.0.0.1 sslmode=disable",
           "-leader-elect",
         ]
       }

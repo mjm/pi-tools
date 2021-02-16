@@ -22,10 +22,10 @@ import (
 )
 
 var (
-	tripsURL      = flag.String("trips-url", "localhost:2121", "URL for trips service")
-	linksURL      = flag.String("links-url", "localhost:4241", "URL for links service")
-	deployURL     = flag.String("deploy-url", "localhost:8481", "URL for deploy service")
-	backupURL     = flag.String("backup-url", "localhost:2321", "URL for backup service")
+	tripsURL      = flag.String("trips-url", "127.0.0.1:2121", "URL for trips service")
+	linksURL      = flag.String("links-url", "127.0.0.1:4241", "URL for links service")
+	deployURL     = flag.String("deploy-url", "127.0.0.1:8481", "URL for deploy service")
+	backupURL     = flag.String("backup-url", "127.0.0.1:2321", "URL for backup service")
 	prometheusURL = flag.String("prometheus-url", "https://prometheus.homelab", "URL for Prometheus for querying alerts")
 	schemaPath    = flag.String("schema-path", "/schema.graphql", "Path to the file with the GraphQL schema")
 )

@@ -34,7 +34,7 @@ var (
 	pingInterval    = flag.Duration("ping-interval", 30*time.Second, "How often to check for nearby devices")
 	deviceFile      = flag.String("device-file", "", "JSON file to check for device presence instead of using Bluetooth")
 	deviceName      = flag.String("device-name", "hci0", "Local Bluetooth device name")
-	messagesURL     = flag.String("messages-url", "localhost:6361", "URL for messages service to use to send chat messages")
+	messagesURL     = flag.String("messages-url", "127.0.0.1:6361", "URL for messages service to use to send chat messages")
 	mode            = flag.String("mode", "server", "Mode (server or client) to use to detect presence")
 	githubTokenPath = flag.String("github-token-path", "/secrets/github-token", "Path to file containing GitHub PAT token")
 )

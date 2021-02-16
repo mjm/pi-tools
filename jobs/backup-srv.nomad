@@ -1,7 +1,7 @@
 job "backup-srv" {
   datacenters = ["dc1"]
 
-  type     = "service"
+  type = "service"
 
   group "backup" {
     count = 2
@@ -104,7 +104,7 @@ job "backup-srv" {
       config {
         image   = "mmoriarity/backup-srv"
         command = "/backup-srv"
-        args = [
+        args    = [
           "-tarsnap-keyfile",
           "${NOMAD_SECRETS_DIR}/tarsnap.key",
         ]

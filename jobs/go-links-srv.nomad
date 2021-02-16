@@ -104,7 +104,7 @@ job "go-links" {
         command = "/go-links"
         args    = [
           "-db",
-          "dbname=golinks host=localhost sslmode=disable",
+          "dbname=golinks host=127.0.0.1 sslmode=disable",
         ]
       }
 

@@ -27,7 +27,7 @@ import (
 )
 
 var (
-	tripsURL = flag.String("trips-url", "localhost:2121", "URL for trips service to lookup and update trip information")
+	tripsURL = flag.String("trips-url", "127.0.0.1:2121", "URL for trips service to lookup and update trip information")
 	chatID   = flag.Int("chat-id", 223272201, "Chat ID to send messages to")
 )
 
