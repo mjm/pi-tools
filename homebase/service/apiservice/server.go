@@ -13,6 +13,7 @@ import (
 	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
 	linkspb "github.com/mjm/pi-tools/go-links/proto/links"
+	"github.com/mjm/pi-tools/pkg/instrumentation/otelgraphql"
 )
 
 type Server struct {
@@ -34,7 +35,9 @@ func New(
 		backupClient:  backups,
 		prometheusURL: prometheusURL,
 	}
-	schema, err := graphql.ParseSchema(schemaString, r, graphql.UseFieldResolvers())
+	schema, err := graphql.ParseSchema(schemaString, r,
+		graphql.UseFieldResolvers(),
+		graphql.Tracer(otelgraphql.GraphQLTracer{}))
 	if err != nil {
 		return nil, err
 	}

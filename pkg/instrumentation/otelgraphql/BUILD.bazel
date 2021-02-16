@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "otelgraphql",
+    srcs = ["trace.go"],
+    importpath = "github.com/mjm/pi-tools/pkg/instrumentation/otelgraphql",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_mjm_graphql_go//errors",
+        "@com_github_mjm_graphql_go//introspection",
+        "@com_github_mjm_graphql_go//trace",
+        "@io_opentelemetry_go_otel//:otel",
+        "@io_opentelemetry_go_otel//label",
+        "@io_opentelemetry_go_otel//trace",
+    ],
+)
