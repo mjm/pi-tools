@@ -2,7 +2,10 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "observability",
-    srcs = ["observability.go"],
+    srcs = [
+        "observability.go",
+        "sampler.go",
+    ],
     importpath = "github.com/mjm/pi-tools/observability",
     visibility = ["//visibility:public"],
     deps = [
@@ -14,5 +17,6 @@ go_library(
         "@io_opentelemetry_go_otel//semconv",
         "@io_opentelemetry_go_otel_exporters_metric_prometheus//:prometheus",
         "@io_opentelemetry_go_otel_exporters_trace_jaeger//:jaeger",
+        "@io_opentelemetry_go_otel_sdk//trace",
     ],
 )

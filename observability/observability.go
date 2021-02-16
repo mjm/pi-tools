@@ -12,6 +12,7 @@ import (
 	"go.opentelemetry.io/otel/exporters/trace/jaeger"
 	"go.opentelemetry.io/otel/label"
 	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/semconv"
 
 	"github.com/mjm/pi-tools/debug"
@@ -29,6 +30,9 @@ func Start(svcname string) (func(), error) {
 	}
 	stopTracing, err = jaeger.InstallNewPipeline(
 		endpoint,
+		jaeger.WithSDK(&trace.Config{
+			DefaultSampler: DefaultSampler(),
+		}),
 		jaeger.WithProcess(jaeger.Process{
 			ServiceName: svcname,
 			Tags: []label.KeyValue{

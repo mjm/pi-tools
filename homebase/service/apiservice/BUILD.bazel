@@ -26,7 +26,6 @@ go_library(
         "//detect-presence/proto/trips",
         "//go-links/proto/links",
         "//pkg/instrumentation/otelgraphql",
-        "@com_github_golang_protobuf//ptypes:go_default_library_gen",
         "@com_github_mjm_graphql_go//:graphql-go",
         "@com_github_mjm_graphql_go//relay",
         "@com_github_prometheus_client_golang//api",
