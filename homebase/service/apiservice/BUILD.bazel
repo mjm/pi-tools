@@ -31,5 +31,6 @@ go_library(
         "@com_github_mjm_graphql_go//relay",
         "@com_github_prometheus_client_golang//api",
         "@com_github_prometheus_client_golang//api/prometheus/v1:prometheus",
+        "@org_golang_x_sync//errgroup",
     ],
 )

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
+	"strings"
 
 	"go.opentelemetry.io/otel/label"
 	"go.opentelemetry.io/otel/trace"
@@ -25,7 +26,9 @@ func New(borgPath string) *Borg {
 
 func (b *Borg) commandJSON(ctx context.Context, result interface{}, args ...string) error {
 	ctx, span := tracer.Start(ctx, "BorgCommand",
-		trace.WithAttributes(label.Array("borg.args", args)))
+		trace.WithAttributes(
+			label.String("borg.path", b.borgPath),
+			label.String("borg.args", strings.Join(args, " "))))
 	defer span.End()
 
 	var realArgs []string

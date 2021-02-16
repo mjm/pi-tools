@@ -11,6 +11,11 @@ go_library(
     deps = [
         "//backup/borgbackup",
         "//backup/proto/backup",
+        "//backup/tarsnap",
         "@com_github_golang_protobuf//ptypes:go_default_library_gen",
+        "@io_opentelemetry_go_otel//label",
+        "@io_opentelemetry_go_otel//trace",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
     ],
 )

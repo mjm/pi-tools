@@ -104,6 +104,10 @@ job "backup-srv" {
       config {
         image   = "mmoriarity/backup-srv"
         command = "/backup-srv"
+        args = [
+          "-tarsnap-keyfile",
+          "${NOMAD_SECRETS_DIR}/tarsnap.key",
+        ]
       }
 
       resources {
@@ -111,9 +115,24 @@ job "backup-srv" {
         memory = 100
       }
 
+      env {
+        BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK = "yes"
+      }
+
       volume_mount {
         volume      = "homelab_nfs"
         destination = "/backup/borg"
+      }
+
+      vault {
+        policies = ["tarsnap"]
+      }
+
+      template {
+        data        = <<EOF
+{{ with secret "kv/tarsnap" }}{{ .Data.data.key | base64Decode }}{{ end }}
+EOF
+        destination = "secrets/tarsnap.key"
       }
     }
   }

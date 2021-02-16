@@ -9,6 +9,7 @@ import (
 	"github.com/mjm/graphql-go/relay"
 	"github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
+	"golang.org/x/sync/errgroup"
 
 	backuppb "github.com/mjm/pi-tools/backup/proto/backup"
 	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
@@ -169,12 +170,59 @@ func (r *Resolver) BackupArchives(ctx context.Context, args struct {
 	After *Cursor
 	Kind  *string
 }) (*ArchiveConnection, error) {
-	res, err := r.backupClient.ListArchives(ctx, &backuppb.ListArchivesRequest{})
-	if err != nil {
+	var borgArchives, tarsnapArchives []*backuppb.Archive
+
+	group, groupCtx := errgroup.WithContext(ctx)
+
+	group.Go(func() error {
+		res, err := r.backupClient.ListArchives(groupCtx, &backuppb.ListArchivesRequest{
+			Kind: backuppb.Archive_BORG,
+		})
+		if err != nil {
+			return err
+		}
+
+		borgArchives = res.GetArchives()
+		return nil
+	})
+
+	group.Go(func() error {
+		res, err := r.backupClient.ListArchives(groupCtx, &backuppb.ListArchivesRequest{
+			Kind: backuppb.Archive_TARSNAP,
+		})
+		if err != nil {
+			return err
+		}
+
+		tarsnapArchives = res.GetArchives()
+		return nil
+	})
+
+	if err := group.Wait(); err != nil {
 		return nil, err
 	}
 
-	return &ArchiveConnection{res: res}, nil
+	var archives []*backuppb.Archive
+	var bi, ti int
+	for bi < len(borgArchives) && ti < len(borgArchives) {
+		if borgArchives[bi].GetTime().AsTime().After(tarsnapArchives[ti].GetTime().AsTime()) {
+			archives = append(archives, borgArchives[bi])
+			bi++
+		} else {
+			archives = append(archives, tarsnapArchives[ti])
+			ti++
+		}
+	}
+
+	for ; bi < len(borgArchives); bi++ {
+		archives = append(archives, borgArchives[bi])
+	}
+
+	for ; ti < len(tarsnapArchives); ti++ {
+		archives = append(archives, tarsnapArchives[ti])
+	}
+
+	return &ArchiveConnection{archives: archives}, nil
 }
 
 func (r *Resolver) newPromClient(ctx context.Context) (v1.API, error) {

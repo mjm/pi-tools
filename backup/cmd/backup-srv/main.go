@@ -12,15 +12,17 @@ import (
 	"github.com/mjm/pi-tools/backup/borgbackup"
 	backuppb "github.com/mjm/pi-tools/backup/proto/backup"
 	"github.com/mjm/pi-tools/backup/service/backupservice"
+	"github.com/mjm/pi-tools/backup/tarsnap"
 	"github.com/mjm/pi-tools/observability"
 	"github.com/mjm/pi-tools/pkg/signal"
 	"github.com/mjm/pi-tools/rpc"
 )
 
 var (
-	//tarsnapKeyPath = flag.String("tarsnap-keyfile", "", "Path to the Tarsnap key for the backups")
-	borgPath     = flag.String("borg-path", "borg", "Path to the Borg binary")
-	borgRepoPath = flag.String("borg-repo-path", "/backup/borg/backup", "Path to the Borg backup repository")
+	tarsnapPath    = flag.String("tarsnap-path", "tarsnap", "Path to the Tarsnap binary")
+	tarsnapKeyPath = flag.String("tarsnap-keyfile", "", "Path to the Tarsnap key for the backups")
+	borgPath       = flag.String("borg-path", "borg", "Path to the Borg binary")
+	borgRepoPath   = flag.String("borg-repo-path", "/backup/borg/backup", "Path to the Borg backup repository")
 )
 
 func main() {
@@ -32,8 +34,10 @@ func main() {
 	defer stopObs()
 
 	b := borgbackup.New(*borgPath)
-	backupService := backupservice.New(b, backupservice.Config{
-		BorgRepoPath: *borgRepoPath,
+	t := tarsnap.New(*tarsnapPath)
+	backupService := backupservice.New(b, t, backupservice.Config{
+		BorgRepoPath:   *borgRepoPath,
+		TarsnapKeyPath: *tarsnapKeyPath,
 	})
 
 	http.Handle("/healthz",

@@ -10,6 +10,7 @@ go_library(
         "//backup/borgbackup",
         "//backup/proto/backup",
         "//backup/service/backupservice",
+        "//backup/tarsnap",
         "//observability",
         "//pkg/signal",
         "//rpc",

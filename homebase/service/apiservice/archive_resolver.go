@@ -1,7 +1,6 @@
 package apiservice
 
 import (
-	"github.com/golang/protobuf/ptypes"
 	"github.com/mjm/graphql-go"
 	"github.com/mjm/graphql-go/relay"
 
@@ -9,12 +8,12 @@ import (
 )
 
 type ArchiveConnection struct {
-	res *backuppb.ListArchivesResponse
+	archives []*backuppb.Archive
 }
 
 func (ac *ArchiveConnection) Edges() []ArchiveEdge {
 	var edges []ArchiveEdge
-	for _, a := range ac.res.GetArchives() {
+	for _, a := range ac.archives {
 		edges = append(edges, ArchiveEdge{Archive: a})
 	}
 	return edges
@@ -25,7 +24,7 @@ func (ArchiveConnection) PageInfo() PageInfo {
 }
 
 func (ac *ArchiveConnection) TotalCount() int32 {
-	return int32(len(ac.res.GetArchives()))
+	return int32(len(ac.archives))
 }
 
 type ArchiveEdge struct {
@@ -56,6 +55,8 @@ func (a *Archive) Kind() string {
 	switch a.GetKind() {
 	case backuppb.Archive_BORG:
 		return "BORG"
+	case backuppb.Archive_TARSNAP:
+		return "TARSNAP"
 	default:
 		return "UNKNOWN"
 	}
@@ -65,10 +66,6 @@ func (a *Archive) Name() string {
 	return a.GetName()
 }
 
-func (a *Archive) CreatedAt() (graphql.Time, error) {
-	t, err := ptypes.Timestamp(a.GetTime())
-	if err != nil {
-		return graphql.Time{}, err
-	}
-	return graphql.Time{Time: t}, nil
+func (a *Archive) CreatedAt() graphql.Time {
+	return graphql.Time{Time: a.GetTime().AsTime()}
 }

@@ -153,8 +153,9 @@ type Archive implements Node {
 }
 
 enum ArchiveKind {
-    UNKNOWN,
-    BORG,
+    UNKNOWN
+    BORG
+    TARSNAP
 }
 
 input IgnoreTripInput {
