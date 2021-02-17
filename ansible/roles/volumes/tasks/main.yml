@@ -16,6 +16,24 @@
     state: mounted
   become: true
 
+- name: Create elasticsearch-0 volume mountpoint
+  file:
+    path: /srv/mnt/elasticsearch-0
+    state: directory
+    mode: 0700
+    owner: '1000'
+    group: root
+  become: true
+
+- name: Mount elasticsearch-0 volume
+  ansible.posix.mount:
+    path: /srv/mnt/elasticsearch-0
+    src: 127.0.0.1:/elasticsearch-0
+    fstype: glusterfs
+    opts: defaults,_netdev
+    state: mounted
+  become: true
+
 - name: Create pihole-data volume mountpoint
   file:
     path: /srv/mnt/pihole-data

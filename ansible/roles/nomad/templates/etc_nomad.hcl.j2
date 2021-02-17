@@ -57,6 +57,11 @@ client {
     read_only = false
   }
 
+  host_volume "elasticsearch_0" {
+    path = "/srv/mnt/elasticsearch-0"
+    read_only = false
+  }
+
   host_volume "pihole_data" {
     path = "/srv/mnt/pihole-data"
     read_only = false

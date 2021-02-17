@@ -642,3 +642,41 @@ resource "consul_config_entry" "vault_proxy_intentions" {
     ]
   })
 }
+
+resource "consul_config_entry" "elasticsearch_defaults" {
+  kind = "service-defaults"
+  name = "elasticsearch"
+
+  config_json = jsonencode({
+    Protocol = "http"
+  })
+}
+
+resource "consul_config_entry" "elasticsearch_intentions" {
+  kind = "service-intentions"
+  name = "elasticsearch"
+
+  config_json = jsonencode({
+    Sources = [
+      {
+        Name        = "jaeger-collector"
+        Precedence  = 9
+        Type        = "consul"
+        Permissions = [
+          {
+            Action = "allow"
+            HTTP   = {
+              PathPrefix = "/"
+            }
+          },
+        ]
+      },
+      {
+        Action     = "deny"
+        Name       = "*"
+        Precedence = 8
+        Type       = "consul"
+      },
+    ]
+  })
+}

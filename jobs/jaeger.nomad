@@ -43,9 +43,15 @@ job "jaeger" {
       name = "jaeger-collector"
       port = 14268
 
-      // use connect for the collector to make it easier to connect to from services
       connect {
-        sidecar_service {}
+        sidecar_service {
+          proxy {
+            upstreams {
+              destination_name = "elasticsearch"
+              local_bind_port  = 9200
+            }
+          }
+        }
       }
     }
 
@@ -69,6 +75,11 @@ job "jaeger" {
       config {
         image = "querycapistio/all-in-one@sha256:ad4552a9facb5e71ea2ca296fb92cf510e97783ad5068f5d23a6b169edb4a9dd"
         ports = ["admin-http", "query-http"]
+      }
+
+      env {
+        SPAN_STORAGE_TYPE = "elasticsearch"
+        ES_SERVER_URLS    = "http://127.0.0.1:9200"
       }
     }
   }
