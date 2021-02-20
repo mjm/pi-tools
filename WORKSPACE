@@ -93,7 +93,7 @@ container_pull(
 container_pull(
     name = "backup",
     architecture = "arm64",
-    digest = "sha256:73e2c402a567638429fa106183db17f84c78a8879617c2d563c3db925c7ff084",
+    digest = "sha256:df8e226d7174435515e0f024fba184e8477f804757a1ddf4ea2d1e60c08b6a92",
     os = "linux",
     registry = "index.docker.io",
     repository = "mmoriarity/backup",

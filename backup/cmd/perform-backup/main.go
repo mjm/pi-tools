@@ -61,7 +61,7 @@ func main() {
 		lastStartTime.SetToCurrentTime()
 
 		backupName := fmt.Sprintf("backup-%s", backupTimestamp)
-		backupDest := fmt.Sprintf("/dest/backup::%s", backupName)
+		backupDest := fmt.Sprintf("homelab@nas:/volume1/homelab/backup::%s", backupName)
 		cmd := exec.Command(
 			"borg",
 			"create",
@@ -76,7 +76,7 @@ func main() {
 
 		if err := cmd.Run(); err != nil {
 			lastCompletionTime.SetToCurrentTime()
-			log.Panicf("Running tarsnap failed: %v", err)
+			log.Panicf("Running borg failed: %v", err)
 		}
 
 		lastCompletionTime.SetToCurrentTime()

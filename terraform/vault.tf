@@ -196,6 +196,11 @@ resource "vault_policy" "backup" {
   policy = file("${local.vault_policies_path}/backup.hcl")
 }
 
+resource "vault_policy" "borg" {
+  name   = "borg"
+  policy = file("${local.vault_policies_path}/borg.hcl")
+}
+
 resource "vault_policy" "consul_exporter" {
   name   = "consul-exporter"
   policy = file("${local.vault_policies_path}/consul-exporter.hcl")

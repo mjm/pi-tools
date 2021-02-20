@@ -45,11 +45,6 @@ job "backup-borg" {
       source = "prometheus_data"
     }
 
-    volume "homelab_nfs" {
-      type   = "host"
-      source = "homelab_nfs"
-    }
-
     task "consul-snapshot" {
       lifecycle {
         hook = "prestart"
@@ -173,14 +168,17 @@ EOF
         args    = ["-kind", "borg"]
       }
 
+      env {
+        BORG_RSH = "ssh -o StrictHostKeyChecking=no -i ${NOMAD_SECRETS_DIR}/id_rsa"
+      }
+
       resources {
         cpu    = 100
         memory = 100
       }
 
-      volume_mount {
-        volume      = "homelab_nfs"
-        destination = "/dest"
+      vault {
+        policies = ["borg"]
       }
 
       template {
@@ -190,6 +188,14 @@ PUSHGATEWAY_URL={{ with service "pushgateway" }}{{ with index . 0 }}http://{{ .A
 EOF
         destination = "local/backup.env"
         env         = true
+      }
+
+      template {
+        data        = <<EOF
+{{ with secret "kv/borg" }}{{ .Data.data.private_key }}{{ end }}
+EOF
+        destination = "secrets/id_rsa"
+        perms       = "600"
       }
     }
   }
