@@ -22,7 +22,7 @@ var (
 	tarsnapPath    = flag.String("tarsnap-path", "tarsnap", "Path to the Tarsnap binary")
 	tarsnapKeyPath = flag.String("tarsnap-keyfile", "", "Path to the Tarsnap key for the backups")
 	borgPath       = flag.String("borg-path", "borg", "Path to the Borg binary")
-	borgRepoPath   = flag.String("borg-repo-path", "/backup/borg/backup", "Path to the Borg backup repository")
+	borgRepoPath   = flag.String("borg-repo-path", "homelab@nas:/volume1/homelab/backup", "Path to the Borg backup repository")
 )
 
 func main() {

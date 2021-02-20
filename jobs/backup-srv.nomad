@@ -10,11 +10,6 @@ job "backup-srv" {
       max_parallel = 1
     }
 
-    volume "homelab_nfs" {
-      type   = "host"
-      source = "homelab_nfs"
-    }
-
     network {
       mode = "bridge"
       port "http" {
@@ -117,22 +112,29 @@ job "backup-srv" {
 
       env {
         BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK = "yes"
-      }
 
-      volume_mount {
-        volume      = "homelab_nfs"
-        destination = "/backup/borg"
+        BORG_RSH = "ssh -o StrictHostKeyChecking=no -i ${NOMAD_SECRETS_DIR}/id_rsa"
       }
 
       vault {
-        policies = ["tarsnap"]
+        policies = ["borg", "tarsnap"]
       }
 
       template {
+        // language=GoTemplate
         data        = <<EOF
 {{ with secret "kv/tarsnap" }}{{ .Data.data.key | base64Decode }}{{ end }}
 EOF
         destination = "secrets/tarsnap.key"
+      }
+
+      template {
+        // language=GoTemplate
+        data        = <<EOF
+{{ with secret "kv/borg" }}{{ .Data.data.private_key }}{{ end }}
+EOF
+        destination = "secrets/id_rsa"
+        perms       = "600"
       }
     }
   }

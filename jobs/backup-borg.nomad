@@ -191,6 +191,7 @@ EOF
       }
 
       template {
+        // language=GoTemplate
         data        = <<EOF
 {{ with secret "kv/borg" }}{{ .Data.data.private_key }}{{ end }}
 EOF
