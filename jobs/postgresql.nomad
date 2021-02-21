@@ -34,6 +34,15 @@ job "postgresql" {
     service {
       name = "postgresql"
       port = 5432
+      task = "postgresql"
+
+      check {
+        type     = "script"
+        command  = "pg_isready"
+        args     = ["-U", "postgres"]
+        interval = "15s"
+        timeout  = "3s"
+      }
 
       connect {
         sidecar_service {}
