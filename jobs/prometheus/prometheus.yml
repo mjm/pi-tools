@@ -89,6 +89,7 @@ scrape_configs:
         target_label: __address__
 
   - job_name: consul-connect-envoy
+    scrape_interval: 120s
     consul_sd_configs:
       - token: {{ with secret "consul/creds/prometheus" }}{{ .Data.token }}{{ end }}
         server: {{ env "CONSUL_HTTP_ADDR" }}
