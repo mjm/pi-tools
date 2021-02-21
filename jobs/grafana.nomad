@@ -13,7 +13,6 @@ job "grafana" {
 
     network {
       mode = "bridge"
-      port "expose" {}
     }
 
     service {
@@ -21,8 +20,7 @@ job "grafana" {
       port = 3000
 
       meta {
-        metrics_path       = "/metrics"
-        metrics_port       = "${NOMAD_HOST_PORT_expose}"
+        metrics_path = "/metrics"
       }
 
       check {
@@ -36,14 +34,6 @@ job "grafana" {
       connect {
         sidecar_service {
           proxy {
-            expose {
-              path {
-                path            = "/metrics"
-                protocol        = "http"
-                local_path_port = 3000
-                listener_port   = "expose"
-              }
-            }
             upstreams {
               destination_name = "postgresql"
               local_bind_port  = 5432

@@ -9,7 +9,6 @@ job "vault-proxy" {
 
     network {
       mode = "bridge"
-      port "expose" {}
     }
 
     service {
@@ -18,7 +17,6 @@ job "vault-proxy" {
 
       meta {
         metrics_path = "/metrics"
-        metrics_port = "${NOMAD_HOST_PORT_expose}"
       }
 
       check {
@@ -33,14 +31,6 @@ job "vault-proxy" {
       connect {
         sidecar_service {
           proxy {
-            expose {
-              path {
-                path            = "/metrics"
-                protocol        = "http"
-                local_path_port = 2220
-                listener_port   = "expose"
-              }
-            }
             upstreams {
               destination_name = "jaeger-collector"
               local_bind_port  = 14268

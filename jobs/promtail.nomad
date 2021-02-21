@@ -7,7 +7,6 @@ job "promtail" {
   group "promtail" {
     network {
       mode = "bridge"
-      port "expose" {}
     }
 
     service {
@@ -16,20 +15,11 @@ job "promtail" {
 
       meta {
         metrics_path = "/metrics"
-        metrics_port = "${NOMAD_HOST_PORT_expose}"
       }
 
       connect {
         sidecar_service {
           proxy {
-            expose {
-              path {
-                path            = "/metrics"
-                protocol        = "http"
-                local_path_port = 3101
-                listener_port   = "expose"
-              }
-            }
             upstreams {
               destination_name = "loki"
               local_bind_port  = 3100

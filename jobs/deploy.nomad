@@ -13,7 +13,6 @@ job "deploy" {
 
     network {
       mode = "bridge"
-      port "expose" {}
     }
 
     service {
@@ -22,7 +21,6 @@ job "deploy" {
 
       meta {
         metrics_path = "/metrics"
-        metrics_port = "${NOMAD_HOST_PORT_expose}"
       }
 
       check {
@@ -37,14 +35,6 @@ job "deploy" {
       connect {
         sidecar_service {
           proxy {
-            expose {
-              path {
-                path            = "/metrics"
-                protocol        = "http"
-                local_path_port = 8480
-                listener_port   = "expose"
-              }
-            }
             upstreams {
               destination_name = "jaeger-collector"
               local_bind_port  = 14268

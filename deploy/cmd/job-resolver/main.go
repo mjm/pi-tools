@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
@@ -133,39 +134,70 @@ func main() {
 	}
 }
 
-func updateNetwork(job *api.Job, group *api.TaskGroup) {
+func updateNetwork(_ *api.Job, group *api.TaskGroup) {
 	for i, svc := range group.Services {
-		if svc.Connect == nil || svc.Connect.SidecarService == nil {
+		if svc.Connect == nil {
 			continue
 		}
-
-		if _, ok := svc.Meta["envoy_metrics_port"]; ok {
-			continue
-		}
-
-		port := 9102 + i
-		portLabel := fmt.Sprintf("envoy_metrics_%d", i)
-		net := group.Networks[0]
-		net.DynamicPorts = append(net.DynamicPorts, api.Port{
-			Label:       portLabel,
-			To:          port,
-			HostNetwork: "default",
-		})
 
 		sidecar := svc.Connect.SidecarService
+		if sidecar == nil {
+			continue
+		}
+
 		if sidecar.Proxy == nil {
 			sidecar.Proxy = &api.ConsulProxy{}
 		}
-		if sidecar.Proxy.Config == nil {
-			sidecar.Proxy.Config = map[string]interface{}{}
+
+		net := group.Networks[0]
+
+		if metricsPath, ok := svc.Meta["metrics_path"]; ok {
+			if _, ok := svc.Meta["metrics_port"]; !ok {
+				net.DynamicPorts = append(net.DynamicPorts, api.Port{
+					Label:       "expose",
+					HostNetwork: "default",
+				})
+
+				svc.Meta["metrics_port"] = "${NOMAD_HOST_PORT_expose}"
+				if sidecar.Proxy.ExposeConfig == nil {
+					sidecar.Proxy.ExposeConfig = &api.ConsulExposeConfig{}
+				}
+
+				svcPort, err := strconv.Atoi(svc.PortLabel)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "error: connect service %q specified a port label instead of a port number\n")
+					os.Exit(1)
+				}
+
+				expose := sidecar.Proxy.ExposeConfig
+				expose.Path = append(expose.Path, &api.ConsulExposePath{
+					Path:          metricsPath,
+					Protocol:      "http",
+					LocalPathPort: svcPort,
+					ListenerPort:  "expose",
+				})
+			}
 		}
 
-		sidecar.Proxy.Config["envoy_prometheus_bind_addr"] = fmt.Sprintf("0.0.0.0:%d", port)
+		if _, ok := svc.Meta["envoy_metrics_port"]; !ok {
+			port := 9102 + i
+			portLabel := fmt.Sprintf("envoy_metrics_%d", i)
+			net.DynamicPorts = append(net.DynamicPorts, api.Port{
+				Label:       portLabel,
+				To:          port,
+				HostNetwork: "default",
+			})
 
-		if svc.Meta == nil {
-			svc.Meta = map[string]string{}
+			if sidecar.Proxy.Config == nil {
+				sidecar.Proxy.Config = map[string]interface{}{}
+			}
+			sidecar.Proxy.Config["envoy_prometheus_bind_addr"] = fmt.Sprintf("0.0.0.0:%d", port)
+
+			if svc.Meta == nil {
+				svc.Meta = map[string]string{}
+			}
+			svc.Meta["envoy_metrics_port"] = fmt.Sprintf("${NOMAD_HOST_PORT_%s}", portLabel)
 		}
-		svc.Meta["envoy_metrics_port"] = fmt.Sprintf("${NOMAD_HOST_PORT_%s}", portLabel)
 	}
 }
 
