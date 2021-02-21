@@ -14,7 +14,9 @@ job "prometheus" {
     }
 
     network {
-      port "http" {}
+      port "http" {
+        static = 9090
+      }
     }
 
     service {
