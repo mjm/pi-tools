@@ -22,8 +22,9 @@ job "go-links" {
       port = 4240
 
       meta {
-        metrics_path = "/metrics"
-        metrics_port = "${NOMAD_HOST_PORT_expose}"
+        metrics_path       = "/metrics"
+        metrics_port       = "${NOMAD_HOST_PORT_expose}"
+        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_http}"
       }
 
       check {
@@ -60,26 +61,12 @@ job "go-links" {
     }
 
     service {
-      name = "go-links-metrics"
-      port = "envoy_metrics_http"
-
-      meta {
-        metrics_path = "/metrics"
-      }
-    }
-
-    service {
-      name = "go-links-metrics"
-      port = "envoy_metrics_grpc"
-
-      meta {
-        metrics_path = "/metrics"
-      }
-    }
-
-    service {
       name = "go-links-grpc"
       port = 4241
+
+      meta {
+        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_grpc}"
+      }
 
       //      check {
       //        type = "grpc"

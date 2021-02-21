@@ -83,6 +83,27 @@ scrape_configs:
         replacement: ${1}:${2}
         target_label: __address__
 
+  - job_name: consul-connect-envoy
+    consul_sd_configs:
+      - token: {{ with secret "consul/creds/prometheus" }}{{ .Data.token }}{{ end }}
+    relabel_configs:
+      - source_labels: [__meta_consul_service]
+        action: drop
+        regex: (.+)-sidecar-proxy
+      - source_labels: [__meta_consul_service_metadata_envoy_metrics_port]
+        action: keep
+        regex: (.+)
+      - source_labels: [__meta_consul_service]
+        target_label: service_name
+        regex: (.+)
+      - source_labels: [__meta_consul_node]
+        target_label: node_name
+        regex: (.+)
+      - source_labels: [__address__, __meta_consul_service_metadata_envoy_metrics_port]
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: ${1}:${2}
+        target_label: __address__
+
   - job_name: pushgateway
     consul_sd_configs:
       - services: [pushgateway]
