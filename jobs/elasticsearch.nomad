@@ -21,6 +21,14 @@ job "elasticsearch" {
       name = "elasticsearch"
       port = 9200
 
+      check {
+        type     = "http"
+        expose   = true
+        path     = "/_cluster/health"
+        interval = "15s"
+        timeout  = "3s"
+      }
+
       connect {
         sidecar_service {}
       }
