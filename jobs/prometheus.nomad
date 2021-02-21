@@ -14,10 +14,7 @@ job "prometheus" {
     }
 
     network {
-      port "http" {
-        static = 9090
-        to     = 9090
-      }
+      port "http" {}
     }
 
     service {
@@ -40,9 +37,9 @@ job "prometheus" {
       driver = "docker"
 
       config {
-        image        = "prom/prometheus@sha256:9fa25ec244e0109fdbeaff89496ac149c0539489f2f2126b9e38cf9837235be4"
+        image        = "prom/prometheus@sha256:67262e7101289f19c192019990424a147b527386347210c155e3f261456db941"
         args         = [
-          "--web.listen-address=:9090",
+          "--web.listen-address=:${NOMAD_PORT_http}",
           "--config.file=${NOMAD_SECRETS_DIR}/prometheus.yml",
           "--storage.tsdb.path=/prometheus",
           "--web.console.libraries=/usr/share/prometheus/console_libraries",
@@ -50,7 +47,11 @@ job "prometheus" {
           "--web.external-url=https://prometheus.homelab/",
           "--web.enable-admin-api",
         ]
-        network_mode = "host"
+        ports = ["http"]
+      }
+
+      env {
+        CONSUL_HTTP_ADDR = "${attr.unique.network.ip-address}:8500"
       }
 
       resources {
