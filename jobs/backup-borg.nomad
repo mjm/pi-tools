@@ -90,7 +90,7 @@ EOF
         command = "/prometheus-backup"
         args    = [
           "-prometheus-url",
-          "http://127.0.0.1:9090",
+          "http://10.0.0.2:9090",
           "-prometheus-data-path",
           "/prometheus",
           "-backup-path",
