@@ -4,6 +4,7 @@ import "google/protobuf/timestamp.proto";
 
 service BackupService {
     rpc ListArchives (ListArchivesRequest) returns (ListArchivesResponse);
+    rpc GetArchive (GetArchiveRequest) returns (GetArchiveResponse);
 }
 
 message ListArchivesRequest {
@@ -12,6 +13,15 @@ message ListArchivesRequest {
 
 message ListArchivesResponse {
     repeated Archive archives = 1;
+}
+
+message GetArchiveRequest {
+    Archive.Kind kind = 1;
+    string id = 2;
+}
+
+message GetArchiveResponse {
+    ArchiveDetail archive = 1;
 }
 
 message Archive {
@@ -25,4 +35,23 @@ message Archive {
     string id = 2;
     string name = 3;
     google.protobuf.Timestamp time = 4;
+}
+
+message ArchiveDetail {
+    Archive.Kind kind = 1;
+    string id = 2;
+    string name = 3;
+    google.protobuf.Timestamp start_time = 4;
+    google.protobuf.Timestamp end_time = 5;
+    double duration = 6;
+    repeated string command_line = 7;
+    string username = 8;
+    ArchiveStats stats = 9;
+}
+
+message ArchiveStats {
+    int64 compressed_size = 1;
+    int64 deduplicated_size = 2;
+    int64 original_size = 3;
+    int64 num_files = 4;
 }
