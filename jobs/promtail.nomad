@@ -17,6 +17,14 @@ job "promtail" {
         metrics_path = "/metrics"
       }
 
+      check {
+        type     = "http"
+        expose   = true
+        path     = "/ready"
+        interval = "15s"
+        timeout  = "3s"
+      }
+
       connect {
         sidecar_service {
           proxy {
