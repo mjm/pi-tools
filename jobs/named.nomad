@@ -25,6 +25,15 @@ job "named" {
     service {
       name = "named"
       port = "dns"
+      task = "named"
+
+      check {
+        type     = "script"
+        command  = "dig"
+        args     = ["@${NOMAD_IP_dns}", "-p", "${NOMAD_PORT_dns}", "raspberrypi.homelab"]
+        interval = "30s"
+        timeout  = "5s"
+      }
     }
 
     task "named" {
