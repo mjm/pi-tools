@@ -48,6 +48,8 @@ type Viewer {
         after: Cursor
         kind: ArchiveKind
     ): ArchiveConnection
+
+    backupArchive(id: ID!): Archive
 }
 
 type PageInfo {
@@ -150,6 +152,20 @@ type Archive implements Node {
     kind: ArchiveKind!
     name: String!
     createdAt: Time!
+    details: ArchiveDetails!
+    stats: ArchiveStats!
+}
+
+type ArchiveDetails {
+    duration: Float!
+    commandLine: [String!]!
+}
+
+type ArchiveStats {
+    compressedSize: Int!
+    deduplicatedSize: Int!
+    originalSize: Int!
+    numFiles: Int!
 }
 
 enum ArchiveKind {

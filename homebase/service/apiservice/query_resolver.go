@@ -2,6 +2,7 @@ package apiservice
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -223,6 +224,28 @@ func (r *Resolver) BackupArchives(ctx context.Context, args struct {
 	}
 
 	return &ArchiveConnection{archives: archives}, nil
+}
+
+func (r *Resolver) BackupArchive(ctx context.Context, args struct{ ID graphql.ID }) (*ArchiveDetails, error) {
+	switch relay.UnmarshalKind(args.ID) {
+	case "borg_archive":
+		var id string
+		if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
+			return nil, err
+		}
+
+		res, err := r.backupClient.GetArchive(ctx, &backuppb.GetArchiveRequest{
+			Kind: backuppb.Archive_BORG,
+			Id:   id,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		return &ArchiveDetails{ArchiveDetail: res.GetArchive()}, nil
+	default:
+		return nil, fmt.Errorf("unsupported kind")
+	}
 }
 
 func (r *Resolver) newPromClient(ctx context.Context) (v1.API, error) {
