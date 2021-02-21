@@ -56,8 +56,9 @@ job "homebase" {
       port = 6460
 
       meta {
-        metrics_path = "/metrics"
-        metrics_port = "${NOMAD_HOST_PORT_expose}"
+        metrics_path       = "/metrics"
+        metrics_port       = "${NOMAD_HOST_PORT_expose}"
+        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics}"
       }
 
       check {
@@ -105,15 +106,6 @@ job "homebase" {
       }
     }
 
-    service {
-      name = "homebase-api-metrics"
-      port = "envoy_metrics"
-
-      meta {
-        metrics_path = "/metrics"
-      }
-    }
-
     task "homebase-api-srv" {
       driver = "docker"
 
@@ -152,8 +144,9 @@ job "homebase" {
       port = 6360
 
       meta {
-        metrics_path = "/metrics"
-        metrics_port = "${NOMAD_HOST_PORT_expose}"
+        metrics_path       = "/metrics"
+        metrics_port       = "${NOMAD_HOST_PORT_expose}"
+        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_http}"
       }
 
       check {
@@ -194,26 +187,12 @@ job "homebase" {
     }
 
     service {
-      name = "homebase-bot-metrics"
-      port = "envoy_metrics_http"
-
-      meta {
-        metrics_path = "/metrics"
-      }
-    }
-
-    service {
-      name = "homebase-bot-metrics"
-      port = "envoy_metrics_grpc"
-
-      meta {
-        metrics_path = "/metrics"
-      }
-    }
-
-    service {
       name = "homebase-bot-grpc"
       port = 6361
+
+      meta {
+        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_grpc}"
+      }
 
       connect {
         sidecar_service {

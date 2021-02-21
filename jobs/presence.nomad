@@ -22,8 +22,9 @@ job "presence" {
       port = 2120
 
       meta {
-        metrics_path = "/metrics"
-        metrics_port = "${NOMAD_HOST_PORT_expose}"
+        metrics_path       = "/metrics"
+        metrics_port       = "${NOMAD_HOST_PORT_expose}"
+        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_http}"
       }
 
       check {
@@ -64,26 +65,12 @@ job "presence" {
     }
 
     service {
-      name = "detect-presence-metrics"
-      port = "envoy_metrics_http"
-
-      meta {
-        metrics_path = "/metrics"
-      }
-    }
-
-    service {
-      name = "detect-presence-metrics"
-      port = "envoy_metrics_grpc"
-
-      meta {
-        metrics_path = "/metrics"
-      }
-    }
-
-    service {
       name = "detect-presence-grpc"
       port = 2121
+
+      meta {
+        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_grpc}"
+      }
 
       connect {
         sidecar_service {

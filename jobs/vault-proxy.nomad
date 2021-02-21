@@ -20,8 +20,9 @@ job "vault-proxy" {
       port = 2220
 
       meta {
-        metrics_path = "/metrics"
-        metrics_port = "${NOMAD_HOST_PORT_expose}"
+        metrics_path       = "/metrics"
+        metrics_port       = "${NOMAD_HOST_PORT_expose}"
+        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_http}"
       }
 
       check {
@@ -50,15 +51,6 @@ job "vault-proxy" {
             }
           }
         }
-      }
-    }
-
-    service {
-      name = "vault-proxy-metrics"
-      port = "envoy_metrics_http"
-
-      meta {
-        metrics_path = "/metrics"
       }
     }
 

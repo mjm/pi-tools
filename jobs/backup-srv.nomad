@@ -26,8 +26,9 @@ job "backup-srv" {
       port = 2320
 
       meta {
-        metrics_path = "/metrics"
-        metrics_port = "${NOMAD_HOST_PORT_expose}"
+        metrics_path       = "/metrics"
+        metrics_port       = "${NOMAD_HOST_PORT_expose}"
+        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_http}"
       }
 
       check {
@@ -63,6 +64,10 @@ job "backup-srv" {
       name = "backup-grpc"
       port = 2321
 
+      meta {
+        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_grpc}"
+      }
+
       connect {
         sidecar_service {
           proxy {
@@ -71,24 +76,6 @@ job "backup-srv" {
             }
           }
         }
-      }
-    }
-
-    service {
-      name = "backup-metrics"
-      port = "envoy_metrics_http"
-
-      meta {
-        metrics_path = "/metrics"
-      }
-    }
-
-    service {
-      name = "backup-metrics"
-      port = "envoy_metrics_grpc"
-
-      meta {
-        metrics_path = "/metrics"
       }
     }
 

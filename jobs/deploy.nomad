@@ -27,8 +27,9 @@ job "deploy" {
       port = 8480
 
       meta {
-        metrics_path = "/metrics"
-        metrics_port = "${NOMAD_HOST_PORT_expose}"
+        metrics_path       = "/metrics"
+        metrics_port       = "${NOMAD_HOST_PORT_expose}"
+        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_http}"
       }
 
       check {
@@ -64,6 +65,10 @@ job "deploy" {
       name = "deploy-grpc"
       port = 8481
 
+      meta {
+        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_grpc}"
+      }
+
       connect {
         sidecar_service {
           proxy {
@@ -72,24 +77,6 @@ job "deploy" {
             }
           }
         }
-      }
-    }
-
-    service {
-      name = "deploy-metrics"
-      port = "envoy_metrics_http"
-
-      meta {
-        metrics_path = "/metrics"
-      }
-    }
-
-    service {
-      name = "deploy-metrics"
-      port = "envoy_metrics_grpc"
-
-      meta {
-        metrics_path = "/metrics"
       }
     }
 

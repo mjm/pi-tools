@@ -39,17 +39,12 @@ job "postgresql" {
       name = "postgresql"
       port = 5432
 
+      meta {
+        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics}"
+      }
+
       connect {
         sidecar_service {}
-      }
-    }
-
-    service {
-      name = "postgresql-metrics"
-      port = "envoy_metrics"
-
-      meta {
-        metrics_path = "/metrics"
       }
     }
 

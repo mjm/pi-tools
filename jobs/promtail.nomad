@@ -8,6 +8,9 @@ job "promtail" {
     network {
       mode = "bridge"
       port "expose" {}
+      port "envoy_metrics" {
+        to = 9102
+      }
     }
 
     service {
@@ -15,8 +18,9 @@ job "promtail" {
       port = 3101
 
       meta {
-        metrics_path = "/metrics"
-        metrics_port = "${NOMAD_HOST_PORT_expose}"
+        metrics_path       = "/metrics"
+        metrics_port       = "${NOMAD_HOST_PORT_expose}"
+        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics}"
       }
 
       connect {

@@ -20,8 +20,9 @@ job "loki" {
       port = 3100
 
       meta {
-        metrics_path = "/metrics"
-        metrics_port = "${NOMAD_HOST_PORT_expose}"
+        metrics_path       = "/metrics"
+        metrics_port       = "${NOMAD_HOST_PORT_expose}"
+        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics}"
       }
 
       connect {
@@ -37,15 +38,6 @@ job "loki" {
             }
           }
         }
-      }
-    }
-
-    service {
-      name = "loki-metrics"
-      port = "envoy_metrics"
-
-      meta {
-        metrics_path = "/metrics"
       }
     }
 

@@ -24,8 +24,9 @@ job "grafana" {
       port = 3000
 
       meta {
-        metrics_path = "/metrics"
-        metrics_port = "${NOMAD_HOST_PORT_expose}"
+        metrics_path       = "/metrics"
+        metrics_port       = "${NOMAD_HOST_PORT_expose}"
+        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics}"
       }
 
       check {
@@ -57,15 +58,6 @@ job "grafana" {
             }
           }
         }
-      }
-    }
-
-    service {
-      name = "grafana-metrics"
-      port = "envoy_metrics"
-
-      meta {
-        metrics_path = "/metrics"
       }
     }
 
@@ -111,8 +103,8 @@ job "grafana" {
         for_each = local.dashboards
 
         content {
-          data = file(template.value)
-          destination = "local/dashboards/${basename(template.value)}"
+          data           = file(template.value)
+          destination    = "local/dashboards/${basename(template.value)}"
           // prevent interpreting blocks delimited by '{{' and '}}' as consul templates
           left_delimiter = "do_not_substitute"
         }

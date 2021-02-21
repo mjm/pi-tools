@@ -40,6 +40,10 @@ job "jaeger" {
       name = "jaeger-collector"
       port = 14268
 
+      meta {
+        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_collector}"
+      }
+
       connect {
         sidecar_service {
           proxy {
@@ -49,15 +53,6 @@ job "jaeger" {
             }
           }
         }
-      }
-    }
-
-    service {
-      name = "jaeger-collector-metrics"
-      port = "envoy_metrics_collector"
-
-      meta {
-        metrics_path = "/metrics"
       }
     }
 
