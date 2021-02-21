@@ -29,19 +29,11 @@ job "postgresql" {
         static = 5432
         to     = 5432
       }
-
-      port "envoy_metrics" {
-        to = 9102
-      }
     }
 
     service {
       name = "postgresql"
       port = 5432
-
-      meta {
-        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics}"
-      }
 
       connect {
         sidecar_service {}

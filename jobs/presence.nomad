@@ -9,12 +9,6 @@ job "presence" {
     network {
       mode = "bridge"
       port "expose" {}
-      port "envoy_metrics_http" {
-        to = 9102
-      }
-      port "envoy_metrics_grpc" {
-        to = 9103
-      }
     }
 
     service {
@@ -22,9 +16,8 @@ job "presence" {
       port = 2120
 
       meta {
-        metrics_path       = "/metrics"
-        metrics_port       = "${NOMAD_HOST_PORT_expose}"
-        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_http}"
+        metrics_path = "/metrics"
+        metrics_port = "${NOMAD_HOST_PORT_expose}"
       }
 
       check {
@@ -68,18 +61,8 @@ job "presence" {
       name = "detect-presence-grpc"
       port = 2121
 
-      meta {
-        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_grpc}"
-      }
-
       connect {
-        sidecar_service {
-          proxy {
-            config {
-              envoy_prometheus_bind_addr = "0.0.0.0:9103"
-            }
-          }
-        }
+        sidecar_service {}
       }
     }
 

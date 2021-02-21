@@ -42,18 +42,11 @@ job "ingress" {
         to     = 443
         static = 443
       }
-      port "envoy_metrics" {
-        to = 9102
-      }
     }
 
     service {
       name = "ingress-http"
       port = 80
-
-      meta {
-        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics}"
-      }
 
       connect {
         sidecar_service {

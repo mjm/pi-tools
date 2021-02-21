@@ -46,9 +46,6 @@ job "homebase" {
     network {
       mode = "bridge"
       port "expose" {}
-      port "envoy_metrics" {
-        to = 9102
-      }
     }
 
     service {
@@ -56,9 +53,8 @@ job "homebase" {
       port = 6460
 
       meta {
-        metrics_path       = "/metrics"
-        metrics_port       = "${NOMAD_HOST_PORT_expose}"
-        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics}"
+        metrics_path = "/metrics"
+        metrics_port = "${NOMAD_HOST_PORT_expose}"
       }
 
       check {
@@ -131,12 +127,6 @@ job "homebase" {
     network {
       mode = "bridge"
       port "expose" {}
-      port "envoy_metrics_http" {
-        to = 9102
-      }
-      port "envoy_metrics_grpc" {
-        to = 9103
-      }
     }
 
     service {
@@ -144,9 +134,8 @@ job "homebase" {
       port = 6360
 
       meta {
-        metrics_path       = "/metrics"
-        metrics_port       = "${NOMAD_HOST_PORT_expose}"
-        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_http}"
+        metrics_path = "/metrics"
+        metrics_port = "${NOMAD_HOST_PORT_expose}"
       }
 
       check {
@@ -190,18 +179,8 @@ job "homebase" {
       name = "homebase-bot-grpc"
       port = 6361
 
-      meta {
-        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_grpc}"
-      }
-
       connect {
-        sidecar_service {
-          proxy {
-            config {
-              envoy_prometheus_bind_addr = "0.0.0.0:9103"
-            }
-          }
-        }
+        sidecar_service {}
       }
     }
 

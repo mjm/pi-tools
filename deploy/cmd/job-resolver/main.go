@@ -63,6 +63,8 @@ func main() {
 		}
 
 		for _, group := range parsedJob.TaskGroups {
+			updateNetwork(parsedJob, group)
+
 			for _, task := range group.Tasks {
 				// set common environment variables we expect to have for tracing
 				if task.Env == nil {
@@ -128,6 +130,42 @@ func main() {
 
 		f.Close()
 		fmt.Fprintf(os.Stderr, "info: wrote job JSON to %s\n", destPath)
+	}
+}
+
+func updateNetwork(job *api.Job, group *api.TaskGroup) {
+	for i, svc := range group.Services {
+		if svc.Connect == nil || svc.Connect.SidecarService == nil {
+			continue
+		}
+
+		if _, ok := svc.Meta["envoy_metrics_port"]; ok {
+			continue
+		}
+
+		port := 9102 + i
+		portLabel := fmt.Sprintf("envoy_metrics_%d", i)
+		net := group.Networks[0]
+		net.DynamicPorts = append(net.DynamicPorts, api.Port{
+			Label:       portLabel,
+			To:          port,
+			HostNetwork: "default",
+		})
+
+		sidecar := svc.Connect.SidecarService
+		if sidecar.Proxy == nil {
+			sidecar.Proxy = &api.ConsulProxy{}
+		}
+		if sidecar.Proxy.Config == nil {
+			sidecar.Proxy.Config = map[string]interface{}{}
+		}
+
+		sidecar.Proxy.Config["envoy_prometheus_bind_addr"] = fmt.Sprintf("0.0.0.0:%d", port)
+
+		if svc.Meta == nil {
+			svc.Meta = map[string]string{}
+		}
+		svc.Meta["envoy_metrics_port"] = fmt.Sprintf("${NOMAD_HOST_PORT_%s}", portLabel)
 	}
 }
 

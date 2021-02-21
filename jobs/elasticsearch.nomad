@@ -15,18 +15,11 @@ job "elasticsearch" {
 
     network {
       mode = "bridge"
-      port "envoy_metrics" {
-        to = 9102
-      }
     }
 
     service {
       name = "elasticsearch"
       port = 9200
-
-      meta {
-        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics}"
-      }
 
       connect {
         sidecar_service {}

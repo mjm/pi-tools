@@ -14,9 +14,6 @@ job "jaeger" {
       port "query_http" {
         to = 16686
       }
-      port "envoy_metrics_collector" {
-        to = 9102
-      }
     }
 
     service {
@@ -39,10 +36,6 @@ job "jaeger" {
     service {
       name = "jaeger-collector"
       port = 14268
-
-      meta {
-        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_collector}"
-      }
 
       connect {
         sidecar_service {

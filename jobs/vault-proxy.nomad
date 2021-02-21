@@ -10,9 +10,6 @@ job "vault-proxy" {
     network {
       mode = "bridge"
       port "expose" {}
-      port "envoy_metrics_http" {
-        to = 9102
-      }
     }
 
     service {
@@ -20,9 +17,8 @@ job "vault-proxy" {
       port = 2220
 
       meta {
-        metrics_path       = "/metrics"
-        metrics_port       = "${NOMAD_HOST_PORT_expose}"
-        envoy_metrics_port = "${NOMAD_HOST_PORT_envoy_metrics_http}"
+        metrics_path = "/metrics"
+        metrics_port = "${NOMAD_HOST_PORT_expose}"
       }
 
       check {
