@@ -6,10 +6,7 @@ job "node-exporter" {
 
   group "node-exporter" {
     network {
-      port "http" {
-        static = 9100
-        to     = 9100
-      }
+      port "http" {}
     }
 
     service {
@@ -27,6 +24,7 @@ job "node-exporter" {
       config {
         image = "prom/node-exporter@sha256:eb80355f0ff0a0a0f0342303cd694af28e2820d688f416049d7be7d1760a0b33"
         args  = [
+          "--web.listen-address=:${NOMAD_PORT_http}",
           "--path.procfs=/host/proc",
           "--path.sysfs=/host/sys",
           "--path.rootfs=/host/root",
