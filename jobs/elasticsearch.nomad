@@ -15,9 +15,6 @@ job "elasticsearch" {
 
     network {
       mode = "bridge"
-      port "http" {
-        to = 9200
-      }
       port "envoy_metrics" {
         to = 9102
       }

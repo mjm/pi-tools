@@ -12,12 +12,7 @@ job "backup-srv" {
 
     network {
       mode = "bridge"
-      port "http" {
-        to = 2320
-      }
-      port "grpc" {
-        to = 2321
-      }
+      port "expose" {}
       port "envoy_metrics_http" {
         to = 9102
       }
@@ -30,9 +25,14 @@ job "backup-srv" {
       name = "backup"
       port = 2320
 
+      meta {
+        metrics_path = "/metrics"
+        metrics_port = "${NOMAD_HOST_PORT_expose}"
+      }
+
       check {
         type                   = "http"
-        port                   = "http"
+        expose                 = true
         path                   = "/healthz"
         timeout                = "3s"
         interval               = "15s"
@@ -42,6 +42,14 @@ job "backup-srv" {
       connect {
         sidecar_service {
           proxy {
+            expose {
+              path {
+                path            = "/metrics"
+                protocol        = "http"
+                local_path_port = 2320
+                listener_port   = "expose"
+              }
+            }
             upstreams {
               destination_name = "jaeger-collector"
               local_bind_port  = 14268
@@ -63,15 +71,6 @@ job "backup-srv" {
             }
           }
         }
-      }
-    }
-
-    service {
-      name = "backup-metrics"
-      port = "http"
-
-      meta {
-        metrics_path = "/metrics"
       }
     }
 

@@ -9,9 +9,7 @@ job "loki" {
 
     network {
       mode = "bridge"
-      port "http" {
-        to = 3100
-      }
+      port "expose" {}
       port "envoy_metrics" {
         to = 9102
       }
@@ -21,17 +19,24 @@ job "loki" {
       name = "loki"
       port = 3100
 
-      connect {
-        sidecar_service {}
-      }
-    }
-
-    service {
-      name = "loki-metrics"
-      port = "http"
-
       meta {
         metrics_path = "/metrics"
+        metrics_port = "${NOMAD_HOST_PORT_expose}"
+      }
+
+      connect {
+        sidecar_service {
+          proxy {
+            expose {
+              path {
+                path            = "/metrics"
+                protocol        = "http"
+                local_path_port = 3100
+                listener_port   = "expose"
+              }
+            }
+          }
+        }
       }
     }
 

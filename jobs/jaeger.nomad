@@ -11,9 +11,6 @@ job "jaeger" {
       port "admin_http" {
         to = 14269
       }
-      port "collector_http" {
-        to = 14268
-      }
       port "query_http" {
         to = 16686
       }

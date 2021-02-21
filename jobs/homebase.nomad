@@ -45,9 +45,7 @@ job "homebase" {
 
     network {
       mode = "bridge"
-      port "http" {
-        to = 6460
-      }
+      port "expose" {}
       port "envoy_metrics" {
         to = 9102
       }
@@ -57,9 +55,14 @@ job "homebase" {
       name = "homebase-api"
       port = 6460
 
+      meta {
+        metrics_path = "/metrics"
+        metrics_port = "${NOMAD_HOST_PORT_expose}"
+      }
+
       check {
         type                   = "http"
-        port                   = "http"
+        expose                 = true
         path                   = "/healthz"
         timeout                = "3s"
         interval               = "15s"
@@ -69,6 +72,14 @@ job "homebase" {
       connect {
         sidecar_service {
           proxy {
+            expose {
+              path {
+                path            = "/metrics"
+                protocol        = "http"
+                local_path_port = 6460
+                listener_port   = "expose"
+              }
+            }
             upstreams {
               destination_name = "go-links-grpc"
               local_bind_port  = 4241
@@ -91,15 +102,6 @@ job "homebase" {
             }
           }
         }
-      }
-    }
-
-    service {
-      name = "homebase-api-metrics"
-      port = "http"
-
-      meta {
-        metrics_path = "/metrics"
       }
     }
 
@@ -136,12 +138,7 @@ job "homebase" {
 
     network {
       mode = "bridge"
-      port "http" {
-        to = 6360
-      }
-      port "grpc" {
-        to = 6361
-      }
+      port "expose" {}
       port "envoy_metrics_http" {
         to = 9102
       }
@@ -154,9 +151,14 @@ job "homebase" {
       name = "homebase-bot"
       port = 6360
 
+      meta {
+        metrics_path = "/metrics"
+        metrics_port = "${NOMAD_HOST_PORT_expose}"
+      }
+
       check {
         type                   = "http"
-        port                   = "http"
+        expose                 = true
         path                   = "/healthz"
         timeout                = "3s"
         interval               = "15s"
@@ -166,6 +168,14 @@ job "homebase" {
       connect {
         sidecar_service {
           proxy {
+            expose {
+              path {
+                path            = "/metrics"
+                protocol        = "http"
+                local_path_port = 6360
+                listener_port   = "expose"
+              }
+            }
             upstreams {
               destination_name = "postgresql"
               local_bind_port  = 5432
@@ -180,15 +190,6 @@ job "homebase" {
             }
           }
         }
-      }
-    }
-
-    service {
-      name = "homebase-bot-metrics"
-      port = "http"
-
-      meta {
-        metrics_path = "/metrics"
       }
     }
 

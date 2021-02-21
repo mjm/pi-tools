@@ -13,12 +13,7 @@ job "deploy" {
 
     network {
       mode = "bridge"
-      port "http" {
-        to = 8480
-      }
-      port "grpc" {
-        to = 8481
-      }
+      port "expose" {}
       port "envoy_metrics_http" {
         to = 9102
       }
@@ -31,9 +26,14 @@ job "deploy" {
       name = "deploy"
       port = 8480
 
+      meta {
+        metrics_path = "/metrics"
+        metrics_port = "${NOMAD_HOST_PORT_expose}"
+      }
+
       check {
         type                   = "http"
-        port                   = "http"
+        expose                 = true
         path                   = "/healthz"
         timeout                = "3s"
         interval               = "15s"
@@ -43,6 +43,14 @@ job "deploy" {
       connect {
         sidecar_service {
           proxy {
+            expose {
+              path {
+                path            = "/metrics"
+                protocol        = "http"
+                local_path_port = 8480
+                listener_port   = "expose"
+              }
+            }
             upstreams {
               destination_name = "jaeger-collector"
               local_bind_port  = 14268
@@ -64,15 +72,6 @@ job "deploy" {
             }
           }
         }
-      }
-    }
-
-    service {
-      name = "deploy-metrics"
-      port = "http"
-
-      meta {
-        metrics_path = "/metrics"
       }
     }
 

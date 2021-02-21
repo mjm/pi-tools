@@ -8,12 +8,7 @@ job "presence" {
 
     network {
       mode = "bridge"
-      port "http" {
-        to = 2120
-      }
-      port "grpc" {
-        to = 2121
-      }
+      port "expose" {}
       port "envoy_metrics_http" {
         to = 9102
       }
@@ -26,9 +21,14 @@ job "presence" {
       name = "detect-presence"
       port = 2120
 
+      meta {
+        metrics_path = "/metrics"
+        metrics_port = "${NOMAD_HOST_PORT_expose}"
+      }
+
       check {
         type                   = "http"
-        port                   = "http"
+        expose                 = true
         path                   = "/healthz"
         timeout                = "3s"
         interval               = "15s"
@@ -38,6 +38,14 @@ job "presence" {
       connect {
         sidecar_service {
           proxy {
+            expose {
+              path {
+                path            = "/metrics"
+                protocol        = "http"
+                local_path_port = 2120
+                listener_port   = "expose"
+              }
+            }
             upstreams {
               destination_name = "postgresql"
               local_bind_port  = 5432
@@ -52,15 +60,6 @@ job "presence" {
             }
           }
         }
-      }
-    }
-
-    service {
-      name = "detect-presence-metrics"
-      port = "http"
-
-      meta {
-        metrics_path = "/metrics"
       }
     }
 
