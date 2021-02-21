@@ -48,6 +48,18 @@ job "ingress" {
       name = "ingress-http"
       port = 80
 
+      check {
+        type     = "http"
+        path     = "/healthz"
+        interval = "15s"
+        timeout  = "3s"
+
+        header {
+          // Just need to have some Host header
+          Host = ["ingress"]
+        }
+      }
+
       connect {
         sidecar_service {
           proxy {
