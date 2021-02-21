@@ -40,8 +40,8 @@ scrape_configs:
       cert_file: {{ env "NOMAD_SECRETS_DIR" }}/nomad.crt
       key_file: {{ env "NOMAD_SECRETS_DIR" }}/nomad.key
     relabel_configs:
-        - source_labels: [__meta_consul_node]
-          target_label: node_name
+      - source_labels: [__meta_consul_node]
+        target_label: node_name
 
   - job_name: vault
     consul_sd_configs:
@@ -53,13 +53,16 @@ scrape_configs:
       format: [prometheus]
     bearer_token_file: {{ env "NOMAD_SECRETS_DIR" }}/vault_token
     relabel_configs:
-        - source_labels: [__meta_consul_node]
-          target_label: node_name
+      - source_labels: [__meta_consul_node]
+        target_label: node_name
 
   - job_name: consul-services
     consul_sd_configs:
       - token: {{ with secret "consul/creds/prometheus" }}{{ .Data.token }}{{ end }}
     relabel_configs:
+      - source_labels: [__meta_consul_service]
+        action: drop
+        regex: (.+)-sidecar-proxy
       - source_labels: [__meta_consul_service_metadata_metrics_path]
         action: keep
         regex: (.+)
@@ -75,6 +78,10 @@ scrape_configs:
       - source_labels: [__meta_consul_node]
         target_label: node_name
         regex: (.+)
+      - source_labels: [__address__, __meta_consul_service_metadata_metrics_port]
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: ${1}:${2}
+        target_label: __address__
 
   - job_name: pushgateway
     consul_sd_configs:
