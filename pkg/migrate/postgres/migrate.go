@@ -3,25 +3,26 @@ package postgres
 import (
 	"database/sql"
 	"errors"
+	"io/fs"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 
-	"github.com/mjm/pi-tools/pkg/migrate/embeddata"
+	fssource "github.com/mjm/pi-tools/pkg/migrate/fs"
 )
 
-func UpIfNeeded(db *sql.DB, files map[string][]byte) error {
+func UpIfNeeded(db *sql.DB, files fs.FS) error {
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
 		return err
 	}
 
-	source, err := embeddata.WithFiles(files)
+	source, err := fssource.WithFS(files)
 	if err != nil {
 		return err
 	}
 
-	m, err := migrate.NewWithInstance("go-embed-data", source, "postgres", driver)
+	m, err := migrate.NewWithInstance("fs", source, "postgres", driver)
 	if err != nil {
 		return err
 	}

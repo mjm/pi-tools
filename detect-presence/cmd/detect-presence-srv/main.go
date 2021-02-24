@@ -58,7 +58,7 @@ func main() {
 	stopObs := observability.MustStart("detect-presence-srv")
 	defer stopObs()
 
-	db := storage.MustOpenDB(migrate.Data)
+	db := storage.MustOpenDB(migrate.FS)
 
 	messagesConn := rpc.MustDial(context.Background(), *messagesURL)
 	defer messagesConn.Close()

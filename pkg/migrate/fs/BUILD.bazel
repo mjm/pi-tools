@@ -1,9 +1,9 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "embeddata",
+    name = "fs",
     srcs = ["source.go"],
-    importpath = "github.com/mjm/pi-tools/pkg/migrate/embeddata",
+    importpath = "github.com/mjm/pi-tools/pkg/migrate/fs",
     visibility = ["//visibility:public"],
     deps = ["@com_github_golang_migrate_migrate_v4//source"],
 )

@@ -1,20 +1,9 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
-load("@io_bazel_rules_go//extras:embed_data.bzl", "go_embed_data")
-
-# gazelle:ignore
-
-go_embed_data(
-    name = "migrations",
-    srcs = glob(["*.sql"]),
-    package = "migrate",
-    flatten = True,
-)
 
 go_library(
     name = "migrate",
-    srcs = [
-        ":migrations",
-    ],
+    srcs = ["embed.go"],
+    embedsrcs = glob(["*.sql"]),
     importpath = "github.com/mjm/pi-tools/go-links/database/migrate",
     visibility = ["//visibility:public"],
 )

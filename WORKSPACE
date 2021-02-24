@@ -6,15 +6,23 @@ workspace(
 )
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
-http_archive(
+git_repository(
     name = "io_bazel_rules_go",
-    sha256 = "7904dbecbaffd068651916dce77ff3437679f9d20e1a7956bff43826e7645fcc",
-    urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.25.1/rules_go-v0.25.1.tar.gz",
-        "https://github.com/bazelbuild/rules_go/releases/download/v0.25.1/rules_go-v0.25.1.tar.gz",
-    ],
+    commit = "55c5a0fdd79772a5ac640141eaef6d611db1fb39",
+    shallow_since = "1614029475 -0500",
+    remote = "https://github.com/jayconrod/rules_go.git",
 )
+
+#http_archive(
+#    name = "io_bazel_rules_go",
+#    sha256 = "7904dbecbaffd068651916dce77ff3437679f9d20e1a7956bff43826e7645fcc",
+#    urls = [
+#        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.25.1/rules_go-v0.25.1.tar.gz",
+#        "https://github.com/bazelbuild/rules_go/releases/download/v0.25.1/rules_go-v0.25.1.tar.gz",
+#    ],
+#)
 
 http_archive(
     name = "bazel_gazelle",

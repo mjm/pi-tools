@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	"io/fs"
 	"log"
 
 	"github.com/etherlabsio/healthcheck"
@@ -43,10 +44,10 @@ type wrappedDB struct {
 }
 
 // OpenDB opens the PostgreSQL database for the current application. Panics if SetDefaultDBName has not been called.
-// Pass in a map of migration file contents that were embedded into the binary at build time. These migrations will be
+// Pass in a fs.FS of migration file contents that were embedded into the binary at build time. These migrations will be
 // run immediately after opening the database to ensure the schema is up-to-date. Returns a database that is
 // instrumented for tracing.
-func OpenDB(migrations map[string][]byte) (DB, error) {
+func OpenDB(migrations fs.FS) (DB, error) {
 	if dbDSN == nil {
 		log.Panicf("no default database name configured")
 	}
@@ -71,7 +72,7 @@ func OpenDB(migrations map[string][]byte) (DB, error) {
 
 // MustOpenDB calls OpenDB, but panics if there is an error opening the database or running migrations. Use this in main
 // functions, when panicking was going to be your solution to an error anyway.
-func MustOpenDB(migrations map[string][]byte) DB {
+func MustOpenDB(migrations fs.FS) DB {
 	db, err := OpenDB(migrations)
 	if err != nil {
 		log.Panicf("Error setting up storage: %v", err)

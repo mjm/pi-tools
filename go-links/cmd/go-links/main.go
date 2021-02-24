@@ -28,7 +28,7 @@ func main() {
 	stopObs := observability.MustStart("go-links")
 	defer stopObs()
 
-	db := storage.MustOpenDB(migrate.Data)
+	db := storage.MustOpenDB(migrate.FS)
 
 	linksService := linksservice.New(db)
 	http.Handle("/healthz",

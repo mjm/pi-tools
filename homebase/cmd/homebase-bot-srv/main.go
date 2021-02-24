@@ -42,7 +42,7 @@ func main() {
 	stopObs := observability.MustStart("homebase-bot-srv")
 	defer stopObs()
 
-	db := storage.MustOpenDB(migrate.Data)
+	db := storage.MustOpenDB(migrate.FS)
 
 	t, err := telegram.New(telegram.Config{
 		Token: os.Getenv("TELEGRAM_TOKEN"),
