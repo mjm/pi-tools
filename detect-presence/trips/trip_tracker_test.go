@@ -20,7 +20,7 @@ func TestNewTracker(t *testing.T) {
 	clock := clockwork.NewFakeClock()
 
 	t.Run("starts empty when there are no trips", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		tt, err := NewTracker(db, &fakeMessagesClient{})
@@ -32,7 +32,7 @@ func TestNewTracker(t *testing.T) {
 	})
 
 	t.Run("populates last left and last returned when there are previous trips", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		q := database.New(db)
@@ -60,7 +60,7 @@ func TestNewTracker(t *testing.T) {
 	})
 
 	t.Run("populates last left when there is only one trip and it's in-progress", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		q := database.New(db)
@@ -82,7 +82,7 @@ func TestNewTracker(t *testing.T) {
 	})
 
 	t.Run("populates last left and last returned when there are previous trips and a current trip", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		q := database.New(db)
@@ -124,7 +124,7 @@ func TestTracker_OnLeave(t *testing.T) {
 	clock := clockwork.NewFakeClock()
 
 	t.Run("starts a new trip", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 		q := database.New(db)
 
@@ -142,7 +142,7 @@ func TestTracker_OnLeave(t *testing.T) {
 	})
 
 	t.Run("does not start a trip if one is already in-progress", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		q := database.New(db)
@@ -173,7 +173,7 @@ func TestTracker_OnReturn(t *testing.T) {
 	clock := clockwork.NewFakeClock()
 
 	t.Run("ends the current trip", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		q := database.New(db)

@@ -20,7 +20,7 @@ func TestServer_ListTrips(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("empty list of trips", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		s := New(db, fakeMessagesClient{})
@@ -31,7 +31,7 @@ func TestServer_ListTrips(t *testing.T) {
 	})
 
 	t.Run("with a few trips", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		clock := clockwork.NewFakeClockAt(time.Date(2020, 11, 3, 0, 0, 0, 0, time.UTC))

@@ -17,7 +17,7 @@ func TestServer_CreateLink(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("missing short URL", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		s := New(db)
@@ -29,7 +29,7 @@ func TestServer_CreateLink(t *testing.T) {
 	})
 
 	t.Run("missing destination URL", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		s := New(db)
@@ -41,7 +41,7 @@ func TestServer_CreateLink(t *testing.T) {
 	})
 
 	t.Run("valid input", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		s := New(db)

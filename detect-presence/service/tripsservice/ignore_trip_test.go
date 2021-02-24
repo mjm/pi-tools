@@ -18,7 +18,7 @@ func TestServer_IgnoreTrip(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("missing trip ID", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		s := New(db, fakeMessagesClient{})
@@ -28,7 +28,7 @@ func TestServer_IgnoreTrip(t *testing.T) {
 	})
 
 	t.Run("non-UUID trip ID", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		s := New(db, fakeMessagesClient{})
@@ -38,7 +38,7 @@ func TestServer_IgnoreTrip(t *testing.T) {
 	})
 
 	t.Run("missing trip", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		s := New(db, fakeMessagesClient{})
@@ -49,7 +49,7 @@ func TestServer_IgnoreTrip(t *testing.T) {
 	})
 
 	t.Run("valid trip", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		q := database.New(db)

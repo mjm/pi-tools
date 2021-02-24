@@ -17,7 +17,7 @@ func TestServer_GetLink(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("missing ID", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		s := New(db)
@@ -27,7 +27,7 @@ func TestServer_GetLink(t *testing.T) {
 	})
 
 	t.Run("invalid ID", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		s := New(db)
@@ -37,7 +37,7 @@ func TestServer_GetLink(t *testing.T) {
 	})
 
 	t.Run("missing link", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		s := New(db)
@@ -48,7 +48,7 @@ func TestServer_GetLink(t *testing.T) {
 	})
 
 	t.Run("valid link", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		q := database.New(db)

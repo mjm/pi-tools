@@ -3,6 +3,7 @@ package storagetest
 import (
 	"context"
 	"database/sql"
+	"io/fs"
 
 	"zombiezen.com/go/postgrestest"
 
@@ -18,7 +19,7 @@ func (wrappedDB) Check(context.Context) error {
 	return nil
 }
 
-func NewDatabase(ctx context.Context, dbSrv *postgrestest.Server, migrations map[string][]byte) (storage.DB, error) {
+func NewDatabase(ctx context.Context, dbSrv *postgrestest.Server, migrations fs.FS) (storage.DB, error) {
 	db, err := dbSrv.NewDatabase(ctx)
 	if err != nil {
 		return nil, err

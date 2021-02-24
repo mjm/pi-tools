@@ -14,7 +14,7 @@ func ExampleMustOpenDB() {
 	storage.SetDefaultDBName("trips_dev")
 	flag.Parse()
 
-	db := storage.MustOpenDB(migrate.Data)
+	db := storage.MustOpenDB(migrate.FS)
 	q := database.New(db)
 
 	ctx := context.Background()

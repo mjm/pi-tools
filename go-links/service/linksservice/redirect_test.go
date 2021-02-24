@@ -19,7 +19,7 @@ func TestServer_HandleShortLink(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("missing link", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		s := New(db)
@@ -36,7 +36,7 @@ func TestServer_HandleShortLink(t *testing.T) {
 	})
 
 	t.Run("valid link", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		q := database.New(db)
@@ -63,7 +63,7 @@ func TestServer_HandleShortLink(t *testing.T) {
 	})
 
 	t.Run("strips slashes from the short URL", func(t *testing.T) {
-		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.Data)
+		db, err := storagetest.NewDatabase(ctx, dbSrv, migrate.FS)
 		assert.NoError(t, err)
 
 		q := database.New(db)
