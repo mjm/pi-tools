@@ -24,12 +24,12 @@
         "@types/react-router-dom": "^5.1.6",
         "@types/relay-runtime": "^10.1.6",
         "autoprefixer": "^10.0.4",
-        "babel-plugin-relay": "^10.1.2",
+        "babel-plugin-relay": "^11.0.0-rc.0",
         "graphql": "^15.4.0",
         "http-server": "^0.12.3",
         "postcss": "^8.1.10",
         "postcss-cli": "^8.1.0",
-        "relay-compiler": "^10.1.2",
+        "relay-compiler": "^11.0.0-rc.0",
         "relay-compiler-language-typescript": "^13.0.2",
         "relay-config": "^10.1.2",
         "rollup": "^2.29.0",
@@ -53,9 +53,9 @@
         "react": "^0.0.0-experimental-3310209d0",
         "react-dom": "^0.0.0-experimental-3310209d0",
         "react-helmet": "^6.1.0",
-        "react-relay": "^0.0.0-experimental-0b967d2e",
+        "react-relay": "^11.0.0-rc.0",
         "react-router-dom": "^5.2.0",
-        "relay-runtime": "^10.1.2",
+        "relay-runtime": "^11.0.0-rc.0",
         "tailwindcss": "^2.0.1"
     }
 }
