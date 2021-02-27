@@ -28,9 +28,11 @@ export function TripsPage() {
                 Your trips
             </PageHeader>
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                <ErrorBoundary>
-                    <TripsPageInner/>
-                </ErrorBoundary>
+                <React.Suspense fallback="Loading…">
+                    <ErrorBoundary>
+                        <TripsPageInner/>
+                    </ErrorBoundary>
+                </React.Suspense>
             </div>
         </main>
     );

@@ -18,9 +18,11 @@ export function BackupsPage() {
             </PageHeader>
 
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                <ErrorBoundary>
-                    <BackupsPageInner/>
-                </ErrorBoundary>
+                <React.Suspense fallback="Loading…">
+                    <ErrorBoundary>
+                        <BackupsPageInner/>
+                    </ErrorBoundary>
+                </React.Suspense>
             </div>
         </main>
     );
@@ -35,12 +37,12 @@ function BackupsPageInner() {
                 }
             }
         `,
-        {}
+        {},
     );
 
     if (!data.viewer) {
         return null;
     }
 
-    return <BackupsList viewer={data.viewer} />;
+    return <BackupsList viewer={data.viewer}/>;
 }

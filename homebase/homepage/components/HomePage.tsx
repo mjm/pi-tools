@@ -12,9 +12,11 @@ export function HomePage() {
         <main className="mb-8">
             <PageHeader>Homebase</PageHeader>
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                <ErrorBoundary>
-                    <HomePageInner />
-                </ErrorBoundary>
+                <React.Suspense fallback="Loading…">
+                    <ErrorBoundary>
+                        <HomePageInner/>
+                    </ErrorBoundary>
+                </React.Suspense>
             </div>
         </main>
     );

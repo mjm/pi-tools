@@ -13,9 +13,11 @@ export function GoLinksHomePage() {
                 Go links
             </PageHeader>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-                <ErrorBoundary>
-                    <GoLinksHomePageInner/>
-                </ErrorBoundary>
+                <React.Suspense fallback="Loading…">
+                    <ErrorBoundary>
+                        <GoLinksHomePageInner/>
+                    </ErrorBoundary>
+                </React.Suspense>
             </div>
         </main>
     );
@@ -29,7 +31,7 @@ function GoLinksHomePageInner() {
                     links(first: 30) @connection(key: "RecentLinksList_links") {
                         __id
                         ...RecentLinksList_links
-                        
+
                         # Not used here but it keeps the relay-compiler happy
                         edges {
                             __id
