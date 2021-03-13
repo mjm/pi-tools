@@ -1,17 +1,27 @@
-- name: Check current Consul version
-  shell:
-    cmd: consul version -format json || echo '{"Version":"none"}'
-  register: installed_consul_version
-  changed_when: false
+#- name: Check current Consul version
+#  shell:
+#    cmd: consul version -format json || echo '{"Version":"none"}'
+#  register: installed_consul_version
+#  changed_when: false
+#
+#- name: Install Consul {{ consul_version }}
+#  unarchive:
+#    src: https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_arm64.zip
+#    dest: /usr/local/bin
+#    remote_src: true
+#  become: true
+#  when: (installed_consul_version.stdout | from_json).Version != consul_version
+#  register: install_consul
 
-- name: Install Consul {{ consul_version }}
-  unarchive:
-    src: https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_arm64.zip
-    dest: /usr/local/bin
-    remote_src: true
-  become: true
-  when: (installed_consul_version.stdout | from_json).Version != consul_version
-  register: install_consul
+#- name: Install nightly build of Consul
+#  get_url:
+#    url: https://337267-14125254-gh.circle-artifacts.com/0/pkg/bin/linux_aarch64/consul
+#    dest: /usr/local/bin/consul
+#    mode: 0755
+#    owner: root
+#    group: root
+#  become: true
+#  register: install_consul
 
 - name: Ensure Consul data directory exists
   file:
