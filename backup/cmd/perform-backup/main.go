@@ -61,7 +61,7 @@ func main() {
 		lastStartTime.SetToCurrentTime()
 
 		backupName := fmt.Sprintf("backup-%s", backupTimestamp)
-		backupDest := fmt.Sprintf("homelab@nas:/volume1/homelab/backup::%s", backupName)
+		backupDest := fmt.Sprintf("homelab@nas.homelab:/volume1/homelab/backup::%s", backupName)
 		cmd := exec.Command(
 			"borg",
 			"create",

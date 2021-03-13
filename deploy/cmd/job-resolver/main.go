@@ -135,6 +135,11 @@ func main() {
 }
 
 func updateNetwork(_ *api.Job, group *api.TaskGroup) {
+	if len(group.Networks) == 0 {
+		group.Networks = []*api.NetworkResource{
+			{},
+		}
+	}
 	net := group.Networks[0]
 
 	for i, svc := range group.Services {
