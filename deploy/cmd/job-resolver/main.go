@@ -135,6 +135,8 @@ func main() {
 }
 
 func updateNetwork(_ *api.Job, group *api.TaskGroup) {
+	net := group.Networks[0]
+
 	for i, svc := range group.Services {
 		if svc.Connect == nil {
 			continue
@@ -148,8 +150,6 @@ func updateNetwork(_ *api.Job, group *api.TaskGroup) {
 		if sidecar.Proxy == nil {
 			sidecar.Proxy = &api.ConsulProxy{}
 		}
-
-		net := group.Networks[0]
 
 		if metricsPath, ok := svc.Meta["metrics_path"]; ok {
 			if _, ok := svc.Meta["metrics_port"]; !ok {
@@ -197,6 +197,16 @@ func updateNetwork(_ *api.Job, group *api.TaskGroup) {
 				svc.Meta = map[string]string{}
 			}
 			svc.Meta["envoy_metrics_port"] = fmt.Sprintf("${NOMAD_HOST_PORT_%s}", portLabel)
+		}
+	}
+
+	if net.DNS == nil {
+		net.DNS = &api.DNSConfig{
+			Servers: []string{
+				"10.0.0.2",
+				"10.0.0.3",
+				"10.0.0.4",
+			},
 		}
 	}
 }

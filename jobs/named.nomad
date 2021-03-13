@@ -16,9 +16,17 @@ job "named" {
   group "named" {
     network {
       mode = "host"
+
       port "dns" {
         static = 53
         to     = 53
+      }
+
+      dns {
+        servers = [
+          "8.8.8.8",
+          "8.8.4.4",
+        ]
       }
     }
 
