@@ -4,7 +4,7 @@ groups:
     rules:
       - alert: ExternalDNSFailing
         expr: probe_success{probe_type="dns",instance!~"10.0.0.[2-4]"} < 0.5
-        for: 2m
+        for: 10m
         labels:
           severity: warning
         annotations:
@@ -16,7 +16,7 @@ groups:
 
       - alert: DNSFailingExternalSite
         expr: (min(probe_success{probe_type="dns",instance!~"10.0.0.[2-4]"}) > 0.5) and (min(probe_success{probe_type="dns",probe_scope="public",instance=~"10.0.0.[2-4]"}) < 0.5)
-        for: 2m
+        for: 10m
         labels:
           severity: warning
         annotations:
@@ -27,7 +27,7 @@ groups:
 
       - alert: DNSFailingInternalNode
         expr: probe_success{probe_type="dns",probe_scope="private"} < 0.5
-        for: 2m
+        for: 10m
         labels:
           severity: warning
         annotations:
@@ -38,7 +38,7 @@ groups:
 
       - alert: DNSFailingInternalSite
         expr: probe_success{probe_type="dns",probe_scope="private-cname"} < 0.5
-        for: 2m
+        for: 10m
         labels:
           severity: warning
         annotations:
