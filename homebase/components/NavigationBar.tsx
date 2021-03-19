@@ -75,7 +75,6 @@ function NavLink({to, exact, children}: {
     children: React.ReactNode;
 }) {
     const router: any = useContext(RoutingContext);
-    console.log(router.get().location);
 
     // const match = useRouteMatch({
     //     path: to,

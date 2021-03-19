@@ -3,11 +3,11 @@ import {Helmet} from "react-helmet";
 import {TripRow} from "com_github_mjm_pi_tools/homebase/trips/components/TripRow";
 import {PageHeader} from "com_github_mjm_pi_tools/homebase/components/PageHeader";
 import {TagFilters} from "com_github_mjm_pi_tools/homebase/trips/components/TagFilters";
-import {graphql, useLazyLoadQuery} from "react-relay/hooks";
+import {graphql, PreloadedQuery, usePreloadedQuery} from "react-relay/hooks";
 import {TripsPageQuery} from "com_github_mjm_pi_tools/homebase/api/__generated__/TripsPageQuery.graphql";
 import {ErrorBoundary} from "com_github_mjm_pi_tools/homebase/components/ErrorBoundary";
 
-export function TripsPage() {
+export function TripsPage({prepared}) {
     return (
         <main className="mb-8">
             <Helmet>
@@ -30,7 +30,7 @@ export function TripsPage() {
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <React.Suspense fallback="Loading…">
                     <ErrorBoundary>
-                        <TripsPageInner/>
+                        <TripsPageInner tripsQuery={prepared.tripsQuery}/>
                     </ErrorBoundary>
                 </React.Suspense>
             </div>
@@ -38,8 +38,8 @@ export function TripsPage() {
     );
 }
 
-function TripsPageInner() {
-    const data = useLazyLoadQuery<TripsPageQuery>(
+function TripsPageInner({tripsQuery}: { tripsQuery: PreloadedQuery<TripsPageQuery> }) {
+    const data = usePreloadedQuery<TripsPageQuery>(
         graphql`
             query TripsPageQuery {
                 viewer {
@@ -55,7 +55,7 @@ function TripsPageInner() {
                 }
             }
         `,
-        {},
+        tripsQuery,
     );
 
     if (!data) {

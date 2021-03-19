@@ -8,6 +8,7 @@ ts_library(
     deps = [
         "//homebase/api",
         "//homebase/components",
+        "//homebase/lib",
         "//homebase/trips/lib",
         "@npm_homebase//:node_modules",
     ],

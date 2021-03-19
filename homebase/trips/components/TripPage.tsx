@@ -1,17 +1,17 @@
 import React from "react";
 import {Helmet} from "react-helmet";
-import {useHistory, useParams} from "react-router-dom";
 import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
 import {ErrorBoundary} from "com_github_mjm_pi_tools/homebase/components/ErrorBoundary";
-import {graphql, useLazyLoadQuery} from "react-relay/hooks";
+import {graphql, PreloadedQuery, usePreloadedQuery} from "react-relay/hooks";
 import {TripPageQuery} from "com_github_mjm_pi_tools/homebase/api/__generated__/TripPageQuery.graphql";
 import {DescriptionField} from "com_github_mjm_pi_tools/homebase/components/DescriptionField";
 import {format, formatDuration, intervalToDuration, parseISO} from "date-fns";
 import {TripTagField} from "com_github_mjm_pi_tools/homebase/trips/components/TripTagField";
 import {useIgnoreTrip} from "com_github_mjm_pi_tools/homebase/trips/lib/IgnoreTrip";
+import {RoutingContext} from "com_github_mjm_pi_tools/homebase/components/Router";
 
-export function TripPage() {
-    const {id} = useParams<{ id: string }>();
+export function TripPage({routeData, prepared}) {
+    const {id} = routeData.params;
 
     return (
         <main className="max-w-3xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -37,7 +37,7 @@ export function TripPage() {
                             </Alert>
                         </>
                     )}>
-                        <TripPageInner id={id}/>
+                        <TripPageInner tripQuery={prepared.tripQuery}/>
                     </ErrorBoundary>
                 </React.Suspense>
             </div>
@@ -45,8 +45,8 @@ export function TripPage() {
     );
 }
 
-function TripPageInner({id}: { id: string }) {
-    const data = useLazyLoadQuery<TripPageQuery>(
+function TripPageInner({tripQuery}: { tripQuery: PreloadedQuery<TripPageQuery> }) {
+    const data = usePreloadedQuery<TripPageQuery>(
         graphql`
             query TripPageQuery($id: ID!) {
                 viewer {
@@ -59,7 +59,7 @@ function TripPageInner({id}: { id: string }) {
                 }
             }
         `,
-        {id},
+        tripQuery,
     );
 
     const trip = data.viewer.trip;
@@ -112,19 +112,15 @@ function TripPageInner({id}: { id: string }) {
 }
 
 function TripIgnoreButton({id}: { id: string }) {
-    const history = useHistory();
+    const router: any = React.useContext(RoutingContext);
     const [commit, isInFlight] = useIgnoreTrip();
-    // @ts-ignore
-    const [startTransition, isPending] = React.unstable_useTransition();
 
     async function onIgnore() {
         try {
             await commit(id);
 
             // return to the trips page upon successful ignore
-            startTransition(() => {
-                history.push("/trips");
-            });
+            router.history.push("/trips");
         } catch (e) {
             console.error(e);
         }
@@ -133,7 +129,7 @@ function TripIgnoreButton({id}: { id: string }) {
     return (
         <span className="inline-flex rounded-md shadow-sm">
 <button type="button"
-        disabled={isInFlight || isPending}
+        disabled={isInFlight}
         onClick={onIgnore}
         className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:ring-blue focus:border-blue-300 active:bg-gray-50 active:text-gray-800">
 <svg className="-ml-1 mr-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg"

@@ -62,7 +62,7 @@ export function RouterRenderer() {
     // ```
     // <RouteComponent
     //   component={entry[0].component}
-    //   prepared={entrry[0].prepared}>
+    //   prepared={entry[0].prepared}>
     //   <RouteComponent
     //     component={entry[1].component}
     //     prepared={entry[1].prepared}>
