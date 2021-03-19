@@ -1,5 +1,5 @@
 vault {
-  address     = "http://active.vault.service.consul:8200"
+  address     = "http://127.0.0.1:8200"
   renew_token = true
 }
 
@@ -63,5 +63,5 @@ consul {
 EOF
   destination = "/etc/nomad.tokens.hcl"
   perms       = 0600
-  command     = "systemctl reload nomad"
+  command     = "systemctl restart nomad"
 }
