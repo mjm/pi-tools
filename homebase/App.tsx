@@ -1,19 +1,18 @@
 import React from "react";
-import {BrowserRouter as Router, Route, Switch, useLocation} from "react-router-dom";
 import {Helmet} from "react-helmet";
 import {NavigationBar} from "com_github_mjm_pi_tools/homebase/components/NavigationBar";
-import {TripRoutes} from "com_github_mjm_pi_tools/homebase/trips/components/TripRoutes";
-import {GoLinkRoutes} from "com_github_mjm_pi_tools/homebase/go-links/components/GoLinkRoutes";
-import {HomePage} from "com_github_mjm_pi_tools/homebase/homepage/components/HomePage";
 import {RelayEnvironmentProvider} from "react-relay/hooks";
 import RelayEnvironment from "com_github_mjm_pi_tools/homebase/lib/environment";
-import {BackupRoutes} from "com_github_mjm_pi_tools/homebase/backups/components/BackupRoutes";
+import {createRouter, RouterRenderer, RoutingContext} from "com_github_mjm_pi_tools/homebase/components/Router";
+import routes from "com_github_mjm_pi_tools/homebase/routes";
+
+const router = createRouter(routes);
 
 export function App() {
     return (
         <RelayEnvironmentProvider environment={RelayEnvironment}>
             <React.Suspense fallback={"Loading..."}>
-                <Router>
+                <RoutingContext.Provider value={router.context}>
                     <Helmet>
                         <title>Homebase</title>
                         <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -23,36 +22,20 @@ export function App() {
                         <NavigationBar/>
 
                         <React.Suspense fallback={"Loading..."}>
-                            <Switch>
-                                <Route exact path="/">
-                                    <HomePage/>
-                                </Route>
-                                <Route path="/trips">
-                                    <TripRoutes/>
-                                </Route>
-                                <Route path="/go">
-                                    <GoLinkRoutes/>
-                                </Route>
-                                <Route path="/backups">
-                                    <BackupRoutes/>
-                                </Route>
-                                <Route path="*">
-                                    <NoMatch/>
-                                </Route>
-                            </Switch>
+                            <RouterRenderer/>
                         </React.Suspense>
                     </div>
-                </Router>
+                </RoutingContext.Provider>
             </React.Suspense>
         </RelayEnvironmentProvider>
     );
 }
 
-function NoMatch() {
-    const location = useLocation();
-    console.log(location);
-
-    return (
-        <div>Not Found</div>
-    );
-}
+// function NoMatch() {
+//     const location = useLocation();
+//     console.log(location);
+//
+//     return (
+//         <div>Not Found</div>
+//     );
+// }

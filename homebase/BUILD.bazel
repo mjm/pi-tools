@@ -16,6 +16,7 @@ ts_library(
     srcs = [
         "App.tsx",
         "index.tsx",
+        "routes.ts",
     ],
     tsconfig = "//homebase:tsconfig.json",
     deps = [

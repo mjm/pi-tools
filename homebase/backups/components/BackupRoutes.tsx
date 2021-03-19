@@ -13,3 +13,13 @@ export function BackupRoutes() {
         </Switch>
     );
 }
+
+export function backupRoutes(path: string) {
+    return [
+        {
+            path,
+            exact: true,
+            component: BackupsPage,
+        },
+    ];
+}

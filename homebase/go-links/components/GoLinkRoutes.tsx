@@ -17,3 +17,17 @@ export function GoLinkRoutes() {
         </Switch>
     );
 }
+
+export function goLinksRoutes(path: string) {
+    return [
+        {
+            path,
+            exact: true,
+            component: GoLinksHomePage,
+        },
+        {
+            path: `${path}/:id`,
+            component: GoLinkDetailPage,
+        },
+    ];
+}

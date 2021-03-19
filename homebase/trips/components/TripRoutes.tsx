@@ -17,3 +17,17 @@ export function TripRoutes() {
         </Switch>
     );
 }
+
+export function tripRoutes(path: string) {
+    return [
+        {
+            path,
+            exact: true,
+            component: TripsPage,
+        },
+        {
+            path: `${path}/:id`,
+            component: TripPage,
+        },
+    ];
+}

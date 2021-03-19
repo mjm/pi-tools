@@ -1,6 +1,6 @@
-import React from "react";
-import {useRouteMatch} from "react-router-dom";
+import React, {useContext} from "react";
 import {TransitionLink} from "com_github_mjm_pi_tools/homebase/components/TransitionLink";
+import {RoutingContext} from "com_github_mjm_pi_tools/homebase/components/Router";
 
 export function NavigationBar() {
     const [showMenu, setShowMenu] = React.useState(false);
@@ -74,10 +74,14 @@ function NavLink({to, exact, children}: {
     exact?: boolean;
     children: React.ReactNode;
 }) {
-    const match = useRouteMatch({
-        path: to,
-        exact,
-    });
+    const router: any = useContext(RoutingContext);
+    console.log(router.get().location);
+
+    // const match = useRouteMatch({
+    //     path: to,
+    //     exact,
+    // });
+    const match = false;
 
     return (
         <TransitionLink to={to}
@@ -92,10 +96,11 @@ function MobileNavLink({to, exact, children}: {
     exact?: boolean;
     children: React.ReactNode;
 }) {
-    const match = useRouteMatch({
-        path: to,
-        exact,
-    });
+    // const match = useRouteMatch({
+    //     path: to,
+    //     exact,
+    // });
+    const match = false;
 
     return (
         <TransitionLink to={to}
