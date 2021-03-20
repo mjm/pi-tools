@@ -1,5 +1,5 @@
 import React from "react";
-import {graphql, useLazyLoadQuery} from "react-relay/hooks";
+import {graphql, PreloadedQuery, usePreloadedQuery} from "react-relay/hooks";
 import {PageHeader} from "com_github_mjm_pi_tools/homebase/components/PageHeader";
 import {HomePageQuery} from "com_github_mjm_pi_tools/homebase/api/__generated__/HomePageQuery.graphql";
 import {MostRecentTripCard} from "com_github_mjm_pi_tools/homebase/homepage/components/MostRecentTripCard";
@@ -7,14 +7,14 @@ import {FiringAlertsCard} from "com_github_mjm_pi_tools/homebase/homepage/compon
 import {MostRecentDeployCard} from "com_github_mjm_pi_tools/homebase/homepage/components/MostRecentDeployCard";
 import {ErrorBoundary} from "com_github_mjm_pi_tools/homebase/components/ErrorBoundary";
 
-export function HomePage() {
+export function HomePage({prepared}) {
     return (
         <main className="mb-8">
             <PageHeader>Homebase</PageHeader>
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <React.Suspense fallback="Loading…">
                     <ErrorBoundary>
-                        <HomePageInner/>
+                        <HomePageInner homeQuery={prepared.homeQuery}/>
                     </ErrorBoundary>
                 </React.Suspense>
             </div>
@@ -22,8 +22,8 @@ export function HomePage() {
     );
 }
 
-function HomePageInner() {
-    const data = useLazyLoadQuery<HomePageQuery>(
+function HomePageInner({homeQuery}: { homeQuery: PreloadedQuery<HomePageQuery> }) {
+    const data = usePreloadedQuery<HomePageQuery>(
         graphql`
             query HomePageQuery {
                 viewer {
@@ -33,7 +33,7 @@ function HomePageInner() {
                 }
             }
         `,
-        {},
+        homeQuery,
     );
 
     return (
