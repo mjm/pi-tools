@@ -1,14 +1,13 @@
 import React from "react";
-import {useParams} from "react-router-dom";
 import {Helmet} from "react-helmet";
 import {EditLinkForm} from "com_github_mjm_pi_tools/homebase/go-links/components/EditLinkForm";
 import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
-import {graphql, useLazyLoadQuery} from "react-relay/hooks";
+import {graphql, usePreloadedQuery} from "react-relay/hooks";
 import {GoLinkDetailPageQuery} from "com_github_mjm_pi_tools/homebase/api/__generated__/GoLinkDetailPageQuery.graphql";
 
-export function GoLinkDetailPage() {
-    const {id} = useParams<{ id: string }>();
-    const data = useLazyLoadQuery<GoLinkDetailPageQuery>(
+export function GoLinkDetailPage({routeData, prepared}) {
+    const {id} = routeData.params;
+    const data = usePreloadedQuery<GoLinkDetailPageQuery>(
         graphql`
             query GoLinkDetailPageQuery($id: ID!) {
                 viewer {
@@ -20,7 +19,7 @@ export function GoLinkDetailPage() {
                 }
             }
         `,
-        {id},
+        prepared.linkQuery,
     );
 
     const link = data.viewer.link;

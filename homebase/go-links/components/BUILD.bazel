@@ -9,6 +9,7 @@ ts_library(
         "//homebase/api",
         "//homebase/components",
         "//homebase/go-links/lib",
+        "//homebase/lib",
         "@npm_homebase//:node_modules",
     ],
 )

@@ -30,7 +30,7 @@
         "http-server": "^0.12.3",
         "postcss": "^8.1.10",
         "postcss-cli": "^8.1.0",
-        "relay-compiler": "^11.0.0-rc.0",
+        "relay-compiler": "^11.0.0",
         "relay-compiler-language-typescript": "^13.0.2",
         "relay-config": "^10.1.2",
         "rollup": "^2.29.0",
