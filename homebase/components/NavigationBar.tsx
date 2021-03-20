@@ -69,18 +69,26 @@ export function NavigationBar() {
     );
 }
 
+function useLocation() {
+    const router: any = useContext(RoutingContext);
+    const [entry, setEntry] = React.useState(router.get());
+
+    React.useEffect(() => {
+        return router.subscribe(nextEntry => {
+            setEntry(nextEntry);
+        });
+    }, [router]);
+
+    return entry.location;
+}
+
 function NavLink({to, exact, children}: {
     to: string;
     exact?: boolean;
     children: React.ReactNode;
 }) {
-    const router: any = useContext(RoutingContext);
-
-    // const match = useRouteMatch({
-    //     path: to,
-    //     exact,
-    // });
-    const match = false;
+    const location = useLocation();
+    const match = exact ? location.pathname === to : location.pathname.startsWith(to);
 
     return (
         <TransitionLink to={to}
@@ -95,11 +103,8 @@ function MobileNavLink({to, exact, children}: {
     exact?: boolean;
     children: React.ReactNode;
 }) {
-    // const match = useRouteMatch({
-    //     path: to,
-    //     exact,
-    // });
-    const match = false;
+    const location = useLocation();
+    const match = exact ? location.pathname === to : location.pathname.startsWith(to);
 
     return (
         <TransitionLink to={to}
