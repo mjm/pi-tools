@@ -47,6 +47,17 @@ groups:
             The PiHole is unable to look up the address for Homebase, or it's not returning a CNAME to a
             Raspberry Pi node.
 
+      - alert: NoAdBlocking
+        expr: probe_success{probe_type="dns",probe_scope="ad-blocking"} < 0.5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Ads are not being blocked by DNS
+          description: >
+            DNS queries for ads are not being blocked as expected. It may be that PiHole is down or not
+            registered in Consul, so DNS is falling back to using Google DNS directly.
+
   - name: homebase_bot_alerts
     rules:
       - alert: HomebaseBotServiceDown

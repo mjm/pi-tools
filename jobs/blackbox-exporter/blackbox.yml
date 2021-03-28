@@ -35,3 +35,15 @@ modules:
       validate_answer_rrs:
         fail_if_not_matches_regexp:
           - "homebase.homelab.\t.*\tIN\tCNAME\tingress-http\\.service\\.consul\\."
+
+  dns_ad_blocking:
+    prober: dns
+    timeout: 5s
+    dns:
+      query_name: "googleadservices.com"
+      query_type: "A"
+      valid_rcodes:
+        - NOERROR
+      validate_answer_rrs:
+        fail_if_not_matches_regexp:
+          - "googleadservices.com.\t.*\tIN\tA\t0.0.0.0"

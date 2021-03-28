@@ -181,3 +181,23 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: {{ with service "blackbox-exporter" }}{{ with index . 0 }}{{ .Address }}:{{ .Port }}{{ end }}{{ end }}
+
+  - job_name: 'blackbox-dns-ad-blocking'
+    metrics_path: /probe
+    params:
+      module: [dns_ad_blocking]
+    static_configs:
+      - targets:
+          - 10.0.0.2
+          - 10.0.0.3
+          - 10.0.0.4
+        labels:
+          probe_type: dns
+          probe_scope: ad-blocking
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: {{ with service "blackbox-exporter" }}{{ with index . 0 }}{{ .Address }}:{{ .Port }}{{ end }}{{ end }}
