@@ -5,7 +5,7 @@ import fetch from "node-fetch";
 //
 // const fetch = createFetch(nodeFetch);
 
-const serverUrl = process.env.GRAPHQL_URL || "http://localhost:8080/graphql";
+const serverUrl = process.env.GRAPHQL_URL || "http://localhost:3000/graphql";
 
 async function fetchRelay(params, variables) {
     const response = await fetch(serverUrl, {
