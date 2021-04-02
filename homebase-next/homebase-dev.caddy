@@ -1,0 +1,8 @@
+:8080 {
+    route {
+        reverse_proxy /graphql localhost:6460
+        reverse_proxy /download_app localhost:2120
+        reverse_proxy /app/* localhost:2120
+        reverse_proxy /* localhost:3000
+    }
+}
