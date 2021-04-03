@@ -8,4 +8,4 @@ vault-proxy: ibazel run //vault-proxy/cmd/vault-proxy -- -debug -auth-path webau
 backup: ibazel run //backup/cmd/backup-srv -- -debug -tarsnap-keyfile $HOME/Downloads/tarsnap-raspberrypi.key
 jaeger: /usr/local/bin/jaeger-all-in-one
 tests: ibazel test --keep_going //detect-presence/... //go-links/... //homebase/bot/...
-relay-web: cd homebase && npx relay-compiler --watch
+relay-web: cd homebase && yarn generate:relay --watch

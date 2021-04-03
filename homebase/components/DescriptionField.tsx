@@ -1,12 +1,12 @@
 import React from "react";
 
-export function DescriptionField({label, children, offset}: {
+export default function DescriptionField({label, children, offset}: {
     label: React.ReactNode;
     children: React.ReactNode;
     offset?: boolean
 }) {
     return (
-        <div className={`${offset ? 'bg-gray-50' : 'bg-white'} px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6`}>
+        <div className={`${offset ? "bg-gray-50" : "bg-white"} px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6`}>
             <dt className="text-sm leading-5 font-medium text-gray-500">
                 {label}
             </dt>

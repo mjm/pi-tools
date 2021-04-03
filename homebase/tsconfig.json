@@ -1,21 +1,29 @@
 {
   "compilerOptions": {
-    "jsx": "react",
+    "target": "es5",
     "lib": [
-      "ES2015",
-      "dom"
+      "dom",
+      "dom.iterable",
+      "esnext"
     ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
     "esModuleInterop": true,
-    "baseUrl": ".",
-    "paths": {
-      "com_github_mjm_pi_tools/*": [
-        "../bazel-bin/*",
-        "../*"
-      ]
-    },
-    "types": ["node"]
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve"
   },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
   "exclude": [
-    "homebase/node_modules"
+    "node_modules"
   ]
 }

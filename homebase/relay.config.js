@@ -1,10 +1,10 @@
-// maybe this can eventually be replaced by calling the relay-compiler in a Bazel rules
 module.exports = {
-    schema: 'schema.graphql',
     src: '.',
-    exclude: ["**/node_modules/**", "api/**"],
+    schema: 'schema.graphql',
+    exclude: ['**/node_modules/**', '**/__mocks__/**', '**/__generated__/**'],
+    extensions: ['ts', 'tsx'],
     language: 'typescript',
-    artifactDirectory: 'api/__generated__',
+    artifactDirectory: '__generated__',
     customScalars: {
         Cursor: 'String',
         Time: 'String',

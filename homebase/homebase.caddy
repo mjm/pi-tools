@@ -1,9 +1,0 @@
-:8080 {
-    root * /homebase
-    try_files {path} /index.html?{query}
-    file_server
-}
-
-:9090 {
-  metrics /metrics
-}

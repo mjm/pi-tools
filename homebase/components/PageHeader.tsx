@@ -1,6 +1,4 @@
-import React from "react";
-
-export function PageHeader({children, buttons}: {
+export default function PageHeader({children, buttons}: {
     children: React.ReactNode;
     buttons?: React.ReactNode;
 }) {

@@ -1,87 +1,50 @@
-load("@npm_homebase//@bazel/typescript:index.bzl", "ts_library")
-load("@npm_homebase//@bazel/rollup:index.bzl", "rollup_bundle")
-load("@rules_pkg//:pkg.bzl", "pkg_tar")
-load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
+load("@io_bazel_rules_docker//container:container.bzl", "container_layer", "container_image", "container_push")
 
-exports_files(
-    [
-        "schema.graphql",
-        "tsconfig.json",
-    ],
-    visibility = ["//visibility:public"],
-)
+# All of these build rules expect that `yarn build` was run outside of Bazel before hand.
+# Importantly, the node_modules and .next directories should be populated.
 
-ts_library(
-    name = "homebase",
+filegroup(
+    name = "config",
     srcs = [
-        "App.tsx",
-        "index.tsx",
-        "routes.ts",
-    ],
-    tsconfig = "//homebase:tsconfig.json",
-    deps = [
-        "//homebase/api",
-        "//homebase/backups/components",
-        "//homebase/components",
-        "//homebase/go-links/components",
-        "//homebase/homepage/components",
-        "//homebase/lib",
-        "//homebase/trips/components",
-        "@npm_homebase//:node_modules",
+        "package.json",
+        "next.config.js",
     ],
 )
 
-rollup_bundle(
-    name = "bundle",
-    config_file = "rollup.config.js",
-    entry_point = "index.tsx",
-    format = "umd",
-    link_workspace_root = True,
-    output_dir = True,
-    deps = [
-        ":homebase",
-        "//homebase/styles",
-        "@npm_homebase//:node_modules",
-    ],
+filegroup(
+    name = "public",
+    srcs = glob(["public/**/*"]),
 )
 
-sh_library(
-    name = "server_lib",
-    data = [
-        "homebase-dev.caddy",
-        ":bundle",
-    ],
+filegroup(
+    name = ".next",
+    srcs = glob([".next/**/*"]),
 )
 
-sh_binary(
-    name = "server",
-    srcs = ["caddy-dev.sh"],
-    data = [
-        ":server_lib",
-    ],
-    deps = ["@bazel_tools//tools/bash/runfiles"],
+filegroup(
+    name = "node_modules",
+    srcs = glob(["node_modules/**/*"]),
 )
 
-pkg_tar(
-    name = "pkg",
-    srcs = [
-        ":bundle",
-    ],
-    mode = "0644",
-    package_dir = "./homebase",
-    strip_prefix = "./bundle",
+container_layer(
+    name = "deps",
+    data_path = ".",
+    directory = "app",
+    files = glob(["node_modules/**/*"]),
 )
 
 container_image(
     name = "image",
-    base = "@caddy//image",
-    files = [
-        "homebase.caddy",
-    ],
-    tags = ["no-cache"],
-    tars = [
-        ":pkg",
-    ],
+    base = "@node//image",
+    layers = [":deps"],
+    data_path = ".",
+    directory = "app",
+    files = glob([
+        ".next/**/*",
+        "public/**/*",
+    ]) + [":config"],
+    workdir = "/app",
+    cmd = ["/app/node_modules/next/dist/bin/next", "start"]
 )
 
 container_push(

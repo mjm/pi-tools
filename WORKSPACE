@@ -1,8 +1,8 @@
 workspace(
     name = "com_github_mjm_pi_tools",
-    managed_directories = {
-        "@npm_homebase": ["homebase/node_modules"],
-    },
+#    managed_directories = {
+#        "@npm_homebase": ["homebase/node_modules"],
+#    },
 )
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
@@ -96,33 +96,6 @@ container_pull(
 )
 
 container_pull(
-    name = "kubectl",
-    architecture = "arm64",
-    digest = "sha256:508d34eaafc48dda8b372aa44ce598104899f065603261ade3abcd7f4234b43a",
-    os = "linux",
-    registry = "index.docker.io",
-    repository = "jitesoft/kubectl",
-)
-
-container_pull(
-    name = "caddy",
-    architecture = "arm64",
-    digest = "sha256:085d496dad79fa71008de50e50f06591ab871b8f4711510a759b48a560bfe3aa",  # 2.2.1-alpine
-    os = "linux",
-    registry = "index.docker.io",
-    repository = "caddy",
-)
-
-container_pull(
-    name = "pihole",
-    architecture = "arm64",
-    digest = "sha256:6e07364aa328f62971379e9d95ac5d7bc3b06221a7f497117507f69630fa562a",
-    os = "linux",
-    registry = "index.docker.io",
-    repository = "pihole/pihole",
-)
-
-container_pull(
     name = "node",
     architecture = "arm64",
     digest = "sha256:3647b6e57d6f4d8594526941b052d5823f131523b0fb0723b98bb1d423be80e6", # 14.16.0-buster-slim
@@ -141,19 +114,19 @@ load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 
 rules_pkg_dependencies()
 
-http_archive(
-    name = "build_bazel_rules_nodejs",
-    sha256 = "dd7ea7efda7655c218ca707f55c3e1b9c68055a70c31a98f264b3445bc8f4cb1",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/3.2.3/rules_nodejs-3.2.3.tar.gz"],
-)
-
-load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
-
-yarn_install(
-    name = "npm_homebase",
-    package_json = "//homebase:package.json",
-    yarn_lock = "//homebase:yarn.lock",
-)
+#http_archive(
+#    name = "build_bazel_rules_nodejs",
+#    sha256 = "dd7ea7efda7655c218ca707f55c3e1b9c68055a70c31a98f264b3445bc8f4cb1",
+#    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/3.2.3/rules_nodejs-3.2.3.tar.gz"],
+#)
+#
+#load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
+#
+#yarn_install(
+#    name = "npm_homebase",
+#    package_json = "//homebase:package.json",
+#    yarn_lock = "//homebase:yarn.lock",
+#)
 
 http_archive(
     name = "rules_proto",

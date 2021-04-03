@@ -1,11 +1,11 @@
 import React from "react";
-import {Alert} from "com_github_mjm_pi_tools/homebase/components/Alert";
+import Alert from "./Alert";
 
 interface State {
     error?: Error;
 }
 
-export class ErrorBoundary extends React.Component<{
+export default class ErrorBoundary extends React.Component<{
     children: React.ReactNode;
     fallback?: (error: Error) => React.ReactNode;
 }, State> {

@@ -30,7 +30,7 @@ job "homebase" {
       driver = "docker"
 
       config {
-        image = "mmoriarity/homebase-srv-next"
+        image = "mmoriarity/homebase-srv"
         ports = ["http"]
       }
 
