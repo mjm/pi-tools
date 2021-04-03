@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "event",
+    srcs = ["recorder.go"],
+    importpath = "github.com/mjm/pi-tools/deploy/event",
+    visibility = ["//visibility:public"],
+)
+
+go_library(
+    name = "report",
+    srcs = ["recorder.go"],
+    importpath = "github.com/mjm/pi-tools/deploy/report",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//deploy/proto/deploy",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+    ],
+)

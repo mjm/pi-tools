@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 service DeployService {
     rpc GetMostRecentDeploy (GetMostRecentDeployRequest) returns (GetMostRecentDeployResponse);
 }
@@ -27,4 +29,26 @@ message Deploy {
     State state = 4;
     string started_at = 5;
     string finished_at = 6;
+}
+
+message Report {
+    int64 deploy_id = 1;
+    string commit_sha = 2;
+    string commit_message = 3;
+
+    repeated ReportEvent events = 4;
+}
+
+message ReportEvent {
+    enum Level {
+        UNKNOWN = 0;
+        INFO = 1;
+        WARNING = 2;
+        ERROR = 3;
+    }
+
+    google.protobuf.Timestamp timestamp = 1;
+    Level level = 2;
+    string summary = 3;
+    string description = 4;
 }

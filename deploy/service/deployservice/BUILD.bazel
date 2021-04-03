@@ -12,6 +12,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//deploy/proto/deploy",
+        "//deploy/report",
         "//pkg/spanerr",
         "@com_github_google_go_github_v33//github",
         "@com_github_gregdel_pushover//:pushover",

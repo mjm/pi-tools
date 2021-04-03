@@ -18,6 +18,7 @@ import (
 	"go.opentelemetry.io/otel/label"
 	"go.opentelemetry.io/otel/trace"
 
+	"github.com/mjm/pi-tools/deploy/report"
 	"github.com/mjm/pi-tools/pkg/spanerr"
 )
 
@@ -133,6 +134,9 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 
 	span.SetAttributes(label.Bool("deploy_skipped", false))
 
+	var r report.Recorder
+	r.SetCommitInfo(run.GetHeadCommit().GetID(), run.GetHeadCommit().GetMessage())
+
 	// This will get set to "success" at the end once we are done with the deploy.
 	// If we don't make it that far, we'll return an error, and our defer should automatically add a "failure" status
 	// to the deployment.
@@ -153,6 +157,8 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 		span.SetAttributes(
 			label.Int64("deployment.id", deploy.GetID()),
 			label.String("deployment.sha", deploy.GetSHA()))
+
+		r.SetDeployID(deploy.GetID())
 
 		// Now set the new deployment to be in progress
 		inProgressStatus, _, err := s.GitHubClient.Repositories.CreateDeploymentStatus(ctx, owner, repo, deploy.GetID(), &github.DeploymentStatusRequest{
@@ -217,6 +223,7 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 
 	downloadURL, _, err := s.GitHubClient.Actions.DownloadArtifact(ctx, repoParts[0], repoParts[1], artifact.GetID(), true)
 	if err != nil {
+		r.Error("Could not get download URL for build artifact").WithError(err)
 		return spanerr.RecordError(ctx, err)
 	}
 
@@ -225,23 +232,29 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 		return spanerr.RecordError(ctx, err)
 	}
 
-	r, w := io.Pipe()
+	read, write := io.Pipe()
 	var buf bytes.Buffer
-	go buf.ReadFrom(r)
+	go buf.ReadFrom(read)
 
-	if _, err := s.GitHubClient.Do(ctx, req, w); err != nil {
+	if _, err := s.GitHubClient.Do(ctx, req, write); err != nil {
+		r.Error("Could not download build artifact").WithError(err)
 		return spanerr.RecordError(ctx, err)
 	}
 
 	span.SetAttributes(label.Int("archive.length", buf.Len()))
+	r.Info("Downloaded build artifact").
+		WithDescription("Artifact size: %d bytes", buf.Len())
 
 	zipReader, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
 	if err != nil {
+		r.Error("Could not unzip build artifact").WithError(err)
 		return spanerr.RecordError(ctx, err)
 	}
 
+	r.Info("Found %d Nomad jobs to submit", len(zipReader.File))
+
 	for _, file := range zipReader.File {
-		if err := s.submitNomadJob(ctx, file); err != nil {
+		if err := s.submitNomadJob(ctx, &r, file); err != nil {
 			return spanerr.RecordError(ctx, err)
 		}
 	}
@@ -250,7 +263,7 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 	return nil
 }
 
-func (s *Server) submitNomadJob(ctx context.Context, file *zip.File) error {
+func (s *Server) submitNomadJob(ctx context.Context, r *report.Recorder, file *zip.File) error {
 	ctx, span := tracer.Start(ctx, "Server.submitNomadJob",
 		trace.WithAttributes(
 			label.String("job.filename", file.Name),
@@ -259,6 +272,7 @@ func (s *Server) submitNomadJob(ctx context.Context, file *zip.File) error {
 
 	f, err := file.Open()
 	if err != nil {
+		r.Error("Could not read job contents for %q", file.Name).WithError(err)
 		return spanerr.RecordError(ctx, err)
 	}
 	defer f.Close()
@@ -266,12 +280,15 @@ func (s *Server) submitNomadJob(ctx context.Context, file *zip.File) error {
 	// first, parse the JSON into a job
 	var job nomadapi.Job
 	if err := json.NewDecoder(f).Decode(&job); err != nil {
+		r.Error("Could not decode job contents for %q", file.Name).WithError(err)
 		return spanerr.RecordError(ctx, err)
 	}
 
 	if _, _, err := s.NomadClient.Jobs().Register(&job, nil); err != nil {
+		r.Error("Could not submit job %q", job.Name).WithError(err)
 		return spanerr.RecordError(ctx, err)
 	}
 
+	r.Info("Submitted job %q", job.Name)
 	return nil
 }
