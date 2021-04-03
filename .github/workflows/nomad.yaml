@@ -24,6 +24,20 @@ jobs:
         run: |
           sudo curl -L https://github.com/bazelbuild/bazel/releases/download/3.7.0/bazel-3.7.0-linux-x86_64 -o /usr/local/bin/bazel
           sudo chmod +x /usr/local/bin/bazel
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('homebase-next/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - name: Login to Docker
         run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         env:
@@ -32,12 +46,21 @@ jobs:
 
       - name: Run tests
         run: bazel test --config=ci --build_tests_only //...
+
+      - name: Build Homebase Next.js app
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
+        working-directory: homebase-next
+
       - name: Build and push container images
         run: |
           bazel query 'kind(container_push, //...)' \
             | xargs -n1 bazel run --config=ci --platforms @io_bazel_rules_go//go/toolchain:linux_arm64
+
       - name: Resolve Nomad jobs
         run: bazel run //deploy/cmd/job-resolver -- -root $PWD/jobs -out $RUNNER_TEMP/jobs $PWD/jobs/*.nomad
+
       - name: Store Nomad jobs
         uses: actions/upload-artifact@v2
         with:
