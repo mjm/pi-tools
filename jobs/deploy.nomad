@@ -39,6 +39,10 @@ job "deploy" {
               destination_name = "jaeger-collector"
               local_bind_port  = 14268
             }
+            upstreams {
+              destination_name = "minio"
+              local_bind_port  = 9000
+            }
           }
         }
       }
@@ -127,6 +131,10 @@ NOMAD_TOKEN={{ .Data.secret_id }}
 {{ with secret "kv/pushover" }}
 PUSHOVER_USER_KEY={{ .Data.data.user_key }}
 PUSHOVER_TOKEN={{ .Data.data.token }}
+{{ end }}
+{{ with secret "kv/deploy" }}
+AWS_ACCESS_KEY_ID=deploy
+AWS_SECRET_ACCESS_KEY={{ .Data.data.minio_secret_key }}
 {{ end }}
 EOF
         destination = "secrets/deploy.env"

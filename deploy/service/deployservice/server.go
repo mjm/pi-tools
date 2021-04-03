@@ -3,6 +3,7 @@ package deployservice
 import (
 	"sync"
 
+	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/google/go-github/v33/github"
 	"github.com/gregdel/pushover"
 	nomadapi "github.com/hashicorp/nomad/api"
@@ -31,6 +32,8 @@ type Config struct {
 	ArtifactName string
 
 	PushoverRecipient *pushover.Recipient
+
+	ReportBucket string
 }
 
 type Server struct {
@@ -45,6 +48,8 @@ type Server struct {
 
 	Pushover *pushover.Pushover
 
+	S3 s3iface.S3API
+
 	lastSuccessfulCommit string
 	deployChecksTotal    metric.Int64Counter
 	deployCheckDuration  metric.Float64ValueRecorder
@@ -52,7 +57,7 @@ type Server struct {
 	lock sync.Mutex
 }
 
-func New(gh *github.Client, nomad *nomadapi.Client, po *pushover.Pushover, cfg Config) *Server {
+func New(gh *github.Client, nomad *nomadapi.Client, po *pushover.Pushover, s3Client s3iface.S3API, cfg Config) *Server {
 	m := metric.Must(otel.Meter(instrumentationName))
 	return &Server{
 		Config:       cfg,

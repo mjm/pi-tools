@@ -5,6 +5,7 @@ go 1.14
 require (
 	git.sr.ht/~apreiml/prunef v0.2.0 // indirect
 	github.com/armon/go-metrics v0.3.5-0.20201104215618-6fd5a4ddf425 // indirect
+	github.com/aws/aws-sdk-go v1.35.3 // indirect
 	github.com/bruj0/vault-plugin-auth-u2f v0.0.0-20201021131703-3455d429e361 // indirect
 	github.com/duo-labs/webauthn v0.0.0-20200714211715-1daaee874e43
 	github.com/etherlabsio/healthcheck v0.0.0-20191224061800-dd3d2fd8c3f6

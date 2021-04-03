@@ -3,6 +3,7 @@ package report
 import (
 	"fmt"
 
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
@@ -41,6 +42,10 @@ func (r *Recorder) addEvent(level deploypb.ReportEvent_Level, format string, v .
 	}
 	r.report.Events = append(r.report.Events, evt)
 	return &Event{evt: evt}
+}
+
+func (r *Recorder) Marshal() ([]byte, error) {
+	return proto.Marshal(&r.report)
 }
 
 type Event struct {

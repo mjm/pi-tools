@@ -10,6 +10,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/etherlabsio/healthcheck"
 	"github.com/google/go-github/v33/github"
 	"github.com/gregdel/pushover"
@@ -36,6 +39,9 @@ var (
 
 	pollInterval = flag.Duration("poll-interval", 2*time.Minute, "How often to check with GitHub for a new build")
 	dryRun       = flag.Bool("dry-run", false, "Skip actually applying changes to the cluster")
+
+	minioURL     = flag.String("minio-url", "http://localhost:9000", "URL for accessing Minio for storing deploy reports")
+	reportBucket = flag.String("report-bucket", "deploy-reports", "Bucket to use to store deploy reports")
 )
 
 func main() {
@@ -64,13 +70,22 @@ func main() {
 	pushoverClient := pushover.New(os.Getenv("PUSHOVER_TOKEN"))
 	pushoverRecipient := pushover.NewRecipient(os.Getenv("PUSHOVER_USER_KEY"))
 
-	deploysSrv := deployservice.New(githubClient, nomadClient, pushoverClient, deployservice.Config{
+	sess := session.Must(session.NewSession(&aws.Config{
+		Endpoint:         minioURL,
+		Region:           aws.String("us-east-1"),
+		DisableSSL:       aws.Bool(strings.HasPrefix(*minioURL, "http://")),
+		S3ForcePathStyle: aws.Bool(true),
+	}))
+	s3Client := s3.New(sess)
+
+	deploysSrv := deployservice.New(githubClient, nomadClient, pushoverClient, s3Client, deployservice.Config{
 		DryRun:            *dryRun,
 		GitHubRepo:        *githubRepo,
 		GitHubBranch:      *githubBranch,
 		WorkflowName:      *workflowName,
 		ArtifactName:      *artifactName,
 		PushoverRecipient: pushoverRecipient,
+		ReportBucket:      *reportBucket,
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())

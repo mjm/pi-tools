@@ -9,12 +9,15 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/google/go-github/v33/github"
 	"github.com/gregdel/pushover"
 	nomadapi "github.com/hashicorp/nomad/api"
+	"github.com/segmentio/ksuid"
 	"go.opentelemetry.io/otel/label"
 	"go.opentelemetry.io/otel/trace"
 
@@ -137,6 +140,8 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 	var r report.Recorder
 	r.SetCommitInfo(run.GetHeadCommit().GetID(), run.GetHeadCommit().GetMessage())
 
+	var deployID int64
+
 	// This will get set to "success" at the end once we are done with the deploy.
 	// If we don't make it that far, we'll return an error, and our defer should automatically add a "failure" status
 	// to the deployment.
@@ -154,11 +159,12 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 		if err != nil {
 			return spanerr.RecordError(ctx, err)
 		}
-		span.SetAttributes(
-			label.Int64("deployment.id", deploy.GetID()),
-			label.String("deployment.sha", deploy.GetSHA()))
 
-		r.SetDeployID(deploy.GetID())
+		deployID = deploy.GetID()
+		span.SetAttributes(
+			label.Int64("deployment.id", deployID),
+			label.String("deployment.sha", deploy.GetSHA()))
+		r.SetDeployID(deployID)
 
 		// Now set the new deployment to be in progress
 		inProgressStatus, _, err := s.GitHubClient.Repositories.CreateDeploymentStatus(ctx, owner, repo, deploy.GetID(), &github.DeploymentStatusRequest{
@@ -170,13 +176,14 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 		}
 		span.SetAttributes(label.Int64("deployment.in_progress_status_id", inProgressStatus.GetID()))
 
-		defer func(deployID int64) {
+		defer func() {
 			span.SetAttributes(label.String("deployment.status", finalDeploymentStatus))
 
 			// Create the final status for the deployment
 			finalStatus, _, err := s.GitHubClient.Repositories.CreateDeploymentStatus(ctx, owner, repo, deployID, &github.DeploymentStatusRequest{
 				State:        &finalDeploymentStatus,
 				AutoInactive: github.Bool(true),
+				LogURL:       github.String(fmt.Sprintf("https://homebase.homelab/deploys/%d", deployID)),
 			})
 			if err != nil {
 				span.RecordError(err)
@@ -197,8 +204,37 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 			}, s.Config.PushoverRecipient); err != nil {
 				span.RecordError(err)
 			}
-		}(deploy.GetID())
+		}()
 	}
+
+	defer func(r *report.Recorder) {
+		reportContent, err := r.Marshal()
+		if err != nil {
+			span.RecordError(err)
+			return
+		}
+
+		var key string
+		if deployID == 0 {
+			key = ksuid.New().String()
+		} else {
+			key = strconv.FormatInt(deployID, 10)
+		}
+		span.SetAttributes(
+			label.String("report.key", key),
+			label.String("report.bucket", s.Config.ReportBucket),
+			label.Int("report.size", len(reportContent)))
+
+		_, err = s.S3.PutObjectWithContext(ctx, &s3.PutObjectInput{
+			Bucket: &s.Config.ReportBucket,
+			Key:    &key,
+			Body:   bytes.NewReader(reportContent),
+		})
+		if err != nil {
+			span.RecordError(err)
+			return
+		}
+	}(&r)
 
 	// Alright, on with the show.
 	artifacts, _, err := s.GitHubClient.Actions.ListWorkflowRunArtifacts(ctx, owner, repo, run.GetID(), nil)

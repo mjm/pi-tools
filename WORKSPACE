@@ -1,8 +1,8 @@
 workspace(
     name = "com_github_mjm_pi_tools",
-#    managed_directories = {
-#        "@npm_homebase": ["homebase/node_modules"],
-#    },
+    #    managed_directories = {
+    #        "@npm_homebase": ["homebase/node_modules"],
+    #    },
 )
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
@@ -98,7 +98,7 @@ container_pull(
 container_pull(
     name = "node",
     architecture = "arm64",
-    digest = "sha256:3647b6e57d6f4d8594526941b052d5823f131523b0fb0723b98bb1d423be80e6", # 14.16.0-buster-slim
+    digest = "sha256:3647b6e57d6f4d8594526941b052d5823f131523b0fb0723b98bb1d423be80e6",  # 14.16.0-buster-slim
     os = "linux",
     registry = "index.docker.io",
     repository = "node",
