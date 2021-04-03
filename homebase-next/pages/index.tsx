@@ -5,12 +5,13 @@ import PageHeader from "../components/PageHeader";
 import withRelay from "../lib/withRelay";
 import MostRecentTripCard from "../components/homepage/MostRecentTripCard";
 import MostRecentDeployCard from "../components/homepage/MostRecentDeployCard";
+import FiringAlertsCard from "../components/homepage/FiringAlertsCard";
 
 const HomePageQuery = graphql`
     query pages_HomePageQuery {
         viewer {
             ...MostRecentTripCard_viewer
-            #            ...FiringAlertsCard_viewer
+            ...FiringAlertsCard_viewer
             ...MostRecentDeployCard_viewer
         }
     }
@@ -29,7 +30,7 @@ function HomePage(props: RelayProps<{}, pages_HomePageQuery>) {
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     <MostRecentTripCard viewer={query.viewer}/>
-                    {/*<FiringAlertsCard viewer={query.viewer}/>*/}
+                    <FiringAlertsCard viewer={query.viewer}/>
                     <MostRecentDeployCard viewer={query.viewer}/>
                 </div>
             </div>
