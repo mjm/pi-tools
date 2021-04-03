@@ -19,8 +19,8 @@ go_library(
 go_test(
     name = "storage_test",
     srcs = ["db_test.go"],
-    embed = [":storage"],
     deps = [
+        ":storage",
         "//detect-presence/database",
         "//detect-presence/database/migrate",
     ],

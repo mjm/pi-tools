@@ -3,7 +3,14 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "migrate",
     srcs = ["embed.go"],
-    embedsrcs = glob(["*.sql"]),
+    embedsrcs = [
+        "000001_create_trips_table.down.sql",
+        "000001_create_trips_table.up.sql",
+        "000002_add_trips_ignored_at.down.sql",
+        "000002_add_trips_ignored_at.up.sql",
+        "000003_add_trip_tags.down.sql",
+        "000003_add_trip_tags.up.sql",
+    ],
     importpath = "github.com/mjm/pi-tools/detect-presence/database/migrate",
     visibility = ["//visibility:public"],
 )

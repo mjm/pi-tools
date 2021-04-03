@@ -3,7 +3,10 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "migrate",
     srcs = ["embed.go"],
-    embedsrcs = glob(["*.sql"]),
+    embedsrcs = [
+        "000001_create_links.down.sql",
+        "000001_create_links.up.sql",
+    ],
     importpath = "github.com/mjm/pi-tools/go-links/database/migrate",
     visibility = ["//visibility:public"],
 )
