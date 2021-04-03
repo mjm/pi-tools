@@ -51,7 +51,7 @@ jobs:
         run: |
           yarn install --frozen-lockfile
           yarn build
-        working-directory: homebase-next
+        working-directory: homebase
 
       - name: Build and push container images
         run: |
