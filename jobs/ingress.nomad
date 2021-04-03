@@ -11,6 +11,7 @@ locals {
     "grafana",
     "homebase",
     "jaeger",
+    "minio",
     "nomad",
     "prometheus",
     "pihole",
@@ -86,6 +87,10 @@ job "ingress" {
             upstreams {
               destination_name = "grafana"
               local_bind_port  = 3000
+            }
+            upstreams {
+              destination_name = "minio"
+              local_bind_port  = 9000
             }
           }
         }

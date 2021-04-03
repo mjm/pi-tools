@@ -737,3 +737,35 @@ resource "consul_config_entry" "elasticsearch_intentions" {
     ]
   })
 }
+
+resource "consul_config_entry" "minio_defaults" {
+  kind = "service-defaults"
+  name = "minio"
+
+  config_json = jsonencode({
+    Protocol = "http"
+  })
+}
+
+resource "consul_config_entry" "minio_intentions" {
+  kind = "service-intentions"
+  name = "minio"
+
+  config_json = jsonencode({
+    Sources = [
+      {
+        Name        = "*"
+        Precedence  = 8
+        Type        = "consul"
+        Permissions = [
+          {
+            Action = "allow"
+            HTTP   = {
+              PathPrefix = "/"
+            }
+          },
+        ]
+      },
+    ]
+  })
+}

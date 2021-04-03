@@ -34,6 +34,24 @@
     state: mounted
   become: true
 
+- name: Create minio-0 volume mountpoint
+  file:
+    path: /srv/mnt/minio-0
+    state: directory
+    mode: 0700
+    owner: root
+    group: root
+  become: true
+
+- name: Mount minio-0 volume
+  ansible.posix.mount:
+    path: /srv/mnt/minio-0
+    src: 127.0.0.1:/minio-0
+    fstype: glusterfs
+    opts: defaults,_netdev
+    state: mounted
+  become: true
+
 - name: Create pihole-data volume mountpoint
   file:
     path: /srv/mnt/pihole-data
