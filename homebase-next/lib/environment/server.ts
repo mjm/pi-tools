@@ -7,13 +7,14 @@ import fetch from "node-fetch";
 
 const serverUrl = process.env.GRAPHQL_URL || "http://localhost:3000/graphql";
 
-export function createServerEnvironment(cookie: string) {
+export function createServerEnvironment(cookie: string, user: string) {
     async function fetchRelay(params, variables) {
         const response = await fetch(serverUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Cookie": cookie,
+                "X-Auth-Request-User": user,
             },
             body: JSON.stringify({
                 query: params.text,

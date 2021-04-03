@@ -19,15 +19,18 @@ export default function withRelay<Props extends RelayProps, ServerSideProps>(Com
     }>;
 } {
     return originalWithRelay(Component, query, {
-        async createServerEnvironment(_ctx, { cookie }: { cookie: string }) {
+        async createServerEnvironment(_ctx, {cookie, user}: { cookie: string; user: string }) {
             const {createServerEnvironment} = await import("./environment/server");
-            return createServerEnvironment(cookie);
+            return createServerEnvironment(cookie, user);
         },
         createClientEnvironment() {
             return getClientEnvironment();
         },
         async serverSideProps({req}) {
-            return { cookie: req.headers.cookie };
+            return {
+                cookie: req.headers.cookie,
+                user: req.headers["X-Auth-Request-User"],
+            };
         },
         ...opts,
     });
