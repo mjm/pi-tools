@@ -3,6 +3,7 @@ import {ComponentType} from "react";
 import {GraphQLTaggedNode} from "relay-runtime";
 import {NextPageContext} from "next";
 import {getClientEnvironment} from "./environment/client";
+import Loading from "../components/Loading";
 
 type Options = Omit<RelayOptions, "createServerEnvironment" | "createClientEnvironment">;
 
@@ -32,6 +33,7 @@ export default function withRelay<Props extends RelayProps, ServerSideProps>(Com
                 user: req.headers["X-Auth-Request-User"],
             };
         },
+        fallback: <Loading />,
         ...opts,
     });
 }
