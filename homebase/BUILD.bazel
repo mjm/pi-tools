@@ -1,7 +1,7 @@
 load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_layer", "container_push")
 
 exports_files([
-    "schema.graphql"
+    "schema.graphql",
 ])
 
 # All of these build rules expect that `yarn build` was run outside of Bazel before hand.
