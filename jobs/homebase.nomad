@@ -7,35 +7,40 @@ job "homebase" {
     count = 2
 
     network {
-      port "http" {
-        to = 8080
-      }
+      mode = "bridge"
     }
 
     service {
       name = "homebase"
-      port = "http"
+      port = 3000
+
+      connect {
+        sidecar_service {
+          proxy {
+            upstreams {
+              destination_name = "homebase-api"
+              local_bind_port  = 6460
+            }
+          }
+        }
+      }
     }
 
     task "homebase-srv" {
       driver = "docker"
 
       config {
-        image   = "mmoriarity/homebase-srv"
-        command = "caddy"
-        args    = [
-          "run",
-          "--config",
-          "/homebase.caddy",
-          "--adapter",
-          "caddyfile",
-        ]
-        ports   = ["http"]
+        image = "mmoriarity/homebase-srv-next"
+        ports = ["http"]
       }
 
       resources {
-        cpu    = 50
-        memory = 75
+        cpu    = 100
+        memory = 100
+      }
+
+      env {
+        GRAPHQL_URL = "http://localhost:6460/graphql"
       }
     }
   }

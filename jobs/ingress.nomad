@@ -80,6 +80,10 @@ job "ingress" {
               local_bind_port  = 6460
             }
             upstreams {
+              destination_name = "homebase"
+              local_bind_port  = 3001
+            }
+            upstreams {
               destination_name = "grafana"
               local_bind_port  = 3000
             }

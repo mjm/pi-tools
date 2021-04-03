@@ -392,6 +392,63 @@ resource "consul_config_entry" "homebase_api_intentions" {
         ]
       },
       {
+        Name        = "homebase"
+        Precedence  = 9
+        Type        = "consul"
+        Permissions = [
+          {
+            Action = "allow"
+            HTTP   = {
+              PathExact = "/graphql"
+            }
+          },
+          {
+            Action = "deny"
+            HTTP   = {
+              PathPrefix = "/"
+            }
+          },
+        ]
+      },
+      {
+        Action     = "deny"
+        Name       = "*"
+        Precedence = 8
+        Type       = "consul"
+      },
+    ]
+  })
+}
+
+resource "consul_config_entry" "homebase_defaults" {
+  kind = "service-defaults"
+  name = "homebase"
+
+  config_json = jsonencode({
+    Protocol = "http"
+  })
+}
+
+resource "consul_config_entry" "homebase_intentions" {
+  kind = "service-intentions"
+  name = "homebase"
+
+  config_json = jsonencode({
+    Sources = [
+      {
+        Name        = "ingress-http"
+        Precedence  = 9
+        Type        = "consul"
+        Permissions = [
+          {
+            Action = "allow"
+            HTTP   = {
+              PathPrefix = "/"
+            }
+          },
+        ]
+      },
+      {
         Action     = "deny"
         Name       = "*"
         Precedence = 8
