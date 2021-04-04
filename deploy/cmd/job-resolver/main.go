@@ -142,6 +142,7 @@ func updateNetwork(_ *api.Job, group *api.TaskGroup) {
 	}
 	net := group.Networks[0]
 
+	var addedExposePort bool
 	for i, svc := range group.Services {
 		if svc.Connect == nil {
 			continue
@@ -158,10 +159,13 @@ func updateNetwork(_ *api.Job, group *api.TaskGroup) {
 
 		if metricsPath, ok := svc.Meta["metrics_path"]; ok {
 			if _, ok := svc.Meta["metrics_port"]; !ok {
-				net.DynamicPorts = append(net.DynamicPorts, api.Port{
-					Label:       "expose",
-					HostNetwork: "default",
-				})
+				if !addedExposePort {
+					net.DynamicPorts = append(net.DynamicPorts, api.Port{
+						Label:       "expose",
+						HostNetwork: "default",
+					})
+					addedExposePort = true
+				}
 
 				svc.Meta["metrics_port"] = "${NOMAD_HOST_PORT_expose}"
 				if sidecar.Proxy.ExposeConfig == nil {
@@ -202,6 +206,18 @@ func updateNetwork(_ *api.Job, group *api.TaskGroup) {
 				svc.Meta = map[string]string{}
 			}
 			svc.Meta["envoy_metrics_port"] = fmt.Sprintf("${NOMAD_HOST_PORT_%s}", portLabel)
+		}
+
+		for j, chk := range svc.Checks {
+			if chk.Expose {
+				portLabel := fmt.Sprintf("health_%d_%d", i, j)
+				svc.Checks[j].PortLabel = portLabel
+
+				net.DynamicPorts = append(net.DynamicPorts, api.Port{
+					Label:       portLabel,
+					HostNetwork: "default",
+				})
+			}
 		}
 	}
 
