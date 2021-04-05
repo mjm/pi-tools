@@ -321,10 +321,10 @@ func (s *Server) submitNomadJob(ctx context.Context, r *report.Recorder, file *z
 	}
 
 	if _, _, err := s.NomadClient.Jobs().Register(&job, nil); err != nil {
-		r.Error("Could not submit job %q", job.Name).WithError(err)
+		r.Error("Could not submit job %q", *job.Name).WithError(err)
 		return spanerr.RecordError(ctx, err)
 	}
 
-	r.Info("Submitted job %q", job.Name)
+	r.Info("Submitted job %q", *job.Name)
 	return nil
 }
