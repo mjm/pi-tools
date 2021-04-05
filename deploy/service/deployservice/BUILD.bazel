@@ -3,6 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "deployservice",
     srcs = [
+        "get_deploy_report.go",
         "get_most_recent_deploy.go",
         "poll_changes.go",
         "server.go",
@@ -26,5 +27,6 @@ go_library(
         "@io_opentelemetry_go_otel//trace",
         "@org_golang_google_grpc//codes",
         "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//proto",
     ],
 )
