@@ -64,6 +64,7 @@ func New(gh *github.Client, nomad *nomadapi.Client, po *pushover.Pushover, s3Cli
 		GitHubClient: gh,
 		NomadClient:  nomad,
 		Pushover:     po,
+		S3:           s3Client,
 		deployChecksTotal: m.NewInt64Counter("deploy.check.total",
 			metric.WithDescription("Counts the number of times that the service checked for a new version to deploy")),
 		deployCheckDuration: m.NewFloat64ValueRecorder("deploy.check.duration.seconds",
