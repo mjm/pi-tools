@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/mjm/graphql-go"
@@ -141,7 +142,35 @@ func (r *Resolver) MostRecentDeploy(ctx context.Context) (*Deploy, error) {
 		return nil, err
 	}
 
-	return &Deploy{Deploy: res.GetDeploy()}, nil
+	return &Deploy{
+		Deploy: res.GetDeploy(),
+		r:      r,
+	}, nil
+}
+
+func (r *Resolver) Deploy(ctx context.Context, args struct {
+	ID string
+}) (*Deploy, error) {
+	if err := requireAuthorizedUser(ctx); err != nil {
+		return nil, err
+	}
+
+	id, err := strconv.ParseInt(args.ID, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := r.deployClient.GetDeploy(ctx, &deploypb.GetDeployRequest{
+		DeployId: id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &Deploy{
+		Deploy: res.GetDeploy(),
+		r:      r,
+	}, nil
 }
 
 func (r *Resolver) Alerts(ctx context.Context) ([]*Alert, error) {

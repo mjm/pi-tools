@@ -41,6 +41,8 @@ type Viewer {
 
     mostRecentDeploy: Deploy
 
+    deploy(id: ID!): Deploy
+
     alerts: [Alert!]!
 
     backupArchives(
@@ -115,11 +117,14 @@ type Link implements Node {
 
 type Deploy {
     id: ID!
+    rawID: ID!
     commitSHA: String!
     commitMessage: String!
     state: DeployState!
     startedAt: Time!
     finishedAt: Time
+
+    report: DeployReport
 }
 
 enum DeployState {
@@ -129,6 +134,25 @@ enum DeployState {
     SUCCESS
     FAILURE
     INACTIVE
+}
+
+type DeployReport {
+    id: ID!
+    events: [DeployEvent!]!
+}
+
+type DeployEvent {
+    timestamp: Time!
+    level: DeployEventLevel!
+    summary: String!
+    description: String!
+}
+
+enum DeployEventLevel {
+    UNKNOWN
+    INFO
+    WARNING
+    ERROR
 }
 
 type Alert {
