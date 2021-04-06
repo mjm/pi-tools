@@ -4,6 +4,7 @@ import "google/protobuf/timestamp.proto";
 
 service DeployService {
     rpc GetMostRecentDeploy (GetMostRecentDeployRequest) returns (GetMostRecentDeployResponse);
+    rpc GetDeploy (GetDeployRequest) returns (GetDeployResponse);
     rpc GetDeployReport (GetDeployReportRequest) returns (GetDeployReportResponse);
 }
 
@@ -11,6 +12,14 @@ message GetMostRecentDeployRequest {
 }
 
 message GetMostRecentDeployResponse {
+    Deploy deploy = 1;
+}
+
+message GetDeployRequest {
+    int64 deploy_id = 1;
+}
+
+message GetDeployResponse {
     Deploy deploy = 1;
 }
 

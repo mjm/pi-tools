@@ -3,6 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "deployservice",
     srcs = [
+        "get_deploy.go",
         "get_deploy_report.go",
         "get_most_recent_deploy.go",
         "poll_changes.go",

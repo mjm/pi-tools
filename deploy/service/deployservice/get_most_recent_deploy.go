@@ -34,7 +34,18 @@ func (s *Server) GetMostRecentDeploy(ctx context.Context, _ *deploypb.GetMostRec
 		return nil, status.Errorf(codes.NotFound, "no deployments found for GitHub repository %s", s.Config.GitHubRepo)
 	}
 
-	deploy := deployments[0]
+	deployResponse, err := s.deploymentToProto(ctx, repoParts[0], repoParts[1], deployments[0])
+	if err != nil {
+		return nil, err
+	}
+
+	return &deploypb.GetMostRecentDeployResponse{
+		Deploy: deployResponse,
+	}, nil
+}
+
+func (s *Server) deploymentToProto(ctx context.Context, owner, repo string, deploy *github.Deployment) (*deploypb.Deploy, error) {
+	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(
 		label.Int64("deployment.id", deploy.GetID()),
 		label.String("deployment.sha", deploy.GetSHA()))
@@ -45,14 +56,14 @@ func (s *Server) GetMostRecentDeploy(ctx context.Context, _ *deploypb.GetMostRec
 		StartedAt: deploy.GetCreatedAt().Format(time.RFC3339),
 	}
 
-	commit, _, err := s.GitHubClient.Repositories.GetCommit(ctx, repoParts[0], repoParts[1], deploy.GetSHA())
+	commit, _, err := s.GitHubClient.Repositories.GetCommit(ctx, owner, repo, deploy.GetSHA())
 	if err != nil {
 		return nil, err
 	}
 
 	deployResponse.CommitMessage = commit.GetCommit().GetMessage()
 
-	statuses, _, err := s.GitHubClient.Repositories.ListDeploymentStatuses(ctx, repoParts[0], repoParts[1], deploy.GetID(), &github.ListOptions{
+	statuses, _, err := s.GitHubClient.Repositories.ListDeploymentStatuses(ctx, owner, repo, deploy.GetID(), &github.ListOptions{
 		PerPage: 1,
 	})
 	if err != nil {
@@ -84,7 +95,5 @@ func (s *Server) GetMostRecentDeploy(ctx context.Context, _ *deploypb.GetMostRec
 		deployResponse.State = deploypb.Deploy_PENDING
 	}
 
-	return &deploypb.GetMostRecentDeployResponse{
-		Deploy: deployResponse,
-	}, nil
+	return deployResponse, nil
 }
