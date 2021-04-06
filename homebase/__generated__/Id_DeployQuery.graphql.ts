@@ -11,7 +11,7 @@ export type Id_DeployQueryResponse = {
     readonly viewer: {
         readonly deploy: {
             readonly id: string;
-            readonly " $fragmentRefs": FragmentRefs<"DeploymentDetails_deploy">;
+            readonly " $fragmentRefs": FragmentRefs<"DeploymentDetails_deploy" | "DeploymentEvents_deploy">;
         } | null;
     } | null;
 };
@@ -30,6 +30,7 @@ query Id_DeployQuery(
     deploy(id: $id) {
       id
       ...DeploymentDetails_deploy
+      ...DeploymentEvents_deploy
     }
   }
 }
@@ -39,6 +40,27 @@ fragment DeploymentDetails_deploy on Deploy {
   commitMessage
   startedAt
   finishedAt
+}
+
+fragment DeploymentEvent_deploy on Deploy {
+  startedAt
+}
+
+fragment DeploymentEvent_event on DeployEvent {
+  timestamp
+  level
+  summary
+  description
+}
+
+fragment DeploymentEvents_deploy on Deploy {
+  ...DeploymentEvent_deploy
+  report {
+    events {
+      ...DeploymentEvent_event
+    }
+    id
+  }
 }
 */
 
@@ -92,6 +114,11 @@ return {
                 "args": null,
                 "kind": "FragmentSpread",
                 "name": "DeploymentDetails_deploy"
+              },
+              {
+                "args": null,
+                "kind": "FragmentSpread",
+                "name": "DeploymentEvents_deploy"
               }
             ],
             "storageKey": null
@@ -153,6 +180,57 @@ return {
                 "kind": "ScalarField",
                 "name": "finishedAt",
                 "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "DeployReport",
+                "kind": "LinkedField",
+                "name": "report",
+                "plural": false,
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "DeployEvent",
+                    "kind": "LinkedField",
+                    "name": "events",
+                    "plural": true,
+                    "selections": [
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "timestamp",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "level",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "summary",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "description",
+                        "storageKey": null
+                      }
+                    ],
+                    "storageKey": null
+                  },
+                  (v2/*: any*/)
+                ],
+                "storageKey": null
               }
             ],
             "storageKey": null
@@ -163,14 +241,14 @@ return {
     ]
   },
   "params": {
-    "cacheID": "6dd00a3327ee8d00ea65141df0bd669f",
+    "cacheID": "44dd98bf0e22682df545502984586db6",
     "id": null,
     "metadata": {},
     "name": "Id_DeployQuery",
     "operationKind": "query",
-    "text": "query Id_DeployQuery(\n  $id: ID!\n) {\n  viewer {\n    deploy(id: $id) {\n      id\n      ...DeploymentDetails_deploy\n    }\n  }\n}\n\nfragment DeploymentDetails_deploy on Deploy {\n  commitSHA\n  commitMessage\n  startedAt\n  finishedAt\n}\n"
+    "text": "query Id_DeployQuery(\n  $id: ID!\n) {\n  viewer {\n    deploy(id: $id) {\n      id\n      ...DeploymentDetails_deploy\n      ...DeploymentEvents_deploy\n    }\n  }\n}\n\nfragment DeploymentDetails_deploy on Deploy {\n  commitSHA\n  commitMessage\n  startedAt\n  finishedAt\n}\n\nfragment DeploymentEvent_deploy on Deploy {\n  startedAt\n}\n\nfragment DeploymentEvent_event on DeployEvent {\n  timestamp\n  level\n  summary\n  description\n}\n\nfragment DeploymentEvents_deploy on Deploy {\n  ...DeploymentEvent_deploy\n  report {\n    events {\n      ...DeploymentEvent_event\n    }\n    id\n  }\n}\n"
   }
 };
 })();
-(node as any).hash = 'd31c0ed5360d76660960db6325eb8ba3';
+(node as any).hash = 'dbd4c23533cc1a755e77ecf103e5f2b0';
 export default node;

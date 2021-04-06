@@ -5,6 +5,7 @@ import withRelay from "../../lib/withRelay";
 import Head from "next/head";
 import Alert from "../../components/Alert";
 import DeploymentDetails from "../../components/deploys/DeploymentDetails";
+import DeploymentEvents from "../../components/deploys/DeploymentEvents";
 
 const DeployQuery = graphql`
     query Id_DeployQuery($id: ID!) {
@@ -12,6 +13,7 @@ const DeployQuery = graphql`
             deploy(id: $id) {
                 id
                 ...DeploymentDetails_deploy
+                ...DeploymentEvents_deploy
             }
         }
     }
@@ -39,13 +41,17 @@ function DeployPage({preloadedQuery}: RelayProps<{}, Id_DeployQuery>) {
                     </div>
                 </div>
                 {deploy ? (
-                    <DeploymentDetails deploy={deploy}/>
+                    <>
+                        <DeploymentDetails deploy={deploy}/>
+                    </>
                 ) : (
                     <Alert title="Couldn't load this deploy" severity="error" rounded={false}>
                         No deploy was found with this ID.
                     </Alert>
                 )}
             </div>
+
+            {deploy && <DeploymentEvents deploy={deploy}/>}
         </main>
     );
 }
