@@ -3,19 +3,15 @@ import {RelayProps} from "relay-nextjs";
 import {Id_DeployQuery} from "../../__generated__/Id_DeployQuery.graphql";
 import withRelay from "../../lib/withRelay";
 import Head from "next/head";
-import DescriptionField from "../../components/DescriptionField";
-import {format, formatDuration, intervalToDuration, parseISO} from "date-fns";
 import Alert from "../../components/Alert";
+import DeploymentDetails from "../../components/deploys/DeploymentDetails";
 
 const DeployQuery = graphql`
     query Id_DeployQuery($id: ID!) {
         viewer {
             deploy(id: $id) {
                 id
-                commitSHA
-                commitMessage
-                startedAt
-                finishedAt
+                ...DeploymentDetails_deploy
             }
         }
     }
@@ -43,29 +39,7 @@ function DeployPage({preloadedQuery}: RelayProps<{}, Id_DeployQuery>) {
                     </div>
                 </div>
                 {deploy ? (
-                    <div>
-                        <dl>
-                            <DescriptionField label="Commit" offset>
-                                <a href={`https://github.com/mjm/pi-tools/commit/${deploy.commitSHA}`}
-                                   className="font-medium text-indigo-600 hover:text-indigo-500"
-                                   target="_blank">
-                                    {deploy.commitMessage}
-                                </a>
-                            </DescriptionField>
-                            <DescriptionField label="Started at">
-                                {format(parseISO(deploy.startedAt), "PPpp")}
-                            </DescriptionField>
-                            <DescriptionField label="Finished at" offset>
-                                {format(parseISO(deploy.finishedAt), "PPpp")}
-                            </DescriptionField>
-                            <DescriptionField label="Duration">
-                                {formatDuration(intervalToDuration({
-                                    start: parseISO(deploy.startedAt),
-                                    end: parseISO(deploy.finishedAt),
-                                }))}
-                            </DescriptionField>
-                        </dl>
-                    </div>
+                    <DeploymentDetails deploy={deploy}/>
                 ) : (
                     <Alert title="Couldn't load this deploy" severity="error" rounded={false}>
                         No deploy was found with this ID.
