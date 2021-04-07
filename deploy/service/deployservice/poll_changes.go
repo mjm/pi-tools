@@ -297,7 +297,9 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 			return spanerr.RecordError(ctx, err)
 		}
 
-		jobsToWatch = append(jobsToWatch, job)
+		if job != nil {
+			jobsToWatch = append(jobsToWatch, job)
+		}
 	}
 
 	if s.Config.DryRun {
@@ -376,7 +378,21 @@ func (s *Server) submitNomadJob(ctx context.Context, r *report.Recorder, file *z
 		label.String("job.id", *job.ID),
 		label.String("job.name", *job.Name))
 
+	planResp, _, err := s.NomadClient.Jobs().Plan(&job, true, nil)
+	if err != nil {
+		r.Error("Could not plan job %q", *job.Name).WithError(err)
+		return nil, spanerr.RecordError(ctx, err)
+	}
+
+	span.SetAttributes(
+		label.String("plan.diff_type", planResp.Diff.Type))
+
+	if planResp.Diff.Type == "None" {
+		return nil, nil
+	}
+
 	if s.Config.DryRun {
+		r.Info("Skipped submitting job %q because this is a dry-run", *job.Name)
 		return &job, nil
 	}
 

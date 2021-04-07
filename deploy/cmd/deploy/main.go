@@ -41,15 +41,15 @@ func main() {
 		}
 		f.Close()
 
-		if *dryRun {
-			resp, _, err := nomadClient.Jobs().Plan(&job, true, nil)
-			if err != nil {
-				log.Panicf("planning job %s: %v", *job.Name, err)
-			}
+		resp, _, err := nomadClient.Jobs().Plan(&job, true, nil)
+		if err != nil {
+			log.Panicf("planning job %s: %v", *job.Name, err)
+		}
 
-			log.Printf("planned job %s:", *job.Name)
-			printDiff(resp.Diff)
-		} else {
+		log.Printf("planned job %s:", *job.Name)
+		printDiff(resp.Diff)
+
+		if !*dryRun && resp.Diff.Type != "None" {
 			resp, _, err := nomadClient.Jobs().Register(&job, nil)
 			if err != nil {
 				log.Panicf("registering job %s: %s", *job.Name, err)
@@ -62,7 +62,7 @@ func main() {
 		}
 	}
 
-	if *dryRun {
+	if len(jobs) == 0 {
 		return
 	}
 
