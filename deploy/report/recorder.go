@@ -2,6 +2,7 @@ package report
 
 import (
 	"fmt"
+	"sync"
 
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -11,6 +12,7 @@ import (
 
 type Recorder struct {
 	report deploypb.Report
+	lock   sync.Mutex
 }
 
 func (r *Recorder) SetDeployID(deployID int64) {
@@ -35,6 +37,9 @@ func (r *Recorder) Error(format string, v ...interface{}) *Event {
 }
 
 func (r *Recorder) addEvent(level deploypb.ReportEvent_Level, format string, v ...interface{}) *Event {
+	r.lock.Lock()
+	defer r.lock.Unlock()
+
 	evt := &deploypb.ReportEvent{
 		Timestamp: timestamppb.Now(),
 		Level:     level,
@@ -45,6 +50,9 @@ func (r *Recorder) addEvent(level deploypb.ReportEvent_Level, format string, v .
 }
 
 func (r *Recorder) Marshal() ([]byte, error) {
+	r.lock.Lock()
+	defer r.lock.Unlock()
+
 	return proto.Marshal(&r.report)
 }
 

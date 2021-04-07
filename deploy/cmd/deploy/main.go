@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
+	"time"
 
 	nomadapi "github.com/hashicorp/nomad/api"
 )
@@ -26,6 +28,7 @@ func main() {
 		log.Panicf("creating nomad client: %v", err)
 	}
 
+	var jobs []*nomadapi.Job
 	for _, jobPath := range flag.Args() {
 		f, err := os.Open(jobPath)
 		if err != nil {
@@ -47,13 +50,91 @@ func main() {
 			log.Printf("planned job %s:", *job.Name)
 			printDiff(resp.Diff)
 		} else {
-			if _, _, err := nomadClient.Jobs().Register(&job, nil); err != nil {
+			resp, _, err := nomadClient.Jobs().Register(&job, nil)
+			if err != nil {
 				log.Panicf("registering job %s: %s", *job.Name, err)
 			}
 
 			log.Printf("registered job %s", *job.Name)
+
+			job.JobModifyIndex = &resp.JobModifyIndex
+			jobs = append(jobs, &job)
 		}
 	}
+
+	if *dryRun {
+		return
+	}
+
+	log.Printf("Watching for deployments to complete")
+	var wg sync.WaitGroup
+
+	for _, job := range jobs {
+		wg.Add(1)
+		go func(job *nomadapi.Job) {
+			defer wg.Done()
+
+			var prevDeploy *nomadapi.Deployment
+			var nomadIndex uint64
+			for {
+				q := &nomadapi.QueryOptions{}
+				if nomadIndex > 0 {
+					q.WaitIndex = nomadIndex
+					q.WaitTime = 30 * time.Second
+				}
+				d, wm, err := nomadClient.Jobs().LatestDeployment(*job.ID, q)
+				if err != nil {
+					return
+				}
+
+				if d == nil {
+					log.Printf("Job %q doesn't have deployments, considering it complete", *job.Name)
+					return
+				}
+
+				if d.JobSpecModifyIndex < *job.JobModifyIndex {
+					log.Printf("Job %q hasn't created a new deployment yet, trying again", *job.Name)
+					time.Sleep(5 * time.Second)
+					continue
+				}
+
+				nomadIndex = wm.LastIndex
+				if prevDeploy == nil || prevDeploy.StatusDescription != d.StatusDescription {
+					log.Printf("%s: %s", *job.Name, d.StatusDescription)
+				}
+
+				for name, tg := range d.TaskGroups {
+					// Skip output if it's the same as the last time
+					if prevDeploy != nil {
+						prevTG := prevDeploy.TaskGroups[name]
+						if prevTG.PlacedAllocs == tg.PlacedAllocs &&
+							prevTG.DesiredTotal == tg.DesiredTotal &&
+							prevTG.HealthyAllocs == tg.HealthyAllocs &&
+							prevTG.UnhealthyAllocs == tg.UnhealthyAllocs {
+							continue
+						}
+					}
+
+					log.Printf("%s/%s: placed %d, desired %d, healthy %d, unhealthy %d",
+						*job.Name, name, tg.PlacedAllocs, tg.DesiredTotal, tg.HealthyAllocs, tg.UnhealthyAllocs)
+				}
+
+				switch d.Status {
+				case "running":
+					prevDeploy = d
+					continue
+				case "successful", "failed":
+					return
+				default:
+					log.Printf("Unexpected deployment status %q, giving up", d.Status)
+					return
+				}
+			}
+		}(job)
+	}
+
+	wg.Wait()
+	log.Printf("All jobs finished deploying")
 }
 
 func printDiff(diff *nomadapi.JobDiff) {

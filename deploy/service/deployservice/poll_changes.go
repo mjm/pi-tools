@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -289,17 +290,64 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 
 	r.Info("Found %d Nomad jobs to submit", len(zipReader.File))
 
+	var jobsToWatch []*nomadapi.Job
 	for _, file := range zipReader.File {
-		if err := s.submitNomadJob(ctx, &r, file); err != nil {
+		job, err := s.submitNomadJob(ctx, &r, file)
+		if err != nil {
 			return spanerr.RecordError(ctx, err)
 		}
+
+		jobsToWatch = append(jobsToWatch, job)
 	}
 
-	finalDeploymentStatus = "success"
+	r.Info("Watching deployment progress for all jobs")
+
+	var wg sync.WaitGroup
+	errChan := make(chan error, len(jobsToWatch))
+
+	wg.Add(len(jobsToWatch))
+	for _, job := range jobsToWatch {
+		go func(job *nomadapi.Job) {
+			// Don't wait for the deploy job to complete, since this server running may prevent that.
+			if *job.ID == "deploy" {
+				wg.Done()
+			} else {
+				defer wg.Done()
+			}
+
+			if err := s.watchJobDeployment(ctx, &r, job); err != nil {
+				errChan <- err
+			}
+		}(job)
+	}
+
+	wg.Wait()
+
+	close(errChan)
+	var errs []error
+	var errDescs []string
+	for err := range errChan {
+		errs = append(errs, err)
+		errDescs = append(errDescs, err.Error())
+	}
+
+	if len(errs) == 0 {
+		r.Info("All jobs finished deploying successfully")
+		finalDeploymentStatus = "success"
+	} else {
+		jobWord := "jobs"
+		if len(errs) == 1 {
+			jobWord = "job"
+		}
+
+		r.Error("%d %s failed to deploy", len(errs), jobWord).
+			WithDescription(strings.Join(errDescs, "\n"))
+	}
+
 	return nil
 }
 
-func (s *Server) submitNomadJob(ctx context.Context, r *report.Recorder, file *zip.File) error {
+func (s *Server) submitNomadJob(ctx context.Context, r *report.Recorder, file *zip.File) (*nomadapi.Job, error) {
 	ctx, span := tracer.Start(ctx, "Server.submitNomadJob",
 		trace.WithAttributes(
 			label.String("job.filename", file.Name),
@@ -309,7 +357,7 @@ func (s *Server) submitNomadJob(ctx context.Context, r *report.Recorder, file *z
 	f, err := file.Open()
 	if err != nil {
 		r.Error("Could not read job contents for %q", file.Name).WithError(err)
-		return spanerr.RecordError(ctx, err)
+		return nil, spanerr.RecordError(ctx, err)
 	}
 	defer f.Close()
 
@@ -317,14 +365,117 @@ func (s *Server) submitNomadJob(ctx context.Context, r *report.Recorder, file *z
 	var job nomadapi.Job
 	if err := json.NewDecoder(f).Decode(&job); err != nil {
 		r.Error("Could not decode job contents for %q", file.Name).WithError(err)
-		return spanerr.RecordError(ctx, err)
+		return nil, spanerr.RecordError(ctx, err)
 	}
 
-	if _, _, err := s.NomadClient.Jobs().Register(&job, nil); err != nil {
-		r.Error("Could not submit job %q", *job.Name).WithError(err)
-		return spanerr.RecordError(ctx, err)
+	span.SetAttributes(
+		label.String("job.id", *job.ID),
+		label.String("job.name", *job.Name))
+
+	if s.Config.DryRun {
+		return &job, nil
 	}
+
+	resp, _, err := s.NomadClient.Jobs().Register(&job, nil)
+	if err != nil {
+		r.Error("Could not submit job %q", *job.Name).WithError(err)
+		return nil, spanerr.RecordError(ctx, err)
+	}
+
+	span.SetAttributes(label.Uint64("job.modify_index", resp.JobModifyIndex))
+	job.JobModifyIndex = &resp.JobModifyIndex
 
 	r.Info("Submitted job %q", *job.Name)
-	return nil
+	return &job, nil
+}
+
+func (s *Server) watchJobDeployment(ctx context.Context, r *report.Recorder, job *nomadapi.Job) error {
+	ctx, span := tracer.Start(ctx, "Server.watchJobDeployment",
+		trace.WithAttributes(
+			label.String("job.id", *job.ID)))
+	defer span.End()
+
+	var prevDeploy *nomadapi.Deployment
+	var nomadIndex uint64
+	for {
+		q := &nomadapi.QueryOptions{}
+		if nomadIndex > 0 {
+			q.WaitIndex = nomadIndex
+			q.WaitTime = 30 * time.Second
+		}
+		d, wm, err := s.NomadClient.Jobs().LatestDeployment(*job.ID, q)
+		if err != nil {
+			return spanerr.RecordError(ctx, err)
+		}
+
+		if d == nil {
+			span.SetAttributes(label.Bool("job.has_deployments", false))
+			span.AddEvent("deploy_update",
+				trace.WithAttributes(
+					label.String("deployment.status", "successful")))
+			return nil
+		}
+
+		if d.JobSpecModifyIndex < *job.JobModifyIndex {
+			span.AddEvent("wait_for_deployment",
+				trace.WithAttributes(
+					label.Uint64("job.modify_index", *job.JobModifyIndex),
+					label.Uint64("deployment.job_modify_index", d.JobSpecModifyIndex)))
+			time.Sleep(5 * time.Second)
+			continue
+		}
+
+		if prevDeploy == nil {
+			span.SetAttributes(label.Bool("job.has_deployments", true))
+		}
+
+		nomadIndex = wm.LastIndex
+		if prevDeploy == nil || prevDeploy.StatusDescription != d.StatusDescription {
+			span.AddEvent("deploy_update",
+				trace.WithAttributes(
+					label.String("deployment.status", d.Status),
+					label.String("deployment.status_description", d.StatusDescription)))
+
+			r.Info("%s: %s", *job.Name, d.StatusDescription)
+		}
+
+		for name, tg := range d.TaskGroups {
+			// Skip output if it's the same as the last time
+			if prevDeploy != nil {
+				prevTG := prevDeploy.TaskGroups[name]
+				if prevTG.PlacedAllocs == tg.PlacedAllocs &&
+					prevTG.DesiredTotal == tg.DesiredTotal &&
+					prevTG.HealthyAllocs == tg.HealthyAllocs &&
+					prevTG.UnhealthyAllocs == tg.UnhealthyAllocs {
+					continue
+				}
+			}
+
+			span.AddEvent("task_group_update",
+				trace.WithAttributes(
+					label.String("task_group.name", name),
+					label.Int("task_group.placed_allocs", tg.PlacedAllocs),
+					label.Int("task_group.desired_total", tg.DesiredTotal),
+					label.Int("task_group.healthy_allocs", tg.HealthyAllocs),
+					label.Int("task_group.unhealthy_allocs", tg.UnhealthyAllocs)))
+
+			r.Info("%s/%s: Placed %d, Desired %d, Healthy %d, Unhealthy %d",
+				*job.Name, name, tg.PlacedAllocs, tg.DesiredTotal, tg.HealthyAllocs, tg.UnhealthyAllocs)
+		}
+
+		switch d.Status {
+		case "running":
+			prevDeploy = d
+			continue
+		case "successful":
+			r.Info("%s: %s", *job.Name, d.StatusDescription)
+			return nil
+		case "failed":
+			r.Error("%s: %s", *job.Name, d.StatusDescription)
+			err := fmt.Errorf("%s: deployment failed: %s", *job.Name, d.StatusDescription)
+			return spanerr.RecordError(ctx, err)
+		default:
+			return spanerr.RecordError(ctx, fmt.Errorf("%s: unexpected deployment status %q", *job.Name, d.Status))
+		}
+	}
 }
