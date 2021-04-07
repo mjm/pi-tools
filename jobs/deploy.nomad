@@ -68,6 +68,11 @@ job "deploy" {
         ]
       }
 
+      // If deploy-srv is updating itself, we want to keep the old version alive until it has finished
+      // the in-progress deploy. Otherwise, we leave around in-progress deploys in GitHub and don't get
+      // the right report.
+      kill_timeout = "10m"
+
       resources {
         cpu    = 50
         memory = 100

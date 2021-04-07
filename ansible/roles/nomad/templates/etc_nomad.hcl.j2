@@ -48,6 +48,10 @@ plugin "docker" {
 client {
   enabled = true
 
+  // deploy-srv may want to stay alive for a while, to be able to finish an in-progress deploy.
+  // The default is 30s which is just not enough for that.
+  max_kill_timeout = "10m"
+
   meta {
     "connect.sidecar_image" = "envoyproxy/envoy:v1.16.2"
   }

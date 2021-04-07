@@ -1,6 +1,7 @@
 package deployservice
 
 import (
+	"log"
 	"sync"
 
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
@@ -74,7 +75,9 @@ func New(gh *github.Client, nomad *nomadapi.Client, po *pushover.Pushover, s3Cli
 
 func (s *Server) Shutdown() {
 	// take the lock so that we block until a current deploy is complete
+	log.Printf("Waiting for a possible in-progress deploy to complete")
 	s.lock.Lock()
+	log.Printf("In-progress deploy (if any) has completed, continuing to shutdown")
 
 	// intentionally never unlock here, we don't want any more deploys to start after this
 }
