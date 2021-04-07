@@ -39,6 +39,11 @@ type Viewer {
 
     link(id: ID!): Link
 
+    recentDeploys(
+        first: Int
+        after: Cursor
+    ): DeployConnection
+
     mostRecentDeploy: Deploy
 
     deploy(id: ID!): Deploy
@@ -113,6 +118,17 @@ type Link implements Node {
     shortURL: String!
     destinationURL: String!
     description: String!
+}
+
+type DeployConnection {
+    edges: [DeployEdge!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
+}
+
+type DeployEdge {
+    node: Deploy!
+    cursor: Cursor!
 }
 
 type Deploy {

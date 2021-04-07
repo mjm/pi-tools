@@ -132,6 +132,25 @@ func (r *Resolver) Link(ctx context.Context, args struct {
 	return &Link{Link: res.GetLink()}, nil
 }
 
+func (r *Resolver) RecentDeploys(ctx context.Context, _ struct {
+	First *int32
+	After *Cursor
+}) (*DeployConnection, error) {
+	if err := requireAuthorizedUser(ctx); err != nil {
+		return nil, err
+	}
+
+	res, err := r.deployClient.ListRecentDeploys(ctx, &deploypb.ListRecentDeploysRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	return &DeployConnection{
+		res: res,
+		r:   r,
+	}, nil
+}
+
 func (r *Resolver) MostRecentDeploy(ctx context.Context) (*Deploy, error) {
 	if err := requireAuthorizedUser(ctx); err != nil {
 		return nil, err

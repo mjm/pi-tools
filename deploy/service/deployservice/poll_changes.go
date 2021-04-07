@@ -300,6 +300,10 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 		jobsToWatch = append(jobsToWatch, job)
 	}
 
+	if s.Config.DryRun {
+		return nil
+	}
+
 	r.Info("Watching deployment progress for all jobs")
 
 	var wg sync.WaitGroup

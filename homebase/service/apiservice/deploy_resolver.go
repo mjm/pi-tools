@@ -11,6 +11,46 @@ import (
 	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
 )
 
+type DeployConnection struct {
+	res *deploypb.ListRecentDeploysResponse
+	r   *Resolver
+}
+
+func (dc *DeployConnection) Edges() []DeployEdge {
+	var edges []DeployEdge
+	for _, d := range dc.res.GetDeploys() {
+		edges = append(edges, DeployEdge{
+			Deploy: d,
+			r:      dc.r,
+		})
+	}
+	return edges
+}
+
+func (DeployConnection) PageInfo() PageInfo {
+	return PageInfo{}
+}
+
+func (dc *DeployConnection) TotalCount() int32 {
+	return int32(len(dc.res.GetDeploys()))
+}
+
+type DeployEdge struct {
+	*deploypb.Deploy
+	r *Resolver
+}
+
+func (e DeployEdge) Node() *Deploy {
+	return &Deploy{
+		Deploy: e.Deploy,
+		r:      e.r,
+	}
+}
+
+func (e DeployEdge) Cursor() Cursor {
+	return Cursor(strconv.FormatInt(e.GetId(), 10))
+}
+
 type Deploy struct {
 	*deploypb.Deploy
 	r *Resolver
