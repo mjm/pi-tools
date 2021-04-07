@@ -35,6 +35,7 @@ fragment FiringAlertsCard_viewer on Viewer {
 
 fragment MostRecentDeployCard_viewer on Viewer {
   mostRecentDeploy {
+    rawID
     commitSHA
     commitMessage
     state
@@ -207,6 +208,13 @@ return {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
+                "name": "rawID",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
                 "name": "commitSHA",
                 "storageKey": null
               },
@@ -248,12 +256,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "f5224af7effabfacce3b4f841f20fbe0",
+    "cacheID": "d67669774b4e83ff5cdbcf1021f01181",
     "id": null,
     "metadata": {},
     "name": "pages_HomePageQuery",
     "operationKind": "query",
-    "text": "query pages_HomePageQuery {\n  viewer {\n    ...MostRecentTripCard_viewer\n    ...FiringAlertsCard_viewer\n    ...MostRecentDeployCard_viewer\n  }\n}\n\nfragment FiringAlertsCard_viewer on Viewer {\n  alerts {\n    activeAt\n    value\n  }\n}\n\nfragment MostRecentDeployCard_viewer on Viewer {\n  mostRecentDeploy {\n    commitSHA\n    commitMessage\n    state\n    startedAt\n    finishedAt\n    id\n  }\n}\n\nfragment MostRecentTripCard_viewer on Viewer {\n  trips(first: 1) {\n    edges {\n      node {\n        leftAt\n        returnedAt\n        id\n      }\n    }\n  }\n}\n"
+    "text": "query pages_HomePageQuery {\n  viewer {\n    ...MostRecentTripCard_viewer\n    ...FiringAlertsCard_viewer\n    ...MostRecentDeployCard_viewer\n  }\n}\n\nfragment FiringAlertsCard_viewer on Viewer {\n  alerts {\n    activeAt\n    value\n  }\n}\n\nfragment MostRecentDeployCard_viewer on Viewer {\n  mostRecentDeploy {\n    rawID\n    commitSHA\n    commitMessage\n    state\n    startedAt\n    finishedAt\n    id\n  }\n}\n\nfragment MostRecentTripCard_viewer on Viewer {\n  trips(first: 1) {\n    edges {\n      node {\n        leftAt\n        returnedAt\n        id\n      }\n    }\n  }\n}\n"
   }
 };
 })();

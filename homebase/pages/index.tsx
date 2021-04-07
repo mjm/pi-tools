@@ -28,7 +28,7 @@ function HomePage(props: RelayProps<{}, pages_HomePageQuery>) {
         <main className="mb-8">
             <PageHeader>Homebase</PageHeader>
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     <MostRecentTripCard viewer={query.viewer}/>
                     <FiringAlertsCard viewer={query.viewer}/>
                     <MostRecentDeployCard viewer={query.viewer}/>

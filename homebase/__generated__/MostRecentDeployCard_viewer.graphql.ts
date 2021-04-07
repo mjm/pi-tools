@@ -7,6 +7,7 @@ import { FragmentRefs } from "relay-runtime";
 export type DeployState = "FAILURE" | "INACTIVE" | "IN_PROGRESS" | "PENDING" | "SUCCESS" | "UNKNOWN" | "%future added value";
 export type MostRecentDeployCard_viewer = {
     readonly mostRecentDeploy: {
+        readonly rawID: string;
         readonly commitSHA: string;
         readonly commitMessage: string;
         readonly state: DeployState;
@@ -37,6 +38,13 @@ const node: ReaderFragment = {
       "name": "mostRecentDeploy",
       "plural": false,
       "selections": [
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "rawID",
+          "storageKey": null
+        },
         {
           "alias": null,
           "args": null,
@@ -79,5 +87,5 @@ const node: ReaderFragment = {
   "type": "Viewer",
   "abstractKey": null
 };
-(node as any).hash = 'f1e12948df73cd5fe05fbbab9859bdfb';
+(node as any).hash = '2877b1eccf3d855f5b9662abcd7bd2e9';
 export default node;

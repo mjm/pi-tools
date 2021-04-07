@@ -2,12 +2,14 @@ import React from "react";
 import {graphql, useFragment} from "react-relay/hooks";
 import {MostRecentDeployCard_viewer$key} from "../../__generated__/MostRecentDeployCard_viewer.graphql";
 import HomePageCard from "./HomePageCard";
+import Link from "next/link";
 
 export default function MostRecentDeployCard({viewer}: { viewer: MostRecentDeployCard_viewer$key }) {
     const data = useFragment(
         graphql`
             fragment MostRecentDeployCard_viewer on Viewer {
                 mostRecentDeploy {
+                    rawID
                     commitSHA
                     commitMessage
                     state
@@ -34,12 +36,13 @@ export default function MostRecentDeployCard({viewer}: { viewer: MostRecentDeplo
                           d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
                 </svg>
             }
-            footerHref="https://github.com/mjm/pi-tools/deployments"
+            footerHref="/deploys"
             footer="View deploy history">
-            <a href={`https://github.com/mjm/pi-tools/commit/${deploy.commitSHA}`} target="_blank"
-               className="text-base">
-                {deploy.commitMessage}
-            </a>
+            <Link href={`/deploys/${deploy.rawID}`}>
+                <a className="text-base">
+                    {deploy.commitMessage}
+                </a>
+            </Link>
         </HomePageCard>
     );
 }
