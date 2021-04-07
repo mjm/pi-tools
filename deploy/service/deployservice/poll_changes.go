@@ -435,8 +435,6 @@ func (s *Server) watchJobDeployment(ctx context.Context, r *report.Recorder, job
 				trace.WithAttributes(
 					label.String("deployment.status", d.Status),
 					label.String("deployment.status_description", d.StatusDescription)))
-
-			r.Info("%s: %s", *job.Name, d.StatusDescription)
 		}
 
 		for name, tg := range d.TaskGroups {
@@ -465,6 +463,9 @@ func (s *Server) watchJobDeployment(ctx context.Context, r *report.Recorder, job
 
 		switch d.Status {
 		case "running":
+			if prevDeploy == nil || prevDeploy.StatusDescription != d.StatusDescription {
+				r.Info("%s: %s", *job.Name, d.StatusDescription)
+			}
 			prevDeploy = d
 			continue
 		case "successful":
