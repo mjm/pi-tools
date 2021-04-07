@@ -63,9 +63,7 @@ func (s *Server) deploymentToProto(ctx context.Context, owner, repo string, depl
 
 	deployResponse.CommitMessage = commit.GetCommit().GetMessage()
 
-	statuses, _, err := s.GitHubClient.Repositories.ListDeploymentStatuses(ctx, owner, repo, deploy.GetID(), &github.ListOptions{
-		PerPage: 1,
-	})
+	statuses, _, err := s.GitHubClient.Repositories.ListDeploymentStatuses(ctx, owner, repo, deploy.GetID(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -88,6 +86,14 @@ func (s *Server) deploymentToProto(ctx context.Context, owner, repo string, depl
 			deployResponse.FinishedAt = deployStatus.GetCreatedAt().Format(time.RFC3339)
 		case "inactive":
 			deployResponse.State = deploypb.Deploy_INACTIVE
+
+			// look for a previous success or failure status, and use that to determine when the deploy finished
+			for _, prevStatus := range statuses[1:] {
+				if prevStatus.GetState() == "success" || prevStatus.GetState() == "failure" {
+					deployResponse.FinishedAt = prevStatus.GetCreatedAt().Format(time.RFC3339)
+					break
+				}
+			}
 		default:
 			deployResponse.State = deploypb.Deploy_UNKNOWN
 		}

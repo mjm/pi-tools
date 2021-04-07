@@ -3,9 +3,17 @@ syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 
 service DeployService {
+    rpc ListRecentDeploys (ListRecentDeploysRequest) returns (ListRecentDeploysResponse);
     rpc GetMostRecentDeploy (GetMostRecentDeployRequest) returns (GetMostRecentDeployResponse);
     rpc GetDeploy (GetDeployRequest) returns (GetDeployResponse);
     rpc GetDeployReport (GetDeployReportRequest) returns (GetDeployReportResponse);
+}
+
+message ListRecentDeploysRequest {
+}
+
+message ListRecentDeploysResponse {
+    repeated Deploy deploys = 1;
 }
 
 message GetMostRecentDeployRequest {

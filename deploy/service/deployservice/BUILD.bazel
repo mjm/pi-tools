@@ -6,6 +6,7 @@ go_library(
         "get_deploy.go",
         "get_deploy_report.go",
         "get_most_recent_deploy.go",
+        "list_recent_deploys.go",
         "poll_changes.go",
         "server.go",
         "trace.go",
