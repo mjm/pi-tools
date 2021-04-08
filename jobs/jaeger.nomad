@@ -37,6 +37,15 @@ job "jaeger" {
       name = "jaeger-collector"
       port = 14268
 
+      check {
+        type                   = "http"
+        path                   = "/"
+        port                   = "admin_http"
+        timeout                = "3s"
+        interval               = "15s"
+        success_before_passing = 3
+      }
+
       connect {
         sidecar_service {
           proxy {
@@ -52,6 +61,15 @@ job "jaeger" {
     service {
       name = "jaeger-query"
       port = "query_http"
+
+      check {
+        type                   = "http"
+        path                   = "/"
+        port                   = "admin_http"
+        timeout                = "3s"
+        interval               = "15s"
+        success_before_passing = 3
+      }
     }
 
     task "jaeger" {
@@ -59,7 +77,6 @@ job "jaeger" {
 
       config {
         image = "querycapistio/all-in-one@sha256:ad4552a9facb5e71ea2ca296fb92cf510e97783ad5068f5d23a6b169edb4a9dd"
-        ports = ["admin-http", "query-http"]
       }
 
       env {
