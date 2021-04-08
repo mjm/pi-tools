@@ -22,8 +22,17 @@ job "pihole" {
     service {
       name = "pihole"
       port = "dns"
+      task = "pihole"
 
       tags = ["dns"]
+
+      check {
+        type     = "script"
+        command  = "dig"
+        args     = ["@${NOMAD_IP_dns}", "-p", "${NOMAD_HOST_PORT_dns}", "google.com"]
+        interval = "30s"
+        timeout  = "5s"
+      }
     }
 
     service {
@@ -31,6 +40,14 @@ job "pihole" {
       port = "http"
 
       tags = ["http"]
+
+      check {
+        type                   = "http"
+        path                   = "/"
+        timeout                = "5s"
+        interval               = "30s"
+        success_before_passing = 3
+      }
     }
 
     service {
