@@ -1490,8 +1490,8 @@ go_repository(
 go_repository(
     name = "io_opencensus_go",
     importpath = "go.opencensus.io",
-    sum = "h1:gqCw0LfLxScz8irSi8exQc7fyQ0fKQU/qnC/X8+V/1M=",
-    version = "v0.23.0",
+    sum = "h1:dntmOdLpSpHlVqbW5Eay97DelsZHe+55D+xC6i0dDS0=",
+    version = "v0.22.5",
 )
 
 go_repository(
@@ -1518,8 +1518,8 @@ go_repository(
 go_repository(
     name = "org_golang_google_api",
     importpath = "google.golang.org/api",
-    sum = "h1:12aHIhhQCpWtd3Rcp2WwbboB5W72tJHcjzyA9MCoHAw=",
-    version = "v0.41.0",
+    sum = "h1:uWrpz12dpVPn7cojP82mk02XDgTJLDPc2KbVTxrWb4A=",
+    version = "v0.40.0",
 )
 
 go_repository(
