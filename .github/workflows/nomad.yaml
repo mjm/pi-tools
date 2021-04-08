@@ -44,7 +44,7 @@ jobs:
           path: ${{ github.workspace }}/homebase/.next/cache
           key: ${{ runner.os }}-nextjs-${{ hashFiles('homebase/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('homebase/yarn.lock') }}
+            ${{ runner.os }}-nextjs-
       - name: Login to Docker
         run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         env:
