@@ -11,14 +11,32 @@ receivers:
 processors:
   batch:
 
+  # scrub out the bot token from the URL for telegram API requests
+  attributes/homebasebot:
+    include:
+      match_type: regexp
+      services: [homebase-bot-srv]
+      attributes:
+        - key: http.url
+          value: ^https:\/\/api\.telegram\.org\/bot
+    actions:
+      - key: http.url
+        action: extract
+        pattern: ^(?P<telegram_url_prefix>https:\/\/api\.telegram\.org\/bot)(?P<telegram_api_token>[A-Za-z0-9:]+)(?P<telegram_url_suffix>.*)$
+      - key: telegram_api_token
+        action: delete
+      # ideally we'd be able to combine the prefix and suffix back together and replace the URL with a redacted one
+      # but there's no action that makes that possible, so for the time being, we'll just delete the http.url in this
+      # case.
+      - key: http.url
+        action: delete
+
 exporters:
   otlp:
     endpoint: "api.honeycomb.io:443"
     headers:
       "x-honeycomb-team": "{{ with secret "kv/honeycomb" }}{{ .Data.data.api_key }}{{ end }}"
       "x-honeycomb-dataset": "homelab"
-  jaeger:
-
 
 extensions:
   health_check:
@@ -30,5 +48,5 @@ service:
   pipelines:
     traces:
       receivers: [jaeger, otlp]
-      processors: [batch]
+      processors: [attributes/homebasebot, batch]
       exporters: [otlp]
