@@ -16,6 +16,14 @@ job "node-exporter" {
       meta {
         metrics_path = "/metrics"
       }
+
+      check {
+        type                   = "http"
+        path                   = "/"
+        timeout                = "5s"
+        interval               = "30s"
+        success_before_passing = 3
+      }
     }
 
     task "node-exporter" {
