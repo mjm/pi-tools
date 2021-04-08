@@ -4,9 +4,13 @@ import (
 	"context"
 	"flag"
 	"log"
+	"net/http"
 	"os"
+	"time"
 
+	"github.com/etherlabsio/healthcheck"
 	"github.com/zserge/hid"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
 	"github.com/mjm/pi-tools/observability"
 	"github.com/mjm/pi-tools/pkg/signal"
@@ -42,6 +46,9 @@ func main() {
 
 	ObserveDevices(context.Background(), []hid.Device{device})
 
+	http.Handle("/healthz",
+		otelhttp.WithRouteTag("CheckHealth", healthcheck.Handler(
+			healthcheck.WithTimeout(3*time.Second))))
 	rpc.ListenAndServe()
 
 	signal.Wait()

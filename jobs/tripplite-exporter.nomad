@@ -27,6 +27,14 @@ job "tripplite-exporter" {
       meta {
         metrics_path = "/metrics"
       }
+
+      check {
+        type                   = "http"
+        path                   = "/healthz"
+        timeout                = "5s"
+        interval               = "30s"
+        success_before_passing = 3
+      }
     }
 
     task "tripplite-exporter" {
