@@ -5,15 +5,15 @@ import (
 	"fmt"
 
 	"github.com/zserge/hid"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/metric/global"
 )
 
 const instrumentationName = "github.com/mjm/pi-tools/monitoring/cmd/tripplite_exporter"
 
 func ObserveDevices(ctx context.Context, devices []hid.Device) {
-	meter := metric.Must(otel.Meter(instrumentationName))
+	meter := metric.Must(global.Meter(instrumentationName))
 
 	meter.NewInt64ValueObserver("tripplite.health", func(ctx context.Context, result metric.Int64ObserverResult) {
 		for _, d := range devices {
@@ -149,11 +149,11 @@ func ObserveDevices(ctx context.Context, devices []hid.Device) {
 	statusCharging = statusObs.NewInt64ValueObserver("tripplite.status.battery.charging")
 }
 
-func deviceLabels(d hid.Device) []label.KeyValue {
+func deviceLabels(d hid.Device) []attribute.KeyValue {
 	info := d.Info()
-	return []label.KeyValue{
-		label.String("vendor", fmt.Sprintf("%04x", info.Vendor)),
-		label.String("product", fmt.Sprintf("%04x", info.Product)),
+	return []attribute.KeyValue{
+		attribute.String("vendor", fmt.Sprintf("%04x", info.Vendor)),
+		attribute.String("product", fmt.Sprintf("%04x", info.Product)),
 	}
 }
 

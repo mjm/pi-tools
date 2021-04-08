@@ -9,8 +9,8 @@ import (
 	"net/url"
 	"time"
 
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric/global"
 	"go.opentelemetry.io/otel/semconv"
 	"go.opentelemetry.io/otel/trace"
 
@@ -47,7 +47,7 @@ func New(cfg Config) (*Client, error) {
 		cfg.HTTPClient = http.DefaultClient
 	}
 
-	meter := otel.Meter(instrumentationName)
+	meter := global.Meter(instrumentationName)
 	return &Client{
 		cfg:     cfg,
 		baseURL: baseURL,
@@ -64,9 +64,9 @@ func (c *Client) requestURL(action string) *url.URL {
 func (c *Client) perform(ctx context.Context, action string, params interface{}, resp interface{}) error {
 	ctx, span := tracer.Start(ctx, "telegram.perform",
 		trace.WithAttributes(
-			label.String("telegram.action", action),
-			label.String("telegram.request.type", fmt.Sprintf("%T", params)),
-			label.String("telegram.response.type", fmt.Sprintf("%T", resp))))
+			attribute.String("telegram.action", action),
+			attribute.String("telegram.request.type", fmt.Sprintf("%T", params)),
+			attribute.String("telegram.response.type", fmt.Sprintf("%T", resp))))
 	defer span.End()
 
 	body, err := json.Marshal(params)
@@ -74,10 +74,10 @@ func (c *Client) perform(ctx context.Context, action string, params interface{},
 		return spanerr.RecordError(ctx, fmt.Errorf("serializing request params: %w", err))
 	}
 
-	span.SetAttributes(label.Int("telegram.request.length", len(body)))
+	span.SetAttributes(attribute.Int("telegram.request.length", len(body)))
 
 	u := c.requestURL(action)
-	span.SetAttributes(label.String("telegram.url", u.String()))
+	span.SetAttributes(attribute.String("telegram.url", u.String()))
 
 	r, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), bytes.NewReader(body))
 	if err != nil {
@@ -96,7 +96,7 @@ func (c *Client) perform(ctx context.Context, action string, params interface{},
 	}
 	defer res.Body.Close()
 
-	span.SetAttributes(label.Int("telegram.response.status", res.StatusCode))
+	span.SetAttributes(attribute.Int("telegram.response.status", res.StatusCode))
 
 	if res.StatusCode != http.StatusOK {
 		var resErr Error
@@ -121,15 +121,15 @@ func (c *Client) perform(ctx context.Context, action string, params interface{},
 func (c *Client) measureRequest(ctx context.Context, action string, err error, status int, duration time.Duration) {
 	if err != nil || status > 299 {
 		c.metrics.RequestErrorsTotal.Add(ctx, 1,
-			label.String("action", action),
+			attribute.String("action", action),
 			semconv.HTTPStatusCodeKey.Int(status))
 	}
 	c.metrics.RequestTotal.Add(ctx, 1,
-		label.String("action", action),
+		attribute.String("action", action),
 		semconv.HTTPStatusCodeKey.Int(status))
 	if duration != 0 {
 		c.metrics.RequestDurationSeconds.Record(ctx, duration.Seconds(),
-			label.String("action", action))
+			attribute.String("action", action))
 	}
 }
 

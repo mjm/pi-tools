@@ -3,7 +3,7 @@ package linksservice
 import (
 	"context"
 
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
 	linkspb "github.com/mjm/pi-tools/go-links/proto/links"
@@ -16,7 +16,7 @@ func (s *Server) ListRecentLinks(ctx context.Context, req *linkspb.ListRecentLin
 	if err != nil {
 		return nil, err
 	}
-	span.SetAttributes(label.Int("link.count", len(links)))
+	span.SetAttributes(attribute.Int("link.count", len(links)))
 
 	var res linkspb.ListRecentLinksResponse
 	for _, link := range links {

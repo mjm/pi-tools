@@ -10,8 +10,8 @@ import (
 
 	"github.com/etherlabsio/healthcheck"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/metric/global"
 	"google.golang.org/grpc"
 
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
@@ -78,7 +78,7 @@ func main() {
 		log.Panicf("Error creating leader election: %v", err)
 	}
 
-	metric.Must(otel.Meter(instrumentationName)).NewInt64ValueObserver("homebase.bot.is_leader", func(ctx context.Context, result metric.Int64ObserverResult) {
+	metric.Must(global.Meter(instrumentationName)).NewInt64ValueObserver("homebase.bot.is_leader", func(ctx context.Context, result metric.Int64ObserverResult) {
 		var isLeader int64
 		if election.IsLeader() {
 			isLeader = 1

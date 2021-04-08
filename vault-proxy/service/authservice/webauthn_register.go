@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/pkg/spanerr"
@@ -23,7 +23,7 @@ func (s *Server) StartRegistration(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	span.SetAttributes(label.String("auth.username", body.Name))
+	span.SetAttributes(attribute.String("auth.username", body.Name))
 
 	token := r.Header.Get("X-Vault-Token")
 	if token == "" {
@@ -75,7 +75,7 @@ func (s *Server) FinishRegistration(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	span.SetAttributes(label.String("auth.username", body.Name))
+	span.SetAttributes(attribute.String("auth.username", body.Name))
 
 	token := r.Header.Get("X-Vault-Token")
 	if token == "" {

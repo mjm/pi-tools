@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/golang/protobuf/ptypes"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -14,7 +14,7 @@ import (
 
 func (s *Server) ListArchives(ctx context.Context, req *backuppb.ListArchivesRequest) (*backuppb.ListArchivesResponse, error) {
 	span := trace.SpanFromContext(ctx)
-	span.SetAttributes(label.Stringer("archive.kind", req.GetKind()))
+	span.SetAttributes(attribute.Stringer("archive.kind", req.GetKind()))
 
 	resp := &backuppb.ListArchivesResponse{}
 
@@ -25,7 +25,7 @@ func (s *Server) ListArchives(ctx context.Context, req *backuppb.ListArchivesReq
 			return nil, err
 		}
 
-		span.SetAttributes(label.Int("archive.count", len(archives)))
+		span.SetAttributes(attribute.Int("archive.count", len(archives)))
 
 		for i := len(archives) - 1; i >= 0; i-- {
 			archive := archives[i]
@@ -48,7 +48,7 @@ func (s *Server) ListArchives(ctx context.Context, req *backuppb.ListArchivesReq
 			return nil, err
 		}
 
-		span.SetAttributes(label.Int("archive.count", len(archives)))
+		span.SetAttributes(attribute.Int("archive.count", len(archives)))
 
 		for _, archive := range archives {
 			ts, err := ptypes.TimestampProto(archive.CreatedAt)

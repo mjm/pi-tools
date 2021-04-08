@@ -3,7 +3,7 @@ package telegram
 import (
 	"context"
 
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/pkg/spanerr"
@@ -27,11 +27,11 @@ type AnswerCallbackQueryRequest struct {
 func (c *Client) AnswerCallbackQuery(ctx context.Context, req AnswerCallbackQueryRequest) error {
 	ctx, span := tracer.Start(ctx, "telegram.AnswerCallbackQuery",
 		trace.WithAttributes(
-			label.String("telegram.request.param.callback_query_id", req.CallbackQueryID),
-			label.Int("telegram.request.param.text.length", len(req.Text)),
-			label.Bool("telegram.request.param.show_alert", req.ShowAlert),
-			label.String("telegram.request.param.url", req.URL),
-			label.Int("telegram.request.param.cache_time", req.CacheTime)))
+			attribute.String("telegram.request.param.callback_query_id", req.CallbackQueryID),
+			attribute.Int("telegram.request.param.text.length", len(req.Text)),
+			attribute.Bool("telegram.request.param.show_alert", req.ShowAlert),
+			attribute.String("telegram.request.param.url", req.URL),
+			attribute.Int("telegram.request.param.cache_time", req.CacheTime)))
 	defer span.End()
 
 	var resp VoidResponse

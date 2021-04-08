@@ -14,7 +14,7 @@ go_library(
         "//pkg/spanerr",
         "@com_github_gorilla_sessions//:sessions",
         "@com_github_hashicorp_vault_api//:api",
-        "@io_opentelemetry_go_otel//label",
-        "@io_opentelemetry_go_otel//trace",
+        "@io_opentelemetry_go_otel//attribute",
+        "@io_opentelemetry_go_otel_trace//:trace",
     ],
 )

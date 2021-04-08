@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/pkg/spanerr"
@@ -26,8 +26,8 @@ func New(path string) *Tarsnap {
 func (t *Tarsnap) runCommand(ctx context.Context, args ...string) ([]byte, error) {
 	ctx, span := tracer.Start(ctx, "TarsnapCommand",
 		trace.WithAttributes(
-			label.String("tarsnap.path", t.tarsnapPath),
-			label.String("tarsnap.args", strings.Join(args, " "))))
+			attribute.String("tarsnap.path", t.tarsnapPath),
+			attribute.String("tarsnap.args", strings.Join(args, " "))))
 	defer span.End()
 
 	out, err := exec.CommandContext(ctx, t.tarsnapPath, args...).Output()

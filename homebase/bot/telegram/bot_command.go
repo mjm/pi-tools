@@ -3,7 +3,7 @@ package telegram
 import (
 	"context"
 
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/pkg/spanerr"
@@ -21,7 +21,7 @@ type SetMyCommandsRequest struct {
 func (c *Client) SetMyCommands(ctx context.Context, req SetMyCommandsRequest) error {
 	ctx, span := tracer.Start(ctx, "telegram.SetMyCommands",
 		trace.WithAttributes(
-			label.Int("telegram.request.param.commands.count", len(req.Commands))))
+			attribute.Int("telegram.request.param.commands.count", len(req.Commands))))
 	defer span.End()
 
 	var resp VoidResponse

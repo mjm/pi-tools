@@ -3,7 +3,7 @@ package telegram
 import (
 	"context"
 
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/pkg/spanerr"
@@ -61,10 +61,10 @@ func (c *Client) WatchUpdates(ctx context.Context, ch chan<- UpdateOrError, req 
 func (c *Client) GetUpdates(ctx context.Context, req GetUpdatesRequest) ([]Update, error) {
 	ctx, span := tracer.Start(ctx, "telegram.GetUpdates",
 		trace.WithAttributes(
-			label.Int("telegram.request.param.offset", req.Offset),
-			label.Int("telegram.request.param.limit", req.Limit),
-			label.Int("telegram.request.param.timeout", req.Timeout),
-			label.Array("telegram.request.param.allowed_updates", req.AllowedUpdates)))
+			attribute.Int("telegram.request.param.offset", req.Offset),
+			attribute.Int("telegram.request.param.limit", req.Limit),
+			attribute.Int("telegram.request.param.timeout", req.Timeout),
+			attribute.Array("telegram.request.param.allowed_updates", req.AllowedUpdates)))
 	defer span.End()
 
 	var resp GetUpdatesResponse
@@ -72,6 +72,6 @@ func (c *Client) GetUpdates(ctx context.Context, req GetUpdatesRequest) ([]Updat
 		return nil, spanerr.RecordError(ctx, err)
 	}
 
-	span.SetAttributes(label.Int("telegram.response.update_count", len(resp.Result)))
+	span.SetAttributes(attribute.Int("telegram.response.update_count", len(resp.Result)))
 	return resp.Result, nil
 }

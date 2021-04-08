@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strings"
 
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/label"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/status"
 )
@@ -18,7 +18,7 @@ func (s *Server) HandleShortLink(w http.ResponseWriter, r *http.Request) {
 	span := trace.SpanFromContext(ctx)
 
 	shortURL := strings.Trim(r.URL.Path, "/")
-	span.SetAttributes(label.String("link.short_url", shortURL))
+	span.SetAttributes(attribute.String("link.short_url", shortURL))
 
 	link, err := s.db.GetLinkByShortURL(ctx, shortURL)
 	if err != nil {
@@ -34,7 +34,7 @@ func (s *Server) HandleShortLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	span.SetAttributes(
-		label.String("link.id", link.ID.String()),
-		label.String("link.destination_url", link.DestinationURL))
+		attribute.String("link.id", link.ID.String()),
+		attribute.String("link.destination_url", link.DestinationURL))
 	http.Redirect(w, r, link.DestinationURL, http.StatusPermanentRedirect)
 }

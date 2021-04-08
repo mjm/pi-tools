@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/pkg/spanerr"
@@ -23,7 +23,7 @@ func (s *Server) InstallApp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	span.SetAttributes(label.Int64("github.artifact_id", artifact.GetID()))
+	span.SetAttributes(attribute.Int64("github.artifact_id", artifact.GetID()))
 
 	downloadURL, _, err := s.GithubClient.Actions.DownloadArtifact(ctx, owner, repo, artifact.GetID(), true)
 	if err != nil {
@@ -46,7 +46,7 @@ func (s *Server) InstallApp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	span.SetAttributes(label.Int("archive.length", buf.Len()))
+	span.SetAttributes(attribute.Int("archive.length", buf.Len()))
 
 	zipReader, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
 	if err != nil {

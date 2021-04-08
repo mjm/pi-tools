@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"howett.net/plist"
 
@@ -27,7 +27,7 @@ func (s *Server) InstallManifest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	span.SetAttributes(label.Int64("github.artifact_id", artifact.GetID()))
+	span.SetAttributes(attribute.Int64("github.artifact_id", artifact.GetID()))
 	artifactURL, _, err := s.GithubClient.Actions.DownloadArtifact(ctx, owner, repo, artifact.GetID(), true)
 	if err != nil {
 		err = spanerr.RecordError(ctx, err)
@@ -52,7 +52,7 @@ func (s *Server) InstallManifest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	span.SetAttributes(label.Int("archive.length", buf.Len()))
+	span.SetAttributes(attribute.Int("archive.length", buf.Len()))
 	zipReader, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
 	if err != nil {
 		err = spanerr.RecordError(ctx, err)

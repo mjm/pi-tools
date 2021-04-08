@@ -8,8 +8,9 @@ import (
 	"github.com/jonboulle/clockwork"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/metric/global"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/detect-presence/detector"
@@ -38,7 +39,7 @@ func (c *Checker) Run(ctx context.Context, tickCh chan<- struct{}) {
 		c.clock = clockwork.NewRealClock()
 	}
 
-	meter := otel.Meter(instrumentationName)
+	meter := global.Meter(instrumentationName)
 	c.metrics = newMetrics(meter)
 	metric.Must(meter).NewInt64ValueObserver("presence.bluetooth.healthy", func(ctx context.Context, result metric.Int64ObserverResult) {
 		c.lock.Lock()
@@ -87,7 +88,7 @@ func (c *Checker) tick(ctx context.Context) {
 	defer span.End()
 
 	healthy := c.checkBluetoothHealth(ctx)
-	span.SetAttributes(label.Bool("bluetooth.healthy", healthy))
+	span.SetAttributes(attribute.Bool("bluetooth.healthy", healthy))
 
 	var presentDeviceCount, missingDeviceCount int
 	var missingCanary bool
@@ -110,10 +111,10 @@ func (c *Checker) tick(ctx context.Context) {
 	c.lock.Unlock()
 
 	span.SetAttributes(
-		label.Bool("device.missing_canary", missingCanary),
-		label.Int("device.present_count", presentDeviceCount),
-		label.Int("device.missing_count", missingDeviceCount),
-		label.Int("device.count", presentDeviceCount+missingDeviceCount))
+		attribute.Bool("device.missing_canary", missingCanary),
+		attribute.Int("device.present_count", presentDeviceCount),
+		attribute.Int("device.missing_count", missingDeviceCount),
+		attribute.Int("device.count", presentDeviceCount+missingDeviceCount))
 }
 
 func (c *Checker) checkBluetoothHealth(ctx context.Context) bool {
@@ -127,7 +128,7 @@ func (c *Checker) checkBluetoothHealth(ctx context.Context) bool {
 		c.metrics.BluetoothCheckErrorsTotal.Add(ctx, 1)
 	}
 
-	span.SetAttributes(label.Bool("bluetooth.healthy", healthy))
+	span.SetAttributes(attribute.Bool("bluetooth.healthy", healthy))
 	c.lock.Lock()
 	c.isHealthy = healthy
 	c.lock.Unlock()
@@ -138,19 +139,19 @@ func (c *Checker) checkBluetoothHealth(ctx context.Context) bool {
 func (c *Checker) checkDevice(ctx context.Context, d presence.Device) bool {
 	ctx, span := tracer.Start(ctx, "Checker.checkDevice",
 		trace.WithAttributes(
-			label.String("device.name", d.Name),
-			label.String("device.addr", d.Addr),
-			label.Bool("device.is_canary", d.Canary)))
+			attribute.String("device.name", d.Name),
+			attribute.String("device.addr", d.Addr),
+			attribute.Bool("device.is_canary", d.Canary)))
 	defer span.End()
 
 	startTime := time.Now()
 	present, err := c.Detector.DetectDevice(ctx, d.Addr)
 	duration := time.Now().Sub(startTime)
 
-	labels := []label.KeyValue{
-		label.String("name", d.Name),
-		label.String("addr", d.Addr),
-		label.Bool("canary", d.Canary),
+	labels := []attribute.KeyValue{
+		attribute.String("name", d.Name),
+		attribute.String("addr", d.Addr),
+		attribute.Bool("canary", d.Canary),
 	}
 
 	c.metrics.DeviceCheckTotal.Add(ctx, 1, labels...)
@@ -161,7 +162,7 @@ func (c *Checker) checkDevice(ctx context.Context, d presence.Device) bool {
 	}
 	c.metrics.DeviceCheckDuration.Record(ctx, duration.Seconds(), labels...)
 
-	span.SetAttributes(label.Bool("device.present", present))
+	span.SetAttributes(attribute.Bool("device.present", present))
 	if !d.Canary {
 		c.Tracker.Set(ctx, d, present)
 	}

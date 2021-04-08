@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/segmentio/ksuid"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -16,8 +16,8 @@ import (
 func (s *Server) CreateLink(ctx context.Context, req *linkspb.CreateLinkRequest) (*linkspb.CreateLinkResponse, error) {
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(
-		label.String("link.short_url", req.GetShortUrl()),
-		label.String("link.destination_url", req.GetDestinationUrl()))
+		attribute.String("link.short_url", req.GetShortUrl()),
+		attribute.String("link.destination_url", req.GetDestinationUrl()))
 
 	if req.GetShortUrl() == "" {
 		return nil, status.Error(codes.InvalidArgument, "short URL of link cannot be empty")
@@ -27,7 +27,7 @@ func (s *Server) CreateLink(ctx context.Context, req *linkspb.CreateLinkRequest)
 	}
 
 	id := ksuid.New()
-	span.SetAttributes(label.String("link.id", id.String()))
+	span.SetAttributes(attribute.String("link.id", id.String()))
 
 	link, err := s.db.CreateLink(ctx, database.CreateLinkParams{
 		ID:             id,

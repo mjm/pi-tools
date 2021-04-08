@@ -3,7 +3,7 @@ package tripsservice
 import (
 	"context"
 
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,14 +19,14 @@ func (s *Server) ListTags(ctx context.Context, req *tripspb.ListTagsRequest) (*t
 		limit = req.GetLimit()
 	}
 
-	span.SetAttributes(label.Int32("limit", limit))
+	span.SetAttributes(attribute.Int("limit", int(limit)))
 
 	tags, err := s.q.ListTags(ctx, limit)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "listing tags: %s", err)
 	}
 
-	span.SetAttributes(label.Int("tag.count", len(tags)))
+	span.SetAttributes(attribute.Int("tag.count", len(tags)))
 
 	res := &tripspb.ListTagsResponse{}
 

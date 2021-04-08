@@ -72,6 +72,7 @@ func main() {
 					task.Env = map[string]string{}
 				}
 				task.Env["HOSTNAME"] = "${attr.unique.hostname}"
+				task.Env["HOST_IP"] = "${attr.unique.network.ip-address}"
 				task.Env["NOMAD_CLIENT_ID"] = "${node.unique.id}"
 
 				// remaining modifications are only for Docker tasks

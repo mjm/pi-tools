@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/pkg/spanerr"
@@ -23,7 +23,7 @@ func (s *Server) StartLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	span.SetAttributes(label.String("auth.username", body.Name))
+	span.SetAttributes(attribute.String("auth.username", body.Name))
 
 	resp, err := s.Vault.Logical().Write(fmt.Sprintf("auth/%s/assertion", s.AuthPath), map[string]interface{}{
 		"name": body.Name,
@@ -64,7 +64,7 @@ func (s *Server) FinishLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	span.SetAttributes(label.String("auth.username", body.Name))
+	span.SetAttributes(attribute.String("auth.username", body.Name))
 
 	sess, err := s.Store.Get(r, "vault-proxy")
 	if err != nil {
@@ -106,12 +106,12 @@ func (s *Server) FinishLogin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusForbidden)
 		return
 	}
-	span.SetAttributes(label.Float64("auth.token_ttl", tokenTTL.Seconds()))
+	span.SetAttributes(attribute.Float64("auth.token_ttl", tokenTTL.Seconds()))
 	tokenAccessor, err := secret.TokenAccessor()
 	if err != nil {
 		span.RecordError(err)
 	} else {
-		span.SetAttributes(label.String("auth.token_accessor", tokenAccessor))
+		span.SetAttributes(attribute.String("auth.token_accessor", tokenAccessor))
 	}
 
 	sess, err = s.Store.Get(r, "vault-token")

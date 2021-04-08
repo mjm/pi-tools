@@ -12,7 +12,7 @@ go_library(
     deps = [
         "//pkg/spanerr",
         "@io_opentelemetry_go_otel//:otel",
-        "@io_opentelemetry_go_otel//label",
-        "@io_opentelemetry_go_otel//trace",
+        "@io_opentelemetry_go_otel//attribute",
+        "@io_opentelemetry_go_otel_trace//:trace",
     ],
 )

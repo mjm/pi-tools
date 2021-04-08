@@ -3,7 +3,7 @@ package telegram
 import (
 	"context"
 
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/pkg/spanerr"
@@ -67,12 +67,12 @@ type SendMessageResponse struct {
 func (c *Client) SendMessage(ctx context.Context, req SendMessageRequest) (*Message, error) {
 	ctx, span := tracer.Start(ctx, "telegram.SendMessage",
 		trace.WithAttributes(
-			label.Int("telegram.request.param.chat_id", req.ChatID),
-			label.Int("telegram.request.param.text.length", len(req.Text)),
-			label.String("telegram.request.param.parse_mode", string(req.ParseMode)),
-			label.Bool("telegram.request.param.disable_web_page_preview", req.DisableWebPagePreview),
-			label.Bool("telegram.request.param.disable_notification", req.DisableNotification),
-			label.Int("telegram.request.param.reply_to_message_id", req.ReplyToMessageID)))
+			attribute.Int("telegram.request.param.chat_id", req.ChatID),
+			attribute.Int("telegram.request.param.text.length", len(req.Text)),
+			attribute.String("telegram.request.param.parse_mode", string(req.ParseMode)),
+			attribute.Bool("telegram.request.param.disable_web_page_preview", req.DisableWebPagePreview),
+			attribute.Bool("telegram.request.param.disable_notification", req.DisableNotification),
+			attribute.Int("telegram.request.param.reply_to_message_id", req.ReplyToMessageID)))
 	defer span.End()
 
 	var resp SendMessageResponse
@@ -82,17 +82,17 @@ func (c *Client) SendMessage(ctx context.Context, req SendMessageRequest) (*Mess
 
 	msg := resp.Result
 	span.SetAttributes(
-		label.Int("telegram.response.message_id", msg.MessageID))
+		attribute.Int("telegram.response.message_id", msg.MessageID))
 	return &msg, nil
 }
 
 func (c *Client) EditMessageText(ctx context.Context, req EditMessageTextRequest) (*Message, error) {
 	ctx, span := tracer.Start(ctx, "telegram.EditMessageText",
 		trace.WithAttributes(
-			label.Int("telegram.request.param.chat_id", req.ChatID),
-			label.Int("telegram.request.param.message_id", req.MessageID),
-			label.Int("telegram.request.param.text.length", len(req.Text)),
-			label.String("telegram.request.param.parse_mode", string(req.ParseMode))))
+			attribute.Int("telegram.request.param.chat_id", req.ChatID),
+			attribute.Int("telegram.request.param.message_id", req.MessageID),
+			attribute.Int("telegram.request.param.text.length", len(req.Text)),
+			attribute.String("telegram.request.param.parse_mode", string(req.ParseMode))))
 	defer span.End()
 
 	var resp SendMessageResponse
@@ -102,15 +102,15 @@ func (c *Client) EditMessageText(ctx context.Context, req EditMessageTextRequest
 
 	msg := resp.Result
 	span.SetAttributes(
-		label.Int("telegram.response.message_id", msg.MessageID))
+		attribute.Int("telegram.response.message_id", msg.MessageID))
 	return &msg, nil
 }
 
 func (c *Client) DeleteMessage(ctx context.Context, req DeleteMessageRequest) error {
 	ctx, span := tracer.Start(ctx, "telegram.DeleteMessage",
 		trace.WithAttributes(
-			label.Int("telegram.request.param.chat_id", req.ChatID),
-			label.Int("telegram.request.param.message_id", req.MessageID)))
+			attribute.Int("telegram.request.param.chat_id", req.ChatID),
+			attribute.Int("telegram.request.param.message_id", req.MessageID)))
 	defer span.End()
 
 	var resp VoidResponse

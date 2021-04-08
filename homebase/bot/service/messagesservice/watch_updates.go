@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
@@ -31,14 +31,14 @@ func (s *Server) WatchUpdates(ctx context.Context) {
 			update := updateOrErr.Update
 			if update.CallbackQuery != nil {
 				s.metrics.TelegramUpdateTotal.Add(ctx, 1,
-					label.String("update_type", "callback_query"))
+					attribute.String("update_type", "callback_query"))
 
 				if err := s.handleCallbackQuery(ctx, update.CallbackQuery); err != nil {
 					log.Printf("Error answering callback query: %v", err)
 				}
 			} else if update.Message != nil {
 				s.metrics.TelegramUpdateTotal.Add(ctx, 1,
-					label.String("update_type", "message"))
+					attribute.String("update_type", "message"))
 
 				if err := s.handleMessage(ctx, update.Message); err != nil {
 					log.Printf("Error responding to message: %v", err)
@@ -53,7 +53,7 @@ func (s *Server) WatchUpdates(ctx context.Context) {
 func (s *Server) handleMessage(ctx context.Context, msg *telegram.Message) error {
 	ctx, span := tracer.Start(ctx, "MessagesService.handleMessage",
 		trace.WithAttributes(
-			label.Int("telegram.message_id", msg.MessageID)))
+			attribute.Int("telegram.message_id", msg.MessageID)))
 	defer span.End()
 
 	// check if the message is a command
@@ -82,13 +82,13 @@ func (s *Server) handleMessage(ctx context.Context, msg *telegram.Message) error
 func (s *Server) handleCallbackQuery(ctx context.Context, cbq *telegram.CallbackQuery) error {
 	ctx, span := tracer.Start(ctx, "MessagesService.handleCallbackQuery",
 		trace.WithAttributes(
-			label.Int("telegram.message_id", cbq.Message.MessageID),
-			label.String("telegram.callback_query.data", cbq.Data)))
+			attribute.Int("telegram.message_id", cbq.Message.MessageID),
+			attribute.String("telegram.callback_query.data", cbq.Data)))
 	defer span.End()
 
 	if strings.HasPrefix(cbq.Data, "TAG_TRIP#") {
 		tagName := cbq.Data[9:]
-		span.SetAttributes(label.String("tag.name", tagName))
+		span.SetAttributes(attribute.String("tag.name", tagName))
 
 		tripID, err := s.getCallbackQueryTrip(ctx, cbq)
 		if err != nil {

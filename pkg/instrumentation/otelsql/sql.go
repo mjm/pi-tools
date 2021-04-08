@@ -5,8 +5,8 @@ import (
 	"database/sql"
 
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/label"
 	"go.opentelemetry.io/otel/semconv"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -35,12 +35,12 @@ func NewDBWithTracing(db *sql.DB, opts ...Option) *DB {
 }
 
 type config struct {
-	baseAttrs []label.KeyValue
+	baseAttrs []attribute.KeyValue
 }
 
 type Option func(*config)
 
-func WithAttributes(attrs ...label.KeyValue) Option {
+func WithAttributes(attrs ...attribute.KeyValue) Option {
 	return func(cfg *config) {
 		cfg.baseAttrs = attrs
 	}

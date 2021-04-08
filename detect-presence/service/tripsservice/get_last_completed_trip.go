@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
 	tripspb "github.com/mjm/pi-tools/detect-presence/proto/trips"
@@ -18,7 +18,7 @@ func (s *Server) GetLastCompletedTrip(ctx context.Context, _ *tripspb.GetLastCom
 		return nil, err
 	}
 
-	span.SetAttributes(label.String("trip.id", trip.ID.String()))
+	span.SetAttributes(attribute.String("trip.id", trip.ID.String()))
 
 	t := &tripspb.Trip{
 		Id:     trip.ID.String(),

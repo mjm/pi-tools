@@ -7,17 +7,17 @@ import (
 	"github.com/mjm/graphql-go/introspection"
 	gqltrace "github.com/mjm/graphql-go/trace"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
 
 var tracer = otel.Tracer("github.com/mjm/pi-tools/pkg/instrumentation/otelgraphql")
 
 var (
-	queryKey         = label.Key("graphql.query")
-	operationNameKey = label.Key("graphql.operation_name")
-	typeKey          = label.Key("graphql.type")
-	fieldKey         = label.Key("graphql.field")
+	queryKey         = attribute.Key("graphql.query")
+	operationNameKey = attribute.Key("graphql.operation_name")
+	typeKey          = attribute.Key("graphql.type")
+	fieldKey         = attribute.Key("graphql.field")
 )
 
 // GraphQLTracer implements gqltrace.Tracer for tracing GraphQL requests

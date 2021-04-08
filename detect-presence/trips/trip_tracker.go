@@ -11,8 +11,9 @@ import (
 	"github.com/jonboulle/clockwork"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/metric/global"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/detect-presence/database"
@@ -78,7 +79,7 @@ func NewTracker(db storage.DB, messages messagespb.MessagesServiceClient) (*Trac
 		}
 	}
 
-	m := metric.Must(otel.Meter(instrumentationName))
+	m := metric.Must(global.Meter(instrumentationName))
 	t.tripDurationSeconds = m.NewFloat64ValueRecorder("presence.trip.duration.seconds",
 		metric.WithDescription("Measures how long trips away from home last"))
 
@@ -101,7 +102,7 @@ func NewTracker(db storage.DB, messages messagespb.MessagesServiceClient) (*Trac
 
 func (t *Tracker) OnLeave(ctx context.Context, _ *presence.Tracker) {
 	ctx, span := tracer.Start(ctx, "trips.Tracker.OnLeave",
-		trace.WithAttributes(label.Bool("trip.in_progress", t.currentTrip != nil)))
+		trace.WithAttributes(attribute.Bool("trip.in_progress", t.currentTrip != nil)))
 	defer span.End()
 
 	if t.currentTrip != nil {
@@ -112,10 +113,10 @@ func (t *Tracker) OnLeave(ctx context.Context, _ *presence.Tracker) {
 	defer t.lock.Unlock()
 
 	t.lastLeft = t.clock.Now()
-	span.SetAttributes(label.String("trip.left_at", t.lastLeft.UTC().Format(time.RFC3339)))
+	span.SetAttributes(attribute.String("trip.left_at", t.lastLeft.UTC().Format(time.RFC3339)))
 
 	id := uuid.New()
-	span.SetAttributes(label.String("trip.id", id.String()))
+	span.SetAttributes(attribute.String("trip.id", id.String()))
 
 	newTrip, err := t.db.BeginTrip(ctx, database.BeginTripParams{
 		ID:     id,
@@ -132,7 +133,7 @@ func (t *Tracker) OnLeave(ctx context.Context, _ *presence.Tracker) {
 
 func (t *Tracker) OnReturn(ctx context.Context, _ *presence.Tracker) {
 	ctx, span := tracer.Start(ctx, "trips.Tracker.OnLeave",
-		trace.WithAttributes(label.Bool("trip.in_progress", t.currentTrip != nil)))
+		trace.WithAttributes(attribute.Bool("trip.in_progress", t.currentTrip != nil)))
 	defer span.End()
 
 	t.lock.Lock()
@@ -140,17 +141,17 @@ func (t *Tracker) OnReturn(ctx context.Context, _ *presence.Tracker) {
 
 	t.lastReturned = t.clock.Now()
 	span.SetAttributes(
-		label.String("trip.returned_at", t.lastReturned.UTC().Format(time.RFC3339)),
-		label.String("trip.left_at", t.lastLeft.UTC().Format(time.RFC3339)))
+		attribute.String("trip.returned_at", t.lastReturned.UTC().Format(time.RFC3339)),
+		attribute.String("trip.left_at", t.lastLeft.UTC().Format(time.RFC3339)))
 
 	if !t.lastLeft.IsZero() {
 		tripDuration := t.lastReturned.Sub(t.lastLeft)
-		span.SetAttributes(label.Float64("trip.duration_secs", tripDuration.Seconds()))
+		span.SetAttributes(attribute.Float64("trip.duration_secs", tripDuration.Seconds()))
 		t.tripDurationSeconds.Record(ctx, tripDuration.Seconds())
 	}
 
 	if t.currentTrip != nil {
-		span.SetAttributes(label.String("trip.id", t.currentTrip.ID.String()))
+		span.SetAttributes(attribute.String("trip.id", t.currentTrip.ID.String()))
 		if err := t.db.EndTrip(ctx, database.EndTripParams{
 			ID: t.currentTrip.ID,
 			ReturnedAt: sql.NullTime{

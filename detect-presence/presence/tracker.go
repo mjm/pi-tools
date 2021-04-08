@@ -5,8 +5,9 @@ import (
 	"sync"
 
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/metric/global"
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -35,7 +36,7 @@ func NewTracker() *Tracker {
 		},
 	}
 
-	m := metric.Must(otel.Meter(instrumentationName))
+	m := metric.Must(global.Meter(instrumentationName))
 	m.NewInt64ValueObserver("presence.device.total", func(ctx context.Context, result metric.Int64ObserverResult) {
 		t.lock.Lock()
 		defer t.lock.Unlock()
@@ -46,7 +47,7 @@ func NewTracker() *Tracker {
 				val = 1
 			}
 
-			result.Observe(val, label.String("name", d.Name), label.String("addr", d.Addr))
+			result.Observe(val, attribute.String("name", d.Name), attribute.String("addr", d.Addr))
 		}
 	}, metric.WithDescription("Indicates which devices are detected to be present at the time."))
 
@@ -70,26 +71,26 @@ func (t *Tracker) IsPresent() bool {
 func (t *Tracker) Set(ctx context.Context, d Device, present bool) {
 	ctx, span := tracer.Start(ctx, "presence.Tracker.Set",
 		trace.WithAttributes(
-			label.String("device.name", d.Name),
-			label.String("device.addr", d.Addr),
-			label.Bool("device.present", present)))
+			attribute.String("device.name", d.Name),
+			attribute.String("device.addr", d.Addr),
+			attribute.Bool("device.present", present)))
 	defer span.End()
 
 	t.lock.Lock()
 	wasPresent := t.IsPresent()
-	span.SetAttributes(label.Bool("user.present.previous", wasPresent))
+	span.SetAttributes(attribute.Bool("user.present.previous", wasPresent))
 
 	if present {
 		t.devices[d] = 0
 	} else {
 		t.devices[d] += 1
 	}
-	span.SetAttributes(label.Int("device.failure_count", t.devices[d]))
+	span.SetAttributes(attribute.Int("device.failure_count", t.devices[d]))
 
 	isPresent := t.IsPresent()
 	t.lock.Unlock()
 
-	span.SetAttributes(label.Bool("user.present", isPresent))
+	span.SetAttributes(attribute.Bool("user.present", isPresent))
 
 	if !wasPresent && isPresent {
 		// we have returned!

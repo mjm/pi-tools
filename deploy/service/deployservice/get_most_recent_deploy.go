@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/google/go-github/v33/github"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -29,7 +29,7 @@ func (s *Server) GetMostRecentDeploy(ctx context.Context, _ *deploypb.GetMostRec
 		return nil, err
 	}
 
-	span.SetAttributes(label.Int("deployment.count", len(deployments)))
+	span.SetAttributes(attribute.Int("deployment.count", len(deployments)))
 	if len(deployments) == 0 {
 		return nil, status.Errorf(codes.NotFound, "no deployments found for GitHub repository %s", s.Config.GitHubRepo)
 	}
@@ -47,8 +47,8 @@ func (s *Server) GetMostRecentDeploy(ctx context.Context, _ *deploypb.GetMostRec
 func (s *Server) deploymentToProto(ctx context.Context, owner, repo string, deploy *github.Deployment) (*deploypb.Deploy, error) {
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(
-		label.Int64("deployment.id", deploy.GetID()),
-		label.String("deployment.sha", deploy.GetSHA()))
+		attribute.Int64("deployment.id", deploy.GetID()),
+		attribute.String("deployment.sha", deploy.GetSHA()))
 
 	deployResponse := &deploypb.Deploy{
 		Id:        deploy.GetID(),
@@ -68,12 +68,12 @@ func (s *Server) deploymentToProto(ctx context.Context, owner, repo string, depl
 		return nil, err
 	}
 
-	span.SetAttributes(label.Int("deployment.status_count", len(statuses)))
+	span.SetAttributes(attribute.Int("deployment.status_count", len(statuses)))
 	if len(statuses) > 0 {
 		deployStatus := statuses[0]
 		span.SetAttributes(
-			label.Int64("deployment.status_id", deployStatus.GetID()),
-			label.String("deployment.state", deployStatus.GetState()))
+			attribute.Int64("deployment.status_id", deployStatus.GetID()),
+			attribute.String("deployment.state", deployStatus.GetState()))
 
 		switch deployStatus.GetState() {
 		case "in_progress":

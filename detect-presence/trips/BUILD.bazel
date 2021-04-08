@@ -14,10 +14,11 @@ go_library(
         "@com_github_google_uuid//:uuid",
         "@com_github_jonboulle_clockwork//:clockwork",
         "@io_opentelemetry_go_otel//:otel",
+        "@io_opentelemetry_go_otel//attribute",
         "@io_opentelemetry_go_otel//codes",
-        "@io_opentelemetry_go_otel//label",
-        "@io_opentelemetry_go_otel//metric",
-        "@io_opentelemetry_go_otel//trace",
+        "@io_opentelemetry_go_otel_metric//:metric",
+        "@io_opentelemetry_go_otel_metric//global",
+        "@io_opentelemetry_go_otel_trace//:trace",
     ],
 )
 

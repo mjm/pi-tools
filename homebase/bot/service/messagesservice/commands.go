@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -42,7 +42,7 @@ func (s *Server) RegisterCommands(ctx context.Context) error {
 
 func (s *Server) handleIgnoreCommand(ctx context.Context, msg *telegram.Message) error {
 	ctx, span := tracer.Start(ctx, "MessagesService.handleIgnoreCommand",
-		trace.WithAttributes(label.String("telegram.message.text", msg.Text)))
+		trace.WithAttributes(attribute.String("telegram.message.text", msg.Text)))
 	defer span.End()
 
 	resp, err := s.trips.GetLastCompletedTrip(ctx, &trips.GetLastCompletedTripRequest{})
@@ -79,7 +79,7 @@ func (s *Server) handleIgnoreCommand(ctx context.Context, msg *telegram.Message)
 
 func (s *Server) handleTagCommand(ctx context.Context, msg *telegram.Message) error {
 	ctx, span := tracer.Start(ctx, "MessagesService.handleTagCommand",
-		trace.WithAttributes(label.String("telegram.message.text", msg.Text)))
+		trace.WithAttributes(attribute.String("telegram.message.text", msg.Text)))
 	defer span.End()
 
 	resp, err := s.trips.GetLastCompletedTrip(ctx, &trips.GetLastCompletedTripRequest{})
@@ -119,7 +119,7 @@ func (s *Server) handleTagCommand(ctx context.Context, msg *telegram.Message) er
 
 func (s *Server) handleUntagCommand(ctx context.Context, msg *telegram.Message) error {
 	ctx, span := tracer.Start(ctx, "MessagesService.handleUntagCommand",
-		trace.WithAttributes(label.String("telegram.message.text", msg.Text)))
+		trace.WithAttributes(attribute.String("telegram.message.text", msg.Text)))
 	defer span.End()
 
 	resp, err := s.trips.GetLastCompletedTrip(ctx, &trips.GetLastCompletedTripRequest{})

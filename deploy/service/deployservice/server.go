@@ -8,8 +8,8 @@ import (
 	"github.com/google/go-github/v33/github"
 	"github.com/gregdel/pushover"
 	nomadapi "github.com/hashicorp/nomad/api"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/metric/global"
 )
 
 // Config contains configuration parameters for how to fetch the build artifact to deploy.
@@ -59,7 +59,7 @@ type Server struct {
 }
 
 func New(gh *github.Client, nomad *nomadapi.Client, po *pushover.Pushover, s3Client s3iface.S3API, cfg Config) *Server {
-	m := metric.Must(otel.Meter(instrumentationName))
+	m := metric.Must(global.Meter(instrumentationName))
 	return &Server{
 		Config:       cfg,
 		GitHubClient: gh,

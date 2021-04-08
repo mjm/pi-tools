@@ -6,7 +6,7 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,9 +19,9 @@ import (
 func (s *Server) SendTripCompletedMessage(ctx context.Context, req *messagespb.SendTripCompletedMessageRequest) (*messagespb.SendTripCompletedMessageResponse, error) {
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(
-		label.String("trip.id", req.GetTripId()),
-		label.String("trip.left_at", req.GetLeftAt()),
-		label.String("trip.returned_at", req.GetReturnedAt()))
+		attribute.String("trip.id", req.GetTripId()),
+		attribute.String("trip.left_at", req.GetLeftAt()),
+		attribute.String("trip.returned_at", req.GetReturnedAt()))
 
 	tripID, err := uuid.Parse(req.GetTripId())
 	if err != nil {
@@ -42,14 +42,14 @@ func (s *Server) SendTripCompletedMessage(ctx context.Context, req *messagespb.S
 		return nil, status.Errorf(codes.Internal, "sending message: %s", err)
 	}
 
-	span.SetAttributes(label.Int("telegram.message_id", msg.MessageID))
+	span.SetAttributes(attribute.Int("telegram.message_id", msg.MessageID))
 
 	// before we overwrite it, see if there's an existing message we've already sent about this trip
 	existingMessageID, err := s.q.GetMessageForTrip(ctx, tripID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return nil, status.Errorf(codes.Internal, "fetching existing message for trip: %s", err)
 	}
-	span.SetAttributes(label.Int64("telegram.existing_message_id", existingMessageID))
+	span.SetAttributes(attribute.Int64("telegram.existing_message_id", existingMessageID))
 
 	// record the message ID so we know which trip to update when we get a callback query response
 	if err := s.q.SetMessageForTrip(ctx, database.SetMessageForTripParams{

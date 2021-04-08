@@ -7,6 +7,6 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "@io_opentelemetry_go_otel//codes",
-        "@io_opentelemetry_go_otel//trace",
+        "@io_opentelemetry_go_otel_trace//:trace",
     ],
 )

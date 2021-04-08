@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gorilla/sessions"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/pkg/spanerr"
@@ -18,7 +18,7 @@ func (s *Server) HandleAuthRequest(w http.ResponseWriter, r *http.Request) {
 
 	vaultTokenHeader := r.Header.Get("X-Vault-Token")
 	if vaultTokenHeader != "" {
-		span.SetAttributes(label.String("auth.token_source", "header"))
+		span.SetAttributes(attribute.String("auth.token_source", "header"))
 		s.handleVaultToken(ctx, r, w, vaultTokenHeader, nil)
 		return
 	}
@@ -29,7 +29,7 @@ func (s *Server) HandleAuthRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if vaultTokenRaw, ok := sess.Values["token"]; ok {
-		span.SetAttributes(label.String("auth.token_source", "session"))
+		span.SetAttributes(attribute.String("auth.token_source", "session"))
 		s.handleVaultToken(ctx, r, w, vaultTokenRaw.(string), sess)
 		return
 	}
@@ -59,7 +59,7 @@ func (s *Server) handleVaultToken(ctx context.Context, r *http.Request, w http.R
 	if err != nil {
 		span.RecordError(err)
 	} else {
-		span.SetAttributes(label.String("auth.token_accessor", tokenAccessor))
+		span.SetAttributes(attribute.String("auth.token_accessor", tokenAccessor))
 	}
 
 	tokenTTL, err := secret.TokenTTL()
@@ -67,7 +67,7 @@ func (s *Server) handleVaultToken(ctx context.Context, r *http.Request, w http.R
 		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
 		return
 	}
-	span.SetAttributes(label.Stringer("auth.token_ttl", tokenTTL))
+	span.SetAttributes(attribute.Stringer("auth.token_ttl", tokenTTL))
 
 	// TODO maybe parameterize this
 	if sess != nil && tokenTTL < (24*time.Hour) {
@@ -86,7 +86,7 @@ func (s *Server) handleVaultToken(ctx context.Context, r *http.Request, w http.R
 			http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
 			return
 		}
-		span.SetAttributes(label.Stringer("auth.token_ttl_renewed", tokenTTL))
+		span.SetAttributes(attribute.Stringer("auth.token_ttl_renewed", tokenTTL))
 
 		sess.Options.MaxAge = int(tokenTTL.Seconds())
 		if err := sess.Save(r, w); err != nil {
@@ -107,7 +107,7 @@ func (s *Server) handleVaultToken(ctx context.Context, r *http.Request, w http.R
 		return
 	}
 
-	span.SetAttributes(label.String("auth.username", tokenMeta["username"]))
+	span.SetAttributes(attribute.String("auth.username", tokenMeta["username"]))
 
 	w.Header().Set("X-Auth-Request-Token", vaultToken)
 	w.Header().Set("X-Auth-Request-User", tokenMeta["username"])

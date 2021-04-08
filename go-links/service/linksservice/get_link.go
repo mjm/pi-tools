@@ -6,7 +6,7 @@ import (
 	"errors"
 
 	"github.com/segmentio/ksuid"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -16,7 +16,7 @@ import (
 
 func (s *Server) GetLink(ctx context.Context, req *linkspb.GetLinkRequest) (*linkspb.GetLinkResponse, error) {
 	span := trace.SpanFromContext(ctx)
-	span.SetAttributes(label.String("link.id", req.GetId()))
+	span.SetAttributes(attribute.String("link.id", req.GetId()))
 
 	if req.GetId() == "" {
 		return nil, status.Error(codes.InvalidArgument, "missing ID of link to get")

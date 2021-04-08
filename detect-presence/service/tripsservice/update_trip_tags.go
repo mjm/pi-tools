@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -16,9 +16,9 @@ import (
 func (s *Server) UpdateTripTags(ctx context.Context, req *tripspb.UpdateTripTagsRequest) (*tripspb.UpdateTripTagsResponse, error) {
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(
-		label.String("trip.id", req.GetTripId()),
-		label.Array("trip.tags.added", req.GetTagsToAdd()),
-		label.Array("trip.tags.removed", req.GetTagsToRemove()))
+		attribute.String("trip.id", req.GetTripId()),
+		attribute.Array("trip.tags.added", req.GetTagsToAdd()),
+		attribute.Array("trip.tags.removed", req.GetTagsToRemove()))
 
 	if req.GetTripId() == "" {
 		return nil, status.Error(codes.InvalidArgument, "missing ID for trip to tag")

@@ -19,7 +19,7 @@ import (
 	"github.com/gregdel/pushover"
 	nomadapi "github.com/hashicorp/nomad/api"
 	"github.com/segmentio/ksuid"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/deploy/report"
@@ -60,8 +60,8 @@ func (s *Server) performCheck(ctx context.Context) {
 	}
 	duration := time.Now().Sub(startTime)
 
-	s.deployChecksTotal.Add(ctx, 1, label.String("status", status))
-	s.deployCheckDuration.Record(ctx, duration.Seconds(), label.String("status", status))
+	s.deployChecksTotal.Add(ctx, 1, attribute.String("status", status))
+	s.deployCheckDuration.Record(ctx, duration.Seconds(), attribute.String("status", status))
 }
 
 func (s *Server) checkForChanges(ctx context.Context) error {
@@ -88,8 +88,8 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 	if len(deployments) > 0 {
 		prevDeploy := deployments[0]
 		span.SetAttributes(
-			label.Int64("deployment.previous.id", prevDeploy.GetID()),
-			label.String("deployment.previous.sha", prevDeploy.GetSHA()))
+			attribute.Int64("deployment.previous.id", prevDeploy.GetID()),
+			attribute.String("deployment.previous.sha", prevDeploy.GetSHA()))
 
 		// Again, assuming the first deployment status returned is the newest one.
 		statuses, _, err := s.GitHubClient.Repositories.ListDeploymentStatuses(ctx, owner, repo, prevDeploy.GetID(), &github.ListOptions{
@@ -101,7 +101,7 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 
 		if len(statuses) > 0 {
 			status := statuses[0]
-			span.SetAttributes(label.String("deployment.previous.status", status.GetState()))
+			span.SetAttributes(attribute.String("deployment.previous.status", status.GetState()))
 
 			if status.GetState() == "success" {
 				prevSuccessfulCommit = prevDeploy.GetSHA()
@@ -120,23 +120,23 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 		return spanerr.RecordError(ctx, err)
 	}
 
-	span.SetAttributes(label.Int("workflow.run_count", len(runs.WorkflowRuns)))
+	span.SetAttributes(attribute.Int("workflow.run_count", len(runs.WorkflowRuns)))
 	if len(runs.WorkflowRuns) == 0 {
 		return spanerr.RecordError(ctx, fmt.Errorf("no matching workflow runs found"))
 	}
 
 	run := runs.WorkflowRuns[0]
 	span.SetAttributes(
-		label.String("workflow.run.commit_id", run.GetHeadCommit().GetID()),
-		label.String("workflow.run.commit_message", run.GetHeadCommit().GetMessage()),
-		label.String("last_successful_commit_id", prevSuccessfulCommit))
+		attribute.String("workflow.run.commit_id", run.GetHeadCommit().GetID()),
+		attribute.String("workflow.run.commit_message", run.GetHeadCommit().GetMessage()),
+		attribute.String("last_successful_commit_id", prevSuccessfulCommit))
 
 	if run.GetHeadCommit().GetID() == prevSuccessfulCommit {
-		span.SetAttributes(label.Bool("deploy_skipped", true))
+		span.SetAttributes(attribute.Bool("deploy_skipped", true))
 		return errSkipped
 	}
 
-	span.SetAttributes(label.Bool("deploy_skipped", false))
+	span.SetAttributes(attribute.Bool("deploy_skipped", false))
 
 	var r report.Recorder
 	r.SetCommitInfo(run.GetHeadCommit().GetID(), run.GetHeadCommit().GetMessage())
@@ -163,8 +163,8 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 
 		deployID = deploy.GetID()
 		span.SetAttributes(
-			label.Int64("deployment.id", deployID),
-			label.String("deployment.sha", deploy.GetSHA()))
+			attribute.Int64("deployment.id", deployID),
+			attribute.String("deployment.sha", deploy.GetSHA()))
 		r.SetDeployID(deployID)
 
 		// Now set the new deployment to be in progress
@@ -175,10 +175,10 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 		if err != nil {
 			return spanerr.RecordError(ctx, err)
 		}
-		span.SetAttributes(label.Int64("deployment.in_progress_status_id", inProgressStatus.GetID()))
+		span.SetAttributes(attribute.Int64("deployment.in_progress_status_id", inProgressStatus.GetID()))
 
 		defer func() {
-			span.SetAttributes(label.String("deployment.status", finalDeploymentStatus))
+			span.SetAttributes(attribute.String("deployment.status", finalDeploymentStatus))
 
 			// Create the final status for the deployment
 			finalStatus, _, err := s.GitHubClient.Repositories.CreateDeploymentStatus(ctx, owner, repo, deployID, &github.DeploymentStatusRequest{
@@ -190,7 +190,7 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 				span.RecordError(err)
 			}
 
-			span.SetAttributes(label.Int64("deployment.final_status_id", finalStatus.GetID()))
+			span.SetAttributes(attribute.Int64("deployment.final_status_id", finalStatus.GetID()))
 
 			// Send a notification about the deploy ending
 			var title string
@@ -222,9 +222,9 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 			key = strconv.FormatInt(deployID, 10)
 		}
 		span.SetAttributes(
-			label.String("report.key", key),
-			label.String("report.bucket", s.Config.ReportBucket),
-			label.Int("report.size", len(reportContent)))
+			attribute.String("report.key", key),
+			attribute.String("report.bucket", s.Config.ReportBucket),
+			attribute.Int("report.size", len(reportContent)))
 
 		_, err = s.S3.PutObjectWithContext(ctx, &s3.PutObjectInput{
 			Bucket: &s.Config.ReportBucket,
@@ -243,7 +243,7 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 		return spanerr.RecordError(ctx, err)
 	}
 
-	span.SetAttributes(label.Int("workflow.run.artifact_count", len(artifacts.Artifacts)))
+	span.SetAttributes(attribute.Int("workflow.run.artifact_count", len(artifacts.Artifacts)))
 
 	var artifact *github.Artifact
 	for _, a := range artifacts.Artifacts {
@@ -256,7 +256,7 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 	if artifact == nil {
 		return spanerr.RecordError(ctx, fmt.Errorf("no artifact found named %q", s.Config.ArtifactName))
 	}
-	span.SetAttributes(label.Int64("workflow.run.artifact_id", artifact.GetID()))
+	span.SetAttributes(attribute.Int64("workflow.run.artifact_id", artifact.GetID()))
 
 	downloadURL, _, err := s.GitHubClient.Actions.DownloadArtifact(ctx, repoParts[0], repoParts[1], artifact.GetID(), true)
 	if err != nil {
@@ -278,7 +278,7 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 		return spanerr.RecordError(ctx, err)
 	}
 
-	span.SetAttributes(label.Int("archive.length", buf.Len()))
+	span.SetAttributes(attribute.Int("archive.length", buf.Len()))
 	r.Info("Downloaded build artifact").
 		WithDescription("Artifact size: %d bytes", buf.Len())
 
@@ -356,8 +356,8 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 func (s *Server) submitNomadJob(ctx context.Context, r *report.Recorder, file *zip.File) (*nomadapi.Job, error) {
 	ctx, span := tracer.Start(ctx, "Server.submitNomadJob",
 		trace.WithAttributes(
-			label.String("job.filename", file.Name),
-			label.Uint64("job.size", file.UncompressedSize64)))
+			attribute.String("job.filename", file.Name),
+			attribute.Int64("job.size", int64(file.UncompressedSize64))))
 	defer span.End()
 
 	f, err := file.Open()
@@ -375,8 +375,8 @@ func (s *Server) submitNomadJob(ctx context.Context, r *report.Recorder, file *z
 	}
 
 	span.SetAttributes(
-		label.String("job.id", *job.ID),
-		label.String("job.name", *job.Name))
+		attribute.String("job.id", *job.ID),
+		attribute.String("job.name", *job.Name))
 
 	planResp, _, err := s.NomadClient.Jobs().Plan(&job, true, nil)
 	if err != nil {
@@ -385,7 +385,7 @@ func (s *Server) submitNomadJob(ctx context.Context, r *report.Recorder, file *z
 	}
 
 	span.SetAttributes(
-		label.String("plan.diff_type", planResp.Diff.Type))
+		attribute.String("plan.diff_type", planResp.Diff.Type))
 
 	if planResp.Diff.Type == "None" {
 		return nil, nil
@@ -402,7 +402,7 @@ func (s *Server) submitNomadJob(ctx context.Context, r *report.Recorder, file *z
 		return nil, spanerr.RecordError(ctx, err)
 	}
 
-	span.SetAttributes(label.Uint64("job.modify_index", resp.JobModifyIndex))
+	span.SetAttributes(attribute.Int64("job.modify_index", int64(resp.JobModifyIndex)))
 	job.JobModifyIndex = &resp.JobModifyIndex
 
 	r.Info("Submitted job %q", *job.Name)
@@ -412,7 +412,7 @@ func (s *Server) submitNomadJob(ctx context.Context, r *report.Recorder, file *z
 func (s *Server) watchJobDeployment(ctx context.Context, r *report.Recorder, job *nomadapi.Job) error {
 	ctx, span := tracer.Start(ctx, "Server.watchJobDeployment",
 		trace.WithAttributes(
-			label.String("job.id", *job.ID)))
+			attribute.String("job.id", *job.ID)))
 	defer span.End()
 
 	var prevDeploy *nomadapi.Deployment
@@ -429,32 +429,32 @@ func (s *Server) watchJobDeployment(ctx context.Context, r *report.Recorder, job
 		}
 
 		if d == nil {
-			span.SetAttributes(label.Bool("job.has_deployments", false))
+			span.SetAttributes(attribute.Bool("job.has_deployments", false))
 			span.AddEvent("deploy_update",
 				trace.WithAttributes(
-					label.String("deployment.status", "successful")))
+					attribute.String("deployment.status", "successful")))
 			return nil
 		}
 
 		if d.JobSpecModifyIndex < *job.JobModifyIndex {
 			span.AddEvent("wait_for_deployment",
 				trace.WithAttributes(
-					label.Uint64("job.modify_index", *job.JobModifyIndex),
-					label.Uint64("deployment.job_modify_index", d.JobSpecModifyIndex)))
+					attribute.Int64("job.modify_index", int64(*job.JobModifyIndex)),
+					attribute.Int64("deployment.job_modify_index", int64(d.JobSpecModifyIndex))))
 			time.Sleep(5 * time.Second)
 			continue
 		}
 
 		if prevDeploy == nil {
-			span.SetAttributes(label.Bool("job.has_deployments", true))
+			span.SetAttributes(attribute.Bool("job.has_deployments", true))
 		}
 
 		nomadIndex = wm.LastIndex
 		if prevDeploy == nil || prevDeploy.StatusDescription != d.StatusDescription {
 			span.AddEvent("deploy_update",
 				trace.WithAttributes(
-					label.String("deployment.status", d.Status),
-					label.String("deployment.status_description", d.StatusDescription)))
+					attribute.String("deployment.status", d.Status),
+					attribute.String("deployment.status_description", d.StatusDescription)))
 		}
 
 		for name, tg := range d.TaskGroups {
@@ -471,11 +471,11 @@ func (s *Server) watchJobDeployment(ctx context.Context, r *report.Recorder, job
 
 			span.AddEvent("task_group_update",
 				trace.WithAttributes(
-					label.String("task_group.name", name),
-					label.Int("task_group.placed_allocs", tg.PlacedAllocs),
-					label.Int("task_group.desired_total", tg.DesiredTotal),
-					label.Int("task_group.healthy_allocs", tg.HealthyAllocs),
-					label.Int("task_group.unhealthy_allocs", tg.UnhealthyAllocs)))
+					attribute.String("task_group.name", name),
+					attribute.Int("task_group.placed_allocs", tg.PlacedAllocs),
+					attribute.Int("task_group.desired_total", tg.DesiredTotal),
+					attribute.Int("task_group.healthy_allocs", tg.HealthyAllocs),
+					attribute.Int("task_group.unhealthy_allocs", tg.UnhealthyAllocs)))
 
 			r.Info("%s/%s: Placed %d, Desired %d, Healthy %d, Unhealthy %d",
 				*job.Name, name, tg.PlacedAllocs, tg.DesiredTotal, tg.HealthyAllocs, tg.UnhealthyAllocs)

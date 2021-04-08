@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/google/go-github/v33/github"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
 	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
@@ -26,7 +26,7 @@ func (s *Server) ListRecentDeploys(ctx context.Context, _ *deploypb.ListRecentDe
 		return nil, err
 	}
 
-	span.SetAttributes(label.Int("deployment.count", len(deployments)))
+	span.SetAttributes(attribute.Int("deployment.count", len(deployments)))
 
 	var deployProtos []*deploypb.Deploy
 	for _, d := range deployments {

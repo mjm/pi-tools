@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -22,13 +22,13 @@ func (s *Server) ListTrips(ctx context.Context, req *tripspb.ListTripsRequest) (
 		limit = req.GetLimit()
 	}
 
-	span.SetAttributes(label.Int32("limit", limit))
+	span.SetAttributes(attribute.Int("limit", int(limit)))
 	trips, err := s.q.ListTrips(ctx, limit)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "listing trips: %w", err)
 	}
 
-	span.SetAttributes(label.Int("trip.count", len(trips)))
+	span.SetAttributes(attribute.Int("trip.count", len(trips)))
 
 	for _, trip := range trips {
 		t := &tripspb.Trip{

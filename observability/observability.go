@@ -1,6 +1,7 @@
 package observability
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,9 +10,10 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/metric/prometheus"
-	"go.opentelemetry.io/otel/exporters/trace/jaeger"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/exporters/otlp"
+	"go.opentelemetry.io/otel/exporters/otlp/otlpgrpc"
 	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/sdk/resource"
 	"go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/semconv"
 
@@ -22,36 +24,75 @@ func Start(svcname string) (func(), error) {
 	var err error
 	var stopTracing func()
 
-	var endpoint jaeger.EndpointOption
-	if debug.IsEnabled() {
-		endpoint = jaeger.WithAgentEndpoint("127.0.0.1:6831")
+	//var endpoint jaeger.EndpointOption
+	//if debug.IsEnabled() {
+	//	endpoint = jaeger.WithAgentEndpoint("127.0.0.1:6831")
+	//} else {
+	//	endpoint = jaeger.WithCollectorEndpoint("http://127.0.0.1:14268/api/traces")
+	//}
+
+	if !debug.IsEnabled() {
+		hostIP := os.Getenv("HOST_IP")
+		exporter, err := otlp.NewExporter(context.Background(),
+			otlpgrpc.NewDriver(
+				otlpgrpc.WithInsecure(),
+				otlpgrpc.WithEndpoint(hostIP+":55680")))
+		if err != nil {
+			return nil, fmt.Errorf("creating otlp exporter: %w", err)
+		}
+
+		r, err := resource.New(context.Background(), resource.WithAttributes(
+			semconv.ServiceNamespaceKey.String(os.Getenv("NOMAD_NAMESPACE")),
+			semconv.ServiceNameKey.String(svcname),
+			semconv.ServiceInstanceIDKey.String(os.Getenv("NOMAD_ALLOC_ID")),
+
+			semconv.ContainerNameKey.String(os.Getenv("NOMAD_TASK_NAME")),
+
+			semconv.HostNameKey.String(os.Getenv("HOSTNAME")),
+			semconv.HostIDKey.String(os.Getenv("NOMAD_CLIENT_ID"))))
+		if err != nil {
+			return nil, fmt.Errorf("creating telemetry resource: %w", err)
+		}
+
+		tp := trace.NewTracerProvider(
+			trace.WithSampler(DefaultSampler()),
+			trace.WithBatcher(exporter),
+			trace.WithResource(r))
+		otel.SetTracerProvider(tp)
+
+		stopTracing = func() {
+			if err := tp.Shutdown(context.Background()); err != nil {
+				log.Panicf("shutting down tracing: %v", err)
+			}
+		}
 	} else {
-		endpoint = jaeger.WithCollectorEndpoint("http://127.0.0.1:14268/api/traces")
+		stopTracing = func() {}
 	}
-	stopTracing, err = jaeger.InstallNewPipeline(
-		endpoint,
-		jaeger.WithSDK(&trace.Config{
-			DefaultSampler: DefaultSampler(),
-		}),
-		jaeger.WithProcess(jaeger.Process{
-			ServiceName: svcname,
-			Tags: []label.KeyValue{
-				semconv.ServiceNamespaceKey.String(os.Getenv("NOMAD_NAMESPACE")),
-				semconv.ServiceNameKey.String(fmt.Sprintf("%s/%s",
-					os.Getenv("NOMAD_JOB_NAME"),
-					os.Getenv("NOMAD_GROUP_NAME"))),
-				semconv.ServiceInstanceIDKey.String(os.Getenv("NOMAD_ALLOC_ID")),
 
-				semconv.ContainerNameKey.String(os.Getenv("NOMAD_TASK_NAME")),
-
-				semconv.HostNameKey.String(os.Getenv("HOSTNAME")),
-				semconv.HostIDKey.String(os.Getenv("NOMAD_CLIENT_ID")),
-			},
-		}))
-
-	if err != nil {
-		return nil, fmt.Errorf("installing jaeger tracing pipeline: %w", err)
-	}
+	//stopTracing, err = jaeger.InstallNewPipeline(
+	//	endpoint,
+	//	jaeger.WithSDK(&trace.Config{
+	//		DefaultSampler: DefaultSampler(),
+	//	}),
+	//	jaeger.WithProcess(jaeger.Process{
+	//		ServiceName: svcname,
+	//		Tags: []attribute.KeyValue{
+	//			semconv.ServiceNamespaceKey.String(os.Getenv("NOMAD_NAMESPACE")),
+	//			semconv.ServiceNameKey.String(fmt.Sprintf("%s/%s",
+	//				os.Getenv("NOMAD_JOB_NAME"),
+	//				os.Getenv("NOMAD_GROUP_NAME"))),
+	//			semconv.ServiceInstanceIDKey.String(os.Getenv("NOMAD_ALLOC_ID")),
+	//
+	//			semconv.ContainerNameKey.String(os.Getenv("NOMAD_TASK_NAME")),
+	//
+	//			semconv.HostNameKey.String(os.Getenv("HOSTNAME")),
+	//			semconv.HostIDKey.String(os.Getenv("NOMAD_CLIENT_ID")),
+	//		},
+	//	}))
+	//
+	//if err != nil {
+	//	return nil, fmt.Errorf("installing jaeger tracing pipeline: %w", err)
+	//}
 
 	otel.SetTextMapPropagator(
 		propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))

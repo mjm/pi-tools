@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/metric/global"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -28,7 +28,7 @@ type Server struct {
 }
 
 func New(db storage.DB, t *telegram.Client, trips tripspb.TripsServiceClient, chatID int) *Server {
-	meter := otel.Meter(instrumentationName)
+	meter := global.Meter(instrumentationName)
 	return &Server{
 		db:      db,
 		q:       database.New(db),

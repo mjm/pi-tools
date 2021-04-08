@@ -241,9 +241,9 @@ resource "vault_policy" "nomad_server" {
   policy = file("${local.vault_policies_path}/nomad-server.hcl")
 }
 
-resource "vault_policy" "vault_proxy" {
-  name   = "vault-proxy"
-  policy = file("${local.vault_policies_path}/vault-proxy.hcl")
+resource "vault_policy" "otel_collector" {
+  name   = "otel-collector"
+  policy = file("${local.vault_policies_path}/otel-collector.hcl")
 }
 
 resource "vault_policy" "presence" {
@@ -269,4 +269,9 @@ resource "vault_policy" "tarsnap" {
 resource "vault_policy" "unifi_exporter" {
   name   = "unifi-exporter"
   policy = file("${local.vault_policies_path}/unifi-exporter.hcl")
+}
+
+resource "vault_policy" "vault_proxy" {
+  name   = "vault-proxy"
+  policy = file("${local.vault_policies_path}/vault-proxy.hcl")
 }

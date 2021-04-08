@@ -35,19 +35,20 @@ require (
 	github.com/mjm/graphql-go v0.0.0-20200213070811-48021cabfccf
 	github.com/prometheus/client_golang v1.9.0
 	github.com/segmentio/ksuid v1.0.3
-	github.com/stretchr/testify v1.6.1
+	github.com/stretchr/testify v1.7.0
 	github.com/zserge/hid v0.0.0-20190124175232-e1626f1782f3
-	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.16.0
-	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.16.0
-	go.opentelemetry.io/contrib/instrumentation/runtime v0.16.0
-	go.opentelemetry.io/otel v0.16.0
-	go.opentelemetry.io/otel/exporters/metric/prometheus v0.16.0
-	go.opentelemetry.io/otel/exporters/trace/jaeger v0.16.0
-	go.opentelemetry.io/otel/sdk v0.16.0
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.19.0
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.19.0
+	go.opentelemetry.io/contrib/instrumentation/runtime v0.19.0
+	go.opentelemetry.io/otel v0.19.0
+	go.opentelemetry.io/otel/exporters/metric/prometheus v0.19.0
+	go.opentelemetry.io/otel/exporters/otlp v0.19.0 // indirect
+	go.opentelemetry.io/otel/exporters/trace/jaeger v0.19.0
+	go.opentelemetry.io/otel/sdk v0.19.0
 	golang.org/x/crypto v0.0.0-20200930160638-afb6bcd081ae // indirect
-	golang.org/x/oauth2 v0.0.0-20201109201403-9fd604954f58
-	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
-	google.golang.org/grpc v1.34.0
+	golang.org/x/oauth2 v0.0.0-20210220000619-9bb904979d93
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
+	google.golang.org/grpc v1.36.0
 	google.golang.org/protobuf v1.25.0
 	howett.net/plist v0.0.0-20201203080718-1454fab16a06
 	zombiezen.com/go/postgrestest v1.0.0

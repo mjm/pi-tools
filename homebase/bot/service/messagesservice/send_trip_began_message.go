@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -17,8 +17,8 @@ import (
 func (s *Server) SendTripBeganMessage(ctx context.Context, req *messagespb.SendTripBeganMessageRequest) (*messagespb.SendTripBeganMessageResponse, error) {
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(
-		label.String("trip.id", req.GetTripId()),
-		label.String("trip.left_at", req.GetLeftAt()))
+		attribute.String("trip.id", req.GetTripId()),
+		attribute.String("trip.left_at", req.GetLeftAt()))
 
 	tripID, err := uuid.Parse(req.GetTripId())
 	if err != nil {
@@ -37,7 +37,7 @@ func (s *Server) SendTripBeganMessage(ctx context.Context, req *messagespb.SendT
 		return nil, status.Errorf(codes.Internal, "sending message: %s", err)
 	}
 
-	span.SetAttributes(label.Int("telegram.message_id", msg.MessageID))
+	span.SetAttributes(attribute.Int("telegram.message_id", msg.MessageID))
 
 	// record the message ID so we know which trip to update when we get a callback query response
 	if err := s.q.SetMessageForTrip(ctx, database.SetMessageForTripParams{

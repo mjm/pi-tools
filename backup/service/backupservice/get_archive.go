@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/golang/protobuf/ptypes"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -15,8 +15,8 @@ import (
 func (s *Server) GetArchive(ctx context.Context, req *backuppb.GetArchiveRequest) (*backuppb.GetArchiveResponse, error) {
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(
-		label.String("archive.id", req.GetId()),
-		label.Stringer("archive.kind", req.GetKind()))
+		attribute.String("archive.id", req.GetId()),
+		attribute.Stringer("archive.kind", req.GetKind()))
 
 	resp := &backuppb.GetArchiveResponse{}
 
