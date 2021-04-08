@@ -24,6 +24,9 @@ job "otel-collector" {
         static = 55681
         to     = 55681
       }
+      port "metrics" {
+        to = 8888
+      }
     }
 
     service {
@@ -31,6 +34,11 @@ job "otel-collector" {
       port = "otlp_grpc"
 
       tags = ["grpc"]
+
+      meta {
+        metrics_path = "/metrics"
+        metrics_port = "${NOMAD_HOST_PORT_metrics}"
+      }
 
       check {
         type                   = "http"
@@ -52,7 +60,7 @@ job "otel-collector" {
           "--config",
           "${NOMAD_SECRETS_DIR}/config.yaml",
         ]
-        ports   = ["jaeger_thrift", "otlp_grpc", "otlp_grpc_2", "otlp_http", "healthcheck"]
+        ports   = ["jaeger_thrift", "otlp_grpc", "otlp_grpc_2", "otlp_http", "healthcheck", "metrics"]
       }
 
       resources {
