@@ -88,10 +88,6 @@ job "homebase" {
               destination_name = "backup-grpc"
               local_bind_port  = 2321
             }
-            upstreams {
-              destination_name = "jaeger-collector"
-              local_bind_port  = 14268
-            }
           }
         }
       }
@@ -150,10 +146,6 @@ job "homebase" {
             upstreams {
               destination_name = "detect-presence-grpc"
               local_bind_port  = 2121
-            }
-            upstreams {
-              destination_name = "jaeger-collector"
-              local_bind_port  = 14268
             }
           }
         }

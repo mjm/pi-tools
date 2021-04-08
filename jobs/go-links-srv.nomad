@@ -34,10 +34,6 @@ job "go-links" {
               destination_name = "postgresql"
               local_bind_port  = 5432
             }
-            upstreams {
-              destination_name = "jaeger-collector"
-              local_bind_port  = 14268
-            }
           }
         }
       }

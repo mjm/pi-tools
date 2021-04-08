@@ -32,14 +32,7 @@ job "backup-srv" {
       }
 
       connect {
-        sidecar_service {
-          proxy {
-            upstreams {
-              destination_name = "jaeger-collector"
-              local_bind_port  = 14268
-            }
-          }
-        }
+        sidecar_service {}
       }
     }
 

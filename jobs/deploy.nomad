@@ -36,10 +36,6 @@ job "deploy" {
         sidecar_service {
           proxy {
             upstreams {
-              destination_name = "jaeger-collector"
-              local_bind_port  = 14268
-            }
-            upstreams {
               destination_name = "minio"
               local_bind_port  = 9000
             }

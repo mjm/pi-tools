@@ -38,10 +38,6 @@ job "presence" {
               destination_name = "homebase-bot-grpc"
               local_bind_port  = 6361
             }
-            upstreams {
-              destination_name = "jaeger-collector"
-              local_bind_port  = 14268
-            }
           }
         }
       }
