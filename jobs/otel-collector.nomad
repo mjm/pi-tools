@@ -5,11 +5,18 @@ job "otel-collector" {
 
   group "otel-collector" {
     network {
+      port "healthcheck" {
+        to = 13133
+      }
       port "jaeger_thrift" {
         static = 14268
         to     = 14268
       }
       port "otlp_grpc" {
+        static = 4317
+        to     = 4317
+      }
+      port "otlp_grpc_2" {
         static = 55680
         to     = 55680
       }
@@ -24,6 +31,15 @@ job "otel-collector" {
       port = "otlp_grpc"
 
       tags = ["grpc"]
+
+      check {
+        type                   = "http"
+        path                   = "/"
+        port                   = "healthcheck"
+        timeout                = "3s"
+        interval               = "15s"
+        success_before_passing = 3
+      }
     }
 
     task "otel-collector" {
@@ -36,7 +52,7 @@ job "otel-collector" {
           "--config",
           "${NOMAD_SECRETS_DIR}/config.yaml",
         ]
-        ports   = ["jaeger_thrift", "otlp_grpc", "otlp_http"]
+        ports   = ["jaeger_thrift", "otlp_grpc", "otlp_grpc_2", "otlp_http", "healthcheck"]
       }
 
       resources {

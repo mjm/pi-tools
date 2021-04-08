@@ -36,7 +36,7 @@ func Start(svcname string) (func(), error) {
 		exporter, err := otlp.NewExporter(context.Background(),
 			otlpgrpc.NewDriver(
 				otlpgrpc.WithInsecure(),
-				otlpgrpc.WithEndpoint(hostIP+":55680")))
+				otlpgrpc.WithEndpoint(fmt.Sprintf("%s:%d", hostIP, otlp.DefaultCollectorPort))))
 		if err != nil {
 			return nil, fmt.Errorf("creating otlp exporter: %w", err)
 		}
