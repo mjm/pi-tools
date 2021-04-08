@@ -534,45 +534,6 @@ resource "consul_config_entry" "postgresql_intentions" {
   })
 }
 
-resource "consul_config_entry" "jaeger_collector_defaults" {
-  kind = "service-defaults"
-  name = "jaeger-collector"
-
-  config_json = jsonencode({
-    Protocol = "http"
-  })
-}
-
-resource "consul_config_entry" "jaeger_collector_intentions" {
-  kind = "service-intentions"
-  name = "jaeger-collector"
-
-  config_json = jsonencode({
-    Sources = [
-      {
-        Name        = "*"
-        Description = "Allow any service to send traces to the collector"
-        Precedence  = 8
-        Type        = "consul"
-        Permissions = [
-          {
-            Action = "allow"
-            HTTP   = {
-              PathExact = "/api/traces"
-            }
-          },
-          {
-            Action = "deny"
-            HTTP   = {
-              PathPrefix = "/"
-            }
-          },
-        ]
-      },
-    ]
-  })
-}
-
 resource "consul_config_entry" "grafana_defaults" {
   kind = "service-defaults"
   name = "grafana"
@@ -679,44 +640,6 @@ resource "consul_config_entry" "vault_proxy_intentions" {
     Sources = [
       {
         Name        = "ingress-http"
-        Precedence  = 9
-        Type        = "consul"
-        Permissions = [
-          {
-            Action = "allow"
-            HTTP   = {
-              PathPrefix = "/"
-            }
-          },
-        ]
-      },
-      {
-        Action     = "deny"
-        Name       = "*"
-        Precedence = 8
-        Type       = "consul"
-      },
-    ]
-  })
-}
-
-resource "consul_config_entry" "elasticsearch_defaults" {
-  kind = "service-defaults"
-  name = "elasticsearch"
-
-  config_json = jsonencode({
-    Protocol = "http"
-  })
-}
-
-resource "consul_config_entry" "elasticsearch_intentions" {
-  kind = "service-intentions"
-  name = "elasticsearch"
-
-  config_json = jsonencode({
-    Sources = [
-      {
-        Name        = "jaeger-collector"
         Precedence  = 9
         Type        = "consul"
         Permissions = [

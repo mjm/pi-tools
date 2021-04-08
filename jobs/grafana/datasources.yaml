@@ -16,9 +16,3 @@ datasources:
     editable: false
     jsonData:
       maxLines: 1000
-  - name: Jaeger
-    type: jaeger
-    access: proxy
-    url: {{ with service "jaeger-query" }}{{ with index . 0 }}http://{{ .Address }}:{{ .Port }}{{ end }}{{ end }}
-    version: 1
-    editable: false

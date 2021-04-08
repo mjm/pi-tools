@@ -10,7 +10,6 @@ locals {
     "go",
     "grafana",
     "homebase",
-    "jaeger",
     "minio",
     "nomad",
     "prometheus",
