@@ -7,6 +7,7 @@ import (
 	"github.com/google/go-github/v33/github"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
+	"golang.org/x/sync/errgroup"
 
 	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
 )
@@ -28,13 +29,23 @@ func (s *Server) ListRecentDeploys(ctx context.Context, _ *deploypb.ListRecentDe
 
 	span.SetAttributes(attribute.Int("deployment.count", len(deployments)))
 
-	var deployProtos []*deploypb.Deploy
-	for _, d := range deployments {
-		deployProto, err := s.deploymentToProto(ctx, repoParts[0], repoParts[1], d)
-		if err != nil {
-			return nil, err
-		}
-		deployProtos = append(deployProtos, deployProto)
+	deployProtos := make([]*deploypb.Deploy, len(deployments))
+	grp, grpCtx := errgroup.WithContext(ctx)
+	for i, d := range deployments {
+		i, d := i, d
+		grp.Go(func() error {
+			deployProto, err := s.deploymentToProto(grpCtx, repoParts[0], repoParts[1], d)
+			if err != nil {
+				return err
+			}
+
+			deployProtos[i] = deployProto
+			return nil
+		})
+	}
+
+	if err := grp.Wait(); err != nil {
+		return nil, err
 	}
 
 	return &deploypb.ListRecentDeploysResponse{
