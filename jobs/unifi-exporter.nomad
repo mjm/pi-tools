@@ -33,8 +33,8 @@ job "unifi-exporter" {
       }
 
       resources {
-        cpu    = 100
-        memory = 50
+        cpu    = 50
+        memory = 30
       }
 
       vault {

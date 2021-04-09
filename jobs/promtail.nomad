@@ -74,7 +74,7 @@ job "promtail" {
 
       resources {
         cpu    = 100
-        memory = 100
+        memory = 50
       }
 
       volume_mount {

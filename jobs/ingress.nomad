@@ -112,6 +112,11 @@ job "ingress" {
         ]
       }
 
+      resources {
+        cpu    = 100
+        memory = 50
+      }
+
       meta {
         logging_tag = "ingress"
       }

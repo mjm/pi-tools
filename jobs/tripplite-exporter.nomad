@@ -56,7 +56,7 @@ job "tripplite-exporter" {
 
       resources {
         cpu    = 30
-        memory = 50
+        memory = 30
       }
     }
   }

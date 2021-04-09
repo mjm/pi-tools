@@ -86,8 +86,8 @@ job "pihole" {
       }
 
       resources {
-        cpu    = 50
-        memory = 200
+        cpu    = 200
+        memory = 75
       }
     }
   }

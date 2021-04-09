@@ -35,8 +35,8 @@ job "homebase" {
       }
 
       resources {
-        cpu    = 100
-        memory = 100
+        cpu    = 50
+        memory = 75
       }
 
       env {

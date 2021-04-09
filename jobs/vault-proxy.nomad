@@ -41,6 +41,11 @@ job "vault-proxy" {
         command = "/vault-proxy"
       }
 
+      resources {
+        cpu    = 200
+        memory = 50
+      }
+
       env {
         VAULT_ADDR = "http://active.vault.service.consul:8200"
       }

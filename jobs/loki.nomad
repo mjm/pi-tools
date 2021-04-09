@@ -49,8 +49,8 @@ job "loki" {
       }
 
       resources {
-        cpu    = 50
-        memory = 200
+        cpu    = 100
+        memory = 150
       }
 
       vault {
