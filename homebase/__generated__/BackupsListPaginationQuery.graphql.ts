@@ -4,51 +4,44 @@
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type trips_TripsPageQueryVariables = {};
-export type trips_TripsPageQueryResponse = {
+export type BackupsListPaginationQueryVariables = {
+    count?: number | null;
+    cursor?: string | null;
+};
+export type BackupsListPaginationQueryResponse = {
     readonly viewer: {
-        readonly " $fragmentRefs": FragmentRefs<"TagFilters_tags" | "TripsList_viewer">;
+        readonly " $fragmentRefs": FragmentRefs<"BackupsList_viewer">;
     } | null;
 };
-export type trips_TripsPageQuery = {
-    readonly response: trips_TripsPageQueryResponse;
-    readonly variables: trips_TripsPageQueryVariables;
+export type BackupsListPaginationQuery = {
+    readonly response: BackupsListPaginationQueryResponse;
+    readonly variables: BackupsListPaginationQueryVariables;
 };
 
 
 
 /*
-query trips_TripsPageQuery {
+query BackupsListPaginationQuery(
+  $count: Int = 10
+  $cursor: Cursor
+) {
   viewer {
-    ...TagFilters_tags
-    ...TripsList_viewer
+    ...BackupsList_viewer_1G22uz
   }
 }
 
-fragment TagFilters_tags on Viewer {
-  tags(first: 5) {
-    edges {
-      node {
-        name
-        tripCount
-      }
-    }
-  }
-}
-
-fragment TripRow_trip on Trip {
+fragment ArchiveRow_archive on Archive {
   id
-  leftAt
-  returnedAt
-  tags
+  name
+  createdAt
 }
 
-fragment TripsList_viewer on Viewer {
-  trips(first: 30) {
+fragment BackupsList_viewer_1G22uz on Viewer {
+  backupArchives(first: $count, after: $cursor) {
     edges {
       node {
         id
-        ...TripRow_trip
+        ...ArchiveRow_archive
         __typename
       }
       cursor
@@ -64,17 +57,34 @@ fragment TripsList_viewer on Viewer {
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
-    "kind": "Literal",
+    "defaultValue": 10,
+    "kind": "LocalArgument",
+    "name": "count"
+  },
+  {
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "cursor"
+  }
+],
+v1 = [
+  {
+    "kind": "Variable",
+    "name": "after",
+    "variableName": "cursor"
+  },
+  {
+    "kind": "Variable",
     "name": "first",
-    "value": 30
+    "variableName": "count"
   }
 ];
 return {
   "fragment": {
-    "argumentDefinitions": [],
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "trips_TripsPageQuery",
+    "name": "BackupsListPaginationQuery",
     "selections": [
       {
         "alias": null,
@@ -85,14 +95,20 @@ return {
         "plural": false,
         "selections": [
           {
-            "args": null,
+            "args": [
+              {
+                "kind": "Variable",
+                "name": "count",
+                "variableName": "count"
+              },
+              {
+                "kind": "Variable",
+                "name": "cursor",
+                "variableName": "cursor"
+              }
+            ],
             "kind": "FragmentSpread",
-            "name": "TagFilters_tags"
-          },
-          {
-            "args": null,
-            "kind": "FragmentSpread",
-            "name": "TripsList_viewer"
+            "name": "BackupsList_viewer"
           }
         ],
         "storageKey": null
@@ -103,9 +119,9 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": [],
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "trips_TripsPageQuery",
+    "name": "BackupsListPaginationQuery",
     "selections": [
       {
         "alias": null,
@@ -117,22 +133,16 @@ return {
         "selections": [
           {
             "alias": null,
-            "args": [
-              {
-                "kind": "Literal",
-                "name": "first",
-                "value": 5
-              }
-            ],
-            "concreteType": "TagConnection",
+            "args": (v1/*: any*/),
+            "concreteType": "ArchiveConnection",
             "kind": "LinkedField",
-            "name": "tags",
+            "name": "backupArchives",
             "plural": false,
             "selections": [
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "TagEdge",
+                "concreteType": "ArchiveEdge",
                 "kind": "LinkedField",
                 "name": "edges",
                 "plural": true,
@@ -140,54 +150,7 @@ return {
                   {
                     "alias": null,
                     "args": null,
-                    "concreteType": "Tag",
-                    "kind": "LinkedField",
-                    "name": "node",
-                    "plural": false,
-                    "selections": [
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "name",
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "tripCount",
-                        "storageKey": null
-                      }
-                    ],
-                    "storageKey": null
-                  }
-                ],
-                "storageKey": null
-              }
-            ],
-            "storageKey": "tags(first:5)"
-          },
-          {
-            "alias": null,
-            "args": (v0/*: any*/),
-            "concreteType": "TripConnection",
-            "kind": "LinkedField",
-            "name": "trips",
-            "plural": false,
-            "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "concreteType": "TripEdge",
-                "kind": "LinkedField",
-                "name": "edges",
-                "plural": true,
-                "selections": [
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "Trip",
+                    "concreteType": "Archive",
                     "kind": "LinkedField",
                     "name": "node",
                     "plural": false,
@@ -203,21 +166,14 @@ return {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "leftAt",
+                        "name": "name",
                         "storageKey": null
                       },
                       {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "returnedAt",
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "tags",
+                        "name": "createdAt",
                         "storageKey": null
                       },
                       {
@@ -266,16 +222,18 @@ return {
                 "storageKey": null
               }
             ],
-            "storageKey": "trips(first:30)"
+            "storageKey": null
           },
           {
             "alias": null,
-            "args": (v0/*: any*/),
-            "filters": null,
+            "args": (v1/*: any*/),
+            "filters": [
+              "kind"
+            ],
             "handle": "connection",
-            "key": "TripsList_trips",
+            "key": "BackupsList_backupArchives",
             "kind": "LinkedHandle",
-            "name": "trips"
+            "name": "backupArchives"
           }
         ],
         "storageKey": null
@@ -283,14 +241,14 @@ return {
     ]
   },
   "params": {
-    "cacheID": "0d216bb8e3b4519b847cc9d27c9a9f1f",
+    "cacheID": "57671810b2b95aac316d541f96a98758",
     "id": null,
     "metadata": {},
-    "name": "trips_TripsPageQuery",
+    "name": "BackupsListPaginationQuery",
     "operationKind": "query",
-    "text": "query trips_TripsPageQuery {\n  viewer {\n    ...TagFilters_tags\n    ...TripsList_viewer\n  }\n}\n\nfragment TagFilters_tags on Viewer {\n  tags(first: 5) {\n    edges {\n      node {\n        name\n        tripCount\n      }\n    }\n  }\n}\n\nfragment TripRow_trip on Trip {\n  id\n  leftAt\n  returnedAt\n  tags\n}\n\nfragment TripsList_viewer on Viewer {\n  trips(first: 30) {\n    edges {\n      node {\n        id\n        ...TripRow_trip\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query BackupsListPaginationQuery(\n  $count: Int = 10\n  $cursor: Cursor\n) {\n  viewer {\n    ...BackupsList_viewer_1G22uz\n  }\n}\n\nfragment ArchiveRow_archive on Archive {\n  id\n  name\n  createdAt\n}\n\nfragment BackupsList_viewer_1G22uz on Viewer {\n  backupArchives(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...ArchiveRow_archive\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })();
-(node as any).hash = 'c0af8af7730e92f0da526f80c09fb844';
+(node as any).hash = '5574c804094681e85ccb9436565317d6';
 export default node;

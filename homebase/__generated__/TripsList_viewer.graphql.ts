@@ -4,33 +4,33 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type BackupsList_viewer = {
-    readonly backupArchives: {
+export type TripsList_viewer = {
+    readonly trips: {
         readonly edges: ReadonlyArray<{
             readonly node: {
                 readonly id: string;
-                readonly " $fragmentRefs": FragmentRefs<"ArchiveRow_archive">;
+                readonly " $fragmentRefs": FragmentRefs<"TripRow_trip">;
             };
         }>;
     } | null;
-    readonly " $refType": "BackupsList_viewer";
+    readonly " $refType": "TripsList_viewer";
 };
-export type BackupsList_viewer$data = BackupsList_viewer;
-export type BackupsList_viewer$key = {
-    readonly " $data"?: BackupsList_viewer$data;
-    readonly " $fragmentRefs": FragmentRefs<"BackupsList_viewer">;
+export type TripsList_viewer$data = TripsList_viewer;
+export type TripsList_viewer$key = {
+    readonly " $data"?: TripsList_viewer$data;
+    readonly " $fragmentRefs": FragmentRefs<"TripsList_viewer">;
 };
 
 
 
 const node: ReaderFragment = (function(){
 var v0 = [
-  "backupArchives"
+  "trips"
 ];
 return {
   "argumentDefinitions": [
     {
-      "defaultValue": 10,
+      "defaultValue": 30,
       "kind": "LocalArgument",
       "name": "count"
     },
@@ -62,23 +62,23 @@ return {
       "fragmentPathInResult": [
         "viewer"
       ],
-      "operation": require('./BackupsListPaginationQuery.graphql.ts')
+      "operation": require('./TripsListPaginationQuery.graphql.ts')
     }
   },
-  "name": "BackupsList_viewer",
+  "name": "TripsList_viewer",
   "selections": [
     {
-      "alias": "backupArchives",
+      "alias": "trips",
       "args": null,
-      "concreteType": "ArchiveConnection",
+      "concreteType": "TripConnection",
       "kind": "LinkedField",
-      "name": "__BackupsList_backupArchives_connection",
+      "name": "__TripsList_trips_connection",
       "plural": false,
       "selections": [
         {
           "alias": null,
           "args": null,
-          "concreteType": "ArchiveEdge",
+          "concreteType": "TripEdge",
           "kind": "LinkedField",
           "name": "edges",
           "plural": true,
@@ -86,7 +86,7 @@ return {
             {
               "alias": null,
               "args": null,
-              "concreteType": "Archive",
+              "concreteType": "Trip",
               "kind": "LinkedField",
               "name": "node",
               "plural": false,
@@ -108,7 +108,7 @@ return {
                 {
                   "args": null,
                   "kind": "FragmentSpread",
-                  "name": "ArchiveRow_archive"
+                  "name": "TripRow_trip"
                 }
               ],
               "storageKey": null
@@ -156,5 +156,5 @@ return {
   "abstractKey": null
 };
 })();
-(node as any).hash = '5574c804094681e85ccb9436565317d6';
+(node as any).hash = 'c3bf7f89215f8ae44f6c2e9b556a2451';
 export default node;

@@ -1,11 +1,12 @@
-import {graphql, useFragment} from "react-relay/hooks";
+import {graphql, usePaginationFragment} from "react-relay/hooks";
 import {BackupsList_viewer$key} from "../../__generated__/BackupsList_viewer.graphql";
 import ArchiveRow from "./ArchiveRow";
 
 export default function BackupsList({viewer}: { viewer: BackupsList_viewer$key }) {
-    const data = useFragment(
+    const {data} = usePaginationFragment(
         graphql`
             fragment BackupsList_viewer on Viewer
+            @refetchable(queryName: "BackupsListPaginationQuery")
             @argumentDefinitions(
                 count: { type: "Int", defaultValue: 10 }
                 cursor: { type: "Cursor" }

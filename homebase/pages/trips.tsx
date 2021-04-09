@@ -5,20 +5,13 @@ import {graphql, usePreloadedQuery} from "react-relay/hooks";
 import withRelay from "../lib/withRelay";
 import {trips_TripsPageQuery} from "../__generated__/trips_TripsPageQuery.graphql";
 import TagFilters from "../components/trips/TagFilters";
-import TripRow from "../components/trips/TripRow";
+import TripsList from "../components/trips/TripsList";
 
 const TripsPageQuery = graphql`
     query trips_TripsPageQuery {
         viewer {
             ...TagFilters_tags
-            trips(first: 30) @connection(key: "TripsPageQuery_trips") {
-                edges {
-                    node {
-                        id
-                        ...TripRow_trip
-                    }
-                }
-            }
+            ...TripsList_viewer
         }
     }
 `;
@@ -28,8 +21,6 @@ function TripsPage({preloadedQuery}: RelayProps<{}, trips_TripsPageQuery>) {
     if (!query) {
         return null;
     }
-
-    const tripNodes = query.viewer.trips.edges.map(e => e.node);
 
     return (
         <main className="mb-8">
@@ -76,11 +67,7 @@ function TripsPage({preloadedQuery}: RelayProps<{}, trips_TripsPageQuery>) {
                                         <th className="px-6 py-3 bg-gray-50"/>
                                     </tr>
                                     </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
-                                    {tripNodes.map(trip => (
-                                        <TripRow key={trip.id} trip={trip}/>
-                                    ))}
-                                    </tbody>
+                                    <TripsList viewer={query.viewer}/>
                                 </table>
                             </div>
                         </div>
@@ -91,4 +78,4 @@ function TripsPage({preloadedQuery}: RelayProps<{}, trips_TripsPageQuery>) {
     );
 }
 
-export default withRelay(TripsPage, TripsPageQuery)
+export default withRelay(TripsPage, TripsPageQuery);
