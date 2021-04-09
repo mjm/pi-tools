@@ -36,7 +36,8 @@ job "loki" {
       driver = "docker"
 
       config {
-        image = "grafana/loki@sha256:6afc0da6995fecf15307762d378242b65cab20d4a35b4a39397d67cad48fb7fb"
+        # loki 2.2.1
+        image = "grafana/loki@sha256:7d2ddbe46c11cf9778eba0abf67bc963366dcfd7bda1a123e5244187e64dafec"
         args  = ["-config.file=${NOMAD_TASK_DIR}/loki.yml"]
       }
 

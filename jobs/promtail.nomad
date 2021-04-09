@@ -47,7 +47,8 @@ job "promtail" {
       driver = "docker"
 
       config {
-        image = "grafana/promtail@sha256:d0965273b4e7c9dc2430f48e7b31f9eebf3a1d301a24c5d1cf49bdd2a9289dfb"
+        # promtail 2.2.1
+        image = "grafana/promtail@sha256:ca2711bece9b74ce51aad398dedeba706c553f16446a79d0b495573a0060529b"
         args  = [
           "-config.file=${NOMAD_TASK_DIR}/promtail.yml",
         ]
