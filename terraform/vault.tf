@@ -236,6 +236,11 @@ resource "vault_policy" "ingress" {
   policy = file("${local.vault_policies_path}/ingress.hcl")
 }
 
+resource "vault_policy" "loki" {
+  name   = "loki"
+  policy = file("${local.vault_policies_path}/loki.hcl")
+}
+
 resource "vault_policy" "nomad_server" {
   name   = "nomad-server"
   policy = file("${local.vault_policies_path}/nomad-server.hcl")

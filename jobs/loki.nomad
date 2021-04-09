@@ -28,7 +28,14 @@ job "loki" {
       }
 
       connect {
-        sidecar_service {}
+        sidecar_service {
+          proxy {
+            upstreams {
+              destination_name = "minio"
+              local_bind_port  = 9000
+            }
+          }
+        }
       }
     }
 
@@ -46,9 +53,15 @@ job "loki" {
         memory = 200
       }
 
+      vault {
+        policies    = ["loki"]
+        change_mode = "noop"
+      }
+
       template {
         data        = file("loki/loki.yml")
         destination = "local/loki.yml"
+        change_mode = "restart"
       }
     }
   }
