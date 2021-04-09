@@ -1,7 +1,8 @@
 job "otel-collector" {
   datacenters = ["dc1"]
 
-  type = "system"
+  type     = "system"
+  priority = 70
 
   group "otel-collector" {
     network {
@@ -59,13 +60,15 @@ job "otel-collector" {
         args    = [
           "--config",
           "${NOMAD_SECRETS_DIR}/config.yaml",
+          "--mem-ballast-size-mib",
+          "50",
         ]
         ports   = ["jaeger_thrift", "otlp_grpc", "otlp_grpc_2", "otlp_http", "healthcheck", "metrics"]
       }
 
       resources {
         cpu    = 100
-        memory = 100
+        memory = 150
       }
 
       vault {

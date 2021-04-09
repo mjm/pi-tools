@@ -11,6 +11,12 @@ receivers:
 processors:
   batch:
 
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 100
+    spike_limit_mib: 20
+    ballast_size_mib: 50
+
   # scrub out the bot token from the URL for telegram API requests
   attributes/homebasebot:
     include:
@@ -48,5 +54,5 @@ service:
   pipelines:
     traces:
       receivers: [jaeger, otlp]
-      processors: [attributes/homebasebot, batch]
+      processors: [memory_limiter, batch, attributes/homebasebot]
       exporters: [otlp]
