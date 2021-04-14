@@ -6,6 +6,7 @@ import withRelay from "../lib/withRelay";
 import MostRecentTripCard from "../components/homepage/MostRecentTripCard";
 import MostRecentDeployCard from "../components/homepage/MostRecentDeployCard";
 import FiringAlertsCard from "../components/homepage/FiringAlertsCard";
+import Alert from "../components/Alert";
 
 const HomePageQuery = graphql`
     query pages_HomePageQuery {
