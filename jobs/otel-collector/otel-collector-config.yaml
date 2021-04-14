@@ -3,6 +3,7 @@ receivers:
     protocols:
       thrift_http:
         endpoint: "0.0.0.0:14268"
+  zipkin:
   otlp:
     protocols:
       grpc: # on port 55680
@@ -53,6 +54,6 @@ service:
   extensions: [health_check,pprof,zpages]
   pipelines:
     traces:
-      receivers: [jaeger, otlp]
+      receivers: [jaeger, zipkin, otlp]
       processors: [memory_limiter, batch, attributes/homebasebot]
       exporters: [otlp]

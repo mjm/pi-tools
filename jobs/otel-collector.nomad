@@ -13,6 +13,10 @@ job "otel-collector" {
         static = 14268
         to     = 14268
       }
+      port "zipkin" {
+        static = 9411
+        to     = 9411
+      }
       port "otlp_grpc" {
         static = 4317
         to     = 4317
@@ -63,7 +67,15 @@ job "otel-collector" {
           "--mem-ballast-size-mib",
           "50",
         ]
-        ports   = ["jaeger_thrift", "otlp_grpc", "otlp_grpc_2", "otlp_http", "healthcheck", "metrics"]
+        ports   = [
+          "jaeger_thrift",
+          "zipkin",
+          "otlp_grpc",
+          "otlp_grpc_2",
+          "otlp_http",
+          "healthcheck",
+          "metrics",
+        ]
       }
 
       resources {
