@@ -72,10 +72,20 @@ jobs:
       - name: Build and push container images
         run: |
           bazel query 'kind(container_push, //...)' \
-            | xargs -n1 bazel run --config=ci --platforms @io_bazel_rules_go//go/toolchain:linux_arm64
+            | xargs -n1 \
+              bazel run \
+                --remote_cache=https://storage.googleapis.com/mjm-github-actions-bazel-cache \
+                --google_credentials=$RUNNER_TEMP/credentials.json \
+                --config=ci \
+                --platforms @io_bazel_rules_go//go/toolchain:linux_arm64
 
       - name: Resolve Nomad jobs
-        run: bazel run //deploy/cmd/job-resolver -- -root $PWD/jobs -out $RUNNER_TEMP/jobs $PWD/jobs/*.nomad
+        run: |
+          bazel run \
+            --remote_cache=https://storage.googleapis.com/mjm-github-actions-bazel-cache \
+            --google_credentials=$RUNNER_TEMP/credentials.json \
+            //deploy/cmd/job-resolver -- \
+            -root $PWD/jobs -out $RUNNER_TEMP/jobs $PWD/jobs/*.nomad
 
       - name: Store Nomad jobs
         uses: actions/upload-artifact@v2
