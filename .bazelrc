@@ -5,6 +5,6 @@ test --build_tests_only
 
 build:ci -c opt
 build:ci --repository_cache=/tmp/repo-cache
-build:ci --disk_cache=~/.cache/bazel/disk-cache
+# build:ci --disk_cache=~/.cache/bazel/disk-cache
 
 test:ci --test_output=all

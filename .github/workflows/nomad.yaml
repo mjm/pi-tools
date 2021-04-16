@@ -13,13 +13,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Cache Bazel outputs
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/bazel/disk-cache
-          key: bazel-images-${{ github.sha }}
-          restore-keys: |
-            bazel-images-
+#      - name: Cache Bazel outputs
+#        uses: actions/cache@v2
+#        with:
+#          path: ~/.cache/bazel/disk-cache
+#          key: bazel-images-${{ github.sha }}
+#          restore-keys: |
+#            bazel-images-
       - name: Install Bazel
         run: |
           sudo curl -L https://github.com/bazelbuild/bazel/releases/download/3.7.0/bazel-3.7.0-linux-x86_64 -o /usr/local/bin/bazel
@@ -50,9 +50,17 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Set up build cache credentials
+        run: echo "$GOOGLE_CREDENTIALS_JSON" > $RUNNER_TEMP/credentials.json
+        env:
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
 
       - name: Run tests
-        run: bazel test --config=ci --build_tests_only //...
+        run: bazel test \
+          --config=ci \
+          --remote_cache=https://storage.googleapis.com/mjm-github-actions-bazel-cache \
+          --google_credentials=$RUNNER_TEMP/credentials.json \
+          //...
 
       - name: Build Homebase Next.js app
         run: |
