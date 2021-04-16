@@ -56,12 +56,13 @@ jobs:
           GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
 
       - name: Run tests
-        run: bazel \
-          --remote_cache=https://storage.googleapis.com/mjm-github-actions-bazel-cache \
-          --google_credentials=$RUNNER_TEMP/credentials.json \
-          test \
-          --config=ci \
-          //...
+        run: |
+          bazel \
+            test \
+            --remote_cache=https://storage.googleapis.com/mjm-github-actions-bazel-cache \
+            --google_credentials=$RUNNER_TEMP/credentials.json \
+            --config=ci \
+            //...
 
       - name: Build Homebase Next.js app
         run: |
