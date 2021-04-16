@@ -9,6 +9,7 @@
     "generate:relay": "relay-compiler"
   },
   "dependencies": {
+    "@headlessui/react": "^1.0.0",
     "@heroicons/react": "^1.0.0",
     "@tailwindcss/aspect-ratio": "^0.2.0",
     "@tailwindcss/forms": "^0.3.2",
