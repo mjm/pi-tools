@@ -13,17 +13,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Cache Bazel outputs
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/bazel/disk-cache
-          key: bazel-ios-${{ github.sha }}
-          restore-keys: |
-            bazel-ios-
+
       - name: Install Bazel
         run: |
           sudo curl -L https://github.com/bazelbuild/bazel/releases/download/3.7.1/bazel-3.7.1-darwin-x86_64 -o /usr/local/bin/bazel
           sudo chmod +x /usr/local/bin/bazel
+
+      - name: Set up build cache credentials
+        run: echo "$GOOGLE_CREDENTIALS_JSON" > $RUNNER_TEMP/credentials.json
+        env:
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
+
       - name: Install certificates
         env:
           APPLE_CERTS_PASSPHRASE: ${{ secrets.APPLE_CERTS_PASSPHRASE }}
@@ -35,18 +35,32 @@ jobs:
           security list-keychains -d user -s $RUNNER_TEMP/build.keychain
           security default-keychain -s $RUNNER_TEMP/build.keychain
           security set-key-partition-list -S apple-tool:,apple: -s -k "" $RUNNER_TEMP/build.keychain
+
       - name: Build Presence app
-        run: bazel build --config=ci --apple_platform_type=ios --cpu=ios_arm64 --xcode_version=12.2 --embed_label=Presence_1.0_build_${GITHUB_RUN_NUMBER} //detect-presence/ios:ios_ad_hoc
+        run: |
+          bazel build \
+            --remote_cache=https://storage.googleapis.com/mjm-github-actions-bazel-cache \
+            --google_credentials=$RUNNER_TEMP/credentials.json \
+            --config=ci \
+            --apple_platform_type=ios \
+            --cpu=ios_arm64 \
+            --xcode_version=12.2 \
+            --embed_label=Presence_1.0_build_${GITHUB_RUN_NUMBER} \
+            //detect-presence/ios:ios_ad_hoc
+
       - name: Stage IPA for upload
         run: cp bazel-out/applebin_ios-ios_arm64-opt-*/bin/detect-presence/ios/ios_ad_hoc.ipa $RUNNER_TEMP/Presence.ipa
+
       - name: Stage Info.plist for upload
         run: cp bazel-out/applebin_ios-ios_arm64-opt-*/bin/detect-presence/ios/ios_ad_hoc-intermediates/Info.plist $RUNNER_TEMP/Info.plist
+
       - name: Store IPA
         uses: actions/upload-artifact@v2
         with:
           name: Presence.ipa
           path: ${{ runner.temp }}/Presence.ipa
           if-no-files-found: error
+
       - name: Store Info.plist
         uses: actions/upload-artifact@v2
         with:
