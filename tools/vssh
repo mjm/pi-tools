@@ -9,5 +9,5 @@ vault ssh \
   -mount-point="ssh-client-signer" \
   -private-key-path="${HOME}/.ssh/id_ed25519" \
   -public-key-path="${HOME}/.ssh/id_ed25519.pub" \
-  -valid-principals="ubuntu" \
+  -valid-principals="ubuntu,matt" \
   "$@"
