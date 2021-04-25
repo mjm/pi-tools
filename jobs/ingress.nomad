@@ -87,10 +87,6 @@ job "ingress" {
               destination_name = "grafana"
               local_bind_port  = 3000
             }
-            upstreams {
-              destination_name = "minio"
-              local_bind_port  = 9000
-            }
           }
         }
       }

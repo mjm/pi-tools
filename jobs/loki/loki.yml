@@ -18,7 +18,7 @@ ingester:
 storage_config:
   aws:
     {{ with secret "kv/loki" }}
-    s3: http://loki:{{ .Data.data.minio_password }}@127.0.0.1:9000
+    s3: http://loki:{{ .Data.data.minio_password }}@minio.service.consul:9000
     {{ end }}
     bucketnames: logs
     insecure: true

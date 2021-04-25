@@ -28,14 +28,7 @@ job "loki" {
       }
 
       connect {
-        sidecar_service {
-          proxy {
-            upstreams {
-              destination_name = "minio"
-              local_bind_port  = 9000
-            }
-          }
-        }
+        sidecar_service {}
       }
     }
 
