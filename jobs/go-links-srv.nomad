@@ -28,14 +28,7 @@ job "go-links" {
       }
 
       connect {
-        sidecar_service {
-          proxy {
-            upstreams {
-              destination_name = "postgresql"
-              local_bind_port  = 5432
-            }
-          }
-        }
+        sidecar_service {}
       }
     }
 
@@ -56,7 +49,7 @@ job "go-links" {
         command = "/go-links"
         args    = [
           "-db",
-          "dbname=golinks host=127.0.0.1 sslmode=disable",
+          "dbname=golinks host=10.0.2.102 sslmode=disable",
         ]
       }
 

@@ -127,7 +127,7 @@ EOF
           image   = "postgres@sha256:b6399aef923e0529a4f2a5874e8860d29cef3726ab7079883f3368aaa2a9f29c"
           command = "pg_dump"
           args    = [
-            "--host=postgresql.service.consul",
+            "--host=10.0.2.102",
             "--dbname=${DB_NAME}",
             "--file=${NOMAD_ALLOC_DIR}/data/${DB_NAME}.sql",
           ]

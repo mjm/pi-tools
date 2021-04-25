@@ -35,10 +35,6 @@ job "grafana" {
         sidecar_service {
           proxy {
             upstreams {
-              destination_name = "postgresql"
-              local_bind_port  = 5432
-            }
-            upstreams {
               destination_name = "loki"
               local_bind_port  = 3100
             }

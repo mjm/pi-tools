@@ -31,10 +31,6 @@ job "presence" {
         sidecar_service {
           proxy {
             upstreams {
-              destination_name = "postgresql"
-              local_bind_port  = 5432
-            }
-            upstreams {
               destination_name = "homebase-bot-grpc"
               local_bind_port  = 6361
             }
@@ -60,7 +56,7 @@ job "presence" {
         command = "/detect-presence-srv"
         args    = [
           "-db",
-          "dbname=presence host=127.0.0.1 sslmode=disable",
+          "dbname=presence host=10.0.2.102 sslmode=disable",
           "-mode",
           "client",
         ]

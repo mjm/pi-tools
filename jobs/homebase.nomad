@@ -140,10 +140,6 @@ job "homebase" {
         sidecar_service {
           proxy {
             upstreams {
-              destination_name = "postgresql"
-              local_bind_port  = 5432
-            }
-            upstreams {
               destination_name = "detect-presence-grpc"
               local_bind_port  = 2121
             }
@@ -169,7 +165,7 @@ job "homebase" {
         command = "/homebase-bot-srv"
         args    = [
           "-db",
-          "dbname=homebase_bot host=127.0.0.1 sslmode=disable",
+          "dbname=homebase_bot host=10.0.2.102 sslmode=disable",
           "-leader-elect",
         ]
       }
