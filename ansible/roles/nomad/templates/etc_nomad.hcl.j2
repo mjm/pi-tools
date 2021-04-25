@@ -56,21 +56,6 @@ client {
     "connect.sidecar_image" = "envoyproxy/envoy:v1.16.2"
   }
 
-  host_volume "postgresql_0" {
-    path = "/srv/mnt/postgresql-0"
-    read_only = false
-  }
-
-  host_volume "elasticsearch_0" {
-    path = "/srv/mnt/elasticsearch-0"
-    read_only = false
-  }
-
-  host_volume "minio_0" {
-    path = "/srv/mnt/minio-0"
-    read_only = false
-  }
-
   host_volume "pihole_data" {
     path = "/srv/mnt/pihole-data"
     read_only = false
@@ -89,11 +74,6 @@ client {
 
   host_volume "alertmanager_data" {
     path = "/var/lib/alertmanager"
-    read_only = false
-  }
-
-  host_volume "homelab_nfs" {
-    path = "/srv/mnt/homelab"
     read_only = false
   }
 {% endif %}
