@@ -225,9 +225,7 @@ func updateNetwork(_ *api.Job, group *api.TaskGroup) {
 	if net.DNS == nil {
 		net.DNS = &api.DNSConfig{
 			Servers: []string{
-				"10.0.0.2",
-				"10.0.0.3",
-				"10.0.0.4",
+				"10.0.2.101",
 			},
 		}
 	}
