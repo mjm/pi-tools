@@ -1,0 +1,6 @@
+- hosts: artemis
+  remote_user: matt
+  vars:
+    setup_named: true
+  roles:
+    - role: dns

@@ -1,0 +1,77 @@
+// Refer to the named.conf(5) and named(8) man pages, and the documentation
+// in /usr/local/share/doc/bind for more details.
+//
+// If you are going to set up an authoritative server, make sure you
+// understand the hairy details of how DNS works.  Even with
+// simple mistakes, you can break connectivity for affected parties,
+// or cause huge amounts of useless Internet traffic.
+
+options {
+    // All file and path names are relative to the chroot directory,
+    // if any, and should be fully qualified.
+    directory       "{{ named_db_dir }}/working";
+    pid-file        "/var/run/named/pid";
+    dump-file       "/var/dump/named_dump.db";
+    statistics-file "/var/stats/named.stats";
+
+    listen-on {
+        10.0.2.101;
+        127.0.2.1;
+    };
+
+// These zones are already covered by the empty zones listed below.
+// If you remove the related empty zones below, comment these lines out.
+    disable-empty-zone "255.255.255.255.IN-ADDR.ARPA";
+    disable-empty-zone "0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.IP6.ARPA";
+    disable-empty-zone "1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.IP6.ARPA";
+
+    include "{{ named_db_dir }}/named.forwarders.conf";
+
+    allow-query { any; };
+    allow-recursion { any; };
+    allow-query-cache { any; };
+
+    dnssec-enable no;
+    dnssec-validation no;
+
+    auth-nxdomain no;
+    zero-no-soa-ttl-cache yes;
+    max-ncache-ttl 15;
+};
+
+view local {
+    match-destinations {
+        10.0.2.101;
+    };
+
+    zone "homelab" {
+        type master;
+        file "{{ named_db_dir }}/master/homelab.local.db";
+    };
+
+    zone "home.mattmoriarity.com" {
+        type master;
+        file "{{ named_db_dir }}/master/home.mattmoriarity.com.local.db";
+    };
+
+    include "{{ named_db_dir }}/named.default-zones.conf";
+};
+
+view tailscale {
+    match-destinations {
+        127.0.2.1;
+        100.111.80.85;
+    };
+
+    zone "homelab" {
+        type master;
+        file "{{ named_db_dir }}/master/homelab.tailscale.db";
+    };
+
+    zone "home.mattmoriarity.com" {
+        type master;
+        file "{{ named_db_dir }}/master/home.mattmoriarity.com.tailscale.db";
+    };
+
+    include "{{ named_db_dir }}/named.default-zones.conf";
+};

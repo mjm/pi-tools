@@ -4,5 +4,9 @@
     dest: /etc/resolv.conf
     mode: 0644
     owner: root
-    group: root
+    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
   become: true
+
+- name: Set up BIND server
+  import_tasks: named.yml
+  when: setup_named

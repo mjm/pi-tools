@@ -1,0 +1,4 @@
+setup_named: false
+jail_name: dns1
+named_jail_dir: /usr/jails/dns1
+named_db_dir: /usr/local/etc/namedb

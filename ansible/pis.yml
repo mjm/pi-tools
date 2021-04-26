@@ -1,0 +1,9 @@
+- hosts: pis
+  remote_user: ubuntu
+  roles:
+    - role: dns
+    - role: volumes
+    - role: consul
+    - role: vault
+    - role: ssh
+    - role: nomad

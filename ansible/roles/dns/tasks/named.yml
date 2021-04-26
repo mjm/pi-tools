@@ -1,0 +1,68 @@
+- name: Set named to run at boot
+  # can't use 'service' because this is inside a jail
+  command: jexec {{ jail_name }} sysrc named_enable=YES
+  become: true
+
+- name: Configure named
+  template:
+    src: named.conf.j2
+    dest: '{{ named_jail_dir }}{{ named_db_dir }}/named.conf'
+  become: true
+  notify: Reload named config
+
+- name: Configure named default zones
+  template:
+    src: named.default-zones.conf.j2
+    dest: '{{ named_jail_dir }}{{ named_db_dir }}/named.default-zones.conf'
+  become: true
+  notify: Reload named config
+
+- name: Configure named forwarders
+  copy:
+    src: named.forwarders.conf.tpl
+    dest: '{{ named_jail_dir }}{{ named_db_dir }}/named.forwarders.conf.tpl'
+    mode: 0644
+    owner: root
+    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+  become: true
+  notify: Reload consul-template config
+
+- name: Configure homelab local zone DB
+  copy:
+    src: homelab.local.db.tpl
+    dest: '{{ named_jail_dir }}{{ named_db_dir }}/master/homelab.local.db.tpl'
+    mode: 0644
+    owner: root
+    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+  become: true
+  notify: Reload consul-template config
+
+- name: Configure homelab tailscale zone DB
+  copy:
+    src: homelab.tailscale.db.tpl
+    dest: '{{ named_jail_dir }}{{ named_db_dir }}/master/homelab.tailscale.db.tpl'
+    mode: 0644
+    owner: root
+    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+  become: true
+  notify: Reload consul-template config
+
+- name: Configure home.mattmoriarity.com local zone DB
+  copy:
+    src: home.mattmoriarity.com.local.db.tpl
+    dest: '{{ named_jail_dir }}{{ named_db_dir }}/master/home.mattmoriarity.com.local.db.tpl'
+    mode: 0644
+    owner: root
+    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+  become: true
+  notify: Reload consul-template config
+
+- name: Configure home.mattmoriarity.com tailscale zone DB
+  copy:
+    src: home.mattmoriarity.com.tailscale.db.tpl
+    dest: '{{ named_jail_dir }}{{ named_db_dir }}/master/home.mattmoriarity.com.tailscale.db.tpl'
+    mode: 0644
+    owner: root
+    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+  become: true
+  notify: Reload consul-template config
