@@ -12,11 +12,10 @@
       }
     ]
   },
-  "editable": false,
+  "editable": true,
   "gnetId": 1860,
   "graphTooltip": 0,
-  "id": 2,
-  "iteration": 1603129394969,
+  "iteration": 1619414104524,
   "links": [],
   "panels": [
     {
@@ -1279,6 +1278,53 @@
           "legendFormat": "SWAP Used",
           "refId": "E",
           "step": 240
+        },
+        {
+          "expr": "node_memory_size_bytes{instance=\"$node\",job=\"$job\"}",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "RAM Total",
+          "refId": "F",
+          "step": 240
+        },
+        {
+          "expr": "node_memory_size_bytes{instance=\"$node\",job=\"$job\"} - node_memory_free_bytes{instance=\"$node\",job=\"$job\"} - (node_memory_cache_bytes{instance=\"$node\",job=\"$job\"} + node_memory_buffer_bytes{instance=\"$node\",job=\"$job\"})",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "RAM Used",
+          "refId": "G",
+          "step": 240
+        },
+        {
+          "expr": "node_memory_cache_bytes{instance=\"$node\",job=\"$job\"} + node_memory_buffer_bytes{instance=\"$node\",job=\"$job\"}",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "RAM Cache + Buffer",
+          "refId": "H",
+          "step": 240
+        },
+        {
+          "expr": "node_memory_free_bytes{instance=\"$node\",job=\"$job\"}",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "RAM Free",
+          "refId": "I",
+          "step": 240
+        },
+        {
+          "expr": "node_memory_swap_used_bytes{instance=\"$node\",job=\"$job\"}",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "SWAP Used",
+          "refId": "J",
+          "step": 240
         }
       ],
       "thresholds": [],
@@ -1301,6 +1347,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:157",
           "format": "bytes",
           "label": "",
           "logBase": 1,
@@ -1309,6 +1356,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:158",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -13677,8 +13725,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "kubernetes-pods",
-          "value": "kubernetes-pods"
+          "text": "consul-services",
+          "value": "consul-services"
         },
         "datasource": "Prometheus",
         "definition": "",
@@ -13703,8 +13751,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "10.0.0.2:9100",
-          "value": "10.0.0.2:9100"
+          "text": "10.0.2.10:9100",
+          "value": "10.0.2.10:9100"
         },
         "datasource": "Prometheus",
         "definition": "label_values(node_uname_info{job=\"$job\"}, instance)",
@@ -13751,7 +13799,7 @@
     ]
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {
