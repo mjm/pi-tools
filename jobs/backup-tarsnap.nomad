@@ -78,38 +78,38 @@ EOF
       }
     }
 
-    task "prometheus-snapshot" {
-      lifecycle {
-        hook = "prestart"
-      }
-
-      driver = "docker"
-
-      config {
-        image   = "mmoriarity/prometheus-backup"
-        command = "/prometheus-backup"
-        args    = [
-          "-prometheus-url",
-          "http://10.0.0.2:9090",
-          "-prometheus-data-path",
-          "/prometheus",
-          "-backup-path",
-          "${NOMAD_ALLOC_DIR}/data/prometheus",
-        ]
-
-        network_mode = "host"
-      }
-
-      resources {
-        cpu    = 100
-        memory = 100
-      }
-
-      volume_mount {
-        volume      = "prometheus_data"
-        destination = "/prometheus"
-      }
-    }
+//    task "prometheus-snapshot" {
+//      lifecycle {
+//        hook = "prestart"
+//      }
+//
+//      driver = "docker"
+//
+//      config {
+//        image   = "mmoriarity/prometheus-backup"
+//        command = "/prometheus-backup"
+//        args    = [
+//          "-prometheus-url",
+//          "http://10.0.0.2:9090",
+//          "-prometheus-data-path",
+//          "/prometheus",
+//          "-backup-path",
+//          "${NOMAD_ALLOC_DIR}/data/prometheus",
+//        ]
+//
+//        network_mode = "host"
+//      }
+//
+//      resources {
+//        cpu    = 100
+//        memory = 100
+//      }
+//
+//      volume_mount {
+//        volume      = "prometheus_data"
+//        destination = "/prometheus"
+//      }
+//    }
 
     dynamic "task" {
       for_each = local.databases
