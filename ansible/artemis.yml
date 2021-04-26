@@ -4,3 +4,4 @@
     setup_named: true
   roles:
     - role: dns
+    - role: prometheus

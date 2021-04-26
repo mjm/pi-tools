@@ -1,0 +1,207 @@
+groups:
+
+  - name: dns_alerts
+    rules:
+      - alert: ExternalDNSFailing
+        expr: probe_success{probe_type="dns",instance!~"10.0.0.[2-4]"} < 0.5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: External DNS queries are failing
+          description: >
+            One or more external DNS servers are unable to look up Google's home page.
+            This might mean your internet is down, though I'm not sure how you're getting this alert
+            in that case.
+
+      - alert: DNSFailingExternalSite
+        expr: (min(probe_success{probe_type="dns",instance!~"10.0.0.[2-4]"}) > 0.5) and (min(probe_success{probe_type="dns",probe_scope="public",instance=~"10.0.0.[2-4]"}) < 0.5)
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: DNS queries for external sites are failing
+          description: >
+            The PiHole is unable to look up Google's home page, but external DNS is able to look it up
+            without issue. Something is probably wrong with PiHole's configuration.
+
+      - alert: DNSFailingInternalNode
+        expr: probe_success{probe_type="dns",probe_scope="private"} < 0.5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: DNS queries for Raspberry Pi nodes are failing
+          description: >
+            A DNS server is unable to look up the address for the raspberrypi node, or it's not giving
+            the expected IP address.
+
+      - alert: DNSFailingInternalSite
+        expr: probe_success{probe_type="dns",probe_scope="private-cname"} < 0.5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: DNS queries for internal sites are failing
+          description: >
+            The PiHole is unable to look up the address for Homebase, or it's not returning a CNAME to a
+            Raspberry Pi node.
+
+      - alert: NoAdBlocking
+        expr: probe_success{probe_type="dns",probe_scope="ad-blocking"} < 0.5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Ads are not being blocked by DNS
+          description: >
+            DNS queries for ads are not being blocked as expected. It may be that PiHole is down or not
+            registered in Consul, so DNS is falling back to using Google DNS directly.
+
+  - name: homebase_bot_alerts
+    rules:
+      - alert: HomebaseBotServiceDown
+        expr: sum(up{app="homebase-bot"}) < 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: No homebase-bot-srv instances are running
+          description: >
+            There don't seem to be any running pods of homebase-bot-srv. The Telegram bot won't work until
+            this is addressed.
+
+      - alert: HomebaseBotNoLeader
+        expr: sum(homebase_bot_is_leader) < 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: homebase-bot-srv has no leader
+          description: >
+            There are no homebase-bot-srv pods acting as leader. The Telegram bot won't be able to respond to
+            incoming messages until there is a leader.
+
+  - name: node_alerts
+    rules:
+      - alert: NodeExporterDown
+        expr: up{app="node-exporter"} < 0.5
+        for: 5m
+        labels:
+          severity: notice
+        annotations:
+          summary: Node exporter is down
+          annotations: >
+            One or more of the node-exporters can't be scraped by Prometheus. You should look into this, as you're
+            probably missing some metrics you'd like to have.
+
+      - alert: NodeTemperatureTooHigh
+        expr: node_hwmon_temp_celsius > 80
+        for: 5m
+        labels:
+          severity: notice
+        annotations:
+          summary: Raspberry Pi temperature is close to throttling
+          description: >
+            One or more Raspberry Pis are approaching a temperature that will cause the CPU to start
+            throttling.
+
+      - alert: LowDiskSpace
+        expr: (node_filesystem_avail_bytes{device!~'rootfs',mountpoint="/"} / node_filesystem_size_bytes{device!~'rootfs',mountpoint="/"}) < 0.05
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Raspberry Pi is running out of disk space
+          description: >
+            One or more Raspberry Pis have less than 5% space available on their root volume.
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemFree_bytes + node_memory_Cached_bytes + node_memory_Buffers_bytes) < 300000000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Raspberry Pi is using too much memory
+          description: >
+            One or more Raspberry Pis is using a lot of memory. Some process on the machine probably needs to
+            be restarted.
+
+  - name: presence_alerts
+    rules:
+      - alert: PresenceServiceDown
+        expr: sum(up{app="detect-presence"}) < 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: No detect-presence-srv instances are running
+          description: >
+            There don't seem to be any running pods of detect-presence-srv. Trips won't be able to recorded until this
+            is addressed.
+
+  - name: consul_alerts
+    rules:
+      - alert: ServiceUnhealthy
+        expr: min(consul_catalog_service_node_healthy) by (exported_service_name) < 1
+        for: 5m
+        labels:
+          severity: notice
+        annotations:
+          summary: Service {{ $labels.exported_service_name }} has unhealthy instances
+          description: >
+            There is at least one unhealthy instance of {{ $labels.exported_service_name }} in Consul.
+
+            https://consul.homelab/ui/dc1/services/{{ $labels.exported_service_name }}/instances
+
+      - alert: ConsulDown
+        expr: consul_up < 1
+        for: 5m
+        labels:
+          severity: notice
+        annotations:
+          summary: Consul is down
+          description: >
+            The Consul exporter is not able to connect to Consul, so it won't be able to report whether
+            services are healthy.
+
+            https://grafana.homelab/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%22expr%22:%22%7Bsyslog_identifier%3D%5C%22consul-exporter%5C%22%7D%22%7D,%7B%22ui%22:%5Btrue,true,true,%22none%22%5D%7D%5D
+
+  - name: backup_alerts
+    rules:
+
+      - alert: BackupFailed
+        expr: backup_last_success_time - backup_last_completion_time < 0
+        for: 1m
+        labels:
+          severity: notice
+        annotations:
+          summary: '{{ $labels.kind }} backup failed'
+          description: >
+            The last {{ $labels.kind }} backup did not succeed.
+
+            https://grafana.homelab/explore?orgId=1&left=%5B%22now-24h%22,%22now%22,%22Loki%22,%7B%22expr%22:%22%7Bsyslog_identifier%3D%5C%22backup-{{ $labels.kind }}%5C%22%7D%22%7D,%7B%22ui%22:%5Btrue,true,true,%22none%22%5D%7D%5D
+
+      - alert: BorgNotBackingUp
+        expr: time() - backup_last_success_time{kind="borg"} > 16200
+        for: 1m
+        labels:
+          severity: notice
+        annotations:
+          summary: Borg backup is overdue
+          description: >
+            A Borg backup hasn't completed successfully in four and a half hours, something may be wrong.
+
+            https://grafana.homelab/explore?orgId=1&left=%5B%22now-24h%22,%22now%22,%22Loki%22,%7B%22expr%22:%22%7Bsyslog_identifier%3D%5C%22backup-borg%5C%22%7D%22%7D,%7B%22ui%22:%5Btrue,true,true,%22none%22%5D%7D%5D
+
+      - alert: TarsnapNotBackingUp
+        expr: time() - backup_last_success_time{kind="tarsnap"} > 100800
+        for: 1m
+        labels:
+          severity: notice
+        annotations:
+          summary: Tarsnap backup is overdue
+          description: >
+            A Tarsnap backup hasn't completed successfully in twenty-eight hours, something may be wrong.
+
+            https://grafana.homelab/explore?orgId=1&left=%5B%22now-24h%22,%22now%22,%22Loki%22,%7B%22expr%22:%22%7Bsyslog_identifier%3D%5C%22backup-tarsnap%5C%22%7D%22%7D,%7B%22ui%22:%5Btrue,true,true,%22none%22%5D%7D%5D

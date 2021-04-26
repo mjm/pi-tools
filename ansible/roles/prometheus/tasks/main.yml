@@ -1,0 +1,48 @@
+- name: Copy Prometheus config template
+  copy:
+    src: prometheus.yml.tpl
+    dest: '{{ metrics_jail_dir }}/usr/local/etc/prometheus.yml.tpl'
+    mode: 0644
+    owner: root
+    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+  become: true
+  notify: Reload consul-template config
+
+- name: Copy Prometheus consul-template config
+  copy:
+    src: prometheus.hcl
+    dest: '{{ metrics_jail_dir }}/usr/local/etc/consul-template.d/prometheus.hcl'
+    mode: 0644
+    owner: root
+    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+  become: true
+  notify: Reload consul-template config
+
+- name: Create rules directory
+  file:
+    path: '{{ metrics_jail_dir }}/usr/local/etc/rules'
+    state: directory
+    mode: 0755
+    owner: root
+    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+  become: true
+
+- name: Copy alert rules
+  copy:
+    src: alerts.yml
+    dest: '{{ metrics_jail_dir }}/usr/local/etc/rules/alerts.yml'
+    mode: 0644
+    owner: root
+    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+  become: true
+  notify: Reload Prometheus config
+
+- name: Copy presence rules
+  copy:
+    src: presence.yml
+    dest: '{{ metrics_jail_dir }}/usr/local/etc/rules/presence.yml'
+    mode: 0644
+    owner: root
+    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+  become: true
+  notify: Reload Prometheus config
