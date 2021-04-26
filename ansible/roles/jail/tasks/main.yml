@@ -1,0 +1,55 @@
+- name: Copy default jail rc.conf
+  copy:
+    src: rc.conf
+    dest: /usr/jails/flavours/default/etc/rc.conf
+    mode: 0755
+    owner: root
+    group: wheel
+  become: true
+
+- name: Create syslog.d directory in default jail flavour
+  file:
+    path: /usr/jails/flavours/default/usr/local/etc/syslog.d
+    state: directory
+    mode: 0755
+    owner: root
+    group: wheel
+  become: true
+
+- name: Copy remote syslog config
+  copy:
+    src: remote.conf
+    dest: /usr/jails/flavours/default/usr/local/etc/syslog.d/remote.conf
+    mode: 0644
+    owner: root
+    group: wheel
+  become: true
+
+- name: Configure jails
+  template:
+    src: jail.conf.j2
+    dest: /etc/jail.conf
+    mode: 0644
+    owner: root
+    group: wheel
+    backup: true
+  become: true
+
+- name: Create directory for jail fstab files
+  file:
+    path: /etc/jail
+    state: directory
+    mode: 0755
+    owner: root
+    group: wheel
+  become: true
+
+- name: Configure fstab for all jails
+  template:
+    src: fstab.jail.conf.j2
+    dest: /etc/jail/fstab.{{ item.name }}
+    mode: 0644
+    owner: root
+    group: wheel
+  loop: "{{ jails }}"
+  become: true

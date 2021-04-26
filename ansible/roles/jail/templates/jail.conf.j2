@@ -1,0 +1,25 @@
+exec.start = "/bin/sh /etc/rc";
+exec.stop = "/bin/sh /etc/rc.shutdown";
+exec.clean;
+
+mount.fstab = "/etc/jail/fstab.${name}";
+mount.devfs;
+mount.fdescfs;
+mount.procfs;
+
+devfs_ruleset = "4";
+
+path = "/usr/jails/$name";
+
+host.hostname   = $name;
+host.domainname = "home.mattmoriarity.com";
+
+{% for jail in jails %}
+{{ jail.name }} {
+    ip4.addr = {{ jail.ips | join(", ") }};
+{% if "extra_config" is in jail %}
+    {{ jail.extra_config }}
+{% endif %}
+}
+
+{% endfor %}
