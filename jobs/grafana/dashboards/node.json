@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": 1860,
   "graphTooltip": 0,
-  "iteration": 1619414104524,
+  "iteration": 1619415103480,
   "links": [],
   "panels": [
     {
@@ -337,6 +337,16 @@
           "intervalFactor": 1,
           "refId": "B",
           "step": 900
+        },
+        {
+          "expr": "((node_memory_size_bytes{instance=\"$node\",job=\"$job\"} - node_memory_free_bytes{instance=\"$node\",job=\"$job\"} - node_memory_wired_bytes{instance=\"$node\",job=\"$job\"}) / (node_memory_size_bytes{instance=\"$node\",job=\"$job\"} )) * 100",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "C",
+          "step": 900
         }
       ],
       "title": "RAM Used",
@@ -411,6 +421,14 @@
           "expr": "((node_memory_SwapTotal_bytes{instance=\"$node\",job=\"$job\"} - node_memory_SwapFree_bytes{instance=\"$node\",job=\"$job\"}) / (node_memory_SwapTotal_bytes{instance=\"$node\",job=\"$job\"} )) * 100",
           "intervalFactor": 1,
           "refId": "A",
+          "step": 900
+        },
+        {
+          "expr": "(node_memory_swap_used_bytes{instance=\"$node\",job=\"$job\"} / (node_memory_swap_size_bytes{instance=\"$node\",job=\"$job\"} )) * 100",
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "B",
           "step": 900
         }
       ],
@@ -13830,5 +13848,5 @@
   "timezone": "browser",
   "title": "Node Dashboard",
   "uid": "rYdddlPWk",
-  "version": 3
+  "version": 4
 }
