@@ -101,7 +101,7 @@ job "homebase" {
         command = "/homebase-api-srv"
         args    = [
           "-prometheus-url",
-          "http://10.0.0.2:9090",
+          "http://prometheus.service.consul:9090",
         ]
       }
 
