@@ -7,6 +7,10 @@ job "promtail" {
   group "promtail" {
     network {
       mode = "bridge"
+
+      port "syslog" {
+        static = 3102
+      }
     }
 
     service {
@@ -37,6 +41,13 @@ job "promtail" {
       }
     }
 
+    service {
+      name = "promtail"
+      port = "syslog"
+
+      tags = ["syslog"]
+    }
+
     volume "run" {
       type      = "host"
       read_only = false
@@ -52,6 +63,7 @@ job "promtail" {
         args  = [
           "-config.file=${NOMAD_TASK_DIR}/promtail.yml",
         ]
+        ports = ["syslog"]
 
         mount {
           type   = "bind"
