@@ -2,7 +2,7 @@ global:
   resolve_timeout: 5m
 
 templates:
-  - << env "NOMAD_TASK_DIR" >>/templates/*.tpl
+  - /usr/local/etc/alertmanager/templates/*.tpl
 
 route:
   group_by: ['alertname', 'severity']
@@ -12,14 +12,6 @@ route:
   receiver: pagerduty
 
 receivers:
-  - name: 'push.phone.matt'
-    pushover_configs:
-<<- with secret "kv/pushover" >>
-      - user_key: << .Data.data.user_key >>
-        token: << .Data.data.token >>
-<<- end >>
-        title: '{{ template "pushover.title" . }}'
-        priority: '{{ template "pushover.priority" . }}'
   - name: pagerduty
     pagerduty_configs:
       - routing_key: << with secret "kv/pagerduty" >><< .Data.data.routing_key >><< end >>
