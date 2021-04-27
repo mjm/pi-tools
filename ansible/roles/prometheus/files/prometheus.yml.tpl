@@ -128,9 +128,7 @@ scrape_configs:
           - 8.8.8.8
           - 1.0.0.1
           - 1.1.1.1
-          - 10.0.0.2
-          - 10.0.0.3
-          - 10.0.0.4
+          - 10.0.2.101
         labels:
           probe_type: dns
           probe_scope: public
@@ -148,9 +146,7 @@ scrape_configs:
       module: [dns_private]
     static_configs:
       - targets:
-          - 10.0.0.2
-          - 10.0.0.3
-          - 10.0.0.4
+          - 10.0.2.101
         labels:
           probe_type: dns
           probe_scope: private
@@ -168,9 +164,7 @@ scrape_configs:
       module: [dns_private_cname]
     static_configs:
       - targets:
-          - 10.0.0.2
-          - 10.0.0.3
-          - 10.0.0.4
+          - 10.0.2.101
         labels:
           probe_type: dns
           probe_scope: private-cname
@@ -188,9 +182,7 @@ scrape_configs:
       module: [dns_ad_blocking]
     static_configs:
       - targets:
-          - 10.0.0.2
-          - 10.0.0.3
-          - 10.0.0.4
+          - 10.0.2.101
         labels:
           probe_type: dns
           probe_scope: ad-blocking
