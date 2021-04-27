@@ -2,3 +2,9 @@ setup_named: false
 jail_name: dns1
 named_jail_dir: /usr/jails/dns1
 named_db_dir: /usr/local/etc/namedb
+zone_variants:
+  - local
+  - tailscale
+zone_names:
+  - homelab
+  - home.mattmoriarity.com
