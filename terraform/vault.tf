@@ -123,6 +123,8 @@ resource "vault_consul_secret_backend_role" "nomad_client_server" {
     consul_acl_policy.nomad_client.name,
     consul_acl_policy.nomad_server.name,
   ]
+
+  ttl = 31536000 # one year
 }
 
 resource "vault_consul_secret_backend_role" "prometheus" {
