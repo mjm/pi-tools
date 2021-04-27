@@ -34,7 +34,7 @@
     remote_src: true
   become: true
   when: installed_nomad_version.stdout != nomad_version
-  register: install_nomad
+  notify: Restart Nomad service
 
 - name: Ensure Nomad data directory exists
   file:
@@ -59,7 +59,7 @@
     src: etc_nomad.hcl
     dest: /etc/nomad.hcl
   become: true
-  register: config_file
+  notify: Restart Nomad service
 
 - name: Install Nomad systemd unit
   copy:
@@ -69,16 +69,7 @@
     owner: root
     group: root
   become: true
-  register: systemd
-
-- name: Enable and restart Nomad service
-  systemd:
-    name: nomad
-    daemon_reload: true
-    enabled: true
-    state: restarted
-  become: true
-  when: install_nomad.changed or systemd.changed or config_file.changed
+  notify: Restart Nomad service
 
 - name: Ensure Nomad service is started
   systemd:

@@ -12,13 +12,5 @@
     owner: root
     group: root
   become: true
-  register: sshd_config
-
-- name: Restart sshd if needed
-  systemd:
-    name: ssh
-    enabled: true
-    state: restarted
-  become: true
-  when: sshd_config.changed
+  notify: Restart sshd
 

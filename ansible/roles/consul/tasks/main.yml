@@ -11,7 +11,7 @@
     remote_src: true
   become: true
   when: (installed_consul_version.stdout | from_json).Version != consul_version
-  register: install_consul
+  notify: Restart Consul service
 
 - name: Ensure Consul data directory exists
   file:
@@ -27,7 +27,7 @@
     src: etc_consul.hcl.j2
     dest: /etc/consul.hcl
   become: true
-  register: config_file
+  notify: Restart Consul service
 
 - name: Install Consul systemd unit
   copy:
@@ -37,16 +37,7 @@
     owner: root
     group: root
   become: true
-  register: systemd
-
-- name: Enable and restart Consul service
-  systemd:
-    name: consul
-    daemon_reload: true
-    enabled: true
-    state: restarted
-  become: true
-  when: install_consul.changed or systemd.changed or config_file.changed
+  notify: Restart Consul service
 
 - name: Ensure Consul service is started
   systemd:
@@ -68,7 +59,7 @@
     remote_src: true
   become: true
   when: installed_consul_template_version.stdout != consul_template_version
-  register: install_consul_template
+  notify: Restart consul-template service
 
 - name: Create consul-template.d directory
   file:
@@ -87,7 +78,7 @@
     owner: root
     group: root
   become: true
-  register: template_systemd
+  notify: Restart consul-template service
 
 - name: Install consul-template config file
   template:
@@ -99,23 +90,7 @@
     variable_start_string: "[["
     variable_end_string: "]]"
   become: true
-  register: template_config
-
-- name: Restart consul-template service if needed
-  systemd:
-    name: consul-template
-    daemon_reload: true
-    enabled: true
-    state: restarted
-  become: true
-  when: install_consul_template.changed or template_systemd.changed
-
-- name: Reload consul-template service if needed
-  systemd:
-    name: consul-template
-    state: reloaded
-  become: true
-  when: template_config.changed
+  notify: Reload consul-template service
 
 - name: Ensure consul-template service is started
   systemd:

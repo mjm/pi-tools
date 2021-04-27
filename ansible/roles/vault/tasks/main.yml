@@ -11,7 +11,7 @@
     remote_src: true
   become: true
   when: installed_vault_version.stdout != vault_version
-  register: install_vault
+  notify: Restart Vault service
 
 - name: Create Vault plugin directory
   file:
@@ -22,21 +22,21 @@
     mode: 0755
   become: true
 
-- name: Install Vault WebAuthn plugin
-  copy:
-    src: vault-plugin-auth-webauthn
-    dest: /usr/local/libexec/vault/vault-plugin-auth-webauthn
-    owner: root
-    group: root
-    mode: 0755
-  become: true
+#- name: Install Vault WebAuthn plugin
+#  copy:
+#    src: vault-plugin-auth-webauthn
+#    dest: /usr/local/libexec/vault/vault-plugin-auth-webauthn
+#    owner: root
+#    group: root
+#    mode: 0755
+#  become: true
 
 - name: Install Vault config file
   copy:
     src: etc_vault.hcl
     dest: /etc/vault.hcl
   become: true
-  register: config_file
+  notify: Reload Vault service
 
 - name: Install Vault systemd unit
   copy:
@@ -46,23 +46,7 @@
     owner: root
     group: root
   become: true
-  register: systemd
-
-- name: Enable and restart Vault service
-  systemd:
-    name: vault
-    daemon_reload: true
-    enabled: true
-    state: restarted
-  become: true
-  when: install_vault.changed or systemd.changed
-
-- name: Reload Vault service if needed
-  systemd:
-    name: vault
-    state: reloaded
-  become: true
-  when: config_file.changed
+  notify: Restart Vault service
 
 - name: Ensure Vault service is started
   systemd:
