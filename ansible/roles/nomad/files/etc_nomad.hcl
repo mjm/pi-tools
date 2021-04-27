@@ -65,16 +65,4 @@ client {
     path = "/var/lib/promtail"
     read_only = false
   }
-
-{% if inventory_hostname == "raspberrypi.homelab" %}
-  host_volume "prometheus_data" {
-    path = "/srv/nfs/kubernetes/monitoring/prometheus-data"
-    read_only = false
-  }
-
-  host_volume "alertmanager_data" {
-    path = "/var/lib/alertmanager"
-    read_only = false
-  }
-{% endif %}
 }

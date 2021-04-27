@@ -55,8 +55,8 @@
   become: true
 
 - name: Install Nomad config file
-  template:
-    src: etc_nomad.hcl.j2
+  copy:
+    src: etc_nomad.hcl
     dest: /etc/nomad.hcl
   become: true
   register: config_file
