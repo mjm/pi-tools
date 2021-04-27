@@ -8,3 +8,9 @@
 - name: Reload consul-template config
   command: jexec {{ jail_name }} pkill -HUP consul-template
   become: true
+
+- name: Reload packet filter rules
+  service:
+    name: pf
+    state: reloaded
+  become: true

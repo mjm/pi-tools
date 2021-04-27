@@ -1,7 +1,19 @@
 - name: Set named to run at boot
   # can't use 'service' because this is inside a jail
   command: jexec {{ jail_name }} sysrc named_enable=YES
+  register: named_enable
+  changed_when: '"NO -> YES" in named_enable.stdout'
   become: true
+
+- name: Configure packet filter rules
+  copy:
+    src: pf.conf
+    dest: /etc/pf.conf
+    mode: 0644
+    owner: root
+    group: wheel
+  become: true
+  notify: Reload packet filter rules
 
 - name: Configure named
   template:

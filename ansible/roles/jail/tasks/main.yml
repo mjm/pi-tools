@@ -32,7 +32,6 @@
     mode: 0644
     owner: root
     group: wheel
-    backup: true
   become: true
 
 - name: Create directory for jail fstab files
