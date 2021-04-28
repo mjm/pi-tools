@@ -39,6 +39,10 @@ options {
     max-ncache-ttl 15;
 };
 
+statistics-channels {
+    inet 127.0.2.1 port 8053 allow { 127.0.2.1; };
+};
+
 view local {
     match-destinations {
         10.0.2.101;
