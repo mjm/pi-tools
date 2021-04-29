@@ -40,12 +40,22 @@
   notify: Reload consul-template config
 
 - name: Configure zone DBs
-  copy:
-    src: "{{ item }}.db.tpl"
-    dest: '{{ named_jail_dir }}{{ named_db_dir }}/master/{{ item }}.db.tpl'
+  template:
+    src: "{{ item }}.db.tpl.j2"
+    dest: "{{ named_jail_dir }}{{ named_db_dir }}/master/{{ item }}.db.tpl"
     mode: 0644
     owner: root
-    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+    group: wheel
   become: true
   notify: Reload consul-template config
   loop: '{{ zone_names | product(zone_variants) | map("join", ".") }}'
+
+- name: Configure consul-template
+  copy:
+    src: dns.hcl
+    dest: "{{ named_jail_dir }}/usr/local/etc/consul-template.d/dns.hcl"
+    mode: 0644
+    owner: root
+    group: wheel
+  become: true
+  notify: Reload consul-template config

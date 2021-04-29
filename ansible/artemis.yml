@@ -1,35 +1,35 @@
 - hosts: artemis
   remote_user: matt
+  vars:
+    jails:
+      - name: sandbox
+        ips:
+          - re0|10.0.2.100
+          - lo1|127.0.1.1
+      - name: dns1
+        ips:
+          - re0|10.0.2.101
+          - lo1|127.0.2.1
+      - name: db1
+        ips:
+          - re0|10.0.2.102
+          - lo1|127.0.3.1
+        extra_config: |
+          sysvshm = new;
+      - name: minio1
+        ips:
+          - re0|10.0.2.103
+          - lo1|127.0.4.1
+      - name: metrics1
+        ips:
+          - re0|10.0.2.104
+          - lo1|127.0.5.1
+      - name: log1
+        ips:
+          - re0|10.0.2.105
+          - lo1|127.0.6.1
   roles:
     - role: jail
-      vars:
-        jails:
-          - name: sandbox
-            ips:
-              - re0|10.0.2.100
-              - lo1|127.0.1.1
-          - name: dns1
-            ips:
-              - re0|10.0.2.101
-              - lo1|127.0.2.1
-          - name: db1
-            ips:
-              - re0|10.0.2.102
-              - lo1|127.0.3.1
-            extra_config: |
-              sysvshm = new;
-          - name: minio1
-            ips:
-              - re0|10.0.2.103
-              - lo1|127.0.4.1
-          - name: metrics1
-            ips:
-              - re0|10.0.2.104
-              - lo1|127.0.5.1
-          - name: log1
-            ips:
-              - re0|10.0.2.105
-              - lo1|127.0.6.1
     - role: dns
       vars:
         setup_named: true
