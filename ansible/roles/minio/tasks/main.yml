@@ -1,0 +1,26 @@
+- name: Install necessary packages
+  package:
+    name: minio
+    state: present
+
+- name: Install /etc/rc.conf
+  copy:
+    src: rc.conf
+    dest: /etc/rc.conf
+    mode: 0755
+    owner: root
+    group: wheel
+
+- name: Set permissions on Minio database
+  file:
+    path: /var/db/minio
+    state: directory
+    mode: 0750
+    owner: minio
+    group: minio
+
+- name: Ensure services are running and start at boot
+  service:
+    name: minio
+    enabled: true
+    state: started
