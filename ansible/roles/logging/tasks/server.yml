@@ -1,0 +1,33 @@
+- name: Install necessary packages
+  package:
+    name: syslog-ng
+    state: present
+
+- name: Install /etc/rc.conf
+  copy:
+    src: rc.conf
+    dest: /etc/rc.conf
+    mode: 0755
+    owner: root
+    group: wheel
+
+- name: Install syslog-ng.conf
+  copy:
+    src: syslog-ng.conf
+    dest: /usr/local/etc/syslog-ng.conf
+    mode: 0644
+    owner: root
+    group: wheel
+  notify: Reload syslog-ng config
+
+- name: Ensure syslogd is not running
+  service:
+    name: syslogd
+    enabled: false
+    state: stopped
+
+- name: Ensure syslog-ng is started and runs at boot
+  service:
+    name: syslog-ng
+    enabled: true
+    state: started

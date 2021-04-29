@@ -8,9 +8,9 @@
   become: true
 
 - name: Set up BIND server
-  import_tasks: named.yml
+  include_tasks: named.yml
   when: setup_named
 
 - name: Set up packet filter rules
-  import_tasks: pf.yml
+  include_tasks: pf.yml
   when: setup_pf

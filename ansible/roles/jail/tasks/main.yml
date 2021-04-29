@@ -62,4 +62,6 @@
     ansible_connection: sshjail
     root_group: wheel
     jails: "{{ jails }}"
+    setup_named: "{{ item.setup_named | default(omit) }}"
+    logging_mode: "{{ item.logging_mode | default(omit) }}"
   loop: "{{ jails }}"

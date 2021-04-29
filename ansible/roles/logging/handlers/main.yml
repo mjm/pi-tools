@@ -1,0 +1,9 @@
+- name: Reload syslog-ng config
+  service:
+    name: syslog-ng
+    state: reloaded
+
+- name: Reload syslogd config
+  service:
+    name: syslogd
+    state: reloaded

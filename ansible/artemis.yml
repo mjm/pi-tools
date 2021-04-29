@@ -1,5 +1,6 @@
 - hosts: artemis
   remote_user: matt
+  become: true
   vars:
     jails:
       - name: sandbox
@@ -12,6 +13,7 @@
           - re0|10.0.2.101
           - lo1|127.0.2.1
         groups: [dns]
+        setup_named: true
       - name: db1
         ips:
           - re0|10.0.2.102
@@ -34,7 +36,9 @@
           - re0|10.0.2.105
           - lo1|127.0.6.1
         groups: [logging]
+        logging_mode: 'server'
   roles:
+    - role: logging
     - role: jail
     - role: dns
       vars:
@@ -44,15 +48,8 @@
   become: true
   gather_facts: false
   roles:
+    - role: logging
     - role: dns
-
-- hosts: dns
-  become: true
-  gather_facts: false
-  roles:
-    - role: dns
-      vars:
-        setup_named: true
 
 - hosts: metrics
   become: true
