@@ -4,6 +4,14 @@
     state: present
   loop: [prometheus, alertmanager, consul-template]
 
+- name: Install /etc/rc.conf
+  copy:
+    src: rc.conf
+    dest: /etc/rc.conf
+    mode: 0755
+    owner: root
+    group: wheel
+
 - name: Create consul-template config directory
   file:
     path: /usr/local/etc/consul-template.d

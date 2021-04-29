@@ -4,6 +4,14 @@
     state: present
   loop: [bind916, bind_exporter, consul-template]
 
+- name: Install /etc/rc.conf
+  copy:
+    src: rc.conf
+    dest: /etc/rc.conf
+    mode: 0755
+    owner: root
+    group: wheel
+
 - name: Configure named
   template:
     src: named.conf.j2
