@@ -1,3 +1,17 @@
+- name: Install necessary packages
+  package:
+    name: "{{ item }}"
+    state: present
+  loop: [prometheus, alertmanager, consul-template]
+
+- name: Create consul-template config directory
+  file:
+    path: /usr/local/etc/consul-template.d
+    state: directory
+    mode: 0700
+    owner: root
+    group: wheel
+
 - name: Copy common consul-template config
   copy:
     src: common.hcl
@@ -7,6 +21,8 @@
     group: wheel
   become: true
   notify: Reload consul-template config
+
+# TODO consul-template token.hcl file
 
 - name: Copy Prometheus config template
   copy:
@@ -95,3 +111,10 @@
     group: wheel
   become: true
   notify: Reload Alertmanager config
+
+- name: Ensure services are running and start at boot
+  service:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop: [prometheus, alertmanager, consul-template]

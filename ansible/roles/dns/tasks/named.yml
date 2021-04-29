@@ -1,3 +1,9 @@
+- name: Install necessary packages
+  package:
+    name: "{{ item }}"
+    state: present
+  loop: [bind916, bind_exporter, consul-template]
+
 - name: Configure named
   template:
     src: named.conf.j2
@@ -33,6 +39,14 @@
   notify: Reload consul-template config
   loop: '{{ zone_names | product(zone_variants) | map("join", ".") }}'
 
+- name: Create consul-template config directory
+  file:
+    path: /usr/local/etc/consul-template.d
+    state: directory
+    mode: 0700
+    owner: root
+    group: wheel
+
 - name: Configure consul-template
   copy:
     src: dns.hcl
@@ -43,9 +57,9 @@
   become: true
   notify: Reload consul-template config
 
-- name: Set named to run at boot
+- name: Ensure services are running and start at boot
   service:
-    name: named
+    name: "{{ item }}"
     enabled: true
     state: started
-  become: true
+  loop: [named, bind_exporter, consul-template]
