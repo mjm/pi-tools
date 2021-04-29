@@ -1,97 +1,97 @@
 - name: Copy common consul-template config
   copy:
     src: common.hcl
-    dest: '{{ metrics_jail_dir }}/usr/local/etc/consul-template.d/common.hcl'
+    dest: /usr/local/etc/consul-template.d/common.hcl
     mode: 0644
     owner: root
-    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+    group: wheel
   become: true
   notify: Reload consul-template config
 
 - name: Copy Prometheus config template
   copy:
     src: prometheus.yml.tpl
-    dest: '{{ metrics_jail_dir }}/usr/local/etc/prometheus.yml.tpl'
+    dest: /usr/local/etc/prometheus.yml.tpl
     mode: 0644
     owner: root
-    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+    group: wheel
   become: true
   notify: Reload consul-template config
 
 - name: Copy Prometheus consul-template config
   copy:
     src: prometheus.hcl
-    dest: '{{ metrics_jail_dir }}/usr/local/etc/consul-template.d/prometheus.hcl'
+    dest: /usr/local/etc/consul-template.d/prometheus.hcl
     mode: 0644
     owner: root
-    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+    group: wheel
   become: true
   notify: Reload consul-template config
 
 - name: Create rules directory
   file:
-    path: '{{ metrics_jail_dir }}/usr/local/etc/rules'
+    path: /usr/local/etc/rules
     state: directory
     mode: 0755
     owner: root
-    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+    group: wheel
   become: true
 
 - name: Copy alert rules
   copy:
     src: alerts.yml
-    dest: '{{ metrics_jail_dir }}/usr/local/etc/rules/alerts.yml'
+    dest: /usr/local/etc/rules/alerts.yml
     mode: 0644
     owner: root
-    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+    group: wheel
   become: true
   notify: Reload Prometheus config
 
 - name: Copy presence rules
   copy:
     src: presence.yml
-    dest: '{{ metrics_jail_dir }}/usr/local/etc/rules/presence.yml'
+    dest: /usr/local/etc/rules/presence.yml
     mode: 0644
     owner: root
-    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+    group: wheel
   become: true
   notify: Reload Prometheus config
 
 - name: Create Alertmanager templates directory
   file:
-    path: '{{ metrics_jail_dir }}/usr/local/etc/alertmanager/templates'
+    path: /usr/local/etc/alertmanager/templates
     state: directory
     mode: 0755
     owner: root
-    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+    group: wheel
   become: true
 
 - name: Copy Alertmanager config template
   copy:
     src: alertmanager.yml.tpl
-    dest: '{{ metrics_jail_dir }}/usr/local/etc/alertmanager/alertmanager.yml.tpl'
+    dest: /usr/local/etc/alertmanager/alertmanager.yml.tpl
     mode: 0644
     owner: root
-    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+    group: wheel
   become: true
   notify: Reload consul-template config
 
 - name: Copy Alertmanager consul-template config
   copy:
     src: alertmanager.hcl
-    dest: '{{ metrics_jail_dir }}/usr/local/etc/consul-template.d/alertmanager.hcl'
+    dest: /usr/local/etc/consul-template.d/alertmanager.hcl
     mode: 0644
     owner: root
-    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+    group: wheel
   become: true
   notify: Reload consul-template config
 
 - name: Copy PagerDuty alert templates
   copy:
     src: pagerduty.tpl
-    dest: '{{ metrics_jail_dir }}/usr/local/etc/alertmanager/templates/pagerduty.tpl'
+    dest: /usr/local/etc/alertmanager/templates/pagerduty.tpl
     mode: 0644
     owner: root
-    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+    group: wheel
   become: true
   notify: Reload Alertmanager config

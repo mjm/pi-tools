@@ -1,15 +1,15 @@
 - name: Reload Prometheus config
-  command:
-    cmd: service -j {{ jail_name }} prometheus reload
-    warn: false
+  service:
+    name: prometheus
+    state: reloaded
   become: true
 
 - name: Reload Alertmanager config
-  command:
-    cmd: service -j {{ jail_name }} alertmanager reload
-    warn: false
+  service:
+    name: alertmanager
+    state: reloaded
   become: true
 
 - name: Reload consul-template config
-  command: jexec {{ jail_name }} pkill -HUP consul-template
+  command: pkill -HUP consul-template
   become: true

@@ -1,0 +1,9 @@
+- name: Configure packet filter rules
+  copy:
+    src: pf.conf
+    dest: /etc/pf.conf
+    mode: 0644
+    owner: root
+    group: wheel
+  become: true
+  notify: Reload packet filter rules

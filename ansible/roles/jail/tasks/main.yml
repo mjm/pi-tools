@@ -52,3 +52,14 @@
     group: wheel
   loop: "{{ jails }}"
   become: true
+
+- name: Add hosts for each jail
+  add_host:
+    name: "{{ item.name }}"
+    group: "{{ ['jails'] + item.groups }}"
+    ansible_ssh_host: "{{ item.name }}@{{ ansible_ssh_host }}"
+    ansible_python_interpreter: "{{ ansible_python_interpreter }}"
+    ansible_connection: sshjail
+    root_group: wheel
+    jails: "{{ jails }}"
+  loop: "{{ jails }}"

@@ -1,48 +1,31 @@
-- name: Set named to run at boot
-  # can't use 'service' because this is inside a jail
-  command: jexec {{ jail_name }} sysrc named_enable=YES
-  register: named_enable
-  changed_when: '"NO -> YES" in named_enable.stdout'
-  become: true
-
-- name: Configure packet filter rules
-  copy:
-    src: pf.conf
-    dest: /etc/pf.conf
-    mode: 0644
-    owner: root
-    group: wheel
-  become: true
-  notify: Reload packet filter rules
-
 - name: Configure named
   template:
     src: named.conf.j2
-    dest: '{{ named_jail_dir }}{{ named_db_dir }}/named.conf'
+    dest: '{{ named_db_dir }}/named.conf'
   become: true
   notify: Reload named config
 
 - name: Configure named default zones
   template:
     src: named.default-zones.conf.j2
-    dest: '{{ named_jail_dir }}{{ named_db_dir }}/named.default-zones.conf'
+    dest: '{{ named_db_dir }}/named.default-zones.conf'
   become: true
   notify: Reload named config
 
 - name: Configure named forwarders
   copy:
     src: named.forwarders.conf.tpl
-    dest: '{{ named_jail_dir }}{{ named_db_dir }}/named.forwarders.conf.tpl'
+    dest: '{{ named_db_dir }}/named.forwarders.conf.tpl'
     mode: 0644
     owner: root
-    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+    group: wheel
   become: true
   notify: Reload consul-template config
 
 - name: Configure zone DBs
   template:
     src: "{{ item }}.db.tpl.j2"
-    dest: "{{ named_jail_dir }}{{ named_db_dir }}/master/{{ item }}.db.tpl"
+    dest: "{{ named_db_dir }}/master/{{ item }}.db.tpl"
     mode: 0644
     owner: root
     group: wheel
@@ -53,9 +36,16 @@
 - name: Configure consul-template
   copy:
     src: dns.hcl
-    dest: "{{ named_jail_dir }}/usr/local/etc/consul-template.d/dns.hcl"
+    dest: /usr/local/etc/consul-template.d/dns.hcl
     mode: 0644
     owner: root
     group: wheel
   become: true
   notify: Reload consul-template config
+
+- name: Set named to run at boot
+  service:
+    name: named
+    enabled: true
+    state: started
+  become: true

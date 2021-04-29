@@ -1,12 +1,11 @@
 - name: Reload named config
-  # can't use 'service' because this is inside a jail
-  command:
-    cmd: service -j {{ jail_name }} named reload
-    warn: false
+  service:
+    name: named
+    state: reloaded
   become: true
 
 - name: Reload consul-template config
-  command: jexec {{ jail_name }} pkill -HUP consul-template
+  command: pkill -HUP consul-template
   become: true
 
 - name: Reload packet filter rules
