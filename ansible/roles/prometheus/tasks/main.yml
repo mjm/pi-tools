@@ -30,7 +30,14 @@
   become: true
   notify: Reload consul-template config
 
-# TODO consul-template token.hcl file
+- name: Install consul-template tokens config
+  template:
+    src: tokens.hcl.j2
+    dest: /usr/local/etc/consul-template.d/tokens.hcl
+    mode: 0600
+    owner: root
+    group: wheel
+  notify: Reload consul-template config
 
 - name: Copy Prometheus config template
   copy:

@@ -65,6 +65,15 @@
   become: true
   notify: Reload consul-template config
 
+- name: Configure consul-template token
+  template:
+    src: token.hcl.j2
+    dest: /usr/local/etc/consul-template.d/token.hcl
+    mode: 0600
+    owner: root
+    group: wheel
+  notify: Reload consul-template config
+
 - name: Ensure services are running and start at boot
   service:
     name: "{{ item }}"

@@ -4,7 +4,7 @@
     dest: /etc/resolv.conf
     mode: 0644
     owner: root
-    group: '{{ hostvars[inventory_hostname]["root_group"] }}'
+    group: '{{ root_group }}'
   become: true
 
 - name: Set up BIND server
