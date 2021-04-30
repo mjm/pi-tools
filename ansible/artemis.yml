@@ -1,48 +1,13 @@
 - hosts: artemis
   remote_user: matt
   become: true
-  vars:
-    jails:
-      - name: sandbox
-        ips:
-          - re0|10.0.2.100
-          - lo1|127.0.1.1
-        groups: []
-      - name: dns1
-        ips:
-          - re0|10.0.2.101
-          - lo1|127.0.2.1
-        groups: [dns]
-        setup_named: true
-      - name: db1
-        ips:
-          - re0|10.0.2.102
-          - lo1|127.0.3.1
-        extra_config: |
-          sysvshm = new;
-        groups: [postgres]
-      - name: minio1
-        ips:
-          - re0|10.0.2.103
-          - lo1|127.0.4.1
-        groups: [minio]
-      - name: metrics1
-        ips:
-          - re0|10.0.2.104
-          - lo1|127.0.5.1
-        groups: [metrics]
-      - name: log1
-        ips:
-          - re0|10.0.2.105
-          - lo1|127.0.6.1
-        groups: [logging]
-        logging_mode: 'server'
   roles:
     - role: logging
     - role: jail
     - role: dns
       vars:
         setup_pf: true
+    - role: consul
 
 - hosts: jails
   become: true

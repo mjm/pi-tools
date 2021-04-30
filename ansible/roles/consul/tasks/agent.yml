@@ -1,0 +1,46 @@
+- name: Install Consul
+  package:
+    name: consul
+    state: present
+
+- name: Create Consul config directory
+  file:
+    path: /usr/local/etc/consul.d
+    state: directory
+    mode: 0755
+    owner: root
+    group: wheel
+
+- name: Install Consul agent config
+  template:
+    src: consul.agent.hcl.j2
+    dest: /usr/local/etc/consul.d/config.hcl
+    mode: 0644
+    owner: root
+    group: wheel
+  notify: Reload Consul service
+
+- name: Install Consul agent token config
+  template:
+    src: tokens.hcl.j2
+    dest: /usr/local/etc/consul.d/tokens.hcl
+    mode: 0600
+    owner: consul
+    group: consul
+  notify: Reload Consul service
+
+- name: Install Consul service configs
+  template:
+    src: services/{{ item }}.hcl.j2
+    dest: /usr/local/etc/consul.d/service.{{ item }}.hcl
+    mode: 0600
+    owner: consul
+    group: consul
+  loop: "{{ consul_services }}"
+  notify: Reload Consul service
+
+- name: Ensure Consul is started and runs at boot
+  service:
+    name: consul
+    enabled: true
+    state: started

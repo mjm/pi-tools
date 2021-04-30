@@ -1,0 +1,59 @@
+---
+ansible_host: artemis.homelab
+ansible_python_interpreter: /usr/local/bin/python3.7
+
+tailscale_ip: 100.75.195.24
+root_group: wheel
+
+consul_agent_token: !vault |
+  $ANSIBLE_VAULT;1.1;AES256
+  62393831353733656463646665316665353066383239306430646439653563323866306265636531
+  6365393639313761643533646438376664363739306563630a336665346466616136306366633763
+  33383335623835633334666263333135393134306166333633343139633836353062396238343939
+  6266363666366534660a666233653037623536363231616532663530383233383135653235616163
+  35353862373664626638643531643866373538376230363363353336396536373735633830383236
+  3937363737656334643632313238666263373339663061373430
+consul_services:
+  - node_exporter
+  - named
+  - bind_exporter
+  - postgresql
+  - minio
+  - prometheus
+  - alertmanager
+
+jails:
+  - name: sandbox
+    ips:
+      - re0|10.0.2.100
+      - lo1|127.0.1.1
+    groups: []
+  - name: dns1
+    ips:
+      - re0|10.0.2.101
+      - lo1|127.0.2.1
+    groups: [dns]
+    setup_named: true
+  - name: db1
+    ips:
+      - re0|10.0.2.102
+      - lo1|127.0.3.1
+    extra_config: |
+      sysvshm = new;
+    groups: [postgres]
+  - name: minio1
+    ips:
+      - re0|10.0.2.103
+      - lo1|127.0.4.1
+    groups: [minio]
+  - name: metrics1
+    ips:
+      - re0|10.0.2.104
+      - lo1|127.0.5.1
+    groups: [metrics]
+  - name: log1
+    ips:
+      - re0|10.0.2.105
+      - lo1|127.0.6.1
+    groups: [logging]
+    logging_mode: 'server'

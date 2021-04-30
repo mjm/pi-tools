@@ -1,0 +1,16 @@
+service {
+  name    = "minio"
+  port    = 9000
+  address = "10.0.2.103"
+
+  checks = [
+    {
+      name     = "minio is ready"
+      http     = "http://10.0.2.103:9000/minio/health/cluster"
+      interval = "15s"
+      timeout  = "10s"
+    }
+  ]
+
+  token = "{{ consul_agent_token }}"
+}

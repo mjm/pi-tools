@@ -1,0 +1,17 @@
+service {
+  name    = "named"
+  id      = "named:artemis"
+  address = "10.0.2.101"
+  port    = 53
+
+  checks = [
+    {
+      name     = "resolve artemis.home.mattmoriarity.com"
+      args     = ["/usr/bin/drill", "@10.0.2.101", "artemis.home.mattmoriarity.com"]
+      interval = "30s"
+      timeout  = "15s"
+    }
+  ]
+
+  token = "{{ consul_agent_token }}"
+}

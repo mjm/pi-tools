@@ -5,6 +5,11 @@
     state: restarted
   become: true
 
+- name: Reload Consul service
+  service:
+    name: consul
+    state: reloaded
+
 - name: Restart consul-template service
   systemd:
     name: consul-template
@@ -14,7 +19,7 @@
   become: true
 
 - name: Reload consul-template service
-  systemd:
+  service:
     name: consul-template
     state: reloaded
   become: true

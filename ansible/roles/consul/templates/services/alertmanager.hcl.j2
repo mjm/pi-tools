@@ -1,0 +1,20 @@
+service {
+  name    = "alertmanager"
+  port    = 9093
+  address = "10.0.2.104"
+
+  meta = {
+    metrics_path = "/metrics"
+  }
+
+  checks = [
+    {
+      name     = "alertmanager is ready"
+      http     = "http://10.0.2.104:9093/-/ready"
+      interval = "30s"
+      timeout  = "5s"
+    }
+  ]
+
+  token = "{{ consul_agent_token }}"
+}
