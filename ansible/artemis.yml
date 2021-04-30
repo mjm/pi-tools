@@ -2,6 +2,7 @@
   remote_user: matt
   become: true
   roles:
+    - role: pkg
     - role: logging
     - role: jail
     - role: dns
@@ -13,6 +14,7 @@
   become: true
   gather_facts: false
   roles:
+    - role: pkg
     - role: logging
     - role: dns
 
