@@ -2,9 +2,9 @@
   remote_user: ubuntu
   become: true
   roles:
-    - role: dns
-    - role: volumes
+#    - role: dns
+#    - role: volumes
     - role: consul
-    - role: vault
-    - role: ssh
-    - role: nomad
+#    - role: vault
+#    - role: ssh
+#    - role: nomad

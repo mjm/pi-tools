@@ -4,14 +4,17 @@
   register: installed_consul_version
   changed_when: false
 
-- name: Install Consul {{ consul_version }}
-  unarchive:
-    src: https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_arm64.zip
-    dest: /usr/local/bin
-    remote_src: true
-  become: true
-  when: (installed_consul_version.stdout | from_json).Version != consul_version
-  notify: Restart Consul service
+# Not properly detecting the current version in this alpha, so it's downloading this binary everytime.
+# It's slow and a waste of bandwidth, so comment this until we intend to upgrade.
+#
+#- name: Install Consul {{ consul_version }}
+#  unarchive:
+#    src: https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_arm64.zip
+#    dest: /usr/local/bin
+#    remote_src: true
+#  become: true
+#  when: (installed_consul_version.stdout | from_json).Version != consul_version
+#  notify: Restart Consul service
 
 - name: Ensure Consul data directory exists
   file:
@@ -26,7 +29,19 @@
   template:
     src: etc_consul.hcl.j2
     dest: /etc/consul.hcl
+    mode: 0644
+    owner: root
+    group: root
   become: true
+  notify: Restart Consul service
+
+- name: Install Consul tokens config file
+  template:
+    src: tokens.hcl.j2
+    dest: /etc/consul.tokens.hcl
+    mode: 0600
+    owner: root
+    group: root
   notify: Restart Consul service
 
 - name: Install Consul systemd unit
@@ -91,6 +106,15 @@
     variable_end_string: "]]"
   become: true
   notify: Reload consul-template service
+
+- name: Install consul-template environment file
+  template:
+    src: consul-template.env.j2
+    dest: /etc/consul-template.env
+    mode: 0600
+    owner: root
+    group: root
+  notify: Restart consul-template service
 
 - name: Ensure consul-template service is started
   systemd:
