@@ -58,7 +58,18 @@
   copy:
     src: etc_nomad.hcl
     dest: /etc/nomad.hcl
-  become: true
+    mode: 0644
+    owner: root
+    group: root
+  notify: Restart Nomad service
+
+- name: Install Nomad environment file
+  template:
+    src: nomad.env.j2
+    dest: /etc/nomad.env
+    mode: 0600
+    owner: root
+    group: root
   notify: Restart Nomad service
 
 - name: Install Nomad systemd unit
