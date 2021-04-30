@@ -3,6 +3,10 @@ service {
   port    = 9000
   address = "10.0.2.103"
 
+  meta = {
+    metrics_path = "/minio/v2/metrics/cluster"
+  }
+
   checks = [
     {
       name     = "minio is ready"
