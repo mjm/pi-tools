@@ -31,3 +31,16 @@
     mode: 0644
     owner: root
     group: wheel
+  when: setup_pkg_server
+
+- name: Install remote package repo
+  copy:
+    src: amd64-current-remote.conf
+    dest: /usr/local/etc/pkg/repos/amd64-current.conf
+    mode: 0644
+    owner: root
+    group: wheel
+  when: not setup_pkg_server
+
+- include_tasks: server.yml
+  when: setup_pkg_server

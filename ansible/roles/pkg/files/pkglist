@@ -32,3 +32,4 @@ sysutils/tmux
 sysutils/zfs-periodic
 textproc/consul-template
 www/minio
+www/nginx

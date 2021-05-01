@@ -1,6 +1,6 @@
 ---
 ansible_host: artemis.homelab
-ansible_python_interpreter: /usr/local/bin/python3.7
+ansible_python_interpreter: /usr/local/bin/python3.8
 
 tailscale_ip: 100.75.195.24
 root_group: wheel
@@ -109,3 +109,11 @@ jails:
         3630663731316633350a373932363036356530633130353139666635343066313933653532373864
         39376537613337623136313032666464623365363966623135376334633766376632653938393366
         3363366165313436343434323637323236353539383038323562
+
+  - name: pkg1
+    ips:
+      - re0|10.0.2.107
+      - lo1|127.0.8.1
+    groups: [ pkg ]
+    vars:
+      setup_pkg_server: true

@@ -1,0 +1,27 @@
+- name: Install necessary packages
+  package:
+    name: nginx
+    state: present
+
+- name: Install /etc/rc.conf
+  copy:
+    src: rc.conf
+    dest: /etc/rc.conf
+    mode: 0755
+    owner: root
+    group: wheel
+
+- name: Install nginx.conf
+  template:
+    src: nginx.conf.j2
+    dest: /usr/local/etc/nginx/nginx.conf
+    mode: 0644
+    owner: root
+    group: wheel
+  notify: Reload nginx config
+
+- name: Ensure nginx is started and runs at boot
+  service:
+    name: nginx
+    enabled: true
+    state: started
