@@ -18,7 +18,7 @@
     mode: 0644
     owner: root
     group: wheel
-  notify: Reload Consul service
+  notify: Restart Consul service
 
 - name: Install Consul agent token config
   template:

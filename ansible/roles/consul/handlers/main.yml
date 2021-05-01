@@ -1,7 +1,6 @@
 - name: Restart Consul service
-  systemd:
+  service:
     name: consul
-    daemon_reload: true
     state: restarted
   become: true
 
