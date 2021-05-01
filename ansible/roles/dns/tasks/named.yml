@@ -5,8 +5,8 @@
   loop: [bind916, bind_exporter, consul-template]
 
 - name: Install /etc/rc.conf
-  copy:
-    src: rc.conf
+  template:
+    src: rc.conf.j2
     dest: /etc/rc.conf
     mode: 0755
     owner: root
