@@ -1,0 +1,21 @@
+service {
+  name    = "bind-exporter"
+  id      = "bind-exporter:local"
+  port    = 9119
+  address = "10.0.2.101"
+
+  meta = {
+    metrics_path = "/metrics"
+  }
+
+  checks = [
+    {
+      name     = "bind-exporter HTTP"
+      http     = "http://10.0.2.101:9119/"
+      interval = "30s"
+      timeout  = "5s"
+    }
+  ]
+
+  token = "{{ consul_agent_token }}"
+}

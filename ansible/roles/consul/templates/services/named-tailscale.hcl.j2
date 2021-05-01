@@ -1,13 +1,13 @@
 service {
   name    = "named"
-  id      = "named:artemis"
-  address = "10.0.2.101"
+  id      = "named:artemis:tailscale"
+  address = "10.0.2.106"
   port    = 53
 
   checks = [
     {
       name     = "resolve artemis.home.mattmoriarity.com"
-      args     = ["/usr/bin/drill", "@10.0.2.101", "artemis.home.mattmoriarity.com"]
+      args     = ["/usr/bin/drill", "@10.0.2.106", "artemis.home.mattmoriarity.com"]
       interval = "30s"
       timeout  = "15s"
     }

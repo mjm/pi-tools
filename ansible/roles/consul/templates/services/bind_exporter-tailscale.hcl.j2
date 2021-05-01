@@ -1,7 +1,8 @@
 service {
   name    = "bind-exporter"
+  id      = "bind-exporter:tailscale"
   port    = 9119
-  address = "10.0.2.101"
+  address = "10.0.2.106"
 
   meta = {
     metrics_path = "/metrics"
@@ -10,7 +11,7 @@ service {
   checks = [
     {
       name     = "bind-exporter HTTP"
-      http     = "http://10.0.2.101:9119/"
+      http     = "http://10.0.2.106:9119/"
       interval = "30s"
       timeout  = "5s"
     }

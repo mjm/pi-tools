@@ -15,12 +15,14 @@ consul_agent_token: !vault |
   3937363737656334643632313238666263373339663061373430
 consul_services:
   - node_exporter
-  - named
-  - bind_exporter
+  - named-local
+  - bind_exporter-local
   - postgresql
   - minio
   - prometheus
   - alertmanager
+  - named-tailscale
+  - bind_exporter-tailscale
 
 jails:
 
