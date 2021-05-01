@@ -38,14 +38,14 @@
 
 - name: Configure zone DBs
   template:
-    src: "{{ item }}.db.tpl.j2"
-    dest: "{{ named_db_dir }}/master/{{ item }}.db.tpl"
+    src: "{{ item }}.{{ dns_zone_variant }}.db.tpl.j2"
+    dest: "{{ named_db_dir }}/master/{{ item }}.{{ dns_zone_variant }}.db.tpl"
     mode: 0644
     owner: root
     group: wheel
   become: true
   notify: Reload consul-template config
-  loop: '{{ zone_names | product(zone_variants) | map("join", ".") }}'
+  loop: '{{ zone_names }}'
 
 - name: Create consul-template config directory
   file:
@@ -56,8 +56,8 @@
     group: wheel
 
 - name: Configure consul-template
-  copy:
-    src: dns.hcl
+  template:
+    src: dns.hcl.j2
     dest: /usr/local/etc/consul-template.d/dns.hcl
     mode: 0644
     owner: root

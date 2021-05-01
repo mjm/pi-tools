@@ -28,15 +28,16 @@ jails:
     ips:
       - re0|10.0.2.100
       - lo1|127.0.1.1
-    groups: []
+    groups: [ ]
 
   - name: dns1
     ips:
       - re0|10.0.2.101
       - lo1|127.0.2.1
-    groups: [dns]
+    groups: [ dns ]
     vars:
       setup_named: true
+      dns_zone_variant: local
       dns_consul_token: !vault |
         $ANSIBLE_VAULT;1.1;AES256
         65646534633130336438333164646364653539623066666536353165316138613364386139613763
@@ -52,19 +53,19 @@ jails:
       - lo1|127.0.3.1
     extra_config: |
       sysvshm = new;
-    groups: [postgres]
+    groups: [ postgres ]
 
   - name: minio1
     ips:
       - re0|10.0.2.103
       - lo1|127.0.4.1
-    groups: [minio]
+    groups: [ minio ]
 
   - name: metrics1
     ips:
       - re0|10.0.2.104
       - lo1|127.0.5.1
-    groups: [metrics]
+    groups: [ metrics ]
     vars:
       prometheus_consul_token: !vault |
         $ANSIBLE_VAULT;1.1;AES256
@@ -86,6 +87,23 @@ jails:
     ips:
       - re0|10.0.2.105
       - lo1|127.0.6.1
-    groups: [logging]
+    groups: [ logging ]
     vars:
       logging_mode: 'server'
+
+  - name: dns2
+    ips:
+      - re0|10.0.2.106
+      - lo1|127.0.7.1
+    groups: [ dns ]
+    vars:
+      setup_named: true
+      dns_zone_variant: tailscale
+      dns_consul_token: !vault |
+        $ANSIBLE_VAULT;1.1;AES256
+        65646534633130336438333164646364653539623066666536353165316138613364386139613763
+        3834336539623362373532346237623664376332386533300a363562316665613239393464666330
+        62613632313732343865653832333137393735386333353936386461363438383066343433306437
+        3630663731316633350a373932363036356530633130353139666635343066313933653532373864
+        39376537613337623136313032666464623365363966623135376334633766376632653938393366
+        3363366165313436343434323637323236353539383038323562

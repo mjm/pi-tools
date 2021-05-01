@@ -15,8 +15,8 @@ options {
     statistics-file "/var/stats/named.stats";
 
     listen-on {
-        10.0.2.101;
-        127.0.2.1;
+        {{ jail_ip }};
+        {{ jail_localhost_ip }};
     };
 
 // These zones are already covered by the empty zones listed below.
@@ -40,42 +40,17 @@ options {
 };
 
 statistics-channels {
-    inet 127.0.2.1 port 8053 allow { 127.0.2.1; };
+    inet {{ jail_localhost_ip }} port 8053 allow { {{ jail_localhost_ip }}; };
 };
 
-view local {
-    match-destinations {
-        10.0.2.101;
-    };
-
-    zone "homelab" {
-        type master;
-        file "{{ named_db_dir }}/master/homelab.local.db";
-    };
-
-    zone "home.mattmoriarity.com" {
-        type master;
-        file "{{ named_db_dir }}/master/home.mattmoriarity.com.local.db";
-    };
-
-    include "{{ named_db_dir }}/named.default-zones.conf";
+zone "homelab" {
+    type master;
+    file "{{ named_db_dir }}/master/homelab.{{ dns_zone_variant }}.db";
 };
 
-view tailscale {
-    match-destinations {
-        127.0.2.1;
-        100.111.80.85;
-    };
-
-    zone "homelab" {
-        type master;
-        file "{{ named_db_dir }}/master/homelab.tailscale.db";
-    };
-
-    zone "home.mattmoriarity.com" {
-        type master;
-        file "{{ named_db_dir }}/master/home.mattmoriarity.com.tailscale.db";
-    };
-
-    include "{{ named_db_dir }}/named.default-zones.conf";
+zone "home.mattmoriarity.com" {
+    type master;
+    file "{{ named_db_dir }}/master/home.mattmoriarity.com.{{ dns_zone_variant }}.db";
 };
+
+include "{{ named_db_dir }}/named.default-zones.conf";

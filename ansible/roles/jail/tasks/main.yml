@@ -61,9 +61,8 @@
     ansible_python_interpreter: "{{ ansible_python_interpreter }}"
     ansible_connection: sshjail
     root_group: wheel
+    jail_ip: '{{ item.ips[0].split("|")[1] }}'
+    jail_localhost_ip: '{{ item.ips[1].split("|")[1] }}'
     jails: "{{ jails }}"
   args: "{{ item.vars | default({}) }}"
-#    setup_named: "{{ item.setup_named | default(omit) }}"
-#    logging_mode: "{{ item.logging_mode | default(omit) }}"
-#    prometheus_consul_token: "{{ item.prometheus_consul_token | default(omit) }}"
   loop: "{{ jails }}"
