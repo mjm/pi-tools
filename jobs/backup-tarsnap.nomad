@@ -40,6 +40,11 @@ job "backup-tarsnap" {
   group "backup" {
     count = 1
 
+    constraint {
+      attribute = "${node.unique.name}"
+      value     = "raspberrypi"
+    }
+
     task "consul-snapshot" {
       lifecycle {
         hook = "prestart"
