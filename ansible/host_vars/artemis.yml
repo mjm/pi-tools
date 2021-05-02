@@ -117,3 +117,9 @@ jails:
     groups: [ pkg ]
     vars:
       setup_pkg_server: true
+
+  - name: irc1
+    ips:
+      - re0|10.0.2.108
+      - lo1|127.0.9.1
+    groups: [ ]
