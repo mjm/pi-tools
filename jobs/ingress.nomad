@@ -12,6 +12,7 @@ locals {
     "homebase",
     "minio",
     "nomad",
+    "pkg",
     "prometheus",
     "vault",
   ]
