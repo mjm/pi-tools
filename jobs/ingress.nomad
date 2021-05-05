@@ -13,7 +13,6 @@ locals {
     "minio",
     "nomad",
     "prometheus",
-    "pihole",
     "vault",
   ]
 }

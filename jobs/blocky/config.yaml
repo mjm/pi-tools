@@ -1,0 +1,20 @@
+upstream:
+  default:
+    - 8.8.8.8
+    - 8.8.4.4
+    - 1.1.1.1
+    - 1.0.0.1
+blocking:
+  blackLists:
+    ads:
+      - https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt
+      - https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt
+      - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+  clientGroupsBlock:
+    default:
+      - ads
+port: {{ env "NOMAD_PORT_dns" }}
+httpPort: {{ env "NOMAD_PORT_http" }}
+prometheus:
+  enable: true
+  path: /metrics
