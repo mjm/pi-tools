@@ -1,0 +1,36 @@
+root: matt
+matt: matt@mattmoriarity.com
+
+# Basic system aliases -- these MUST be present
+MAILER-DAEMON: postmaster
+postmaster: root
+
+# General redirections for pseudo accounts
+_dhcp:	root
+_pflogd: root
+auditdistd:	root
+bin:	root
+bind:	root
+daemon:	root
+games:	root
+hast:	root
+kmem:	root
+mailnull: postmaster
+man:	root
+news:	root
+nobody:	root
+operator: root
+pop:	root
+proxy:	root
+smmsp:	postmaster
+sshd:	root
+system:	root
+toor:	root
+tty:	root
+usenet: news
+uucp:	root
+
+# NETWORK OPERATIONS MAILBOX NAMES
+abuse:	root
+# noc:		root
+security:	root

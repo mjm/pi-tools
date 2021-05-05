@@ -1,0 +1,32 @@
+- name: Install mailer.conf
+  copy:
+    src: mailer.conf
+    dest: /etc/mail/mailer.conf
+    mode: 0644
+    owner: root
+    group: wheel
+
+- name: Install mail aliases
+  copy:
+    src: aliases
+    dest: /etc/mail/aliases
+    mode: 0644
+    owner: root
+    group: wheel
+  notify: Update mail aliases
+
+- name: Install dma.conf
+  copy:
+    src: dma.conf
+    dest: /etc/dma/dma.conf
+    mode: 0644
+    owner: root
+    group: wheel
+
+- name: Install DMA auth config
+  template:
+    src: auth.conf.j2
+    dest: /etc/dma/auth.conf
+    mode: 0644
+    owner: root
+    group: wheel
