@@ -40,11 +40,22 @@ http {
     server {
         listen       80;
         server_name  {{ inventory_hostname }}.home.mattmoriarity.com;
+        root /usr/local/share/poudriere/html;
 
         #access_log  logs/host.access.log  main;
 
-        location / {
-            root   /usr/local/poudriere/data/packages;
+        #location / {
+        #    root   /usr/local/poudriere/data/packages;
+        #    autoindex on;
+        #}
+
+        location /data {
+            alias /usr/local/poudriere/data/logs/bulk;
+            autoindex on;
+        }
+
+        location /packages {
+            root /usr/local/poudriere/data;
             autoindex on;
         }
     }

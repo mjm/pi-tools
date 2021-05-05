@@ -8,6 +8,16 @@
   # sloppy way of only doing this on artemis and not in each jail
   when: inventory_hostname == 'artemis'
 
+- name: Install periodic rebuild job
+  copy:
+    src: poudriere-rebuild.sh
+    dest: /usr/local/etc/periodic/daily/750.poudriere-rebuild
+    mode: 0755
+    owner: root
+    group: wheel
+  # sloppy way of only doing this on artemis and not in each jail
+  when: inventory_hostname == 'artemis'
+
 - name: Create directory for local package repos
   file:
     path: /usr/local/etc/pkg/repos

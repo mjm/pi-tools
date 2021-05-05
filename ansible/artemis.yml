@@ -2,21 +2,21 @@
   remote_user: matt
   become: true
   roles:
-    - role: pkg
-    - role: logging
+#    - role: pkg
+#    - role: logging
     - role: jail
-    - role: dns
-      vars:
-        setup_pf: true
-    - role: consul
+#    - role: dns
+#      vars:
+#        setup_pf: true
+#    - role: consul
 
 - hosts: jails
   become: true
   gather_facts: false
   roles:
     - role: pkg
-    - role: logging
-    - role: dns
+#    - role: logging
+#    - role: dns
 
 - hosts: metrics
   become: true
