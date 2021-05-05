@@ -122,6 +122,8 @@ jails:
       - re0|10.0.2.107
       - lo1|127.0.8.1
     groups: [ pkg ]
+    extra_mounts: |
+      /usr/local/poudriere/data/logs /usr/jails/pkg1/usr/local/poudriere/data/logs nullfs 0 0
     vars:
       setup_pkg_server: true
 
