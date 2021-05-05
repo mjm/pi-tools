@@ -1,0 +1,16 @@
+service {
+  name    = "poudriere-web"
+  port    = 80
+  address = "10.0.2.107"
+
+  checks = [
+    {
+      name     = "poudriere-web HTTP"
+      http     = "http://10.0.2.107/"
+      interval = "30s"
+      timeout  = "5s"
+    }
+  ]
+
+  token = "{{ consul_agent_token }}"
+}

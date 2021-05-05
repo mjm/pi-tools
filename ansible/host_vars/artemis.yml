@@ -23,6 +23,7 @@ consul_services:
   - alertmanager
   - named-tailscale
   - bind_exporter-tailscale
+  - poudriere-web
 
 fastmail_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256
