@@ -30,3 +30,9 @@
   gather_facts: false
   roles:
     - role: minio
+
+- hosts: paperless
+  become: true
+  gather_facts: false
+  roles:
+    - role: paperless

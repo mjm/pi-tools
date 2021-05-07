@@ -1,0 +1,81 @@
+# Have a look at the docs for documentation.
+# https://paperless-ng.readthedocs.io/en/latest/configuration.html
+
+# Debug. Only enable this for development.
+
+#PAPERLESS_DEBUG=false
+
+# Required services
+
+PAPERLESS_REDIS=redis://redis.service.consul:6379
+PAPERLESS_DBHOST=postgresql.service.consul
+PAPERLESS_DBPORT=5432
+PAPERLESS_DBNAME=paperless
+{{ with secret "database/creds/paperless" }}
+PAPERLESS_DBUSER={{ .Data.username }}
+PAPERLESS_DBPASS={{ .Data.password }}
+{{ end }}
+PAPERLESS_DBSSLMODE=disable
+
+# Paths and folders
+
+PAPERLESS_CONSUMPTION_DIR=/var/spool/paperless-ng
+PAPERLESS_DATA_DIR=/var/db/paperless-ng/data
+PAPERLESS_MEDIA_ROOT=/var/db/paperless-ng/media
+PAPERLESS_STATICDIR=../static
+#PAPERLESS_FILENAME_FORMAT=
+
+# Security and hosting
+
+PAPERLESS_SECRET_KEY={{ with secret "kv/paperless" }}{{ .Data.data.secret_key }}{{ end }}
+#PAPERLESS_ALLOWED_HOSTS=example.com,www.example.com
+#PAPERLESS_CORS_ALLOWED_HOSTS=http://example.com,http://localhost:8000
+#PAPERLESS_FORCE_SCRIPT_NAME=
+#PAPERLESS_STATIC_URL=/static/
+#PAPERLESS_AUTO_LOGIN_USERNAME=
+#PAPERLESS_COOKIE_PREFIX=
+PAPERLESS_ENABLE_HTTP_REMOTE_USER=true
+PAPERLESS_HTTP_REMOTE_USER_HEADER_NAME=HTTP_X_AUTH_REQUEST_USER
+
+# OCR settings
+
+#PAPERLESS_OCR_LANGUAGE=eng
+#PAPERLESS_OCR_MODE=skip
+#PAPERLESS_OCR_OUTPUT_TYPE=pdfa
+#PAPERLESS_OCR_PAGES=1
+#PAPERLESS_OCR_IMAGE_DPI=300
+#PAPERLESS_OCR_CLEAN=clean
+#PAPERLESS_OCR_DESKEW=true
+#PAPERLESS_OCR_ROTATE_PAGES=true
+#PAPERLESS_OCR_ROTATE_PAGES_THRESHOLD=12.0
+#PAPERLESS_OCR_USER_ARGS={}
+#PAPERLESS_CONVERT_MEMORY_LIMIT=0
+#PAPERLESS_CONVERT_TMPDIR=/var/tmp/paperless
+
+# Software tweaks
+
+#PAPERLESS_TASK_WORKERS=1
+#PAPERLESS_THREADS_PER_WORKER=1
+#PAPERLESS_TIME_ZONE=UTC
+PAPERLESS_CONSUMER_POLLING=10
+#PAPERLESS_CONSUMER_DELETE_DUPLICATES=false
+#PAPERLESS_CONSUMER_RECURSIVE=false
+#PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS=false
+#PAPERLESS_OPTIMIZE_THUMBNAILS=true
+#PAPERLESS_POST_CONSUME_SCRIPT=/path/to/an/arbitrary/script.sh
+#PAPERLESS_FILENAME_DATE_ORDER=YMD
+#PAPERLESS_FILENAME_PARSE_TRANSFORMS=[]
+#PAPERLESS_THUMBNAIL_FONT_NAME=
+#PAPERLESS_IGNORE_DATES=
+
+# Tika settings
+
+#PAPERLESS_TIKA_ENABLED=false
+#PAPERLESS_TIKA_ENDPOINT=http://localhost:9998
+#PAPERLESS_TIKA_GOTENBERG_ENDPOINT=http://localhost:3000
+
+# Binaries
+
+PAPERLESS_CONVERT_BINARY=/usr/local/bin/convert
+PAPERLESS_GS_BINARY=/usr/local/bin/gs
+PAPERLESS_OPTIPNG_BINARY=/usr/local/bin/optipng

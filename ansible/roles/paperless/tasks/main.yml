@@ -1,0 +1,77 @@
+- name: Install necessary packages
+  package:
+    name: "{{ item }}"
+    state: present
+  loop: [consul-template]
+
+- name: Install /etc/rc.conf
+  copy:
+    src: rc.conf
+    dest: /etc/rc.conf
+    mode: 0755
+    owner: root
+    group: wheel
+
+- name: Install paperless-restart command
+  copy:
+    src: paperless-restart.sh
+    dest: /usr/local/bin/paperless-restart
+    mode: 0755
+    owner: root
+    group: wheel
+
+- name: Create consul-template config directory
+  file:
+    path: /usr/local/etc/consul-template.d
+    state: directory
+    mode: 0700
+    owner: root
+    group: wheel
+
+- name: Copy common consul-template config
+  copy:
+    src: common.hcl
+    dest: /usr/local/etc/consul-template.d/common.hcl
+    mode: 0644
+    owner: root
+    group: wheel
+  become: true
+  notify: Reload consul-template config
+
+- name: Install consul-template tokens config
+  template:
+    src: tokens.hcl.j2
+    dest: /usr/local/etc/consul-template.d/tokens.hcl
+    mode: 0600
+    owner: root
+    group: wheel
+  notify: Reload consul-template config
+
+- name: Copy paperless-ng config template
+  copy:
+    src: paperless.conf.tpl
+    dest: /usr/local/www/paperless-ng/paperless.conf.tpl
+    mode: 0644
+    owner: root
+    group: wheel
+  notify: Reload consul-template config
+
+- name: Copy paperless-ng consul-template config
+  copy:
+    src: paperless.hcl
+    dest: /usr/local/etc/consul-template.d/paperless.hcl
+    mode: 0644
+    owner: root
+    group: wheel
+  notify: Reload consul-template config
+
+- name: Ensure services are running and start at boot
+  service:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - paperless-ng-webserver
+    - paperless-ng-consumer
+    - paperless-ng-scheduler
+    - consul-template
