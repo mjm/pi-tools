@@ -16,6 +16,10 @@ locals {
       db_name    = "grafana"
       vault_role = "grafana"
     }
+    paperless      = {
+      db_name    = "paperless"
+      vault_role = "paperless"
+    }
   }
 }
 

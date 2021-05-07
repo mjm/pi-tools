@@ -1,11 +1,17 @@
 databases/postgresql13-client
 databases/postgresql13-server
+databases/redis
+deskutils/py-paperless
 devel/git
+devel/py-lxml
+devel/py-pip
 dns/bind916
 dns/bind_exporter
 editors/neovim
 ftp/curl
+graphics/py-pillow
 irc/znc
+math/py-numpy
 misc/nnn
 net-mgmt/alertmanager
 net-mgmt/prometheus2
@@ -13,6 +19,7 @@ ports-mgmt/modules2tuple
 ports-mgmt/pkg
 ports-mgmt/portlint
 ports-mgmt/poudriere
+science/py-scikit-learn
 security/ca_root_nss
 security/sudo
 security/tailscale
@@ -32,5 +39,7 @@ sysutils/tarsnap-periodic
 sysutils/tmux
 sysutils/zfs-periodic
 textproc/consul-template
+textproc/py-pikepdf
 www/minio
 www/nginx
+www/py-autobahn

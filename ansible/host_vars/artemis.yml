@@ -24,6 +24,8 @@ consul_services:
   - named-tailscale
   - bind_exporter-tailscale
   - poudriere-web
+  - redis
+  - paperless
 
 fastmail_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256
@@ -132,4 +134,16 @@ jails:
     ips:
       - re0|10.0.2.108
       - lo1|127.0.9.1
+    groups: [ ]
+
+  - name: redis1
+    ips:
+      - re0|10.0.2.109
+      - lo1|127.0.10.1
+    groups: [ redis ]
+
+  - name: paperless1
+    ips:
+      - re0|10.0.2.110
+      - lo1|127.0.11.1
     groups: [ ]
