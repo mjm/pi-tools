@@ -253,6 +253,11 @@ resource "vault_policy" "otel_collector" {
   policy = file("${local.vault_policies_path}/otel-collector.hcl")
 }
 
+resource "vault_policy" "paperless" {
+  name   = "paperless"
+  policy = file("${local.vault_policies_path}/paperless.hcl")
+}
+
 resource "vault_policy" "presence" {
   name   = "presence"
   policy = file("${local.vault_policies_path}/presence.hcl")
