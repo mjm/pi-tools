@@ -18,3 +18,5 @@ httpPort: {{ env "NOMAD_PORT_http" }}
 prometheus:
   enable: true
   path: /metrics
+caching:
+  maxTime: -1 # disable caching since it seems buggy
