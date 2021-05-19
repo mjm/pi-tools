@@ -50,7 +50,7 @@
 - name: Copy paperless-ng config template
   copy:
     src: paperless.conf.tpl
-    dest: /usr/local/www/paperless-ng/paperless.conf.tpl
+    dest: /usr/local/etc/paperless.conf.tpl
     mode: 0644
     owner: root
     group: wheel

@@ -1,5 +1,5 @@
 template {
-  source      = "/usr/local/www/paperless-ng/paperless.conf.tpl"
-  destination = "/usr/local/www/paperless-ng/paperless.conf"
+  source      = "/usr/local/etc/paperless.conf.tpl"
+  destination = "/usr/local/etc/paperless.conf"
   command     = "/usr/local/bin/paperless-restart"
 }

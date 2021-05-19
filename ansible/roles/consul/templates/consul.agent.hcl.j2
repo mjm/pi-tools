@@ -1,13 +1,13 @@
 node_name  = "{{ inventory_hostname }}"
 retry_join = ["10.0.0.2", "10.0.0.3", "10.0.0.4"]
 
-advertise_addr = "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
-client_addr    = "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }} 127.0.0.1"
+advertise_addr = "{{ default_ip | default(ansible_all_ipv4_addresses[0]) }}"
+client_addr    = "{{ default_ip | default(ansible_all_ipv4_addresses[0]) }} 127.0.0.1"
 
 enable_local_script_checks = true
 
 node_meta {
-  tailscale_ip = "{{ hostvars[inventory_hostname]['tailscale_ip'] }}"
+  tailscale_ip = "{{ tailscale_ip }}"
 }
 
 acl {

@@ -2,6 +2,7 @@
 ansible_host: artemis.homelab
 ansible_python_interpreter: /usr/local/bin/python3.8
 
+default_ip: 10.0.2.10
 tailscale_ip: 100.75.195.24
 root_group: wheel
 

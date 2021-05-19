@@ -19,10 +19,10 @@ PAPERLESS_DBSSLMODE=disable
 
 # Paths and folders
 
-PAPERLESS_CONSUMPTION_DIR=/var/spool/paperless-ng
+PAPERLESS_CONSUMPTION_DIR=/var/db/paperless-ng/consume/input
 PAPERLESS_DATA_DIR=/var/db/paperless-ng/data
 PAPERLESS_MEDIA_ROOT=/var/db/paperless-ng/media
-PAPERLESS_STATICDIR=../static
+PAPERLESS_STATICDIR=/usr/local/www/paperless-ng/static
 #PAPERLESS_FILENAME_FORMAT=
 
 # Security and hosting
@@ -76,6 +76,6 @@ PAPERLESS_CONSUMER_POLLING=10
 
 # Binaries
 
-PAPERLESS_CONVERT_BINARY=/usr/local/bin/convert
-PAPERLESS_GS_BINARY=/usr/local/bin/gs
-PAPERLESS_OPTIPNG_BINARY=/usr/local/bin/optipng
+#PAPERLESS_CONVERT_BINARY=/usr/local/bin/convert
+#PAPERLESS_GS_BINARY=/usr/local/bin/gs
+#PAPERLESS_OPTIPNG_BINARY=/usr/local/bin/optipng
