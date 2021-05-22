@@ -6,6 +6,7 @@ locals {
   homelab_certs = [
     "alertmanager",
     "auth",
+    "code",
     "consul",
     "go",
     "grafana",
@@ -136,7 +137,7 @@ job "ingress" {
 
         content {
           data          = <<EOF
-{{ with secret "pki-homelab/issue/homelab" "common_name=${template.value}.homelab" -}}
+{{ with secret "pki-homelab/issue/homelab" "common_name=${template.value}.homelab" "alt_names=${template.value}.home.mattmoriarity.com" -}}
 {{ .Data.certificate }}
 {{ .Data.private_key }}
 {{ end }}

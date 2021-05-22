@@ -27,6 +27,7 @@ consul_services:
   - poudriere-web
   - redis
   - paperless
+  - phabricator
 
 fastmail_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256
