@@ -1,9 +1,12 @@
+databases/mysql80-server
 databases/postgresql13-client
 databases/postgresql13-server
 databases/redis
 deskutils/py-paperless
 deskutils/py-paperless-ng
+devel/arcanist
 devel/git
+devel/phabricator
 devel/py-lxml
 devel/py-pip
 dns/bind916
