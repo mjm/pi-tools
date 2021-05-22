@@ -107,7 +107,7 @@ resource "vault_pki_secret_backend_role" "homelab" {
   allow_bare_domains = false
   allow_subdomains   = true
   allow_glob_domains = false
-  allowed_domains    = ["homelab"]
+  allowed_domains    = ["homelab", "home.mattmoriarity.com"]
 }
 
 resource "vault_mount" "consul" {
