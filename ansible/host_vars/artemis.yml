@@ -28,6 +28,7 @@ consul_services:
   - redis
   - paperless
   - phabricator
+  - mysql
 
 fastmail_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256
