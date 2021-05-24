@@ -1,0 +1,64 @@
+- name: Install necessary packages
+  package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - consul-template
+    - phabricator-php74
+    - nginx
+
+- name: Create consul-template config directory
+  file:
+    path: /usr/local/etc/consul-template.d
+    state: directory
+    mode: 0700
+    owner: root
+    group: wheel
+
+- name: Copy common consul-template config
+  copy:
+    src: common.hcl
+    dest: /usr/local/etc/consul-template.d/common.hcl
+    mode: 0644
+    owner: root
+    group: wheel
+  become: true
+  notify: Reload consul-template config
+
+- name: Install consul-template tokens config
+  template:
+    src: tokens.hcl.j2
+    dest: /usr/local/etc/consul-template.d/tokens.hcl
+    mode: 0600
+    owner: root
+    group: wheel
+  notify: Reload consul-template config
+
+- name: Copy phabricator local config template
+  copy:
+    src: local.json.tpl
+    dest: /usr/local/etc/phabricator.conf.tpl
+    mode: 0644
+    owner: root
+    group: wheel
+  notify: Reload consul-template config
+
+- name: Copy phabricator consul-template config
+  copy:
+    src: phabricator.hcl
+    dest: /usr/local/etc/consul-template.d/phabricator.hcl
+    mode: 0644
+    owner: root
+    group: wheel
+  notify: Reload consul-template config
+
+- name: Ensure services are running and start at boot
+  service:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - phd
+    - php-fpm
+    - nginx
+    - consul-template

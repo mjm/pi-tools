@@ -36,3 +36,9 @@
   gather_facts: false
   roles:
     - role: paperless
+
+- hosts: phabricator
+  become: true
+  gather_facts: false
+  roles:
+    - role: phabricator
