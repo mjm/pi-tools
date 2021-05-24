@@ -258,6 +258,11 @@ resource "vault_policy" "paperless" {
   policy = file("${local.vault_policies_path}/paperless.hcl")
 }
 
+resource "vault_policy" "phabricator" {
+  name   = "phabricator"
+  policy = file("${local.vault_policies_path}/phabricator.hcl")
+}
+
 resource "vault_policy" "presence" {
   name   = "presence"
   policy = file("${local.vault_policies_path}/presence.hcl")

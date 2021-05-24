@@ -21,6 +21,69 @@ locals {
       vault_role = "paperless"
     }
   }
+
+  phabricator_databases = [
+    "phabricator_almanac",
+    "phabricator_application",
+    "phabricator_audit",
+    "phabricator_auth",
+    "phabricator_badges",
+    "phabricator_cache",
+    "phabricator_calendar",
+    "phabricator_chatlog",
+    "phabricator_conduit",
+    "phabricator_config",
+    "phabricator_conpherence",
+    "phabricator_countdown",
+    "phabricator_daemon",
+    "phabricator_dashboard",
+    "phabricator_differential",
+    "phabricator_diviner",
+    "phabricator_doorkeeper",
+    "phabricator_draft",
+    "phabricator_drydock",
+    "phabricator_fact",
+    "phabricator_feed",
+    "phabricator_file",
+    "phabricator_flag",
+    "phabricator_fund",
+    "phabricator_harbormaster",
+    "phabricator_herald",
+    "phabricator_legalpad",
+    "phabricator_maniphest",
+    "phabricator_meta_data",
+    "phabricator_metamta",
+    "phabricator_multimeter",
+    "phabricator_nuance",
+    "phabricator_oauth_server",
+    "phabricator_owners",
+    "phabricator_packages",
+    "phabricator_passphrase",
+    "phabricator_paste",
+    "phabricator_pastebin",
+    "phabricator_phame",
+    "phabricator_phlux",
+    "phabricator_pholio",
+    "phabricator_phortune",
+    "phabricator_phragment",
+    "phabricator_phrequent",
+    "phabricator_phriction",
+    "phabricator_phurl",
+    "phabricator_policy",
+    "phabricator_ponder",
+    "phabricator_project",
+    "phabricator_releeph",
+    "phabricator_repository",
+    "phabricator_search",
+    "phabricator_slowvote",
+    "phabricator_spaces",
+    "phabricator_system",
+    "phabricator_token",
+    "phabricator_user",
+    "phabricator_worker",
+    "phabricator_xhpast",
+    "phabricator_xhprof",
+  ]
 }
 
 job "backup-tarsnap" {
@@ -127,6 +190,46 @@ EOF
           destination = "secrets/db.env"
           env         = true
         }
+      }
+    }
+
+    task "dump-phabricator-dbs" {
+      lifecycle {
+        hook = "prestart"
+      }
+
+      driver = "docker"
+
+      config {
+        image = "mysql/mysql-server@sha256:b33c6e23c8678e29a43ae7cad47cd6bbead6e39c911c5a7b2b6d943cd42b2944"
+        args  = concat([
+          "mysqldump",
+          "--defaults-file=${NOMAD_SECRETS_DIR}/my.cnf",
+          "--result-file=${NOMAD_ALLOC_DIR}/data/phabricator.sql",
+          "--databases",
+        ], local.phabricator_databases)
+      }
+
+      resources {
+        cpu    = 200
+        memory = 200
+      }
+
+      vault {
+        policies = ["phabricator"]
+      }
+
+      template {
+        // language=GoTemplate
+        data        = <<EOF
+[client]
+host = mysql.service.consul
+{{ with secret "database/creds/phabricator" -}}
+user = {{ .Data.username }}
+password = {{ .Data.password }}
+{{- end }}
+EOF
+        destination = "secrets/my.cnf"
       }
     }
 
