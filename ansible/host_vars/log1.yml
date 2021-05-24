@@ -1,0 +1,4 @@
+---
+ansible_ssh_host: log1@artemis.homelab
+
+logging_mode: 'server'

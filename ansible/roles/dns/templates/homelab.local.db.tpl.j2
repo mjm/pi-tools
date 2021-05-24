@@ -9,7 +9,7 @@ $TTL  1m
 @   IN  NS  localhost.
 ;<< range nodes >>
 << .Node >> IN  A << .Address >><< end >>
-{% for jail in jails %}
+{% for jail in hostvars.artemis.jails %}
 {{ jail.name }}  IN  A  {{ jail.ips[0].split("|")[1] }}
 {% endfor %}
 *.homelab.  IN  CNAME ingress-http.service.consul.

@@ -1,0 +1,2 @@
+---
+ansible_ssh_host: irc1@artemis.homelab

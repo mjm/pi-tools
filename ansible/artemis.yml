@@ -6,8 +6,6 @@
     - role: logging
     - role: jail
     - role: dns
-      vars:
-        setup_pf: true
     - role: consul
     - role: mail
 
@@ -19,25 +17,25 @@
     - role: logging
     - role: dns
 
-- hosts: metrics
+- hosts: metrics1
   become: true
   gather_facts: false
   roles:
     - role: prometheus
 
-- hosts: minio
+- hosts: minio1
   become: true
   gather_facts: false
   roles:
     - role: minio
 
-- hosts: paperless
+- hosts: paperless1
   become: true
   gather_facts: false
   roles:
     - role: paperless
 
-- hosts: phabricator
+- hosts: code1
   become: true
   gather_facts: false
   roles:

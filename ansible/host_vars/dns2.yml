@@ -1,0 +1,6 @@
+---
+ansible_ssh_host: dns2@artemis.homelab
+
+jail_ip: 10.0.2.106
+jail_localhost_ip: 127.0.7.1
+dns_zone_variant: tailscale

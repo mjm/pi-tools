@@ -1,4 +1,7 @@
 ---
+ansible_host: raspberrypi2.homelab
+tailscale_ip: 100.97.193.106
+
 consul_agent_token: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   66653732393364653766353434376533393531656364653061366539663931386562396162356163
