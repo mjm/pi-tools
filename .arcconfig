@@ -1,3 +1,5 @@
 {
-  "phabricator.uri": "https://code.home.mattmoriarity.com"
+  "phabricator.uri": "https://code.home.mattmoriarity.com",
+  "base": "git:merge-base(main), arc:prompt",
+  "arc.land.onto": ["main"]
 }
