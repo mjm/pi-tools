@@ -4,11 +4,19 @@
     state: present
   loop: [bind916, bind_exporter]
 
-- name: Install /etc/rc.conf
+- name: Install named RC config
+  copy:
+    src: rc.named.conf
+    dest: /etc/rc.conf.d/named
+    mode: 0644
+    owner: root
+    group: wheel
+
+- name: Install bind_exporter RC config
   template:
-    src: rc.conf.j2
-    dest: /etc/rc.conf
-    mode: 0755
+    src: rc.bind_exporter.conf.j2
+    dest: /etc/rc.conf.d/bind_exporter
+    mode: 0644
     owner: root
     group: wheel
 

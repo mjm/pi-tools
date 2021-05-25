@@ -4,11 +4,19 @@
     state: present
   loop: [prometheus, alertmanager]
 
-- name: Install /etc/rc.conf
+- name: Install prometheus RC config
   copy:
-    src: rc.conf
-    dest: /etc/rc.conf
-    mode: 0755
+    src: rc.prometheus.conf
+    dest: /etc/rc.conf.d/prometheus
+    mode: 0644
+    owner: root
+    group: wheel
+
+- name: Install alertmanager RC config
+  copy:
+    src: rc.alertmanager.conf
+    dest: /etc/rc.conf.d/alertmanager
+    mode: 0644
     owner: root
     group: wheel
 

@@ -3,11 +3,11 @@
     name: nginx
     state: present
 
-- name: Install /etc/rc.conf
+- name: Install nginx RC config
   copy:
-    src: rc.conf
-    dest: /etc/rc.conf
-    mode: 0755
+    src: rc.nginx.conf
+    dest: /etc/rc.conf.d/nginx
+    mode: 0644
     owner: root
     group: wheel
 

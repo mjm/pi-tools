@@ -3,11 +3,11 @@
     name: minio
     state: present
 
-- name: Install /etc/rc.conf
+- name: Install /etc/rc.conf.d/minio
   copy:
-    src: rc.conf
-    dest: /etc/rc.conf
-    mode: 0755
+    src: rc.minio.conf
+    dest: /etc/rc.conf.d/minio
+    mode: 0644
     owner: root
     group: wheel
 

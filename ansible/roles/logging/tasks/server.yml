@@ -3,11 +3,19 @@
     name: syslog-ng
     state: present
 
-- name: Install /etc/rc.conf
+- name: Disable syslogd
   copy:
-    src: rc.conf
-    dest: /etc/rc.conf
-    mode: 0755
+    src: rc.syslogd.conf
+    dest: /etc/rc.conf.d/syslogd
+    mode: 0644
+    owner: root
+    group: wheel
+
+- name: Enable syslog-ng
+  copy:
+    src: rc.syslog_ng.conf
+    dest: /etc/rc.conf.d/syslog_ng
+    mode: 0644
     owner: root
     group: wheel
 
@@ -23,7 +31,6 @@
 - name: Ensure syslogd is not running
   service:
     name: syslogd
-    enabled: false
     state: stopped
 
 - name: Ensure syslog-ng is started and runs at boot
