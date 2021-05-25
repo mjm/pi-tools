@@ -1,0 +1,5 @@
+consul_template_consul_token: ''
+consul_template_vault_token: ''
+
+consul_address: http://10.0.2.10:8500
+vault_address: http://vault.service.consul:8200

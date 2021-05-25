@@ -17,6 +17,12 @@
     - role: logging
     - role: dns
 
+- hosts: metrics1, paperless1, dns, code1
+  become: true
+  gather_facts: false
+  roles:
+    - role: consul-template
+
 - hosts: metrics1
   become: true
   gather_facts: false

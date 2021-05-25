@@ -2,7 +2,7 @@
   package:
     name: "{{ item }}"
     state: present
-  loop: [bind916, bind_exporter, consul-template]
+  loop: [bind916, bind_exporter]
 
 - name: Install /etc/rc.conf
   template:
@@ -47,14 +47,6 @@
   notify: Reload consul-template config
   loop: '{{ zone_names }}'
 
-- name: Create consul-template config directory
-  file:
-    path: /usr/local/etc/consul-template.d
-    state: directory
-    mode: 0700
-    owner: root
-    group: wheel
-
 - name: Configure consul-template
   template:
     src: dns.hcl.j2
@@ -65,18 +57,9 @@
   become: true
   notify: Reload consul-template config
 
-- name: Configure consul-template token
-  template:
-    src: token.hcl.j2
-    dest: /usr/local/etc/consul-template.d/token.hcl
-    mode: 0600
-    owner: root
-    group: wheel
-  notify: Reload consul-template config
-
 - name: Ensure services are running and start at boot
   service:
     name: "{{ item }}"
     enabled: true
     state: started
-  loop: [named, bind_exporter, consul-template]
+  loop: [named, bind_exporter]

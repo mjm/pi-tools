@@ -1,0 +1,2 @@
+consul_template_enable="YES"
+consul_template_syslog_output_enable="YES"

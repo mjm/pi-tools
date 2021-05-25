@@ -1,0 +1,12 @@
+{% if consul_template_consul_token != '' %}
+consul {
+  address = "{{ consul_address }}"
+}
+{% endif %}
+
+{% if consul_template_vault_token != '' %}
+vault {
+  address     = "{{ vault_address }}"
+  renew_token = true
+}
+{% endif %}

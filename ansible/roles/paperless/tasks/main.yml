@@ -1,9 +1,3 @@
-- name: Install necessary packages
-  package:
-    name: "{{ item }}"
-    state: present
-  loop: [consul-template]
-
 - name: Install /etc/rc.conf
   copy:
     src: rc.conf
@@ -19,33 +13,6 @@
     mode: 0755
     owner: root
     group: wheel
-
-- name: Create consul-template config directory
-  file:
-    path: /usr/local/etc/consul-template.d
-    state: directory
-    mode: 0700
-    owner: root
-    group: wheel
-
-- name: Copy common consul-template config
-  copy:
-    src: common.hcl
-    dest: /usr/local/etc/consul-template.d/common.hcl
-    mode: 0644
-    owner: root
-    group: wheel
-  become: true
-  notify: Reload consul-template config
-
-- name: Install consul-template tokens config
-  template:
-    src: tokens.hcl.j2
-    dest: /usr/local/etc/consul-template.d/tokens.hcl
-    mode: 0600
-    owner: root
-    group: wheel
-  notify: Reload consul-template config
 
 - name: Copy paperless-ng config template
   copy:
@@ -74,4 +41,3 @@
     - paperless-ng-webserver
     - paperless-ng-consumer
     - paperless-ng-scheduler
-    - consul-template
