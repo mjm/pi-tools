@@ -1,2 +1,12 @@
 - name: Reload consul-template config
   command: pkill -HUP consul-template
+
+- name: Reload nginx config
+  service:
+    name: nginx
+    state: reloaded
+
+- name: Restart php-fpm
+  service:
+    name: php-fpm
+    state: restarted
