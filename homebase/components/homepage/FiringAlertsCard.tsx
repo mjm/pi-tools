@@ -21,7 +21,7 @@ export default function FiringAlertsCard({viewer}: { viewer: FiringAlertsCard_vi
         <HomePageCard
             title="Alerts firing"
             icon={<ExclamationIcon className="h-6 w-6 text-gray-400"/>}
-            footerHref="https://alertmanager.homelab/"
+            footerHref="https://alertmanager.home.mattmoriarity.com/"
             footer="View active alerts"
         >
             {data.alerts.length}

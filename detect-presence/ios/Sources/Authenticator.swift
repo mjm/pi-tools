@@ -7,7 +7,7 @@ class Authenticator: NSObject, ObservableObject, ASWebAuthenticationPresentation
 
     func logIn() {
         Future<URL, Error> { completion in
-            let authUrl = URL(string: "https://auth.homelab/webauthn/login_app")!
+            let authUrl = URL(string: "https://auth.home.mattmoriarity.com/webauthn/login_app")!
 
             let authSession = ASWebAuthenticationSession(
                 url: authUrl,
@@ -48,7 +48,7 @@ class Authenticator: NSObject, ObservableObject, ASWebAuthenticationPresentation
             let newCookie = HTTPCookie(properties: [
                 .name: String(cookieParts[0]),
                 .value: String(cookieParts[1]),
-                .domain: ".homelab",
+                .domain: ".home.mattmoriarity.com",
                 .path: "/",
                 .expires: NSDate().addingTimeInterval(31536000)
             ])!

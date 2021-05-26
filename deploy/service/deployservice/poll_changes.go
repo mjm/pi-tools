@@ -184,7 +184,7 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 			finalStatus, _, err := s.GitHubClient.Repositories.CreateDeploymentStatus(ctx, owner, repo, deployID, &github.DeploymentStatusRequest{
 				State:        &finalDeploymentStatus,
 				AutoInactive: github.Bool(true),
-				LogURL:       github.String(fmt.Sprintf("https://homebase.homelab/deploys/%d", deployID)),
+				LogURL:       github.String(fmt.Sprintf("https://homebase.home.mattmoriarity.com/deploys/%d", deployID)),
 			})
 			if err != nil {
 				span.RecordError(err)

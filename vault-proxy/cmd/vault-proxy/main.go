@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/etherlabsio/healthcheck"
@@ -20,7 +21,7 @@ import (
 
 var (
 	authPath     = flag.String("auth-path", "webauthn", "Path of webauthn auth method in Vault")
-	cookieDomain = flag.String("cookie-domain", "homelab", "Domain to use for cookies, must be common base between callback and app hostnames")
+	cookieDomain = flag.String("cookie-domains", "homelab,home.mattmoriarity.com", "Comma-separated domains to use for cookies, must be common base between callback and app hostnames")
 	staticDir    = flag.String("static-dir", "/static", "Path to static assets")
 )
 
@@ -41,9 +42,9 @@ func main() {
 			healthcheck.WithTimeout(3*time.Second))))
 
 	authService, err := authservice.New(vault, authservice.Config{
-		AuthPath:     *authPath,
-		CookieDomain: *cookieDomain,
-		CookieKey:    os.Getenv("COOKIE_KEY"),
+		AuthPath:      *authPath,
+		CookieDomains: strings.Split(*cookieDomain, ","),
+		CookieKey:     os.Getenv("COOKIE_KEY"),
 	})
 	if err != nil {
 		log.Panicf("Error creating auth service: %v", err)

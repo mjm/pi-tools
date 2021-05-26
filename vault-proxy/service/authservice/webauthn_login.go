@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
@@ -114,13 +115,16 @@ func (s *Server) FinishLogin(w http.ResponseWriter, r *http.Request) {
 		span.SetAttributes(attribute.String("auth.token_accessor", tokenAccessor))
 	}
 
+	cookieDomain := s.chooseCookieDomain(r)
+	span.SetAttributes(attribute.String("auth.cookie_domain", cookieDomain))
+
 	sess, err = s.Store.Get(r, "vault-token")
 	if err != nil {
 		http.Error(w, spanerr.RecordError(ctx, err).Error(), http.StatusInternalServerError)
 		return
 	}
 	sess.Options.MaxAge = int(tokenTTL.Seconds())
-	sess.Options.Domain = s.CookieDomain
+	sess.Options.Domain = cookieDomain
 	sess.Options.Path = "/"
 	sess.Values["token"] = vaultToken
 	sess.Values["creation_ttl"] = int(tokenTTL.Seconds())
@@ -131,4 +135,15 @@ func (s *Server) FinishLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (s *Server) chooseCookieDomain(r *http.Request) string {
+	hostname := strings.Split(r.Host, ":")[0]
+	for _, d := range s.CookieDomains {
+		if strings.HasSuffix(hostname, "."+d) {
+			return d
+		}
+	}
+
+	return s.CookieDomains[0]
 }

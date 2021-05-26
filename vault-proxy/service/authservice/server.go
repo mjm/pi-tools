@@ -8,16 +8,16 @@ import (
 )
 
 type Server struct {
-	Vault        *vaultapi.Client
-	Store        sessions.Store
-	AuthPath     string
-	CookieDomain string
+	Vault         *vaultapi.Client
+	Store         sessions.Store
+	AuthPath      string
+	CookieDomains []string
 }
 
 type Config struct {
-	AuthPath     string
-	CookieDomain string
-	CookieKey    string
+	AuthPath      string
+	CookieDomains []string
+	CookieKey     string
 }
 
 func New(vault *vaultapi.Client, cfg Config) (*Server, error) {
@@ -28,9 +28,9 @@ func New(vault *vaultapi.Client, cfg Config) (*Server, error) {
 
 	store := sessions.NewCookieStore(key)
 	return &Server{
-		Vault:        vault,
-		Store:        store,
-		AuthPath:     cfg.AuthPath,
-		CookieDomain: cfg.CookieDomain,
+		Vault:         vault,
+		Store:         store,
+		AuthPath:      cfg.AuthPath,
+		CookieDomains: cfg.CookieDomains,
 	}, nil
 }

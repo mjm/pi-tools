@@ -17,8 +17,8 @@ resource "vault_generic_endpoint" "webauthn_config" {
 
   data_json = jsonencode({
     display_name = "Matt's Homelab"
-    id           = "homelab"
-    origin       = "https://auth.homelab"
+    id           = "home.mattmoriarity.com"
+    origin       = "https://auth.home.mattmoriarity.com"
     token_ttl    = 259200
   })
 
