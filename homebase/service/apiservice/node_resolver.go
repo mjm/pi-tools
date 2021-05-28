@@ -22,3 +22,7 @@ func (n *Node) ToLink() (*Link, bool) {
 func (n *Node) ToArchive() (*Archive, bool) {
 	return nil, false
 }
+
+func (n *Node) ToPaperlessDocument() (*PaperlessDocument, bool) {
+	return nil, false
+}

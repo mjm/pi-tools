@@ -102,6 +102,8 @@ job "homebase" {
         args    = [
           "-prometheus-url",
           "http://prometheus.service.consul:9090",
+          "-paperless-url",
+          "http://paperless.service.consul:8000",
         ]
       }
 

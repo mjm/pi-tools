@@ -2,8 +2,11 @@ package apiservice
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -25,6 +28,7 @@ type Resolver struct {
 	deployClient  deploypb.DeployServiceClient
 	backupClient  backuppb.BackupServiceClient
 	prometheusURL string
+	paperlessURL  string
 }
 
 func (r *Resolver) Viewer() *Resolver {
@@ -296,16 +300,67 @@ func (r *Resolver) BackupArchive(ctx context.Context, args struct{ ID graphql.ID
 	}
 }
 
-func (r *Resolver) newPromClient(ctx context.Context) (v1.API, error) {
-	transport := http.DefaultTransport
-	if strings.HasPrefix(r.prometheusURL, "https://") {
-		cookieHeader := ctx.Value(cookieHeaderContextKey).(string)
-		transport = &oauthProxyCookieTripper{
-			cookieHeader: cookieHeader,
-			wrapped:      transport,
+type paperlessDocumentsResponse struct {
+	Count   int                         `json:"count"`
+	Next    *string                     `json:"next"`
+	Results []paperlessDocumentResponse `json:"results"`
+}
+
+type paperlessDocumentResponse struct {
+	ID       int    `json:"id"`
+	Title    string `json:"title"`
+	Created  string `json:"created"`
+	Added    string `json:"added"`
+	Modified string `json:"modified"`
+}
+
+func (r *Resolver) PaperlessInboxDocuments(ctx context.Context, args struct {
+	First *int32
+	After *Cursor
+}) (*PaperlessDocumentConnection, error) {
+	client := &http.Client{Transport: newAuthHTTPTransport(ctx, r.paperlessURL)}
+	params := url.Values{}
+	params.Set("tags__name__iexact", "taxes")
+	if args.First != nil {
+		params.Set("page_size", strconv.Itoa(int(*args.First)))
+	}
+	if args.After != nil {
+		decodedCursor, err := base64.StdEncoding.DecodeString(string(*args.After))
+		if err != nil {
+			return nil, err
 		}
+		params.Set("page", string(decodedCursor))
+	}
+	u := r.paperlessURL + "/api/documents/?" + params.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	if err != nil {
+		return nil, err
 	}
 
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status from paperless API: expected 200, got %d", res.StatusCode)
+	}
+
+	var decoded paperlessDocumentsResponse
+	if err := json.NewDecoder(res.Body).Decode(&decoded); err != nil {
+		return nil, err
+	}
+
+	return &PaperlessDocumentConnection{
+		res: &decoded,
+		r:   r,
+	}, nil
+}
+
+func (r *Resolver) newPromClient(ctx context.Context) (v1.API, error) {
+	transport := newAuthHTTPTransport(ctx, r.prometheusURL)
 	c, err := api.NewClient(api.Config{
 		Address:      r.prometheusURL,
 		RoundTripper: transport,
@@ -314,6 +369,23 @@ func (r *Resolver) newPromClient(ctx context.Context) (v1.API, error) {
 		return nil, err
 	}
 	return v1.NewAPI(c), nil
+}
+
+func newAuthHTTPTransport(ctx context.Context, url string) http.RoundTripper {
+	transport := http.DefaultTransport
+	if strings.HasPrefix(url, "https://") {
+		cookieHeader := ctx.Value(cookieHeaderContextKey).(string)
+		transport = &oauthProxyCookieTripper{
+			cookieHeader: cookieHeader,
+			wrapped:      transport,
+		}
+	} else if authUser, ok := ctx.Value(authUserContextKey).(string); ok {
+		transport = &authUserHeaderTripper{
+			authUser: authUser,
+			wrapped:  transport,
+		}
+	}
+	return transport
 }
 
 type oauthProxyCookieTripper struct {
@@ -328,5 +400,20 @@ func (t *oauthProxyCookieTripper) RoundTrip(r *http.Request) (*http.Response, er
 	}
 
 	r.Header.Set("Cookie", t.cookieHeader)
+	return transport.RoundTrip(r)
+}
+
+type authUserHeaderTripper struct {
+	authUser string
+	wrapped  http.RoundTripper
+}
+
+func (t *authUserHeaderTripper) RoundTrip(r *http.Request) (*http.Response, error) {
+	transport := t.wrapped
+	if transport == nil {
+		transport = http.DefaultTransport
+	}
+
+	r.Header.Set("X-Auth-Request-User", t.authUser)
 	return transport.RoundTrip(r)
 }

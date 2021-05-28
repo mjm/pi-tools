@@ -57,6 +57,11 @@ type Viewer {
     ): ArchiveConnection
 
     backupArchive(id: ID!): Archive
+
+    paperlessInboxDocuments(
+        first: Int
+        after: Cursor
+    ): PaperlessDocumentConnection
 }
 
 type PageInfo {
@@ -212,6 +217,25 @@ enum ArchiveKind {
     UNKNOWN
     BORG
     TARSNAP
+}
+
+type PaperlessDocumentConnection {
+    edges: [PaperlessDocumentEdge!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
+}
+
+type PaperlessDocumentEdge {
+    node: PaperlessDocument!
+    cursor: Cursor!
+}
+
+type PaperlessDocument implements Node {
+    id: ID!
+    title: String!
+    createdAt: Time!
+    addedAt: Time!
+    modifiedAt: Time!
 }
 
 input IgnoreTripInput {

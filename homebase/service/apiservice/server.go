@@ -27,6 +27,7 @@ func New(
 	deploys deploypb.DeployServiceClient,
 	backups backuppb.BackupServiceClient,
 	prometheusURL string,
+	paperlessURL string,
 ) (*Server, error) {
 	r := &Resolver{
 		tripsClient:   trips,
@@ -34,6 +35,7 @@ func New(
 		deployClient:  deploys,
 		backupClient:  backups,
 		prometheusURL: prometheusURL,
+		paperlessURL:  paperlessURL,
 	}
 	schema, err := graphql.ParseSchema(schemaString, r,
 		graphql.UseFieldResolvers(),

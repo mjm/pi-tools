@@ -11,6 +11,7 @@ go_library(
         "link_resolver.go",
         "node_resolver.go",
         "pageinfo_resolver.go",
+        "paperless_document_resolver.go",
         "query_resolver.go",
         "server.go",
         "tag_resolver.go",
