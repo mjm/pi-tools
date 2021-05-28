@@ -43,6 +43,8 @@ export default function DeploymentRow({deploy, isLast}: {
             break;
     }
 
+    const [commitSubject] = data.commitMessage.split("\n", 1);
+
     return (
         <li>
             <div className="relative pb-8">
@@ -60,7 +62,7 @@ export default function DeploymentRow({deploy, isLast}: {
                             <p className={`text-sm`}>
                                 <Link href={`/deploys/${data.rawID}`}>
                                     <a className="font-medium text-gray-700 hover:text-indigo-900 transition ease-in-out duration-150">
-                                        {data.commitMessage}
+                                        {commitSubject}
                                     </a>
                                 </Link>
                             </p>

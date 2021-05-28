@@ -16,6 +16,15 @@ export default function DeploymentDetails({deploy}: { deploy: DeploymentDetails_
         deploy,
     );
 
+    const firstLineBreak = data.commitMessage.indexOf("\n");
+    let commitSubject, commitMessage;
+    if (firstLineBreak > 0) {
+        commitSubject = data.commitMessage.substring(0, firstLineBreak);
+        commitMessage = data.commitMessage.substring(firstLineBreak).trim();
+    } else {
+        commitSubject = data.commitMessage;
+    }
+
     return (
         <div>
             <dl>
@@ -23,8 +32,11 @@ export default function DeploymentDetails({deploy}: { deploy: DeploymentDetails_
                     <a href={`https://github.com/mjm/pi-tools/commit/${data.commitSHA}`}
                        className="font-medium text-indigo-600 hover:text-indigo-500"
                        target="_blank">
-                        {data.commitMessage}
+                        {commitSubject}
                     </a>
+                    {commitMessage && (
+                        <p className="mt-4 whitespace-pre-line">{commitMessage}</p>
+                    )}
                 </DescriptionField>
                 <DescriptionField label="Started at">
                     {format(parseISO(data.startedAt), "PPpp")}
