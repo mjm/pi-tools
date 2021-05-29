@@ -4,7 +4,7 @@ data_dir = "/var/lib/consul"
 bootstrap_expect = 3
 retry_join       = ["10.0.0.2", "10.0.0.3", "10.0.0.4"]
 
-advertise_addr = "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+advertise_addr = "{{ ansible_default_ipv4.address }}"
 client_addr    = "0.0.0.0"
 
 acl {
@@ -15,7 +15,7 @@ acl {
 }
 
 node_meta {
-  tailscale_ip = "{{ hostvars[inventory_hostname]['tailscale_ip'] }}"
+  tailscale_ip = "{{ tailscale_ip }}"
 }
 
 ports {
