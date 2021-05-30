@@ -420,12 +420,14 @@
         "y": 10
       },
       "hiddenSeries": false,
-      "id": 6,
+      "id": 14,
       "legend": {
+        "alignAsTable": false,
         "avg": false,
         "current": false,
         "max": false,
         "min": false,
+        "rightSide": false,
         "show": false,
         "total": false,
         "values": false
@@ -447,44 +449,26 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "min(tripplite_health)",
+          "expr": "node_cooling_device_max_state",
+          "hide": false,
           "interval": "",
-          "legendFormat": "",
+          "legendFormat": "{{node_name}}",
           "refId": "A"
-        }
-      ],
-      "thresholds": [
-        {
-          "colorMode": "ok",
-          "fill": false,
-          "line": true,
-          "op": "gt",
-          "value": 89.5,
-          "yaxis": "left"
         },
         {
-          "colorMode": "warning",
-          "fill": false,
-          "line": true,
-          "op": "lt",
-          "value": 89.5,
-          "yaxis": "left"
-        },
-        {
-          "colorMode": "critical",
-          "fill": false,
-          "line": true,
-          "op": "lt",
-          "value": 30.5,
-          "yaxis": "left"
+          "expr": "node_cooling_device_cur_state",
+          "interval": "",
+          "legendFormat": "{{node_name}}",
+          "refId": "B"
         }
       ],
+      "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "UPS battery health",
+      "title": "Raspberry Pi fan state",
       "tooltip": {
-        "shared": true,
+        "shared": false,
         "sort": 0,
         "value_type": "individual"
       },
@@ -501,8 +485,8 @@
           "format": "short",
           "label": null,
           "logBase": 1,
-          "max": "100",
-          "min": "0",
+          "max": null,
+          "min": null,
           "show": true
         },
         {
@@ -616,6 +600,126 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 17
+      },
+      "hiddenSeries": false,
+      "id": 6,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.1",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "min(tripplite_health)",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "ok",
+          "fill": false,
+          "line": true,
+          "op": "gt",
+          "value": 89.5,
+          "yaxis": "left"
+        },
+        {
+          "colorMode": "warning",
+          "fill": false,
+          "line": true,
+          "op": "lt",
+          "value": 89.5,
+          "yaxis": "left"
+        },
+        {
+          "colorMode": "critical",
+          "fill": false,
+          "line": true,
+          "op": "lt",
+          "value": 30.5,
+          "yaxis": "left"
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "UPS battery health",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": "100",
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
   "refresh": "1m",
@@ -633,5 +737,5 @@
   "timezone": "",
   "title": "Cluster",
   "uid": "3frfw9AMz",
-  "version": 6
+  "version": 8
 }
