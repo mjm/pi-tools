@@ -16,7 +16,7 @@ POUDRIERE="/usr/local/bin/poudriere"
 PORTLIST="/usr/local/etc/pkglist"
 JAILS="amd64-13-0"
 REPOS="current"
-URL="http://pkg1.home.mattmoriarity.com"
+URL="https://pkg.home.mattmoriarity.com"
 
 poudriere_build() {
     for JAIL in $JAILS; do
