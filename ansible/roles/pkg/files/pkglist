@@ -10,7 +10,6 @@ devel/phabricator
 devel/py-lxml
 devel/py-pip
 dns/bind916
-dns/bind_exporter
 editors/neovim
 ftp/curl
 graphics/py-pillow
@@ -18,6 +17,7 @@ irc/znc
 math/py-numpy
 misc/nnn
 net-mgmt/alertmanager
+net-mgmt/bind_exporter
 net-mgmt/prometheus2
 ports-mgmt/modules2tuple
 ports-mgmt/pkg
