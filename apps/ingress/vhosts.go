@@ -5,6 +5,7 @@ var virtualHosts = []virtualHost{
 		Name: "auth",
 		Upstream: upstream{
 			Name:        "vault-proxy",
+			ServiceName: "vault-proxy",
 			ConnectPort: 2220,
 		},
 		DisableOAuth: true,
@@ -13,6 +14,14 @@ var virtualHosts = []virtualHost{
     proxy_set_header X-Real-IP               $remote_addr;
     proxy_set_header X-Scheme                $scheme;
 `,
+	},
+	{
+		Name: "consul",
+		Upstream: upstream{
+			Name:        "consul",
+			ServiceName: "consul",
+			ServicePort: 8500,
+		},
 	},
 	{
 		Name: "nomad",
@@ -75,6 +84,7 @@ var virtualHosts = []virtualHost{
 		Name: "grafana",
 		Upstream: upstream{
 			Name:        "grafana",
+			ServiceName: "grafana",
 			ConnectPort: 3000,
 		},
 	},
@@ -82,6 +92,7 @@ var virtualHosts = []virtualHost{
 		Name: "go",
 		Upstream: upstream{
 			Name:        "go-links",
+			ServiceName: "go-links",
 			ConnectPort: 4240,
 		},
 		CustomServerConfig: `

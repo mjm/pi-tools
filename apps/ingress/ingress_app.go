@@ -116,14 +116,7 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 						Connect: &nomadapi.ConsulConnect{
 							SidecarService: &nomadapi.ConsulSidecarService{
 								Proxy: &nomadapi.ConsulProxy{
-									Upstreams: []*nomadapi.ConsulUpstream{
-										nomadic.ConsulUpstream("detect-presence", 2120),
-										nomadic.ConsulUpstream("vault-proxy", 2220),
-										nomadic.ConsulUpstream("go-links", 4240),
-										nomadic.ConsulUpstream("homebase-api", 6460),
-										nomadic.ConsulUpstream("homebase", 3001),
-										nomadic.ConsulUpstream("grafana", 3000),
-									},
+									Upstreams: connectUpstreams(),
 								},
 							},
 						},
@@ -184,7 +177,6 @@ func (a *App) Uninstall(ctx context.Context, clients nomadic.Clients) error {
 var vaultPolicy string
 
 var extraCertNames = []string{
-	"consul",
 	"homebase",
 }
 
