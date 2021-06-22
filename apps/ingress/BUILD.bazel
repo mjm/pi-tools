@@ -2,7 +2,12 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "ingress",
-    srcs = ["ingress_app.go"],
+    srcs = [
+        "ingress_app.go",
+        "nginx.go",
+        "upstream.go",
+        "vhosts.go",
+    ],
     embedsrcs = [
         "load-balancer.conf",
         "ingress.hcl",

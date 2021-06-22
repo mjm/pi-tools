@@ -5,7 +5,6 @@ import (
 	_ "embed"
 	"fmt"
 	"strings"
-	"text/template"
 	"time"
 
 	consulapi "github.com/hashicorp/consul/api"
@@ -184,31 +183,9 @@ func (a *App) Uninstall(ctx context.Context, clients nomadic.Clients) error {
 //go:embed ingress.hcl
 var vaultPolicy string
 
-//go:embed load-balancer.conf
-var nginxConf string
-var nginxTemplate *template.Template
-
-func init() {
-	nginxTemplate = template.Must(
-		template.New("load_balancer").
-			Delims("<<", ">>").
-			Parse(nginxConf))
-}
-
-var certNames = []string{
-	"alertmanager",
-	"auth",
-	"code",
+var extraCertNames = []string{
 	"consul",
-	"go",
-	"grafana",
 	"homebase",
-	"minio",
-	"nomad",
-	"paperless",
-	"pkg",
-	"prometheus",
-	"vault",
 }
 
 const certTemplateData = `
@@ -219,14 +196,14 @@ const certTemplateData = `
 `
 
 func taskTemplates() []*nomadapi.Template {
-	var nginxResult strings.Builder
-	if err := nginxTemplate.Execute(&nginxResult, nil); err != nil {
+	nginxResult, err := nginxConfig()
+	if err != nil {
 		panic(err)
 	}
 
 	templates := []*nomadapi.Template{
 		{
-			EmbeddedTmpl: nomadic.String(nginxResult.String()),
+			EmbeddedTmpl: &nginxResult,
 			DestPath:     nomadic.String("local/load-balancer.conf"),
 			ChangeMode:   nomadic.String("signal"),
 			ChangeSignal: nomadic.String("SIGHUP"),
@@ -252,6 +229,11 @@ func taskTemplates() []*nomadapi.Template {
 			ChangeMode:   nomadic.String("signal"),
 			ChangeSignal: nomadic.String("SIGHUP"),
 		},
+	}
+
+	certNames := append([]string{}, extraCertNames...)
+	for _, vhost := range virtualHosts {
+		certNames = append(certNames, vhost.Name)
 	}
 
 	for _, certName := range certNames {
