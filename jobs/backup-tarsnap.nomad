@@ -212,7 +212,7 @@ EOF
 
       resources {
         cpu    = 200
-        memory = 200
+        memory = 500
       }
 
       vault {
