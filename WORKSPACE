@@ -5498,4 +5498,11 @@ go_repository(
     version = "v0.0.0-20201126162022-7de9c90e9dd1",
 )
 
+go_repository(
+    name = "com_github_urfave_cli_v2",
+    importpath = "github.com/urfave/cli/v2",
+    sum = "h1:qph92Y649prgesehzOrQjdWyxFOp/QVM+6imKHad91M=",
+    version = "v2.3.0",
+)
+
 gazelle_dependencies()

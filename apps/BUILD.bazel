@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "apps",
+    srcs = ["apps.go"],
+    importpath = "github.com/mjm/pi-tools/apps",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//apps/ingress",
+        "//pkg/nomadic",
+    ],
+)

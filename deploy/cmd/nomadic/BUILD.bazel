@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "nomadic_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mjm/pi-tools/deploy/cmd/nomadic",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//apps",
+        "//pkg/nomadic",
+        "@com_github_urfave_cli_v2//:cli",
+    ],
+)
+
+go_binary(
+    name = "nomadic",
+    embed = [":nomadic_lib"],
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "nomadic",
+    srcs = [
+        "clients.go",
+        "constants.go",
+        "deployable.go",
+        "helpers.go",
+        "logging.go",
+        "ptr_wrappers.go",
+        "registry.go",
+    ],
+    importpath = "github.com/mjm/pi-tools/pkg/nomadic",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_hashicorp_consul_api//:api",
+        "@com_github_hashicorp_nomad_api//:api",
+        "@com_github_hashicorp_vault_api//:api",
+    ],
+)
