@@ -11,8 +11,10 @@ import (
 	"github.com/mjm/pi-tools/pkg/nomadic"
 )
 
-const imageRepo = "spx01/blocky"
-const imageVersion = "sha256:59b3661951c28db0eecd9bb2e673c798d7c861d286e7713665da862e5254c477"
+const (
+	imageRepo    = "spx01/blocky"
+	imageVersion = "sha256:59b3661951c28db0eecd9bb2e673c798d7c861d286e7713665da862e5254c477"
+)
 
 type App struct {
 	name string
@@ -94,7 +96,7 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 						Name:   "blocky",
 						Driver: "docker",
 						Config: map[string]interface{}{
-							"image": imageRepo + "@" + imageVersion,
+							"image": nomadic.Image(imageRepo, imageVersion),
 							"args": []string{
 								"/app/blocky",
 								"--config",

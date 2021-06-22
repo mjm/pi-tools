@@ -13,6 +13,11 @@ import (
 	"github.com/mjm/pi-tools/pkg/nomadic"
 )
 
+const (
+	imageRepo    = "nginx"
+	imageVersion = "sha256:763d95e3db66d9bd1bb926c029e5659ee67eb49ff57f83d331de5f5af6d2ae0c"
+)
+
 type App struct {
 	name string
 }
@@ -131,7 +136,7 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 						Name:   "nginx",
 						Driver: "docker",
 						Config: map[string]interface{}{
-							"image": "nginx@sha256:763d95e3db66d9bd1bb926c029e5659ee67eb49ff57f83d331de5f5af6d2ae0c",
+							"image": nomadic.Image(imageRepo, imageVersion),
 							"volumes": []string{
 								"local:/etc/nginx/conf.d",
 								"secrets:/etc/nginx/ssl",
