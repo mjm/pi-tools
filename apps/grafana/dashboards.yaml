@@ -1,0 +1,9 @@
+apiVersion: 1
+
+providers:
+  - name: dashboards
+    type: file
+    updateIntervalSeconds: 600
+    options:
+      path: {{ env "NOMAD_TASK_DIR" }}/dashboards
+      foldersFromFilesStructure: true
