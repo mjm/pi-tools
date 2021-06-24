@@ -74,18 +74,7 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 		nomadic.WithVaultPolicies(a.name),
 		nomadic.WithVaultChangeNoop())
 
-	resp, _, err := clients.Nomad.Jobs().Plan(job, true, nil)
-	if err != nil {
-		return fmt.Errorf("planning %s job: %w", *job.ID, err)
-	}
-	if resp.Diff.Type == "None" {
-		return nil
-	}
-
-	if _, _, err := clients.Nomad.Jobs().Register(job, nil); err != nil {
-		return fmt.Errorf("registering %s job: %w", *job.ID, err)
-	}
-	return nil
+	return clients.DeployJobs(ctx, job)
 }
 
 func (a *App) Uninstall(ctx context.Context, clients nomadic.Clients) error {

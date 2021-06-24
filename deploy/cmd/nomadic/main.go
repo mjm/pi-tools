@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -56,7 +57,9 @@ func main() {
 
 	apps.Load()
 
-	if err := app.Run(os.Args); err != nil {
+	ctx := nomadic.WithEvents(context.Background(), nomadic.NewLoggingEventReporter())
+
+	if err := app.RunContext(ctx, os.Args); err != nil {
 		log.Fatal(err)
 	}
 }

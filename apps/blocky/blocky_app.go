@@ -3,7 +3,6 @@ package blocky
 import (
 	"context"
 	_ "embed"
-	"fmt"
 	"time"
 
 	nomadapi "github.com/hashicorp/nomad/api"
@@ -96,18 +95,7 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 		nomadic.WithMemoryMB(75),
 		nomadic.WithLoggingTag(a.name))
 
-	resp, _, err := clients.Nomad.Jobs().Plan(job, true, nil)
-	if err != nil {
-		return fmt.Errorf("planning %s job: %w", *job.ID, err)
-	}
-	if resp.Diff.Type == "None" {
-		return nil
-	}
-
-	if _, _, err := clients.Nomad.Jobs().Register(job, nil); err != nil {
-		return fmt.Errorf("registering %s job: %w", *job.ID, err)
-	}
-	return nil
+	return clients.DeployJobs(ctx, job)
 }
 
 func (a *App) Uninstall(ctx context.Context, clients nomadic.Clients) error {
