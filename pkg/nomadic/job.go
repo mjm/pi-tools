@@ -67,6 +67,16 @@ func WithMetricsScraping(path string) ServiceOption {
 	}
 }
 
+func WithMetricsPort(label string) ServiceOption {
+	return func(tg *nomadapi.TaskGroup, svc *nomadapi.Service) {
+		if svc.Connect != nil {
+			panic(fmt.Errorf("overriding metrics port for a connect service is not allowed"))
+		}
+
+		svc.Meta["metrics_port"] = fmt.Sprintf("${NOMAD_HOST_PORT_%s}", label)
+	}
+}
+
 func WithUpstreams(upstreams ...*nomadapi.ConsulUpstream) ServiceOption {
 	return func(tg *nomadapi.TaskGroup, svc *nomadapi.Service) {
 		proxy := svc.Connect.SidecarService.Proxy

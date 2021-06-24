@@ -3,6 +3,7 @@ package promtail
 import (
 	"context"
 	_ "embed"
+	"fmt"
 	"time"
 
 	nomadapi "github.com/hashicorp/nomad/api"
@@ -118,7 +119,11 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 var configFile string
 
 func (a *App) Uninstall(ctx context.Context, clients nomadic.Clients) error {
-	panic("implement me")
+	if _, _, err := clients.Nomad.Jobs().Deregister(a.name, false, nil); err != nil {
+		return fmt.Errorf("deregistering %s nomad job: %w", a.name, err)
+	}
+
+	return nil
 }
 
 var _ nomadic.Deployable = (*App)(nil)
