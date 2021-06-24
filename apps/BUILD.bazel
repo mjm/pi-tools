@@ -9,6 +9,7 @@ go_library(
         "//apps/blocky",
         "//apps/grafana",
         "//apps/ingress",
+        "//apps/loki",
         "//pkg/nomadic",
     ],
 )
