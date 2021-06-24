@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 
 	"github.com/urfave/cli/v2"
 
@@ -49,6 +50,27 @@ func main() {
 						return err
 					}
 
+					return nil
+				},
+			},
+			{
+				Name: "list",
+				Aliases: []string{"l", "ls"},
+				Action: func(c *cli.Context) error {
+					if c.NArg() > 0 {
+						cli.ShowCommandHelpAndExit(c, "list", 1)
+						return nil
+					}
+
+					var appNames []string
+					for appName := range nomadic.Registry() {
+						appNames = append(appNames, appName)
+					}
+					sort.Strings(appNames)
+
+					for _, appName := range appNames {
+						fmt.Println(appName)
+					}
 					return nil
 				},
 			},
