@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	consulapi "github.com/hashicorp/consul/api"
 	nomadapi "github.com/hashicorp/nomad/api"
 
 	"github.com/mjm/pi-tools/pkg/nomadic"
@@ -33,7 +34,58 @@ func (a *App) Name() string {
 
 func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 	if err := clients.Vault.Sys().PutPolicy(a.name, vaultPolicy); err != nil {
-		return fmt.Errorf("updating %s vault policy: %w", err)
+		return fmt.Errorf("updating %s vault policy: %w", a.name, err)
+	}
+
+	svcDefaults := &consulapi.ServiceConfigEntry{
+		Kind:     consulapi.ServiceDefaults,
+		Name:     a.name,
+		Protocol: "http",
+	}
+	if _, _, err := clients.Consul.ConfigEntries().Set(svcDefaults, nil); err != nil {
+		return fmt.Errorf("setting %s service defaults: %w", a.name, err)
+	}
+
+	svcIntentions := &consulapi.ServiceIntentionsConfigEntry{
+		Kind: consulapi.ServiceIntentions,
+		Name: a.name,
+		Sources: []*consulapi.SourceIntention{
+			{
+				Name:       "grafana",
+				Precedence: 9,
+				Type:       consulapi.IntentionSourceConsul,
+				Permissions: []*consulapi.IntentionPermission{
+					{
+						Action: consulapi.IntentionActionAllow,
+						HTTP: &consulapi.IntentionHTTPPermission{
+							PathPrefix: "/",
+						},
+					},
+				},
+			},
+			{
+				Name:       "promtail",
+				Precedence: 9,
+				Type:       consulapi.IntentionSourceConsul,
+				Permissions: []*consulapi.IntentionPermission{
+					{
+						Action: consulapi.IntentionActionAllow,
+						HTTP: &consulapi.IntentionHTTPPermission{
+							PathPrefix: "/",
+						},
+					},
+				},
+			},
+			{
+				Name:       "*",
+				Action:     consulapi.IntentionActionDeny,
+				Precedence: 8,
+				Type:       consulapi.IntentionSourceConsul,
+			},
+		},
+	}
+	if _, _, err := clients.Consul.ConfigEntries().Set(svcIntentions, nil); err != nil {
+		return fmt.Errorf("setting %s service intentions: %w", a.name, err)
 	}
 
 	job := nomadic.NewJob(a.name, 80)

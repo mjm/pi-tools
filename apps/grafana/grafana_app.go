@@ -71,7 +71,7 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 		},
 	}
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcIntentions, nil); err != nil {
-		return fmt.Errorf("setting %s service intentions: %w", err)
+		return fmt.Errorf("setting %s service intentions: %w", a.name, err)
 	}
 
 	job := nomadic.NewJob(a.name, 70)
