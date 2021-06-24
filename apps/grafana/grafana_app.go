@@ -32,8 +32,8 @@ func (a *App) Name() string {
 }
 
 func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
-	if err := clients.Vault.Sys().PutPolicy("grafana", vaultPolicy); err != nil {
-		return fmt.Errorf("updating grafana vault policy: %w", err)
+	if err := clients.Vault.Sys().PutPolicy(a.name, vaultPolicy); err != nil {
+		return fmt.Errorf("updating %s vault policy: %w", a.name, err)
 	}
 
 	svcDefaults := &consulapi.ServiceConfigEntry{
@@ -74,100 +74,41 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 		return fmt.Errorf("setting %s service intentions: %w", err)
 	}
 
-	job := &nomadapi.Job{
-		ID:          &a.name,
-		Datacenters: nomadic.DefaultDatacenters,
-		Priority:    nomadic.Int(70),
-		TaskGroups: []*nomadapi.TaskGroup{
+	job := nomadic.NewJob(a.name, 70)
+	tg := nomadic.AddTaskGroup(job, "grafana", 3)
+
+	nomadic.AddConnectService(tg, &nomadapi.Service{
+		Name:      a.name,
+		PortLabel: "3000",
+		Checks: []nomadapi.ServiceCheck{
 			{
-				Name:  nomadic.String("grafana"),
-				Count: nomadic.Int(3),
-				Networks: []*nomadapi.NetworkResource{
-					{
-						Mode: "bridge",
-						DNS:  nomadic.DefaultDNS,
-						DynamicPorts: []nomadapi.Port{
-							{
-								Label: "health",
-							},
-							{
-								Label: "expose",
-							},
-							{
-								Label: "envoy_metrics",
-								To:    9102,
-							},
-						},
-					},
-				},
-				Services: []*nomadapi.Service{
-					{
-						Name:      a.name,
-						PortLabel: "3000",
-						Meta: map[string]string{
-							"metrics_path":       "/metrics",
-							"envoy_metrics_port": "${NOMAD_HOST_PORT_envoy_metrics}",
-							"metrics_port":       "${NOMAD_HOST_PORT_expose}",
-						},
-						Checks: []nomadapi.ServiceCheck{
-							{
-								Type:      "http",
-								Path:      "/api/health",
-								Interval:  15 * time.Second,
-								Timeout:   3 * time.Second,
-								Expose:    true,
-								PortLabel: "health",
-							},
-						},
-						Connect: &nomadapi.ConsulConnect{
-							SidecarService: &nomadapi.ConsulSidecarService{
-								Proxy: &nomadapi.ConsulProxy{
-									ExposeConfig: &nomadapi.ConsulExposeConfig{
-										Path: []*nomadapi.ConsulExposePath{
-											{
-												Path:          "/metrics",
-												Protocol:      "http",
-												LocalPathPort: 3000,
-												ListenerPort:  "expose",
-											},
-										},
-									},
-									Upstreams: []*nomadapi.ConsulUpstream{
-										nomadic.ConsulUpstream("loki", 3100),
-									},
-									Config: map[string]interface{}{
-										"envoy_prometheus_bind_addr": "0.0.0.0:9102",
-									},
-								},
-							},
-						},
-					},
-				},
-				Tasks: []*nomadapi.Task{
-					{
-						Name:   "grafana",
-						Driver: "docker",
-						Config: map[string]interface{}{
-							"image":   nomadic.Image(imageRepo, imageVersion),
-							"logging": nomadic.Logging("grafana"),
-						},
-						Resources: &nomadapi.Resources{
-							CPU:      nomadic.Int(200),
-							MemoryMB: nomadic.Int(100),
-						},
-						Env: map[string]string{
-							"GF_PATHS_CONFIG":       "${NOMAD_SECRETS_DIR}/grafana.ini",
-							"GF_PATHS_PROVISIONING": "${NOMAD_TASK_DIR}/provisioning",
-						},
-						Vault: &nomadapi.Vault{
-							Policies: []string{"grafana"},
-						},
-						Templates: taskTemplates(),
-					},
-				},
+				Type:     "http",
+				Path:     "/api/health",
+				Interval: 15 * time.Second,
+				Timeout:  3 * time.Second,
 			},
 		},
-	}
+	},
+		nomadic.WithMetricsScraping("/metrics"),
+		nomadic.WithUpstreams(
+			nomadic.ConsulUpstream("loki", 3100)))
+
+	nomadic.AddTask(tg, &nomadapi.Task{
+		Name: "grafana",
+		Config: map[string]interface{}{
+			"image":   nomadic.Image(imageRepo, imageVersion),
+		},
+		Env: map[string]string{
+			"GF_PATHS_CONFIG":       "${NOMAD_SECRETS_DIR}/grafana.ini",
+			"GF_PATHS_PROVISIONING": "${NOMAD_TASK_DIR}/provisioning",
+		},
+		Templates: taskTemplates(),
+	},
+		nomadic.WithCPU(200),
+		nomadic.WithMemoryMB(100),
+		nomadic.WithLoggingTag(a.name),
+		nomadic.WithVaultPolicies(a.name))
+
 	resp, _, err := clients.Nomad.Jobs().Plan(job, true, nil)
 	if err != nil {
 		return fmt.Errorf("planning %s job: %w", *job.ID, err)
