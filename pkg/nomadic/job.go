@@ -34,7 +34,9 @@ type ServiceOption func(tg *nomadapi.TaskGroup, svc *nomadapi.Service)
 func WithMetricsScraping(path string) ServiceOption {
 	return func(tg *nomadapi.TaskGroup, svc *nomadapi.Service) {
 		svc.Meta["metrics_path"] = path
-		// TODO handle non-connect services
+		if svc.Connect == nil {
+			return
+		}
 
 		AddPort(tg, nomadapi.Port{Label: "expose"})
 		svc.Meta["metrics_port"] = "${NOMAD_HOST_PORT_expose}"
@@ -119,6 +121,20 @@ func AddConnectService(tg *nomadapi.TaskGroup, svc *nomadapi.Service, opts ...Se
 	return svc
 }
 
+func AddService(tg *nomadapi.TaskGroup, svc *nomadapi.Service, opts ...ServiceOption) *nomadapi.Service {
+	if svc.Meta == nil {
+		svc.Meta = map[string]string{}
+	}
+
+	tg.Services = append(tg.Services, svc)
+
+	for _, opt := range opts {
+		opt(tg, svc)
+	}
+
+	return svc
+}
+
 func AddPort(tg *nomadapi.TaskGroup, port nomadapi.Port) {
 	if port.Value == 0 {
 		if hasDynamicPort(tg, port.Label) {
@@ -164,6 +180,15 @@ func WithVaultPolicies(policies ...string) TaskOption {
 			task.Vault = &nomadapi.Vault{}
 		}
 		task.Vault.Policies = append(task.Vault.Policies, policies...)
+	}
+}
+
+func WithVaultChangeNoop() TaskOption {
+	return func(tg *nomadapi.TaskGroup, task *nomadapi.Task) {
+		if task.Vault == nil {
+			task.Vault = &nomadapi.Vault{}
+		}
+		task.Vault.ChangeMode = String("noop")
 	}
 }
 

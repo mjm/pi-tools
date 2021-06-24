@@ -96,7 +96,7 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 	nomadic.AddTask(tg, &nomadapi.Task{
 		Name: "grafana",
 		Config: map[string]interface{}{
-			"image":   nomadic.Image(imageRepo, imageVersion),
+			"image": nomadic.Image(imageRepo, imageVersion),
 		},
 		Env: map[string]string{
 			"GF_PATHS_CONFIG":       "${NOMAD_SECRETS_DIR}/grafana.ini",

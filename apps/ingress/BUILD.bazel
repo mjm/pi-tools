@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "ingress_app.go",
         "nginx.go",
+        "templates.go",
         "upstream.go",
         "vhosts.go",
     ],

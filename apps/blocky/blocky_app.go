@@ -31,96 +31,71 @@ func (a *App) Name() string {
 }
 
 func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
-	job := &nomadapi.Job{
-		ID:          &a.name,
-		Datacenters: nomadic.DefaultDatacenters,
-		Priority:    nomadic.Int(90),
-		TaskGroups: []*nomadapi.TaskGroup{
+	job := nomadic.NewJob(a.name, 90)
+	tg := nomadic.AddTaskGroup(job, "blocky", 1)
+	nomadic.AddPort(tg, nomadapi.Port{Label: "dns"})
+	nomadic.AddPort(tg, nomadapi.Port{Label: "http"})
+	nomadic.AddService(tg, &nomadapi.Service{
+		Name:      a.name,
+		PortLabel: "dns",
+		TaskName:  "blocky",
+		Tags:      []string{"dns"},
+		Checks: []nomadapi.ServiceCheck{
 			{
-				Name:  nomadic.String("blocky"),
-				Count: nomadic.Int(1),
-				Networks: []*nomadapi.NetworkResource{
-					{
-						DNS: nomadic.DefaultDNS,
-						DynamicPorts: []nomadapi.Port{
-							{
-								Label: "dns",
-							},
-							{
-								Label: "http",
-							},
-						},
-					},
+				Type:    "script",
+				Command: "dig",
+				Args: []string{
+					"@${NOMAD_IP_dns}",
+					"-p",
+					"${NOMAD_HOST_PORT_dns}",
+					"google.com",
 				},
-				Services: []*nomadapi.Service{
-					{
-						Name:      a.name,
-						PortLabel: "dns",
-						TaskName:  "blocky",
-						Tags:      []string{"dns"},
-						Checks: []nomadapi.ServiceCheck{
-							{
-								Type:    "script",
-								Command: "dig",
-								Args: []string{
-									"@${NOMAD_IP_dns}",
-									"-p",
-									"${NOMAD_HOST_PORT_dns}",
-									"google.com",
-								},
-								Interval: 30 * time.Second,
-								Timeout:  5 * time.Second,
-							},
-						},
-					},
-					{
-						Name:      "blocky",
-						PortLabel: "http",
-						Tags:      []string{"http"},
-						Meta: map[string]string{
-							"metrics_path": "/metrics",
-						},
-						Checks: []nomadapi.ServiceCheck{
-							{
-								Type:                 "http",
-								Path:                 "/",
-								Interval:             30 * time.Second,
-								Timeout:              5 * time.Second,
-								SuccessBeforePassing: 3,
-							},
-						},
-					},
-				},
-				Tasks: []*nomadapi.Task{
-					{
-						Name:   "blocky",
-						Driver: "docker",
-						Config: map[string]interface{}{
-							"image": nomadic.Image(imageRepo, imageVersion),
-							"args": []string{
-								"/app/blocky",
-								"--config",
-								"${NOMAD_TASK_DIR}/config.yaml",
-							},
-							"logging": nomadic.Logging("blocky"),
-							"ports":   []string{"dns", "http"},
-						},
-						Resources: &nomadapi.Resources{
-							CPU:      nomadic.Int(200),
-							MemoryMB: nomadic.Int(75),
-						},
-						Templates: []*nomadapi.Template{
-							{
-								EmbeddedTmpl: nomadic.String(configFile),
-								DestPath:     nomadic.String("local/config.yaml"),
-								ChangeMode:   nomadic.String("restart"),
-							},
-						},
-					},
-				},
+				Interval: 30 * time.Second,
+				Timeout:  5 * time.Second,
 			},
 		},
-	}
+	})
+	nomadic.AddService(tg, &nomadapi.Service{
+		Name:      a.name,
+		PortLabel: "http",
+		Tags:      []string{"http"},
+		Meta: map[string]string{
+			"metrics_path": "/metrics",
+		},
+		Checks: []nomadapi.ServiceCheck{
+			{
+				Type:                 "http",
+				Path:                 "/",
+				Interval:             30 * time.Second,
+				Timeout:              5 * time.Second,
+				SuccessBeforePassing: 3,
+			},
+		},
+	}, nomadic.WithMetricsScraping("/metrics"))
+
+	nomadic.AddTask(tg, &nomadapi.Task{
+		Name: "blocky",
+		Config: map[string]interface{}{
+			"image": nomadic.Image(imageRepo, imageVersion),
+			"args": []string{
+				"/app/blocky",
+				"--config",
+				"${NOMAD_TASK_DIR}/config.yaml",
+			},
+			"ports": []string{"dns", "http"},
+		},
+		Templates: []*nomadapi.Template{
+			{
+				EmbeddedTmpl: nomadic.String(configFile),
+				DestPath:     nomadic.String("local/config.yaml"),
+				ChangeMode:   nomadic.String("restart"),
+			},
+		},
+	},
+		nomadic.WithCPU(200),
+		nomadic.WithMemoryMB(75),
+		nomadic.WithLoggingTag(a.name))
+
 	resp, _, err := clients.Nomad.Jobs().Plan(job, true, nil)
 	if err != nil {
 		return fmt.Errorf("planning %s job: %w", *job.ID, err)
