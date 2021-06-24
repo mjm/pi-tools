@@ -10,6 +10,7 @@ go_library(
         "//apps/grafana",
         "//apps/ingress",
         "//apps/loki",
+        "//apps/promtail",
         "//pkg/nomadic",
     ],
 )

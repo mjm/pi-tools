@@ -15,6 +15,12 @@ func NewJob(name string, priority int) *nomadapi.Job {
 	}
 }
 
+func NewSystemJob(name string, priority int) *nomadapi.Job {
+	j := NewJob(name, priority)
+	j.Type = String(nomadapi.JobTypeSystem)
+	return j
+}
+
 func AddTaskGroup(job *nomadapi.Job, name string, count int) *nomadapi.TaskGroup {
 	tg := &nomadapi.TaskGroup{
 		Name:  &name,
