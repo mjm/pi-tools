@@ -11,6 +11,7 @@ go_library(
         "//apps/ingress",
         "//apps/loki",
         "//apps/otel",
+        "//apps/presence",
         "//apps/promtail",
         "//apps/unifiexporter",
         "//pkg/nomadic",
