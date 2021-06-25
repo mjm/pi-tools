@@ -2,6 +2,7 @@ package nomadic
 
 import (
 	_ "embed"
+	"sort"
 	"strings"
 )
 
@@ -22,6 +23,15 @@ func Image(repo, tagOrDigest string) string {
 	} else {
 		return repo + ":" + tagOrDigest
 	}
+}
+
+func RegisteredImageURIs() []string {
+	var uris []string
+	for _, imageURI := range digestMap {
+		uris = append(uris, imageURI)
+	}
+	sort.Strings(uris)
+	return uris
 }
 
 //go:embed digests

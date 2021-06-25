@@ -54,7 +54,7 @@ func main() {
 				},
 			},
 			{
-				Name: "list",
+				Name:    "list",
 				Aliases: []string{"l", "ls"},
 				Action: func(c *cli.Context) error {
 					if c.NArg() > 0 {
@@ -70,6 +70,20 @@ func main() {
 
 					for _, appName := range appNames {
 						fmt.Println(appName)
+					}
+					return nil
+				},
+			},
+			{
+				Name: "images",
+				Action: func(c *cli.Context) error {
+					if c.NArg() > 0 {
+						cli.ShowCommandHelpAndExit(c, "images", 1)
+						return nil
+					}
+
+					for _, imageURI := range nomadic.RegisteredImageURIs() {
+						fmt.Println(imageURI)
 					}
 					return nil
 				},
