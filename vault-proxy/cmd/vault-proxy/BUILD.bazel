@@ -23,6 +23,14 @@ go_binary(
     visibility = ["//visibility:public"],
 )
 
+go_binary(
+    name = "vault-proxy_arm",
+    embed = [":vault-proxy_lib"],
+    goos = "linux",
+    goarch = "arm64",
+    visibility = ["//visibility:public"],
+)
+
 container_layer(
     name = "static-files",
     directory = "/static",
@@ -33,8 +41,11 @@ container_image(
     name = "image",
     base = "@distroless_base//image",
     files = [
-        ":vault-proxy",
+        ":vault-proxy_arm",
     ],
+    symlinks = {
+        "/vault-proxy": "/vault-proxy_arm",
+    },
     layers = [
         ":static-files",
     ],
@@ -48,4 +59,5 @@ container_push(
     image = ":image",
     registry = "index.docker.io",
     repository = "mmoriarity/vault-proxy",
+    visibility = ["//visibility:public"],
 )

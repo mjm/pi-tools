@@ -1,4 +1,11 @@
 exports_files([
     "unifi.patch",
     "unifi_exporter.patch",
+    "image_digests.sh",
 ])
+
+sh_binary(
+    name = "image_digests",
+    srcs = ["image_digests.sh"],
+    visibility = ["//visibility:public"],
+)

@@ -18,12 +18,23 @@ go_binary(
     visibility = ["//visibility:public"],
 )
 
+go_binary(
+    name = "beacon-srv_arm",
+    embed = [":beacon-srv_lib"],
+    goos = "linux",
+    goarch = "arm64",
+    visibility = ["//visibility:public"],
+)
+
 container_image(
     name = "image",
     base = "@ubuntu_bluetooth//image",
     files = [
-        ":beacon-srv",
+        ":beacon-srv_arm",
     ],
+    symlinks = {
+        "/beacon-srv": "/beacon-srv_arm",
+    },
     mode = "0755",
     tags = ["no-cache"],
 )
@@ -34,4 +45,5 @@ container_push(
     image = ":image",
     registry = "index.docker.io",
     repository = "mmoriarity/beacon-srv",
+    visibility = ["//visibility:public"],
 )

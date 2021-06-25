@@ -1,4 +1,25 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//tools:resolve.bzl", "image_digests")
+
+image_digests(
+    name = "digests",
+    pushes = [
+        "//backup/cmd/backup-srv:image-push",
+        "//backup/cmd/prometheus-backup:image-push",
+        "//backup:image-push",
+        "//deploy/cmd/deploy-srv:image-push",
+        "//detect-presence/cmd/beacon-srv:image-push",
+        "//detect-presence/cmd/detect-presence-srv:image-push",
+        "//go-links/cmd/go-links:image-push",
+        "//homebase/cmd/homebase-api-srv:image-push",
+        "//homebase/cmd/homebase-bot-srv:image-push",
+        "//homebase:image-push",
+        "//monitoring/cmd/tripplite_exporter:image-push",
+        "//monitoring/unifi_exporter:image-push",
+        "//observability/otel-collector:image-push",
+        "//vault-proxy/cmd/vault-proxy:image-push",
+    ],
+)
 
 go_library(
     name = "nomadic",
