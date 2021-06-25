@@ -36,6 +36,9 @@ go_library(
         "ptr_wrappers.go",
         "registry.go",
     ],
+    embedsrcs = [
+        ":digests",  # keep
+    ],
     importpath = "github.com/mjm/pi-tools/pkg/nomadic",
     visibility = ["//visibility:public"],
     deps = [

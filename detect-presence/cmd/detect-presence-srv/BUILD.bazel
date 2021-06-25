@@ -37,8 +37,8 @@ go_binary(
 go_binary(
     name = "detect-presence-srv_arm",
     embed = [":detect-presence-srv_lib"],
-    goos = "linux",
     goarch = "arm64",
+    goos = "linux",
     visibility = ["//visibility:public"],
 )
 
@@ -48,10 +48,10 @@ container_image(
     files = [
         ":detect-presence-srv_arm",
     ],
+    mode = "0755",
     symlinks = {
         "/detect-presence-srv": "/detect-presence-srv_arm",
     },
-    mode = "0755",
     tags = ["no-cache"],
 )
 

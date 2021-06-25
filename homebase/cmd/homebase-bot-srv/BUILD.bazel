@@ -34,8 +34,8 @@ go_binary(
 go_binary(
     name = "homebase-bot-srv_arm",
     embed = [":homebase-bot-srv_lib"],
-    goos = "linux",
     goarch = "arm64",
+    goos = "linux",
     visibility = ["//visibility:public"],
 )
 
@@ -45,10 +45,10 @@ container_image(
     files = [
         ":homebase-bot-srv_arm",
     ],
+    mode = "0755",
     symlinks = {
         "/homebase-bot-srv": "/homebase-bot-srv_arm",
     },
-    mode = "0755",
     tags = ["no-cache"],
 )
 

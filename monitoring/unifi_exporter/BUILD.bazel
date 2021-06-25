@@ -1,11 +1,12 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
 
+# keep
 go_binary(
     name = "unifi_exporter",
     embed = ["@com_github_mdlayher_unifi_exporter//cmd/unifi_exporter:unifi_exporter_lib"],
-    goos = "linux",
     goarch = "arm64",
+    goos = "linux",
 )
 
 container_image(

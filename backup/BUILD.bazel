@@ -8,10 +8,10 @@ container_image(
         "//backup/cmd/perform-backup:perform-backup_arm",
         "@ht_sr_git_apreiml_prunef//:prunef",
     ],
+    mode = "0755",
     symlinks = {
         "/usr/bin/perform-backup": "/usr/bin/perform-backup_arm",
     },
-    mode = "0755",
     tags = ["no-cache"],
 )
 

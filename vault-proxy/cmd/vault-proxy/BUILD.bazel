@@ -26,8 +26,8 @@ go_binary(
 go_binary(
     name = "vault-proxy_arm",
     embed = [":vault-proxy_lib"],
-    goos = "linux",
     goarch = "arm64",
+    goos = "linux",
     visibility = ["//visibility:public"],
 )
 
@@ -43,13 +43,13 @@ container_image(
     files = [
         ":vault-proxy_arm",
     ],
-    symlinks = {
-        "/vault-proxy": "/vault-proxy_arm",
-    },
     layers = [
         ":static-files",
     ],
     mode = "0755",
+    symlinks = {
+        "/vault-proxy": "/vault-proxy_arm",
+    },
     tags = ["no-cache"],
 )
 
