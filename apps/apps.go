@@ -7,6 +7,7 @@ import (
 	"github.com/mjm/pi-tools/apps/loki"
 	"github.com/mjm/pi-tools/apps/otel"
 	"github.com/mjm/pi-tools/apps/promtail"
+	"github.com/mjm/pi-tools/apps/unifiexporter"
 	"github.com/mjm/pi-tools/pkg/nomadic"
 )
 
@@ -17,4 +18,5 @@ func Load() {
 	nomadic.Register(loki.New("loki"))
 	nomadic.Register(otel.New("otel"))
 	nomadic.Register(promtail.New("promtail"))
+	nomadic.Register(unifiexporter.New("unifi-exporter"))
 }

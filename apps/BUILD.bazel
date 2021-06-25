@@ -12,6 +12,7 @@ go_library(
         "//apps/loki",
         "//apps/otel",
         "//apps/promtail",
+        "//apps/unifiexporter",
         "//pkg/nomadic",
     ],
 )
