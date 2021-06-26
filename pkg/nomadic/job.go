@@ -208,6 +208,17 @@ func WithVaultChangeNoop() TaskOption {
 	}
 }
 
+func WithTracingEnv() TaskOption {
+	return func(tg *nomadapi.TaskGroup, task *nomadapi.Task) {
+		if task.Env == nil {
+			task.Env = map[string]string{}
+		}
+		task.Env["HOSTNAME"] = "${attr.unique.hostname}"
+		task.Env["HOST_IP"] = "${attr.unique.network.ip-address}"
+		task.Env["NOMAD_CLIENT_ID"] = "${node.unique.id}"
+	}
+}
+
 func AddTask(tg *nomadapi.TaskGroup, task *nomadapi.Task, opts ...TaskOption) *nomadapi.Task {
 	if task.Driver == "" {
 		task.Driver = "docker"

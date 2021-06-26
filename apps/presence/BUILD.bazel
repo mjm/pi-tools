@@ -3,10 +3,12 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "presence",
     srcs = ["presence_app.go"],
+    embedsrcs = ["presence.hcl"],
     importpath = "github.com/mjm/pi-tools/apps/presence",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/nomadic",
+        "@com_github_hashicorp_consul_api//:api",
         "@com_github_hashicorp_nomad_api//:api",
     ],
 )
