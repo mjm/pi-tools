@@ -1,6 +1,7 @@
 package apps
 
 import (
+	"github.com/mjm/pi-tools/apps/backup"
 	"github.com/mjm/pi-tools/apps/blocky"
 	"github.com/mjm/pi-tools/apps/grafana"
 	"github.com/mjm/pi-tools/apps/ingress"
@@ -13,6 +14,7 @@ import (
 )
 
 func Load() {
+	nomadic.Register(backup.New("backup"))
 	nomadic.Register(blocky.New("blocky"))
 	nomadic.Register(grafana.New("grafana"))
 	nomadic.Register(ingress.New("ingress"))

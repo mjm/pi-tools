@@ -6,6 +6,7 @@ go_library(
     importpath = "github.com/mjm/pi-tools/apps",
     visibility = ["//visibility:public"],
     deps = [
+        "//apps/backup",
         "//apps/blocky",
         "//apps/grafana",
         "//apps/ingress",
