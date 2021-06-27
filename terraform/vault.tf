@@ -208,11 +208,6 @@ resource "vault_policy" "go_links" {
   policy = file("${local.vault_policies_path}/go-links.hcl")
 }
 
-resource "vault_policy" "homebase_bot" {
-  name   = "homebase-bot"
-  policy = file("${local.vault_policies_path}/homebase-bot.hcl")
-}
-
 resource "vault_policy" "nomad_server" {
   name   = "nomad-server"
   policy = file("${local.vault_policies_path}/nomad-server.hcl")

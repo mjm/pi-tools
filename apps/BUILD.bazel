@@ -11,6 +11,7 @@ go_library(
         "//apps/blocky",
         "//apps/consulexporter",
         "//apps/grafana",
+        "//apps/homebase",
         "//apps/ingress",
         "//apps/loki",
         "//apps/otel",
