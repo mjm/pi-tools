@@ -9,15 +9,17 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/google/go-github/v33/github"
 	"github.com/gregdel/pushover"
 	nomadapi "github.com/hashicorp/nomad/api"
+	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
+	"github.com/mjm/pi-tools/pkg/nomadic"
 	"github.com/segmentio/ksuid"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
@@ -288,66 +290,48 @@ func (s *Server) checkForChanges(ctx context.Context) error {
 		return spanerr.RecordError(ctx, err)
 	}
 
-	r.Info("Found %d Nomad jobs to submit", len(zipReader.File))
-
-	var jobsToWatch []*nomadapi.Job
-	for _, file := range zipReader.File {
-		job, err := s.submitNomadJob(ctx, &r, file)
-		if err != nil {
-			return spanerr.RecordError(ctx, err)
-		}
-
-		if job != nil {
-			jobsToWatch = append(jobsToWatch, job)
-		}
-	}
+	span.SetAttributes(attribute.Int("archive.file_count", len(zipReader.File)))
 
 	if s.Config.DryRun {
 		return nil
 	}
 
-	r.Info("Watching deployment progress for all jobs")
+	nomadicFile, err := zipReader.File[0].Open()
+	if err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+	defer nomadicFile.Close()
 
-	var wg sync.WaitGroup
-	errChan := make(chan error, len(jobsToWatch))
+	tmpFile, err := os.CreateTemp("", "nomadic-")
+	if err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+	defer tmpFile.Close()
 
-	wg.Add(len(jobsToWatch))
-	for _, job := range jobsToWatch {
-		go func(job *nomadapi.Job) {
-			// Don't wait for the deploy job to complete, since this server running may prevent that.
-			if *job.ID == "deploy" {
-				wg.Done()
-			} else {
-				defer wg.Done()
-			}
+	if _, err := io.Copy(tmpFile, nomadicFile); err != nil {
+		return spanerr.RecordError(ctx, err)
+	}
+	tmpFile.Close()
 
-			if err := s.watchJobDeployment(ctx, &r, job); err != nil {
-				errChan <- err
-			}
-		}(job)
+	if err := os.Chmod(tmpFile.Name(), 0755); err != nil {
+		return spanerr.RecordError(ctx, err)
 	}
 
-	wg.Wait()
-
-	close(errChan)
-	var errs []error
-	var errDescs []string
-	for err := range errChan {
-		errs = append(errs, err)
-		errDescs = append(errDescs, err.Error())
-	}
-
-	if len(errs) == 0 {
-		r.Info("All jobs finished deploying successfully")
-		finalDeploymentStatus = "success"
-	} else {
-		jobWord := "jobs"
-		if len(errs) == 1 {
-			jobWord = "job"
+	doneCh := make(chan struct{})
+	eventCh := make(chan *deploypb.ReportEvent)
+	go func() {
+		for evt := range eventCh {
+			r.AppendEvent(evt)
 		}
+		close(doneCh)
+	}()
 
-		r.Error("%d %s failed to deploy", len(errs), jobWord).
-			WithDescription(strings.Join(errDescs, "\n"))
+	deployErr := nomadic.DeployAll(ctx, tmpFile.Name(), eventCh)
+	<-doneCh
+
+	if deployErr == nil {
+		r.Info("All apps finished deploying successfully")
+		finalDeploymentStatus = "success"
 	}
 
 	return nil

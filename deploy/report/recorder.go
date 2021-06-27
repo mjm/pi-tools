@@ -36,6 +36,13 @@ func (r *Recorder) Error(format string, v ...interface{}) Event {
 	return r.addEvent(deploypb.ReportEvent_ERROR, format, v...)
 }
 
+func (r *Recorder) AppendEvent(evt *deploypb.ReportEvent) {
+	r.lock.Lock()
+	defer r.lock.Unlock()
+
+	r.report.Events = append(r.report.Events, evt)
+}
+
 func (r *Recorder) addEvent(level deploypb.ReportEvent_Level, format string, v ...interface{}) Event {
 	r.lock.Lock()
 	defer r.lock.Unlock()

@@ -31,9 +31,9 @@ import (
 
 var (
 	githubRepo   = flag.String("repo", "mjm/pi-tools", "GitHub repository to check for builds")
-	githubBranch = flag.String("branch", "main", "Git branch of builds that should be considered for deploying")
+	githubBranch = flag.String("branch", "infra-as-software", "Git branch of builds that should be considered for deploying")
 	workflowName = flag.String("workflow", "nomad.yaml", "Filename of GitHub Actions workflow to wait for")
-	artifactName = flag.String("artifact", "jobs", "Name of artifact containing Nomad job JSON files")
+	artifactName = flag.String("artifact", "nomadic", "Name of artifact containing Nomad job JSON files")
 
 	githubTokenPath = flag.String("github-token-path", "/secrets/github-token", "Path to file containing GitHub PAT token")
 

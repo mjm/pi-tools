@@ -51,6 +51,7 @@ func (s *server) StreamEvents(server nomadic.Nomadic_StreamEventsServer) error {
 		msg, err := server.Recv()
 		if err != nil {
 			if err == io.EOF {
+				close(s.ch)
 				close(s.doneCh)
 				return server.SendAndClose(&nomadic.StreamEventsResponse{})
 			}
