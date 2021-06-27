@@ -35,6 +35,7 @@ go_library(
         "metrics.go",
         "ptr_wrappers.go",
         "registry.go",
+        "server.go",
     ],
     embedsrcs = [
         ":digests",  # keep
@@ -42,10 +43,13 @@ go_library(
     importpath = "github.com/mjm/pi-tools/pkg/nomadic",
     visibility = ["//visibility:public"],
     deps = [
+        "//deploy/proto/deploy",
         "//deploy/report",
-        "//pkg/spanerr",
+        "//pkg/nomadic/proto/nomadic",
         "@com_github_hashicorp_consul_api//:api",
         "@com_github_hashicorp_nomad_api//:api",
         "@com_github_hashicorp_vault_api//:api",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_protobuf//types/known/timestamppb",
     ],
 )

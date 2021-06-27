@@ -10,8 +10,6 @@ import (
 	consulapi "github.com/hashicorp/consul/api"
 	nomadapi "github.com/hashicorp/nomad/api"
 	vaultapi "github.com/hashicorp/vault/api"
-
-	"github.com/mjm/pi-tools/pkg/spanerr"
 )
 
 type Clients struct {
@@ -96,8 +94,8 @@ func (c Clients) DeployJobs(ctx context.Context, jobs ...*nomadapi.Job) error {
 		jobWord = "job"
 	}
 
-	events.Error("%d %s failed to deploy", len(errs), jobWord).
-		WithDescription(strings.Join(errDescs, "\n"))
+	events.Error("%d %s failed to deploy", len(errs), jobWord,
+		withDescription(strings.Join(errDescs, "\n")))
 	return fmt.Errorf("1 or more jobs failed to deploy")
 }
 
@@ -178,7 +176,7 @@ func (c Clients) watchJobDeployment(ctx context.Context, job *nomadapi.Job) erro
 			events.Error("%s: %s", *job.ID, d.StatusDescription)
 			return fmt.Errorf("%s: deployment failed: %s", *job.ID, d.StatusDescription)
 		default:
-			return spanerr.RecordError(ctx, fmt.Errorf("%s: unexpected deployment status %q", *job.ID, d.Status))
+			return fmt.Errorf("%s: unexpected deployment status %q", *job.ID, d.Status)
 		}
 	}
 }

@@ -7,8 +7,11 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//apps",
+        "//deploy/proto/deploy",
         "//pkg/nomadic",
+        "//pkg/nomadic/proto/nomadic",
         "@com_github_urfave_cli_v2//:cli",
+        "@org_golang_google_grpc//:go_default_library",
     ],
 )
 
