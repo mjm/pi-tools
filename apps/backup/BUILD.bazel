@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "backup_app.go",
         "databases.go",
+        "templates.go",
     ],
     embedsrcs = [
         "backup.hcl",
@@ -16,6 +17,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/nomadic",
+        "@com_github_hashicorp_consul_api//:api",
         "@com_github_hashicorp_nomad_api//:api",
     ],
 )

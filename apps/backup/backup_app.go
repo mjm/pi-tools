@@ -4,7 +4,9 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"time"
 
+	consulapi "github.com/hashicorp/consul/api"
 	nomadapi "github.com/hashicorp/nomad/api"
 
 	"github.com/mjm/pi-tools/pkg/nomadic"
@@ -21,6 +23,8 @@ const (
 	mysqlImageVersion = "sha256:b33c6e23c8678e29a43ae7cad47cd6bbead6e39c911c5a7b2b6d943cd42b2944"
 
 	backupImageRepo = "mmoriarity/perform-backup"
+
+	serviceImageRepo = "mmoriarity/backup-srv"
 )
 
 type App struct {
@@ -50,10 +54,15 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 		return fmt.Errorf("updating %s vault policy: %w", a.tarsnapName(), err)
 	}
 
+	if err := a.installConfigEntries(ctx, clients); err != nil {
+		return err
+	}
+
 	borgJob := a.createBorgJob()
 	tarsnapJob := a.createTarsnapJob()
+	serviceJob := a.createServiceJob()
 
-	return clients.DeployJobs(ctx, borgJob, tarsnapJob)
+	return clients.DeployJobs(ctx, borgJob, tarsnapJob, serviceJob)
 }
 
 func (a *App) Uninstall(ctx context.Context, clients nomadic.Clients) error {
@@ -75,6 +84,65 @@ func (a *App) Uninstall(ctx context.Context, clients nomadic.Clients) error {
 
 	if _, _, err := clients.Nomad.Jobs().Deregister(a.tarsnapName(), false, nil); err != nil {
 		return fmt.Errorf("deregistering %s nomad job: %w", a.tarsnapName(), err)
+	}
+
+	return nil
+}
+
+func (a *App) installConfigEntries(ctx context.Context, clients nomadic.Clients) error {
+	httpName := a.name
+	httpDefaults := &consulapi.ServiceConfigEntry{
+		Kind:     consulapi.ServiceDefaults,
+		Name:     httpName,
+		Protocol: "http",
+	}
+	if _, _, err := clients.Consul.ConfigEntries().Set(httpDefaults, nil); err != nil {
+		return fmt.Errorf("setting %s service defaults: %w", httpName, err)
+	}
+
+	grpcName := a.name + "-grpc"
+	grpcDefaults := &consulapi.ServiceConfigEntry{
+		Kind:     consulapi.ServiceDefaults,
+		Name:     grpcName,
+		Protocol: "grpc",
+	}
+	if _, _, err := clients.Consul.ConfigEntries().Set(grpcDefaults, nil); err != nil {
+		return fmt.Errorf("setting %s service defaults: %w", grpcName, err)
+	}
+
+	grpcIntentions := &consulapi.ServiceIntentionsConfigEntry{
+		Kind: consulapi.ServiceIntentions,
+		Name: grpcName,
+		Sources: []*consulapi.SourceIntention{
+			{
+				Name:       "homebase-api",
+				Precedence: 9,
+				Type:       consulapi.IntentionSourceConsul,
+				Permissions: []*consulapi.IntentionPermission{
+					{
+						Action: consulapi.IntentionActionAllow,
+						HTTP: &consulapi.IntentionHTTPPermission{
+							PathPrefix: "/BackupService/",
+						},
+					},
+					{
+						Action: consulapi.IntentionActionDeny,
+						HTTP: &consulapi.IntentionHTTPPermission{
+							PathPrefix: "/",
+						},
+					},
+				},
+			},
+			{
+				Name:       "*",
+				Action:     consulapi.IntentionActionDeny,
+				Precedence: 8,
+				Type:       consulapi.IntentionSourceConsul,
+			},
+		},
+	}
+	if _, _, err := clients.Consul.ConfigEntries().Set(grpcIntentions, nil); err != nil {
+		return fmt.Errorf("setting %s service intentions: %w", grpcName, err)
 	}
 
 	return nil
@@ -109,12 +177,7 @@ func (a *App) createBorgJob() *nomadapi.Job {
 				DestPath:     nomadic.String("local/backup.env"),
 				Envvars:      nomadic.Bool(true),
 			},
-			{
-				EmbeddedTmpl: nomadic.String(`{{ with secret "kv/borg" }}{{ .Data.data.private_key }}{{ end }}
-`),
-				DestPath: nomadic.String("secrets/id_rsa"),
-				Perms:    nomadic.String("600"),
-			},
+			borgSSHKeyTemplate,
 		},
 	},
 		nomadic.WithCPU(100),
@@ -201,10 +264,7 @@ password = {{ .Data.password }}
 				DestPath:     nomadic.String("local/backup.env"),
 				Envvars:      nomadic.Bool(true),
 			},
-			{
-				EmbeddedTmpl: nomadic.String(`{{ with secret "kv/tarsnap" }}{{ .Data.data.key | base64Decode }}{{ end }}`),
-				DestPath:     nomadic.String("secrets/tarsnap.key"),
-			},
+			tarsnapKeyTemplate,
 		},
 	},
 		nomadic.WithCPU(100),
@@ -229,10 +289,7 @@ password = {{ .Data.password }}
 			},
 		},
 		Templates: []*nomadapi.Template{
-			{
-				EmbeddedTmpl: nomadic.String(`{{ with secret "kv/tarsnap" }}{{ .Data.data.key | base64Decode }}{{ end }}`),
-				DestPath:     nomadic.String("secrets/tarsnap.key"),
-			},
+			tarsnapKeyTemplate,
 			{
 				EmbeddedTmpl: &pruneScript,
 				DestPath:     nomadic.String("local/prune.sh"),
@@ -244,6 +301,62 @@ password = {{ .Data.password }}
 		nomadic.WithMemoryMB(30),
 		nomadic.WithLoggingTag(a.tarsnapName()),
 		nomadic.WithVaultPolicies(a.tarsnapName()))
+
+	return job
+}
+
+func (a *App) createServiceJob() *nomadapi.Job {
+	name := a.name + "-srv"
+	job := nomadic.NewJob(name, 50)
+	tg := nomadic.AddTaskGroup(job, "backup", 2)
+	tg.Update = &nomadapi.UpdateStrategy{
+		MaxParallel: nomadic.Int(1),
+	}
+
+	nomadic.AddConnectService(tg, &nomadapi.Service{
+		Name:      a.name,
+		PortLabel: "2320",
+		Checks: []nomadapi.ServiceCheck{
+			{
+				Type:                 "http",
+				Path:                 "/healthz",
+				Interval:             15 * time.Second,
+				Timeout:              3 * time.Second,
+				SuccessBeforePassing: 3,
+			},
+		},
+	}, nomadic.WithMetricsScraping("/metrics"))
+
+	nomadic.AddConnectService(tg, &nomadapi.Service{
+		Name:      a.name + "-grpc",
+		PortLabel: "2321",
+	})
+
+	nomadic.AddTask(tg, &nomadapi.Task{
+		Name: "backup-srv",
+		Config: map[string]interface{}{
+			"image":   nomadic.Image(serviceImageRepo, "latest"),
+			"command": "/backup-srv",
+			"args": []string{
+				"-tarsnap-keyfile",
+				"${NOMAD_SECRETS_DIR}/tarsnap.key",
+			},
+		},
+		Env: map[string]string{
+			"BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK": "yes",
+
+			"BORG_RSH": "ssh -o StrictHostKeyChecking=no -i ${NOMAD_SECRETS_DIR}/id_rsa",
+		},
+		Templates: []*nomadapi.Template{
+			tarsnapKeyTemplate,
+			borgSSHKeyTemplate,
+		},
+	},
+		nomadic.WithCPU(50),
+		nomadic.WithMemoryMB(100),
+		nomadic.WithLoggingTag(name),
+		nomadic.WithVaultPolicies(a.borgName(), a.tarsnapName()),
+		nomadic.WithTracingEnv())
 
 	return job
 }
