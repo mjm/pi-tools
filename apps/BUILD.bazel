@@ -9,6 +9,7 @@ go_library(
         "//apps/backup",
         "//apps/blackboxexporter",
         "//apps/blocky",
+        "//apps/consulexporter",
         "//apps/grafana",
         "//apps/ingress",
         "//apps/loki",

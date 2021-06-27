@@ -193,11 +193,6 @@ resource "vault_policy" "alertmanager" {
   policy = file("${local.vault_policies_path}/alertmanager.hcl")
 }
 
-resource "vault_policy" "consul_exporter" {
-  name   = "consul-exporter"
-  policy = file("${local.vault_policies_path}/consul-exporter.hcl")
-}
-
 resource "vault_policy" "consul_template" {
   name   = "consul-template"
   policy = file("${local.vault_policies_path}/consul-template.hcl")
