@@ -78,6 +78,19 @@ func (a *App) Uninstall(ctx context.Context, clients nomadic.Clients) error {
 		return fmt.Errorf("deleting %s vault policy: %w", a.tarsnapName(), err)
 	}
 
+	if _, err := clients.Consul.ConfigEntries().Delete(consulapi.ServiceDefaults, a.name, nil); err != nil {
+		return fmt.Errorf("deleting %s service defaults: %w", a.name, err)
+	}
+
+	grpcName := a.name + "-grpc"
+	if _, err := clients.Consul.ConfigEntries().Delete(consulapi.ServiceDefaults, grpcName, nil); err != nil {
+		return fmt.Errorf("deleting %s service defaults: %w", grpcName, err)
+	}
+
+	if _, err := clients.Consul.ConfigEntries().Delete(consulapi.ServiceIntentions, grpcName, nil); err != nil {
+		return fmt.Errorf("deleting %s service intentions: %w", grpcName, err)
+	}
+
 	if _, _, err := clients.Nomad.Jobs().Deregister(a.borgName(), false, nil); err != nil {
 		return fmt.Errorf("deregistering %s nomad job: %w", a.borgName(), err)
 	}
