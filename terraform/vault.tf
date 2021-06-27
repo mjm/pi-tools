@@ -193,16 +193,6 @@ resource "vault_policy" "alertmanager" {
   policy = file("${local.vault_policies_path}/alertmanager.hcl")
 }
 
-resource "vault_policy" "backup" {
-  name   = "backup"
-  policy = file("${local.vault_policies_path}/backup.hcl")
-}
-
-resource "vault_policy" "borg" {
-  name   = "borg"
-  policy = file("${local.vault_policies_path}/borg.hcl")
-}
-
 resource "vault_policy" "consul_exporter" {
   name   = "consul-exporter"
   policy = file("${local.vault_policies_path}/consul-exporter.hcl")
@@ -223,34 +213,14 @@ resource "vault_policy" "go_links" {
   policy = file("${local.vault_policies_path}/go-links.hcl")
 }
 
-resource "vault_policy" "grafana" {
-  name   = "grafana"
-  policy = file("${local.vault_policies_path}/grafana.hcl")
-}
-
 resource "vault_policy" "homebase_bot" {
   name   = "homebase-bot"
   policy = file("${local.vault_policies_path}/homebase-bot.hcl")
 }
 
-resource "vault_policy" "ingress" {
-  name   = "ingress"
-  policy = file("${local.vault_policies_path}/ingress.hcl")
-}
-
-resource "vault_policy" "loki" {
-  name   = "loki"
-  policy = file("${local.vault_policies_path}/loki.hcl")
-}
-
 resource "vault_policy" "nomad_server" {
   name   = "nomad-server"
   policy = file("${local.vault_policies_path}/nomad-server.hcl")
-}
-
-resource "vault_policy" "otel_collector" {
-  name   = "otel-collector"
-  policy = file("${local.vault_policies_path}/otel-collector.hcl")
 }
 
 resource "vault_policy" "paperless" {
@@ -263,29 +233,9 @@ resource "vault_policy" "phabricator" {
   policy = file("${local.vault_policies_path}/phabricator.hcl")
 }
 
-resource "vault_policy" "presence" {
-  name   = "presence"
-  policy = file("${local.vault_policies_path}/presence.hcl")
-}
-
 resource "vault_policy" "prometheus" {
   name   = "prometheus"
   policy = file("${local.vault_policies_path}/prometheus.hcl")
-}
-
-resource "vault_policy" "storage_readers" {
-  name   = "storage-readers"
-  policy = file("${local.vault_policies_path}/storage-readers.hcl")
-}
-
-resource "vault_policy" "tarsnap" {
-  name   = "tarsnap"
-  policy = file("${local.vault_policies_path}/tarsnap.hcl")
-}
-
-resource "vault_policy" "unifi_exporter" {
-  name   = "unifi-exporter"
-  policy = file("${local.vault_policies_path}/unifi-exporter.hcl")
 }
 
 resource "vault_policy" "vault_proxy" {
