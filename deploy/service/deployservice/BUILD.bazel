@@ -16,6 +16,7 @@ go_library(
     deps = [
         "//deploy/proto/deploy",
         "//deploy/report",
+        "//pkg/nomadic",
         "//pkg/spanerr",
         "@com_github_aws_aws_sdk_go//service/s3",
         "@com_github_aws_aws_sdk_go//service/s3/s3iface",

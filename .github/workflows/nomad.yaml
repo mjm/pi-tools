@@ -83,6 +83,7 @@ jobs:
           bazel build \
             --remote_cache=https://storage.googleapis.com/mjm-github-actions-bazel-cache \
             --google_credentials=$RUNNER_TEMP/credentials.json \
+            --platforms @io_bazel_rules_go//go/toolchain:linux_arm64 \
             //deploy/cmd/nomadic
 
       - name: Copy nomadic binary into place
