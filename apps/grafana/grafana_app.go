@@ -14,7 +14,8 @@ import (
 
 const (
 	imageRepo    = "grafana/grafana"
-	imageVersion = "sha256:f0817ecbf8dcf33e10cca2245bd25439433c441189bbe1ce935ac61d05f9cc6f"
+	// grafana 8.0.3
+	imageVersion = "sha256:db7bdb09f965cc087bfa4aad75532f824a5eeef788602a54caf29e9d09be71a3"
 )
 
 type App struct {
