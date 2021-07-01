@@ -23,7 +23,7 @@ func (a *App) createTarsnapJob() *nomad.Job {
 
 	// only run tarsnap job on this node because it has the tarsnap cache
 	// TODO make the tarsnap cache into a host volume and mount it that way
-	tg.Constrain(&nomad.Constraint{
+	job.Constrain(&nomad.Constraint{
 		LTarget: "${node.unique.name}",
 		Operand: "=",
 		RTarget: "raspberrypi",
@@ -140,7 +140,7 @@ func (a *App) createTarsnapDeleteJob() *nomad.Job {
 
 	// only run tarsnap job on this node because it has the tarsnap cache
 	// TODO make the tarsnap cache into a host volume and mount it that way
-	tg.Constrain(&nomad.Constraint{
+	job.Constrain(&nomad.Constraint{
 		LTarget: "${node.unique.name}",
 		Operand: "=",
 		RTarget: "raspberrypi",

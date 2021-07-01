@@ -6,6 +6,7 @@ import (
 	"time"
 
 	nomadapi "github.com/hashicorp/nomad/api"
+
 	"github.com/mjm/pi-tools/pkg/nomadic"
 )
 
@@ -33,7 +34,7 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 
 	// this needs to connect to the Tripplite UPS over USB,
 	// and it's only plugged in to this machine.
-	tg.Constrain(&nomadapi.Constraint{
+	job.Constrain(&nomadapi.Constraint{
 		LTarget: "${node.unique.name}",
 		Operand: "=",
 		RTarget: "raspberrypi",
