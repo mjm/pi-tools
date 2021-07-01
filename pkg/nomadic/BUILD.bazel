@@ -32,7 +32,6 @@ go_library(
         "image.go",
         "job.go",
         "logging.go",
-        "metrics.go",
         "ptr_wrappers.go",
         "registry.go",
         "trace.go",
