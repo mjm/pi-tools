@@ -36,40 +36,16 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 		return fmt.Errorf("updating %s vault policy: %w", a.name, err)
 	}
 
-	svcDefaults := &consul.ServiceConfigEntry{
-		Kind:     consul.ServiceDefaults,
-		Name:     a.name,
-		Protocol: "http",
-	}
+	svcDefaults := nomadic.NewServiceDefaults(a.name, "http")
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcDefaults, nil); err != nil {
 		return fmt.Errorf("setting %s service defaults: %w", a.name, err)
 	}
 
-	svcIntentions := &consul.ServiceIntentionsConfigEntry{
-		Kind: consul.ServiceIntentions,
-		Name: a.name,
-		Sources: []*consul.SourceIntention{
-			{
-				Name:       "ingress-http",
-				Precedence: 9,
-				Type:       consul.IntentionSourceConsul,
-				Permissions: []*consul.IntentionPermission{
-					{
-						Action: consul.IntentionActionAllow,
-						HTTP: &consul.IntentionHTTPPermission{
-							PathPrefix: "/",
-						},
-					},
-				},
-			},
-			{
-				Action:     consul.IntentionActionDeny,
-				Name:       "*",
-				Precedence: 8,
-				Type:       consul.IntentionSourceConsul,
-			},
-		},
-	}
+	svcIntentions := nomadic.NewServiceIntentions(a.name,
+		nomadic.AppAwareIntention("ingress-http",
+			nomadic.AllowHTTP(nomadic.HTTPPathPrefix("/"))),
+		nomadic.DenyIntention("*"))
+
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcIntentions, nil); err != nil {
 		return fmt.Errorf("setting %s service intentions: %w", a.name, err)
 	}

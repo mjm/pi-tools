@@ -8,6 +8,7 @@ import (
 
 	consulapi "github.com/hashicorp/consul/api"
 	nomadapi "github.com/hashicorp/nomad/api"
+
 	"github.com/mjm/pi-tools/pkg/nomadic"
 )
 
@@ -34,78 +35,29 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 		return fmt.Errorf("updating %s vault policy: %w", a.name, err)
 	}
 
-	svcDefaults := &consulapi.ServiceConfigEntry{
-		Kind:     consulapi.ServiceDefaults,
-		Name:     a.name,
-		Protocol: "http",
-	}
+	svcDefaults := nomadic.NewServiceDefaults(a.name, "http")
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcDefaults, nil); err != nil {
 		return fmt.Errorf("setting %s service defaults: %w", a.name, err)
 	}
 
-	svcIntentions := &consulapi.ServiceIntentionsConfigEntry{
-		Kind: consulapi.ServiceIntentions,
-		Name: a.name,
-		Sources: []*consulapi.SourceIntention{
-			{
-				Name:       "ingress-http",
-				Precedence: 9,
-				Type:       consulapi.IntentionSourceConsul,
-				Action:     consulapi.IntentionActionAllow,
-			},
-			{
-				Name:       "*",
-				Precedence: 8,
-				Type:       consulapi.IntentionSourceConsul,
-				Action:     consulapi.IntentionActionDeny,
-			},
-		},
-	}
+	svcIntentions := nomadic.NewServiceIntentions(a.name,
+		nomadic.AllowIntention("ingress-http"),
+		nomadic.DenyIntention("*"))
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcIntentions, nil); err != nil {
 		return fmt.Errorf("setting %s service intentions: %w", a.name, err)
 	}
 
 	grpcName := a.name + "-grpc"
-	svcDefaults = &consulapi.ServiceConfigEntry{
-		Kind:     consulapi.ServiceDefaults,
-		Name:     grpcName,
-		Protocol: "grpc",
-	}
+	svcDefaults = nomadic.NewServiceDefaults(grpcName, "grpc")
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcDefaults, nil); err != nil {
 		return fmt.Errorf("setting %s service defaults: %w", grpcName, err)
 	}
 
-	svcIntentions = &consulapi.ServiceIntentionsConfigEntry{
-		Kind: consulapi.ServiceIntentions,
-		Name: grpcName,
-		Sources: []*consulapi.SourceIntention{
-			{
-				Name:       "homebase-api",
-				Precedence: 9,
-				Type:       consulapi.IntentionSourceConsul,
-				Permissions: []*consulapi.IntentionPermission{
-					{
-						Action: consulapi.IntentionActionAllow,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathPrefix: "/LinksService/",
-						},
-					},
-					{
-						Action: consulapi.IntentionActionDeny,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathPrefix: "/",
-						},
-					},
-				},
-			},
-			{
-				Name:       "*",
-				Precedence: 8,
-				Type:       consulapi.IntentionSourceConsul,
-				Action:     consulapi.IntentionActionDeny,
-			},
-		},
-	}
+	svcIntentions = nomadic.NewServiceIntentions(grpcName,
+		nomadic.AppAwareIntention("homebase-api",
+			nomadic.AllowHTTP(nomadic.HTTPPathPrefix("/LinksService/")),
+			nomadic.DenyAllHTTP()),
+		nomadic.DenyIntention("*"))
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcIntentions, nil); err != nil {
 		return fmt.Errorf("setting %s service intentions: %w", grpcName, err)
 	}

@@ -41,7 +41,7 @@ func (a *App) addAPITaskGroup(job *nomadapi.Job) {
 	nomadic.AddTask(tg, &nomadapi.Task{
 		Name: "homebase-api-srv",
 		Config: map[string]interface{}{
-			"image": nomadic.Image(apiImageRepo, "latest"),
+			"image":   nomadic.Image(apiImageRepo, "latest"),
 			"command": "/homebase-api-srv",
 			"args": []string{
 				"-prometheus-url",
@@ -53,72 +53,26 @@ func (a *App) addAPITaskGroup(job *nomadapi.Job) {
 	},
 		nomadic.WithCPU(50),
 		nomadic.WithMemoryMB(50),
-		nomadic.WithLoggingTag(a.name + "-api"),
+		nomadic.WithLoggingTag(a.name+"-api"),
 		nomadic.WithTracingEnv())
 }
 
 func (a *App) installAPIConfigEntries(ctx context.Context, clients nomadic.Clients) error {
 	name := a.name + "-api"
 
-	svcDefaults := &consulapi.ServiceConfigEntry{
-		Kind:     consulapi.ServiceDefaults,
-		Name:     name,
-		Protocol: "http",
-	}
+	svcDefaults := nomadic.NewServiceDefaults(name, "http")
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcDefaults, nil); err != nil {
 		return fmt.Errorf("setting %s service defaults: %w", name, err)
 	}
 
-	svcIntentions := &consulapi.ServiceIntentionsConfigEntry{
-		Kind: consulapi.ServiceIntentions,
-		Name: name,
-		Sources: []*consulapi.SourceIntention{
-			{
-				Name:       "ingress-http",
-				Precedence: 9,
-				Type:       consulapi.IntentionSourceConsul,
-				Permissions: []*consulapi.IntentionPermission{
-					{
-						Action: consulapi.IntentionActionAllow,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathExact: "/graphql",
-						},
-					},
-					{
-						Action: consulapi.IntentionActionDeny,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathPrefix: "/",
-						},
-					},
-				},
-			},
-			{
-				Name:       a.name,
-				Precedence: 9,
-				Type:       consulapi.IntentionSourceConsul,
-				Permissions: []*consulapi.IntentionPermission{
-					{
-						Action: consulapi.IntentionActionAllow,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathExact: "/graphql",
-						},
-					},
-					{
-						Action: consulapi.IntentionActionDeny,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathPrefix: "/",
-						},
-					},
-				},
-			},
-			{
-				Name:       "*",
-				Precedence: 8,
-				Type:       consulapi.IntentionSourceConsul,
-				Action:     consulapi.IntentionActionDeny,
-			},
-		},
-	}
+	svcIntentions := nomadic.NewServiceIntentions(name,
+		nomadic.AppAwareIntention("ingress-http",
+			nomadic.AllowHTTP(nomadic.HTTPPathPrefix("/graphql")),
+			nomadic.DenyAllHTTP()),
+		nomadic.AppAwareIntention(a.name,
+			nomadic.AllowHTTP(nomadic.HTTPPathPrefix("/graphql")),
+			nomadic.DenyAllHTTP()),
+		nomadic.DenyIntention("*"))
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcIntentions, nil); err != nil {
 		return fmt.Errorf("setting %s service intentions: %w", name, err)
 	}

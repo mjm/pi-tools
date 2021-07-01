@@ -8,6 +8,7 @@ import (
 
 	consulapi "github.com/hashicorp/consul/api"
 	nomadapi "github.com/hashicorp/nomad/api"
+
 	"github.com/mjm/pi-tools/pkg/nomadic"
 )
 
@@ -35,46 +36,16 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 	}
 
 	grpcName := a.name + "-grpc"
-	svcDefaults := &consulapi.ServiceConfigEntry{
-		Kind:     consulapi.ServiceDefaults,
-		Name:     grpcName,
-		Protocol: "grpc",
-	}
+	svcDefaults := nomadic.NewServiceDefaults(grpcName, "grpc")
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcDefaults, nil); err != nil {
 		return fmt.Errorf("setting %s service defaults: %w", grpcName, err)
 	}
 
-	svcIntentions := &consulapi.ServiceIntentionsConfigEntry{
-		Kind: consulapi.ServiceIntentions,
-		Name: grpcName,
-		Sources: []*consulapi.SourceIntention{
-			{
-				Name:       "homebase-api",
-				Precedence: 9,
-				Type:       consulapi.IntentionSourceConsul,
-				Permissions: []*consulapi.IntentionPermission{
-					{
-						Action: consulapi.IntentionActionAllow,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathPrefix: "/DeployService/",
-						},
-					},
-					{
-						Action: consulapi.IntentionActionDeny,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathPrefix: "/",
-						},
-					},
-				},
-			},
-			{
-				Name:       "*",
-				Precedence: 8,
-				Type:       consulapi.IntentionSourceConsul,
-				Action:     consulapi.IntentionActionDeny,
-			},
-		},
-	}
+	svcIntentions := nomadic.NewServiceIntentions(grpcName,
+		nomadic.AppAwareIntention("homebase-api",
+			nomadic.AllowHTTP(nomadic.HTTPPathPrefix("/DeployService/")),
+			nomadic.DenyAllHTTP()),
+		nomadic.DenyIntention("*"))
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcIntentions, nil); err != nil {
 		return fmt.Errorf("setting %s service intentions: %w", grpcName, err)
 	}

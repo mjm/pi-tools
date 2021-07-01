@@ -38,40 +38,16 @@ func (a *App) addWebTaskGroup(job *nomadapi.Job) {
 }
 
 func (a *App) installWebConfigEntries(ctx context.Context, clients nomadic.Clients) error {
-	svcDefaults := &consulapi.ServiceConfigEntry{
-		Kind:     consulapi.ServiceDefaults,
-		Name:     a.name,
-		Protocol: "http",
-	}
+	svcDefaults := nomadic.NewServiceDefaults(a.name, "http")
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcDefaults, nil); err != nil {
 		return fmt.Errorf("setting %s service defaults: %w", a.name, err)
 	}
 
-	svcIntentions := &consulapi.ServiceIntentionsConfigEntry{
-		Kind: consulapi.ServiceIntentions,
-		Name: a.name,
-		Sources: []*consulapi.SourceIntention{
-			{
-				Name:       "ingress-http",
-				Precedence: 9,
-				Type:       consulapi.IntentionSourceConsul,
-				Permissions: []*consulapi.IntentionPermission{
-					{
-						Action: consulapi.IntentionActionAllow,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathPrefix: "/",
-						},
-					},
-				},
-			},
-			{
-				Name:       "*",
-				Precedence: 8,
-				Type:       consulapi.IntentionSourceConsul,
-				Action:     consulapi.IntentionActionDeny,
-			},
-		},
-	}
+	svcIntentions := nomadic.NewServiceIntentions(a.name,
+		nomadic.AppAwareIntention("ingress-http",
+			nomadic.AllowHTTP(nomadic.HTTPPathPrefix("/"))),
+		nomadic.DenyIntention("*"))
+
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcIntentions, nil); err != nil {
 		return fmt.Errorf("setting %s service intentions: %w", a.name, err)
 	}

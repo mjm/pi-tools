@@ -93,73 +93,29 @@ func (a *App) installBotVaultPolicy(ctx context.Context, clients nomadic.Clients
 func (a *App) installBotConfigEntries(ctx context.Context, clients nomadic.Clients) error {
 	httpName := a.name + "-bot"
 
-	svcDefaults := &consulapi.ServiceConfigEntry{
-		Kind:     consulapi.ServiceDefaults,
-		Name:     httpName,
-		Protocol: "http",
-	}
+	svcDefaults := nomadic.NewServiceDefaults(httpName, "http")
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcDefaults, nil); err != nil {
 		return fmt.Errorf("setting %s service defaults: %w", httpName, err)
 	}
 
-	svcIntentions := &consulapi.ServiceIntentionsConfigEntry{
-		Kind: consulapi.ServiceIntentions,
-		Name: httpName,
-		Sources: []*consulapi.SourceIntention{
-			{
-				Name:       "*",
-				Precedence: 8,
-				Type:       consulapi.IntentionSourceConsul,
-				Action:     consulapi.IntentionActionDeny,
-			},
-		},
-	}
+	svcIntentions := nomadic.NewServiceIntentions(httpName,
+		nomadic.DenyIntention("*"))
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcIntentions, nil); err != nil {
 		return fmt.Errorf("setting %s service intentions: %w", httpName, err)
 	}
 
 	grpcName := httpName + "-grpc"
 
-	svcDefaults = &consulapi.ServiceConfigEntry{
-		Kind:     consulapi.ServiceDefaults,
-		Name:     grpcName,
-		Protocol: "grpc",
-	}
+	svcDefaults = nomadic.NewServiceDefaults(grpcName, "grpc")
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcDefaults, nil); err != nil {
 		return fmt.Errorf("setting %s service defaults: %w", grpcName, err)
 	}
 
-	svcIntentions = &consulapi.ServiceIntentionsConfigEntry{
-		Kind: consulapi.ServiceIntentions,
-		Name: grpcName,
-		Sources: []*consulapi.SourceIntention{
-			{
-				Name:       "detect-presence",
-				Precedence: 9,
-				Type:       consulapi.IntentionSourceConsul,
-				Permissions: []*consulapi.IntentionPermission{
-					{
-						Action: consulapi.IntentionActionAllow,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathPrefix: "/MessagesService/",
-						},
-					},
-					{
-						Action: consulapi.IntentionActionDeny,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathPrefix: "/",
-						},
-					},
-				},
-			},
-			{
-				Name:       "*",
-				Precedence: 8,
-				Type:       consulapi.IntentionSourceConsul,
-				Action:     consulapi.IntentionActionDeny,
-			},
-		},
-	}
+	svcIntentions = nomadic.NewServiceIntentions(grpcName,
+		nomadic.AppAwareIntention("detect-presence",
+			nomadic.AllowHTTP(nomadic.HTTPPathPrefix("/MessagesService/")),
+			nomadic.DenyAllHTTP()),
+		nomadic.DenyIntention("*"))
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcIntentions, nil); err != nil {
 		return fmt.Errorf("setting %s service intentions: %w", grpcName, err)
 	}
@@ -169,7 +125,7 @@ func (a *App) installBotConfigEntries(ctx context.Context, clients nomadic.Clien
 
 func (a *App) uninstallBotVaultPolicy(ctx context.Context, clients nomadic.Clients) error {
 	if err := clients.Vault.Sys().DeletePolicy(a.name + "-bot"); err != nil {
-		return fmt.Errorf("deleting %s vault policy: %w", a.name + "-bot", err)
+		return fmt.Errorf("deleting %s vault policy: %w", a.name+"-bot", err)
 	}
 
 	return nil

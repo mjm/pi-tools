@@ -105,56 +105,22 @@ func (a *App) Uninstall(ctx context.Context, clients nomadic.Clients) error {
 
 func (a *App) installConfigEntries(ctx context.Context, clients nomadic.Clients) error {
 	httpName := a.name
-	httpDefaults := &consulapi.ServiceConfigEntry{
-		Kind:     consulapi.ServiceDefaults,
-		Name:     httpName,
-		Protocol: "http",
-	}
+	httpDefaults := nomadic.NewServiceDefaults(httpName, "http")
 	if _, _, err := clients.Consul.ConfigEntries().Set(httpDefaults, nil); err != nil {
 		return fmt.Errorf("setting %s service defaults: %w", httpName, err)
 	}
 
 	grpcName := a.name + "-grpc"
-	grpcDefaults := &consulapi.ServiceConfigEntry{
-		Kind:     consulapi.ServiceDefaults,
-		Name:     grpcName,
-		Protocol: "grpc",
-	}
+	grpcDefaults := nomadic.NewServiceDefaults(grpcName, "grpc")
 	if _, _, err := clients.Consul.ConfigEntries().Set(grpcDefaults, nil); err != nil {
 		return fmt.Errorf("setting %s service defaults: %w", grpcName, err)
 	}
 
-	grpcIntentions := &consulapi.ServiceIntentionsConfigEntry{
-		Kind: consulapi.ServiceIntentions,
-		Name: grpcName,
-		Sources: []*consulapi.SourceIntention{
-			{
-				Name:       "homebase-api",
-				Precedence: 9,
-				Type:       consulapi.IntentionSourceConsul,
-				Permissions: []*consulapi.IntentionPermission{
-					{
-						Action: consulapi.IntentionActionAllow,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathPrefix: "/BackupService/",
-						},
-					},
-					{
-						Action: consulapi.IntentionActionDeny,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathPrefix: "/",
-						},
-					},
-				},
-			},
-			{
-				Name:       "*",
-				Action:     consulapi.IntentionActionDeny,
-				Precedence: 8,
-				Type:       consulapi.IntentionSourceConsul,
-			},
-		},
-	}
+	grpcIntentions := nomadic.NewServiceIntentions(grpcName,
+		nomadic.AppAwareIntention("homebase-api",
+			nomadic.AllowHTTP(nomadic.HTTPPathPrefix("/BackupService/")),
+			nomadic.DenyAllHTTP()),
+		nomadic.DenyIntention("*"))
 	if _, _, err := clients.Consul.ConfigEntries().Set(grpcIntentions, nil); err != nil {
 		return fmt.Errorf("setting %s service intentions: %w", grpcName, err)
 	}

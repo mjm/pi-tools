@@ -26,9 +26,9 @@ go_library(
     srcs = [
         "clients.go",
         "constants.go",
+        "consul.go",
         "deployable.go",
         "events.go",
-        "helpers.go",
         "image.go",
         "job.go",
         "logging.go",

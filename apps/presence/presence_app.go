@@ -135,111 +135,37 @@ PGPASSWORD={{ .Data.password | toJSON }}
 
 func (a *App) installConsulConfigEntries(ctx context.Context, clients nomadic.Clients) error {
 	httpName := "detect-presence"
-	httpDefaults := &consulapi.ServiceConfigEntry{
-		Kind:     consulapi.ServiceDefaults,
-		Name:     httpName,
-		Protocol: "http",
-	}
+	httpDefaults := nomadic.NewServiceDefaults(httpName, "http")
 
 	if _, _, err := clients.Consul.ConfigEntries().Set(httpDefaults, nil); err != nil {
 		return fmt.Errorf("setting %s service defaults: %w", httpName, err)
 	}
 
-	httpIntentions := &consulapi.ServiceIntentionsConfigEntry{
-		Kind: consulapi.ServiceIntentions,
-		Name: httpName,
-		Sources: []*consulapi.SourceIntention{
-			{
-				Name:       "ingress-http",
-				Precedence: 9,
-				Type:       consulapi.IntentionSourceConsul,
-				Permissions: []*consulapi.IntentionPermission{
-					{
-						Action: consulapi.IntentionActionAllow,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathPrefix: "/app/",
-						},
-					},
-					{
-						Action: consulapi.IntentionActionDeny,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathPrefix: "/",
-						},
-					},
-				},
-			},
-			{
-				Name:       "*",
-				Precedence: 8,
-				Type:       consulapi.IntentionSourceConsul,
-				Action:     consulapi.IntentionActionDeny,
-			},
-		},
-	}
+	httpIntentions := nomadic.NewServiceIntentions(httpName,
+		nomadic.AppAwareIntention("ingress-http",
+			nomadic.AllowHTTP(nomadic.HTTPPathPrefix("/app/")),
+			nomadic.DenyAllHTTP()),
+		nomadic.DenyIntention("*"))
+
 	if _, _, err := clients.Consul.ConfigEntries().Set(httpIntentions, nil); err != nil {
 		return fmt.Errorf("setting %s service intentions: %w", httpName, err)
 	}
 
 	grpcName := httpName + "-grpc"
-	grpcDefaults := &consulapi.ServiceConfigEntry{
-		Kind:     consulapi.ServiceDefaults,
-		Name:     grpcName,
-		Protocol: "grpc",
-	}
+	grpcDefaults := nomadic.NewServiceDefaults(grpcName, "grpc")
 	if _, _, err := clients.Consul.ConfigEntries().Set(grpcDefaults, nil); err != nil {
 		return fmt.Errorf("setting %s service defaults: %w", grpcName, err)
 	}
 
-	grpcIntentions := &consulapi.ServiceIntentionsConfigEntry{
-		Kind: consulapi.ServiceIntentions,
-		Name: grpcName,
-		Sources: []*consulapi.SourceIntention{
-			{
-				Name:       "homebase-bot",
-				Precedence: 9,
-				Type:       consulapi.IntentionSourceConsul,
-				Permissions: []*consulapi.IntentionPermission{
-					{
-						Action: consulapi.IntentionActionDeny,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathExact: "/TripsService/RecordTrips",
-						},
-					},
-					{
-						Action: consulapi.IntentionActionAllow,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathPrefix: "/TripsService/",
-						},
-					},
-				},
-			},
-			{
-				Name:       "homebase-api",
-				Precedence: 9,
-				Type:       consulapi.IntentionSourceConsul,
-				Permissions: []*consulapi.IntentionPermission{
-					{
-						Action: consulapi.IntentionActionAllow,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathPrefix: "/TripsService/",
-						},
-					},
-					{
-						Action: consulapi.IntentionActionDeny,
-						HTTP: &consulapi.IntentionHTTPPermission{
-							PathPrefix: "/",
-						},
-					},
-				},
-			},
-			{
-				Name:       "*",
-				Precedence: 8,
-				Type:       consulapi.IntentionSourceConsul,
-				Action:     consulapi.IntentionActionDeny,
-			},
-		},
-	}
+	grpcIntentions := nomadic.NewServiceIntentions(grpcName,
+		nomadic.AppAwareIntention("homebase-bot",
+			nomadic.DenyHTTP(nomadic.HTTPPathExact("/TripsService/RecordTrips")),
+			nomadic.AllowHTTP(nomadic.HTTPPathPrefix("/TripsService/"))),
+		nomadic.AppAwareIntention("homebase-api",
+			nomadic.AllowHTTP(nomadic.HTTPPathPrefix("/TripsService/")),
+			nomadic.DenyAllHTTP()),
+		nomadic.DenyIntention("*"))
+
 	if _, _, err := clients.Consul.ConfigEntries().Set(grpcIntentions, nil); err != nil {
 		return fmt.Errorf("setting %s service intentions: %w", grpcName, err)
 	}

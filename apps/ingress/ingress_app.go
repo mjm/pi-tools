@@ -38,27 +38,13 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 	httpServiceName := a.name + "-http"
 	httpsServiceName := a.name + "-https"
 
-	svcDefaults := &consul.ServiceConfigEntry{
-		Kind:     consul.ServiceDefaults,
-		Name:     httpServiceName,
-		Protocol: "http",
-	}
+	svcDefaults := nomadic.NewServiceDefaults(httpServiceName, "http")
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcDefaults, nil); err != nil {
 		return fmt.Errorf("updating %s service defaults: %w", httpServiceName, err)
 	}
 
-	svcIntentions := &consul.ServiceIntentionsConfigEntry{
-		Kind: consul.ServiceIntentions,
-		Name: httpServiceName,
-		Sources: []*consul.SourceIntention{
-			{
-				Action:     consul.IntentionActionDeny,
-				Name:       "*",
-				Precedence: 8,
-				Type:       consul.IntentionSourceConsul,
-			},
-		},
-	}
+	svcIntentions := nomadic.NewServiceIntentions(httpServiceName,
+		nomadic.DenyIntention("*"))
 	if _, _, err := clients.Consul.ConfigEntries().Set(svcIntentions, nil); err != nil {
 		return fmt.Errorf("updating %s service intentions: %w", httpServiceName, err)
 	}
