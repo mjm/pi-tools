@@ -1,0 +1,26 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+
+proto_library(
+    name = "nomadic_proto",
+    srcs = ["nomadic.proto"],
+    visibility = ["//visibility:public"],
+    deps = ["//deploy/proto/deploy:deploy_proto"],
+)
+
+go_proto_library(
+    name = "nomadic_go_proto",
+    compilers = ["@io_bazel_rules_go//proto:go_grpc"],
+    importpath = "github.com/mjm/pi-tools/pkg/nomadic/proto/nomadic",
+    proto = ":nomadic_proto",
+    visibility = ["//visibility:public"],
+    deps = ["//deploy/proto/deploy"],
+)
+
+go_library(
+    name = "nomadic",
+    embed = [":nomadic_go_proto"],
+    importpath = "github.com/mjm/pi-tools/pkg/nomadic/proto/nomadic",
+    visibility = ["//visibility:public"],
+)

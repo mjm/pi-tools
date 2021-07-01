@@ -24,19 +24,26 @@ func (r *Recorder) SetCommitInfo(commitSha string, commitMessage string) {
 	r.report.CommitMessage = commitMessage
 }
 
-func (r *Recorder) Info(format string, v ...interface{}) *Event {
+func (r *Recorder) Info(format string, v ...interface{}) Event {
 	return r.addEvent(deploypb.ReportEvent_INFO, format, v...)
 }
 
-func (r *Recorder) Warning(format string, v ...interface{}) *Event {
+func (r *Recorder) Warning(format string, v ...interface{}) Event {
 	return r.addEvent(deploypb.ReportEvent_WARNING, format, v...)
 }
 
-func (r *Recorder) Error(format string, v ...interface{}) *Event {
+func (r *Recorder) Error(format string, v ...interface{}) Event {
 	return r.addEvent(deploypb.ReportEvent_ERROR, format, v...)
 }
 
-func (r *Recorder) addEvent(level deploypb.ReportEvent_Level, format string, v ...interface{}) *Event {
+func (r *Recorder) AppendEvent(evt *deploypb.ReportEvent) {
+	r.lock.Lock()
+	defer r.lock.Unlock()
+
+	r.report.Events = append(r.report.Events, evt)
+}
+
+func (r *Recorder) addEvent(level deploypb.ReportEvent_Level, format string, v ...interface{}) Event {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 
@@ -46,7 +53,7 @@ func (r *Recorder) addEvent(level deploypb.ReportEvent_Level, format string, v .
 		Summary:   fmt.Sprintf(format, v...),
 	}
 	r.report.Events = append(r.report.Events, evt)
-	return &Event{evt: evt}
+	return &event{evt: evt}
 }
 
 func (r *Recorder) Marshal() ([]byte, error) {
@@ -56,15 +63,20 @@ func (r *Recorder) Marshal() ([]byte, error) {
 	return proto.Marshal(&r.report)
 }
 
-type Event struct {
+type Event interface {
+	WithDescription(string, ...interface{}) Event
+	WithError(error) Event
+}
+
+type event struct {
 	evt *deploypb.ReportEvent
 }
 
-func (e *Event) WithDescription(format string, v ...interface{}) *Event {
+func (e *event) WithDescription(format string, v ...interface{}) Event {
 	e.evt.Description = fmt.Sprintf(format, v...)
 	return e
 }
 
-func (e *Event) WithError(err error) *Event {
+func (e *event) WithError(err error) Event {
 	return e.WithDescription("Error: %v", err)
 }

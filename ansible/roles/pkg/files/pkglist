@@ -2,7 +2,6 @@ databases/mysql80-server
 databases/postgresql13-client
 databases/postgresql13-server
 databases/redis
-deskutils/py-paperless
 deskutils/py-paperless-ng
 devel/arcanist
 devel/git
@@ -32,8 +31,10 @@ shells/zsh
 shells/zsh-autosuggestions
 shells/zsh-completions
 shells/zsh-syntax-highlighting
+sysutils/bhyve-firmware
 sysutils/consul
 sysutils/ezjail
+sysutils/grub2-bhyve
 sysutils/iocage
 sysutils/jail_exporter
 sysutils/node_exporter
@@ -41,9 +42,11 @@ sysutils/syslog-ng
 sysutils/tarsnap
 sysutils/tarsnap-periodic
 sysutils/tmux
+sysutils/vm-bhyve
 sysutils/zfs-periodic
 textproc/consul-template
 textproc/py-pikepdf
 www/minio
 www/nginx
 www/py-autobahn
+www/youtube_dl

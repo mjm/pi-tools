@@ -26,14 +26,25 @@ go_binary(
     visibility = ["//visibility:public"],
 )
 
+go_binary(
+    name = "homebase-api-srv_arm",
+    embed = [":homebase-api-srv_lib"],
+    goarch = "arm64",
+    goos = "linux",
+    visibility = ["//visibility:public"],
+)
+
 container_image(
     name = "image",
     base = "@distroless_base//image",
     files = [
-        ":homebase-api-srv",
+        ":homebase-api-srv_arm",
         "//homebase:schema.graphql",
     ],
     mode = "0755",
+    symlinks = {
+        "/homebase-api-srv": "/homebase-api-srv_arm",
+    },
     tags = ["no-cache"],
 )
 
@@ -43,4 +54,5 @@ container_push(
     image = ":image",
     registry = "index.docker.io",
     repository = "mmoriarity/homebase-api-srv",
+    visibility = ["//visibility:public"],
 )

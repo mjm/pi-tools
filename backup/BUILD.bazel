@@ -5,10 +5,13 @@ container_image(
     base = "@backup//image",
     directory = "/usr/bin",
     files = [
-        "//backup/cmd/perform-backup",
+        "//backup/cmd/perform-backup:perform-backup_arm",
         "@ht_sr_git_apreiml_prunef//:prunef",
     ],
     mode = "0755",
+    symlinks = {
+        "/usr/bin/perform-backup": "/usr/bin/perform-backup_arm",
+    },
     tags = ["no-cache"],
 )
 
@@ -18,4 +21,5 @@ container_push(
     image = ":image",
     registry = "index.docker.io",
     repository = "mmoriarity/perform-backup",
+    visibility = ["//visibility:public"],
 )

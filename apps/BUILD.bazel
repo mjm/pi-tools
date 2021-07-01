@@ -1,0 +1,29 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "apps",
+    srcs = ["apps.go"],
+    importpath = "github.com/mjm/pi-tools/apps",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//apps/backup",
+        "//apps/blackboxexporter",
+        "//apps/blocky",
+        "//apps/consulexporter",
+        "//apps/deploy",
+        "//apps/golinks",
+        "//apps/grafana",
+        "//apps/homebase",
+        "//apps/ingress",
+        "//apps/loki",
+        "//apps/nodeexporter",
+        "//apps/otel",
+        "//apps/presence",
+        "//apps/promtail",
+        "//apps/pushgateway",
+        "//apps/trippliteexporter",
+        "//apps/unifiexporter",
+        "//apps/vaultproxy",
+        "//pkg/nomadic",
+    ],
+)

@@ -2,7 +2,7 @@ name: Build Nomad jobs
 
 on:
   push:
-    branches: [main]
+    branches: [main, infra-as-software]
 
 jobs:
   build:
@@ -79,17 +79,23 @@ jobs:
                 --config=ci \
                 --platforms @io_bazel_rules_go//go/toolchain:linux_arm64
 
-      - name: Resolve Nomad jobs
+      - name: Build nomadic binary
         run: |
-          bazel run \
+          bazel build \
             --remote_cache=https://storage.googleapis.com/mjm-github-actions-bazel-cache \
             --google_credentials=$RUNNER_TEMP/credentials.json \
-            //deploy/cmd/job-resolver -- \
-            -root $PWD/jobs -out $RUNNER_TEMP/jobs $PWD/jobs/*.nomad
+            --config=ci \
+            --platforms @io_bazel_rules_go//go/toolchain:linux_arm64 \
+            //deploy/cmd/nomadic
 
-      - name: Store Nomad jobs
+      - name: Copy nomadic binary into place
+        run: |
+          mkdir ${{ runner.temp }}/nomadic
+          cp bazel-bin/deploy/cmd/nomadic/nomadic_/nomadic ${{ runner.temp }}/nomadic
+
+      - name: Store nomadic binary
         uses: actions/upload-artifact@v2
         with:
-          name: jobs
-          path: ${{ runner.temp }}/jobs/
+          name: nomadic
+          path: ${{ runner.temp }}/nomadic/
           if-no-files-found: error

@@ -14,13 +14,24 @@ go_binary(
     visibility = ["//visibility:public"],
 )
 
+go_binary(
+    name = "prometheus-backup_arm",
+    embed = [":prometheus-backup_lib"],
+    goarch = "arm64",
+    goos = "linux",
+    visibility = ["//visibility:public"],
+)
+
 container_image(
     name = "image",
     base = "@rsync//image",
     files = [
-        ":prometheus-backup",
+        ":prometheus-backup_arm",
     ],
     mode = "0755",
+    symlinks = {
+        "/prometheus-backup": "/prometheus-backup_arm",
+    },
     tags = ["no-cache"],
 )
 
@@ -30,4 +41,5 @@ container_push(
     image = ":image",
     registry = "index.docker.io",
     repository = "mmoriarity/prometheus-backup",
+    visibility = ["//visibility:public"],
 )

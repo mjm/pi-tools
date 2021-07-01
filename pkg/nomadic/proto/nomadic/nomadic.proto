@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+import "deploy/proto/deploy/deploy.proto";
+
+service Nomadic {
+    rpc StreamEvents (stream StreamEventsRequest) returns (StreamEventsResponse);
+}
+
+message StreamEventsRequest {
+    ReportEvent event = 1;
+}
+
+message StreamEventsResponse {
+}

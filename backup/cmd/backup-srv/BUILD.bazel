@@ -26,13 +26,24 @@ go_binary(
     visibility = ["//visibility:public"],
 )
 
+go_binary(
+    name = "backup-srv_arm",
+    embed = [":backup-srv_lib"],
+    goarch = "arm64",
+    goos = "linux",
+    visibility = ["//visibility:public"],
+)
+
 container_image(
     name = "image",
     base = "@backup//image",
     files = [
-        ":backup-srv",
+        ":backup-srv_arm",
     ],
     mode = "0755",
+    symlinks = {
+        "/backup-srv": "/backup-srv_arm",
+    },
     tags = ["no-cache"],
 )
 
@@ -42,4 +53,5 @@ container_push(
     image = ":image",
     registry = "index.docker.io",
     repository = "mmoriarity/backup-srv",
+    visibility = ["//visibility:public"],
 )

@@ -27,13 +27,24 @@ go_binary(
     visibility = ["//visibility:public"],
 )
 
+go_binary(
+    name = "go-links_arm",
+    embed = [":go-links_lib"],
+    goarch = "arm64",
+    goos = "linux",
+    visibility = ["//visibility:public"],
+)
+
 container_image(
     name = "image",
     base = "@distroless_base//image",
     files = [
-        ":go-links",
+        ":go-links_arm",
     ],
     mode = "0755",
+    symlinks = {
+        "/go-links": "/go-links_arm",
+    },
     tags = ["no-cache"],
 )
 
@@ -43,4 +54,5 @@ container_push(
     image = ":image",
     registry = "index.docker.io",
     repository = "mmoriarity/go-links-srv",
+    visibility = ["//visibility:public"],
 )

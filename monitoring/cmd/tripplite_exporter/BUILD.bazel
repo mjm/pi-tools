@@ -29,13 +29,24 @@ go_binary(
     visibility = ["//visibility:public"],
 )
 
+go_binary(
+    name = "tripplite_exporter_arm",
+    embed = [":tripplite_exporter_lib"],
+    goarch = "arm64",
+    goos = "linux",
+    visibility = ["//visibility:public"],
+)
+
 container_image(
     name = "image",
     base = "@distroless_base//image",
     files = [
-        ":tripplite_exporter",
+        ":tripplite_exporter_arm",
     ],
     mode = "0755",
+    symlinks = {
+        "/tripplite_exporter": "/tripplite_exporter_arm",
+    },
     tags = ["no-cache"],
 )
 
@@ -45,4 +56,5 @@ container_push(
     image = ":image",
     registry = "index.docker.io",
     repository = "mmoriarity/tripplite-exporter",
+    visibility = ["//visibility:public"],
 )

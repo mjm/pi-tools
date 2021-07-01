@@ -2695,8 +2695,8 @@ go_repository(
 go_repository(
     name = "io_opentelemetry_go_otel_exporters_stdout",
     importpath = "go.opentelemetry.io/otel/exporters/stdout",
-    sum = "h1:A+XiGIPQbGoJoBOJfKAKnZyiUSjSWvL3XWETUvtom5k=",
-    version = "v0.13.0",
+    sum = "h1:6+QJvepCJ/YS3rOlsnjhVo527ohlPowOBgsZThR9Hoc=",
+    version = "v0.19.0",
 )
 
 go_repository(
@@ -3813,9 +3813,9 @@ go_repository(
     patch_args = ["-p1"],
     # This is needed because the patch above adds the promhttp dependency, but patches in go_repository
     # rules run after Gazelle has already run for the repo, so it ends up missing from the build file.
-    patch_cmds = ["""sed -i.bak '/com_github_prometheus_client_golang/ a\\
+    patch_cmds = ["""sed -i.bak -e '/com_github_prometheus_client_golang/ a\\
         "@com_github_prometheus_client_golang//prometheus/promhttp",
-' cmd/unifi_exporter/BUILD.bazel
+' -e s/private/public/ cmd/unifi_exporter/BUILD.bazel
 """],
     patches = [
         "//tools:unifi_exporter.patch",
@@ -5496,6 +5496,13 @@ go_repository(
     importpath = "golang.org/x/term",
     sum = "h1:v+OssWQX+hTHEmOBgwxdZxK4zHq3yOs8F9J7mk0PY8E=",
     version = "v0.0.0-20201126162022-7de9c90e9dd1",
+)
+
+go_repository(
+    name = "com_github_urfave_cli_v2",
+    importpath = "github.com/urfave/cli/v2",
+    sum = "h1:qph92Y649prgesehzOrQjdWyxFOp/QVM+6imKHad91M=",
+    version = "v2.3.0",
 )
 
 gazelle_dependencies()
