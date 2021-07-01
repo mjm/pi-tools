@@ -1,0 +1,14 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "nomadicservice",
+    srcs = ["server.go"],
+    importpath = "github.com/mjm/pi-tools/pkg/nomadic/service/nomadicservice",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//deploy/proto/deploy",
+        "//pkg/nomadic/proto/nomadic",
+        "@io_opentelemetry_go_otel_trace//:trace",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
+)

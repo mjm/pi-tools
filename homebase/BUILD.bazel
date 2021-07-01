@@ -60,4 +60,5 @@ container_push(
     image = ":image",
     registry = "index.docker.io",
     repository = "mmoriarity/homebase-srv",
+    visibility = ["//visibility:public"],
 )

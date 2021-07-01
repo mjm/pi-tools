@@ -31,13 +31,24 @@ go_binary(
     visibility = ["//visibility:public"],
 )
 
+go_binary(
+    name = "homebase-bot-srv_arm",
+    embed = [":homebase-bot-srv_lib"],
+    goarch = "arm64",
+    goos = "linux",
+    visibility = ["//visibility:public"],
+)
+
 container_image(
     name = "image",
     base = "@distroless_base//image",
     files = [
-        ":homebase-bot-srv",
+        ":homebase-bot-srv_arm",
     ],
     mode = "0755",
+    symlinks = {
+        "/homebase-bot-srv": "/homebase-bot-srv_arm",
+    },
     tags = ["no-cache"],
 )
 
@@ -47,4 +58,5 @@ container_push(
     image = ":image",
     registry = "index.docker.io",
     repository = "mmoriarity/homebase-bot-srv",
+    visibility = ["//visibility:public"],
 )

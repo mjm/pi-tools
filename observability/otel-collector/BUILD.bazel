@@ -18,4 +18,5 @@ container_push(
     image = ":image",
     registry = "index.docker.io",
     repository = "mmoriarity/opentelemetry-collector",
+    visibility = ["//visibility:public"],
 )

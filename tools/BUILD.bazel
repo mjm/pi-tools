@@ -1,4 +1,5 @@
 exports_files([
     "unifi.patch",
     "unifi_exporter.patch",
+    "image_digests.sh",
 ])

@@ -32,13 +32,24 @@ go_binary(
     visibility = ["//visibility:public"],
 )
 
+go_binary(
+    name = "deploy-srv_arm",
+    embed = [":deploy-srv_lib"],
+    goarch = "arm64",
+    goos = "linux",
+    visibility = ["//visibility:public"],
+)
+
 container_image(
     name = "image",
     base = "@distroless_base//image",
     files = [
-        ":deploy-srv",
+        ":deploy-srv_arm",
     ],
     mode = "0755",
+    symlinks = {
+        "/deploy-srv": "/deploy-srv_arm",
+    },
     tags = ["no-cache"],
 )
 
@@ -48,4 +59,5 @@ container_push(
     image = ":image",
     registry = "index.docker.io",
     repository = "mmoriarity/deploy-srv",
+    visibility = ["//visibility:public"],
 )

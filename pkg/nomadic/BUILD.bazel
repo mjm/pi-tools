@@ -1,0 +1,57 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//tools:resolve.bzl", "image_digests")
+
+image_digests(
+    name = "digests",
+    pushes = [
+        "//backup/cmd/backup-srv:image-push",
+        "//backup/cmd/prometheus-backup:image-push",
+        "//backup:image-push",
+        "//deploy/cmd/deploy-srv:image-push",
+        "//detect-presence/cmd/beacon-srv:image-push",
+        "//detect-presence/cmd/detect-presence-srv:image-push",
+        "//go-links/cmd/go-links:image-push",
+        "//homebase/cmd/homebase-api-srv:image-push",
+        "//homebase/cmd/homebase-bot-srv:image-push",
+        "//homebase:image-push",
+        "//monitoring/cmd/tripplite_exporter:image-push",
+        "//monitoring/unifi_exporter:image-push",
+        "//observability/otel-collector:image-push",
+        "//vault-proxy/cmd/vault-proxy:image-push",
+    ],
+)
+
+go_library(
+    name = "nomadic",
+    srcs = [
+        "clients.go",
+        "constants.go",
+        "deployable.go",
+        "events.go",
+        "helpers.go",
+        "image.go",
+        "job.go",
+        "logging.go",
+        "metrics.go",
+        "ptr_wrappers.go",
+        "registry.go",
+        "trace.go",
+    ],
+    embedsrcs = [
+        ":digests",  # keep
+    ],
+    importpath = "github.com/mjm/pi-tools/pkg/nomadic",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//deploy/proto/deploy",
+        "//deploy/report",
+        "//pkg/spanerr",
+        "@com_github_hashicorp_consul_api//:api",
+        "@com_github_hashicorp_nomad_api//:api",
+        "@com_github_hashicorp_vault_api//:api",
+        "@io_opentelemetry_go_otel//:otel",
+        "@io_opentelemetry_go_otel//attribute",
+        "@io_opentelemetry_go_otel_trace//:trace",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+    ],
+)

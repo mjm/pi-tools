@@ -14,7 +14,6 @@
       <excludeFolder url="file://$MODULE_DIR$/bazel-pi-tools" />
       <excludeFolder url="file://$MODULE_DIR$/bazel-testlogs" />
       <excludeFolder url="file://$MODULE_DIR$/detect-presence/ios/pi-tools.xcodeproj/.tulsi" />
-      <excludeFolder url="file://$MODULE_DIR$/homebase-next/.next" />
       <excludeFolder url="file://$MODULE_DIR$/homebase/.next" />
     </content>
     <orderEntry type="inheritedJdk" />

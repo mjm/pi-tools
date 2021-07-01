@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "blackboxexporter",
+    srcs = ["blackbox_exporter_app.go"],
+    embedsrcs = ["blackbox.yml"],
+    importpath = "github.com/mjm/pi-tools/apps/blackboxexporter",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/nomadic",
+        "@com_github_hashicorp_nomad_api//:api",
+    ],
+)

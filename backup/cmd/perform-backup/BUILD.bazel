@@ -16,3 +16,11 @@ go_binary(
     embed = [":perform-backup_lib"],
     visibility = ["//visibility:public"],
 )
+
+go_binary(
+    name = "perform-backup_arm",
+    embed = [":perform-backup_lib"],
+    goarch = "arm64",
+    goos = "linux",
+    visibility = ["//visibility:public"],
+)

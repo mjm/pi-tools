@@ -35,6 +35,7 @@ require (
 	github.com/prometheus/client_golang v1.9.0
 	github.com/segmentio/ksuid v1.0.3
 	github.com/stretchr/testify v1.7.0
+	github.com/urfave/cli/v2 v2.3.0
 	github.com/zserge/hid v0.0.0-20190124175232-e1626f1782f3
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.19.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.19.0
@@ -42,6 +43,7 @@ require (
 	go.opentelemetry.io/otel v0.19.0
 	go.opentelemetry.io/otel/exporters/metric/prometheus v0.19.0
 	go.opentelemetry.io/otel/exporters/otlp v0.19.0
+	go.opentelemetry.io/otel/exporters/stdout v0.19.0
 	go.opentelemetry.io/otel/metric v0.19.0
 	go.opentelemetry.io/otel/sdk v0.19.0
 	go.opentelemetry.io/otel/trace v0.19.0

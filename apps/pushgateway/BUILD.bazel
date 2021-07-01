@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "pushgateway",
+    srcs = ["pushgateway_app.go"],
+    importpath = "github.com/mjm/pi-tools/apps/pushgateway",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/nomadic",
+        "@com_github_hashicorp_nomad_api//:api",
+    ],
+)

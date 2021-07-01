@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "dashboards",
+    srcs = ["dashboards.go"],
+    embedsrcs = [
+        "bind.json",
+        "cluster.json",
+        "envoy.json",
+        "home.json",
+        "node.json",
+    ],
+    importpath = "github.com/mjm/pi-tools/apps/grafana/dashboards",
+    visibility = ["//visibility:public"],
+)
