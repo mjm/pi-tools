@@ -186,6 +186,14 @@ var virtualHosts = []virtualHost{
     proxy_set_header X-Forwarded-Host $server_name;
 `,
 	},
+	{
+		Name: "adminer",
+		Upstream: upstream{
+			Name: "adminer",
+			ServiceName: "adminer",
+			ConnectPort: 10000,
+		},
+	},
 }
 
 type virtualHost struct {

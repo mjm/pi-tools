@@ -1,6 +1,7 @@
 package apps
 
 import (
+	"github.com/mjm/pi-tools/apps/adminer"
 	"github.com/mjm/pi-tools/apps/backup"
 	"github.com/mjm/pi-tools/apps/blackboxexporter"
 	"github.com/mjm/pi-tools/apps/blocky"
@@ -23,6 +24,7 @@ import (
 )
 
 func Load() {
+	nomadic.Register(adminer.New("adminer"))
 	nomadic.Register(backup.New("backup"))
 	nomadic.Register(blackboxexporter.New("blackbox-exporter"))
 	nomadic.Register(blocky.New("blocky"))
