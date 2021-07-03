@@ -9,24 +9,23 @@ import (
 	"sync"
 	"sync/atomic"
 
-	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
-	"github.com/mjm/pi-tools/pkg/nomadic/service/nomadicservice"
-	"github.com/mjm/pi-tools/pkg/spanerr"
 	"github.com/urfave/cli/v2"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/otlp"
-	"go.opentelemetry.io/otel/exporters/otlp/otlpgrpc"
-	"go.opentelemetry.io/otel/exporters/stdout"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	"go.opentelemetry.io/otel/semconv"
+	"go.opentelemetry.io/otel/semconv/v1.4.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 
 	"github.com/mjm/pi-tools/apps"
+	deploypb "github.com/mjm/pi-tools/deploy/proto/deploy"
 	"github.com/mjm/pi-tools/pkg/nomadic"
 	nomadicpb "github.com/mjm/pi-tools/pkg/nomadic/proto/nomadic"
+	"github.com/mjm/pi-tools/pkg/nomadic/service/nomadicservice"
+	"github.com/mjm/pi-tools/pkg/spanerr"
 )
 
 var tracer = otel.Tracer("github.com/mjm/pi-tools/deploy/cmd/nomadic")
@@ -78,7 +77,7 @@ func main() {
 
 			if c.Bool("debug-tracing") {
 				log.Printf("Setting up stdout exporter")
-				exporter, err := stdout.NewExporter()
+				exporter, err := stdouttrace.New()
 				if err != nil {
 					return fmt.Errorf("creating stdout exporter: %w", err)
 				}
@@ -88,10 +87,10 @@ func main() {
 				otel.SetTracerProvider(tp)
 			} else {
 				hostIP := os.Getenv("HOST_IP")
-				exporter, err := otlp.NewExporter(context.Background(),
-					otlpgrpc.NewDriver(
-						otlpgrpc.WithInsecure(),
-						otlpgrpc.WithEndpoint(fmt.Sprintf("%s:%d", hostIP, otlp.DefaultCollectorPort))))
+				exporter, err := otlptracegrpc.New(
+					context.Background(),
+					otlptracegrpc.WithInsecure(),
+					otlptracegrpc.WithEndpoint(fmt.Sprintf("%s:4317", hostIP)))
 				if err != nil {
 					return fmt.Errorf("creating otlp exporter: %w", err)
 				}

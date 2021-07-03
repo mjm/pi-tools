@@ -9,7 +9,7 @@ import (
 	"log"
 
 	"github.com/etherlabsio/healthcheck"
-	"go.opentelemetry.io/otel/semconv"
+	"go.opentelemetry.io/otel/semconv/v1.4.0"
 
 	"github.com/mjm/pi-tools/pkg/instrumentation/otelsql"
 	"github.com/mjm/pi-tools/pkg/migrate/postgres"
@@ -58,7 +58,7 @@ func OpenDB(migrations fs.FS) (DB, error) {
 	}
 	db := otelsql.NewDBWithTracing(sqlDB,
 		otelsql.WithAttributes(
-			semconv.DBSystemPostgres,
+			semconv.DBSystemPostgreSQL,
 			// assuming this is safe to include since it was on the command-line.
 			// passwords should come from a file or environment variable.
 			semconv.DBConnectionStringKey.String(*dbDSN)))

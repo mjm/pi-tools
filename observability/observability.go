@@ -9,13 +9,18 @@ import (
 
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/metric/prometheus"
-	"go.opentelemetry.io/otel/exporters/otlp"
-	"go.opentelemetry.io/otel/exporters/otlp/otlpgrpc"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/exporters/prometheus"
+	"go.opentelemetry.io/otel/metric/global"
 	"go.opentelemetry.io/otel/propagation"
+	export "go.opentelemetry.io/otel/sdk/export/metric"
+	"go.opentelemetry.io/otel/sdk/metric/aggregator/histogram"
+	controller "go.opentelemetry.io/otel/sdk/metric/controller/basic"
+	processor "go.opentelemetry.io/otel/sdk/metric/processor/basic"
+	"go.opentelemetry.io/otel/sdk/metric/selector/simple"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"go.opentelemetry.io/otel/sdk/trace"
-	"go.opentelemetry.io/otel/semconv"
+	"go.opentelemetry.io/otel/semconv/v1.4.0"
 
 	"github.com/mjm/pi-tools/debug"
 )
@@ -26,10 +31,10 @@ func Start(svcname string) (func(), error) {
 
 	if !debug.IsEnabled() {
 		hostIP := os.Getenv("HOST_IP")
-		exporter, err := otlp.NewExporter(context.Background(),
-			otlpgrpc.NewDriver(
-				otlpgrpc.WithInsecure(),
-				otlpgrpc.WithEndpoint(fmt.Sprintf("%s:%d", hostIP, otlp.DefaultCollectorPort))))
+		exporter, err := otlptracegrpc.New(
+			context.Background(),
+			otlptracegrpc.WithInsecure(),
+			otlptracegrpc.WithEndpoint(fmt.Sprintf("%s:4317", hostIP)))
 		if err != nil {
 			return nil, fmt.Errorf("creating otlp exporter: %w", err)
 		}
@@ -66,14 +71,19 @@ func Start(svcname string) (func(), error) {
 		propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 
 	// this comes after because we want the prometheus meter provider even when debugging
-	metrics, err := prometheus.InstallNewPipeline(prometheus.Config{
-		DefaultHistogramBoundaries: []float64{0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50},
-	})
+	ctl := controller.New(
+		processor.New(
+			simple.NewWithHistogramDistribution(
+				histogram.WithExplicitBoundaries([]float64{0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50})),
+			export.CumulativeExportKindSelector(),
+			processor.WithMemory(true)))
+	exporter, err := prometheus.New(prometheus.Config{}, ctl)
 	if err != nil {
 		stopTracing()
 		return nil, fmt.Errorf("installing metrics pipeline: %w", err)
 	}
-	http.Handle("/metrics", metrics)
+	global.SetMeterProvider(exporter.MeterProvider())
+	http.Handle("/metrics", exporter)
 
 	if err := runtime.Start(); err != nil {
 		stopTracing()

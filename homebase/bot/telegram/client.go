@@ -11,7 +11,7 @@ import (
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric/global"
-	"go.opentelemetry.io/otel/semconv"
+	"go.opentelemetry.io/otel/semconv/v1.4.0"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/mjm/pi-tools/pkg/spanerr"
