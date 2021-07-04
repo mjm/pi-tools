@@ -649,7 +649,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "min(tripplite_health)",
+          "expr": "min(network_ups_tools_battery_charge)",
           "interval": "",
           "legendFormat": "",
           "refId": "A"

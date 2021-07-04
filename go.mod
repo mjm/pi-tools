@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	cloud.google.com/go v0.78.0 // indirect
+	github.com/DRuggeri/nut_exporter v1.2.1-0.20210523193031-0e227b792ecc // indirect
 	github.com/Microsoft/go-winio v0.4.15-0.20200113171025-3fe6c5262873 // indirect
 	github.com/armon/go-metrics v0.3.5-0.20201104215618-6fd5a4ddf425 // indirect
 	github.com/aws/aws-sdk-go v1.35.3
@@ -84,6 +85,4 @@ require (
 	zombiezen.com/go/postgrestest v1.0.0
 )
 
-replace (
-	google.golang.org/grpc => google.golang.org/grpc v1.37.1
-)
+replace google.golang.org/grpc => google.golang.org/grpc v1.37.1
