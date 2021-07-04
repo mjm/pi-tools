@@ -38,6 +38,7 @@ sysutils/grub2-bhyve
 sysutils/iocage
 sysutils/jail_exporter
 sysutils/node_exporter
+sysutils/nut
 sysutils/syslog-ng
 sysutils/tarsnap
 sysutils/tarsnap-periodic
