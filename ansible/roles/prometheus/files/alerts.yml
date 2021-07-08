@@ -205,3 +205,28 @@ groups:
             A Tarsnap backup hasn't completed successfully in twenty-eight hours, something may be wrong.
 
             https://grafana.home.mattmoriarity.com/explore?orgId=1&left=%5B%22now-24h%22,%22now%22,%22Loki%22,%7B%22expr%22:%22%7Bsyslog_identifier%3D%5C%22backup-tarsnap%5C%22%7D%22%7D,%7B%22ui%22:%5Btrue,true,true,%22none%22%5D%7D%5D
+
+  - name: ups_alerts
+    rules:
+      - alert: NoUPSData
+        expr: absent(network_ups_tools_ups_status)
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: UPS metric data is missing
+          description: >
+            No UPS metrics are being scraped. Check if the nut-exporter is running and is able to connect to NUT on the Synology.
+
+            https://nomad.home.mattmoriarity.com/ui/jobs/nut
+            https://consul.home.mattmoriarity.com/ui/dc1/services/nut/instances
+
+      - alert: UPSDischarging
+        expr: network_ups_tools_ups_status{flag="DISCHRG"} > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: UPS battery is discharging
+          description: >
+            The UPS battery is currently discharging. If power does not return, it will likely run out of battery in 30-40 minutes.
