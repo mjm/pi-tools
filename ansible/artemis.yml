@@ -4,6 +4,7 @@
   roles:
     - role: pkg
     - role: logging
+    - role: nut
     - role: jail
     - role: dns
     - role: consul

@@ -1,0 +1,53 @@
+- name: Install nut package
+  package:
+    name: nut
+    state: present
+
+- name: Install nut.conf
+  copy:
+    src: nut.conf
+    dest: /etc/nut/nut.conf
+    mode: 0640
+    owner: root
+    group: nut
+  when: ansible_system == "Linux"
+
+- name: Install upsmon.conf on Linux
+  copy:
+    src: upsmon.conf
+    dest: /etc/nut/upsmon.conf
+    mode: 0640
+    owner: root
+    group: nut
+  when: ansible_system == "Linux"
+
+- name: Install upsmon.conf on FreeBSD
+  copy:
+    src: upsmon.conf
+    dest: /usr/local/etc/nut/upsmon.conf
+    mode: 0644
+    owner: root
+    group: wheel
+  when: ansible_system == "FreeBSD"
+
+- name: Install rc config for nut_upsmon
+  copy:
+    src: rc.nut_upsmon.conf
+    dest: /usr/local/etc/rc.conf.d/nut_upsmon
+    mode: 0644
+    owner: root
+    group: wheel
+  when: ansible_system == "FreeBSD"
+
+- name: Ensure nut-client service is running
+  systemd:
+    name: nut-client
+    state: started
+    enabled: true
+  when: ansible_system == "Linux"
+
+- name: Ensure nut_upsmon service is running
+  service:
+    name: nut_upsmon
+    state: started
+  when: ansible_system == "FreeBSD"
