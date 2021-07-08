@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	nomad "github.com/hashicorp/nomad/api"
 
@@ -33,22 +34,8 @@ func (a *App) Name() string {
 }
 
 func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
-	job := nomadic.NewSystemJob(a.name, 70)
+	job := nomadic.NewJob(a.name, 70)
 	tg := nomadic.AddTaskGroup(job, "nut", 1)
-
-	// this needs to connect to the Tripplite UPS over USB,
-	// and it's only plugged in to this machine.
-	job.Constrain(&nomad.Constraint{
-		LTarget: "${node.unique.name}",
-		Operand: "=",
-		RTarget: "raspberrypi",
-	})
-
-	nomadic.AddPort(tg, nomad.Port{
-		Label: "upsd",
-		Value: 3493,
-		To:    3493,
-	})
 
 	nomadic.AddPort(tg, nomad.Port{
 		Label: "metrics",
@@ -57,39 +44,16 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 
 	nomadic.AddService(tg, &nomad.Service{
 		Name:      a.name,
-		PortLabel: "upsd",
-		Meta: map[string]string{
-			"metrics_port": "${NOMAD_HOST_PORT_metrics}",
+		PortLabel: "metrics",
+		Checks: []nomad.ServiceCheck{
+			{
+				Type:     "http",
+				Path:     "/",
+				Interval: 30 * time.Second,
+				Timeout:  5 * time.Second,
+			},
 		},
 	}, nomadic.WithMetricsScraping("/ups_metrics"))
-
-	nomadic.AddTask(tg, &nomad.Task{
-		Name: "upsd",
-		Config: map[string]interface{}{
-			"image":      nomadic.Image(imageRepo, imageVersion),
-			"ports":      []string{"upsd"},
-			"privileged": true,
-			"volumes": []string{
-				"secrets:/run/secrets",
-			},
-		},
-		Env: map[string]string{
-			"VENDORID": "09ae",
-			"SERIAL":   "3031BV4OM882401020",
-			// terrible hack to get the productid into the config file
-			"POLLINTERVAL": "2\n        productid = 3024",
-		},
-		Templates: []*nomad.Template{
-			{
-				// TODO store a real random password in Vault
-				EmbeddedTmpl: nomadic.String(`asdf`),
-				DestPath:     nomadic.String("secrets/nut-upsd-password"),
-			},
-		},
-	},
-		nomadic.WithCPU(50),
-		nomadic.WithMemoryMB(50),
-		nomadic.WithLoggingTag(a.name))
 
 	nomadic.AddTask(tg, &nomad.Task{
 		Name: "nut-exporter",
@@ -97,7 +61,7 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 			"image":   nomadic.Image(exporterImageRepo, "latest"),
 			"command": "/nut_exporter",
 			"args": []string{
-				"--nut.server=${NOMAD_IP_upsd}",
+				"--nut.server=10.0.0.10",
 				"--nut.vars_enable=" + strings.Join(enabledVariables, ","),
 			},
 			"ports": []string{"metrics"},
