@@ -148,13 +148,48 @@ func main() {
 
 					log.Printf("Installing %s", appName)
 
-					//tracer := otel.Tracer("github.com/mjm/pi-tools/deploy/cmd/nomadic")
 					ctx, span := tracer.Start(c.Context, "install",
 						trace.WithAttributes(
 							attribute.String("app.name", app.Name())))
 					defer span.End()
 
 					if err := app.Install(ctx, clients); err != nil {
+						return err
+					}
+
+					return nil
+				},
+			},
+			{
+				Name: "uninstall",
+				Aliases: []string{"u"},
+				Action: func(c *cli.Context) error {
+					if c.NArg() < 1 {
+						cli.ShowCommandHelpAndExit(c, "uninstall", 1)
+						return nil
+					}
+
+					clients, err := nomadic.DefaultClients()
+					if err != nil {
+						return err
+					}
+
+					// TODO support multiple apps
+					appName := c.Args().First()
+					app := nomadic.Find(appName)
+
+					if app == nil {
+						return fmt.Errorf("Unknown application name %q", appName)
+					}
+
+					log.Printf("Uninstalling %s", appName)
+
+					ctx, span := tracer.Start(c.Context, "uninstall",
+						trace.WithAttributes(
+							attribute.String("app.name", app.Name())))
+					defer span.End()
+
+					if err := app.Uninstall(ctx, clients); err != nil {
 						return err
 					}
 
