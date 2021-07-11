@@ -2,7 +2,7 @@
 
 set -e
 
-cd "$(git rev-parse --show-toplevel)/ansible" || exit
+cd "$(git rev-parse --show-toplevel)" || exit
 
 #echo "Building Vault WebAuthn plugin" >&2
 #bazel build --platforms @io_bazel_rules_go//go/toolchain:linux_arm64 //vault-proxy/cmd/vault-plugin-auth-webauthn
@@ -10,17 +10,4 @@ cd "$(git rev-parse --show-toplevel)/ansible" || exit
 #rm -f ./roles/vault/files/vault-plugin-auth-webauthn
 #cp ../bazel-bin/vault-proxy/cmd/vault-plugin-auth-webauthn/vault-plugin-auth-webauthn_/vault-plugin-auth-webauthn ./roles/vault/files/vault-plugin-auth-webauthn
 
-tmpdir="$(mktemp -d)"
-keypath="$tmpdir/signed-cert.pub"
-
-function finish {
-  echo "Cleaning up key in $tmpdir" >&2
-  rm -rf "$tmpdir"
-}
-trap finish EXIT
-
-../tools/vssh -no-exec -field=signed_key placeholder > "$keypath"
-echo "Generated temporary certificate key at $keypath" >&2
-
-ansible-playbook --ssh-common-args="-i $HOME/.ssh/id_ed25519 -i $keypath" --inventory=hosts.ini "$@" site.yml
-
+./tools/ansible-playbook site.yml "$@"

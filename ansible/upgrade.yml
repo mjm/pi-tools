@@ -1,0 +1,19 @@
+- hosts:
+    - artemis
+    - jails
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Upgrade installed packages
+      command: pkg upgrade --yes
+
+- hosts: pis
+  remote_user: ubuntu
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Upgrade APT packages
+      apt:
+        name: "*"
+        state: latest
+        update_cache: true
