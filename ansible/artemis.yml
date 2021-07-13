@@ -52,3 +52,8 @@
   become: true
   roles:
     - role: redis
+
+- hosts: ci1
+  become: true
+  roles:
+    - role: teamcity
