@@ -10,12 +10,14 @@ devel/git
 devel/phabricator
 devel/py-lxml
 devel/py-pip
+devel/rebar3
 dns/bind916
 editors/neovim
 ftp/curl
 graphics/py-pillow
 irc/znc
 java/openjdk11-jre
+lang/elixir
 math/py-numpy
 misc/nnn
 net-mgmt/alertmanager
