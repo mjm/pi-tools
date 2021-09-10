@@ -187,9 +187,16 @@ var virtualHosts = []virtualHost{
 `,
 	},
 	{
+		Name: "ci",
+		Upstream: upstream{
+			Name:        "teamcity",
+			ServiceName: "teamcity",
+		},
+	},
+	{
 		Name: "adminer",
 		Upstream: upstream{
-			Name: "adminer",
+			Name:        "adminer",
 			ServiceName: "adminer",
 			ConnectPort: 10000,
 		},
