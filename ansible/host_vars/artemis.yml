@@ -116,6 +116,9 @@ jails:
     ips:
       - re0|10.0.2.113
       - lo1|127.0.14.1
+    # CI jail also runs postgres for running tests that need a DB, so it needs this option too.
+    extra_config: |
+      sysvshm = new;
 
   - name: homelab1
     ips:
