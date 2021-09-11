@@ -192,6 +192,21 @@ var virtualHosts = []virtualHost{
 			Name:        "teamcity",
 			ServiceName: "teamcity",
 		},
+		CustomServerConfig: `
+  proxy_read_timeout     1200;
+  proxy_connect_timeout  240;
+  client_max_body_size   0;    # maximum size of an HTTP request. 0 allows uploading large artifacts to TeamCity
+`,
+		CustomLocationConfig: `
+    proxy_http_version  1.1;
+    proxy_set_header    Host $server_name:$server_port;
+    proxy_set_header    X-Forwarded-Host $http_host;    # necessary for proper absolute redirects and TeamCity CSRF check
+    proxy_set_header    X-Forwarded-Proto $scheme;
+    proxy_set_header    X-Forwarded-For $remote_addr;
+    proxy_set_header    Upgrade $http_upgrade; # WebSocket support
+    proxy_set_header    Connection $connection_upgrade; # WebSocket support
+
+`,
 	},
 	{
 		Name: "adminer",
