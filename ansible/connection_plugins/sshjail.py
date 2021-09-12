@@ -82,6 +82,9 @@ DOCUMENTATION = '''
                 version_added: '2.7'
           vars:
               - name: ansible_ssh_common_args
+          cli:
+              - name: ssh_common_args
+          default: ''
       ssh_executable:
           default: ssh
           description:
@@ -324,7 +327,6 @@ except ImportError:
 class ConnectionBase(SSHConnection):
     pass
 
-
 class Connection(ConnectionBase):
     ''' ssh based connections '''
 
@@ -345,6 +347,8 @@ class Connection(ConnectionBase):
         self.jpath = None
         self.connector = None
 
+        display.vvv(f"common args: {self.get_option('ssh_common_args')}")
+        display.vvv(f"play content: {self._play_context}")
         # logging.warning(self._play_context.connection)
 
     def match_jail(self):
