@@ -3,8 +3,7 @@
     "detect-presence/ios/BUILD"
   ],
   "buildTargets" : [
-    "//detect-presence/ios:ios",
-    "//detect-presence/ios:ios_ad_hoc"
+    "//detect-presence/ios:ios"
   ],
   "optionSet" : {
     "BazelBuildOptionsDebug" : {

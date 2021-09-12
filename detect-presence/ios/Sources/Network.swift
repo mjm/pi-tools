@@ -2,8 +2,6 @@ import Relay
 import Foundation
 import Combine
 
-private let graphqlURL = URL(string: "http://100.117.39.47:8080/graphql")!
-
 struct RequestPayload: Encodable {
     var query: String
     var operationName: String
@@ -19,7 +17,7 @@ class Network: Relay.Network {
             self.url = URL(string: "http://mars.home.mattmoriarity.com:8080/graphql")!
         } else {
             NSLog("creating real network")
-            self.url = URL(string: "https://homebase.home.mattmoriarity.com/graphql")!
+            self.url = URL(string: "https://homelab.home.mattmoriarity.com/graphql")!
         }
     }
 
