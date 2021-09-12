@@ -2,16 +2,17 @@ package backup
 
 var pgDatabases = []postgresDatabase{
 	{
-		Name: "presence",
+		Name:        "trips",
+		vaultPolicy: "presence",
 	},
 	{
-		Name:        "golinks",
-		vaultPolicy: "go-links",
+		Name:   "go-links",
+		dbName: "go_links",
 	},
-	{
-		Name:   "homebase-bot",
-		dbName: "homebase_bot",
-	},
+	//{
+	//	Name:   "homebase-bot",
+	//	dbName: "homebase_bot",
+	//},
 	{
 		Name: "grafana",
 	},
