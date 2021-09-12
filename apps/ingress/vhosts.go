@@ -192,6 +192,7 @@ var virtualHosts = []virtualHost{
 			Name:        "teamcity",
 			ServiceName: "teamcity",
 		},
+		DisableOAuth: true,
 		CustomServerConfig: `
   proxy_read_timeout     1200;
   proxy_connect_timeout  240;
