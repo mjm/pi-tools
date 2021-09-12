@@ -130,7 +130,7 @@ PGPASSWORD={{ .Data.password | toJSON }}
 		nomadic.WithMemoryMB(40),
 		nomadic.WithLoggingTag(a.beaconName))
 
-	return clients.DeployJobs(ctx, job, beaconJob)
+	return clients.DeployJobs(ctx, beaconJob)
 }
 
 func (a *App) installConsulConfigEntries(ctx context.Context, clients nomadic.Clients) error {
