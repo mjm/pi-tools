@@ -205,7 +205,22 @@ var virtualHosts = []virtualHost{
     proxy_set_header    X-Forwarded-For $remote_addr;
     proxy_set_header    Upgrade $http_upgrade; # WebSocket support
     proxy_set_header    Connection $connection_upgrade; # WebSocket support
-
+`,
+	},
+	{
+		Name: "homelab",
+		Upstream: upstream{
+			Name:        "homelab",
+			ServiceName: "homelab",
+		},
+		CustomLocationConfig: `
+    proxy_http_version  1.1;
+    proxy_set_header    Host $server_name:$server_port;
+    proxy_set_header    X-Forwarded-Host $http_host;
+    proxy_set_header    X-Forwarded-Proto $scheme;
+    proxy_set_header    X-Forwarded-For $remote_addr;
+    proxy_set_header    Upgrade $http_upgrade; # WebSocket support
+    proxy_set_header    Connection $connection_upgrade; # WebSocket support
 `,
 	},
 	{

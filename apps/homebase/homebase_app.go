@@ -33,7 +33,7 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 	job := nomadic.NewJob(a.name, 50)
 	a.addWebTaskGroup(job)
 	a.addAPITaskGroup(job)
-	a.addBotTaskGroup(job)
+	//a.addBotTaskGroup(job)
 
 	return clients.DeployJobs(ctx, job)
 }
