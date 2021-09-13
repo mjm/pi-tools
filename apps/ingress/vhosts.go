@@ -214,6 +214,17 @@ var virtualHosts = []virtualHost{
 			Name:        "homelab",
 			ServiceName: "homelab",
 		},
+		// skip auth redirect for /app endpoints
+		CustomServerConfig: `
+  location /app {
+    proxy_pass http://homelab;
+    proxy_http_version  1.1;
+    proxy_set_header    Host $server_name:$server_port;
+    proxy_set_header    X-Forwarded-Host $http_host;
+    proxy_set_header    X-Forwarded-Proto $scheme;
+    proxy_set_header    X-Forwarded-For $remote_addr;
+  }
+`,
 		CustomLocationConfig: `
     proxy_http_version  1.1;
     proxy_set_header    Host $server_name:$server_port;
