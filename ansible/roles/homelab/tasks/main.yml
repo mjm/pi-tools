@@ -1,0 +1,22 @@
+- name: Install necessary packages
+  package:
+    name: "{{ item }}"
+    state: present
+  loop: [py38-borgbackup, tarsnap]
+
+- name: Create /opt/homelab directory
+  file:
+    path: /opt/homelab
+    state: directory
+    recurse: true
+    mode: 0700
+    owner: root
+    group: wheel
+
+- name: Install deploy-homelab script
+  copy:
+    src: deploy-homelab.sh
+    dest: /opt/deploy-homelab
+    mode: 0755
+    owner: root
+    group: wheel

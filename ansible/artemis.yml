@@ -57,3 +57,8 @@
   become: true
   roles:
     - role: teamcity
+
+- hosts: homelab1
+  become: true
+  roles:
+    - role: homelab
