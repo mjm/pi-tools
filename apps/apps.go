@@ -8,7 +8,6 @@ import (
 	"github.com/mjm/pi-tools/apps/consulexporter"
 	"github.com/mjm/pi-tools/apps/deploy"
 	"github.com/mjm/pi-tools/apps/grafana"
-	"github.com/mjm/pi-tools/apps/homebase"
 	"github.com/mjm/pi-tools/apps/ingress"
 	"github.com/mjm/pi-tools/apps/loki"
 	"github.com/mjm/pi-tools/apps/nodeexporter"
@@ -31,7 +30,7 @@ func Load() {
 	nomadic.Register(deploy.New("deploy"))
 	//nomadic.Register(golinks.New("go-links"))
 	nomadic.Register(grafana.New("grafana"))
-	nomadic.Register(homebase.New("homebase"))
+	//nomadic.Register(homebase.New("homebase"))
 	nomadic.Register(ingress.New("ingress"))
 	nomadic.Register(loki.New("loki"))
 	nomadic.Register(nodeexporter.New("node-exporter"))

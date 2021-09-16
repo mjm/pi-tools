@@ -61,9 +61,9 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 	borgJob := a.createBorgJob()
 	tarsnapJob := a.createTarsnapJob()
 	tarsnapDeleteJob := a.createTarsnapDeleteJob()
-	serviceJob := a.createServiceJob()
+	//serviceJob := a.createServiceJob()
 
-	return clients.DeployJobs(ctx, borgJob, tarsnapJob, tarsnapDeleteJob, serviceJob)
+	return clients.DeployJobs(ctx, borgJob, tarsnapJob, tarsnapDeleteJob)
 }
 
 func (a *App) Uninstall(ctx context.Context, clients nomadic.Clients) error {
