@@ -66,7 +66,7 @@
 
 - name: Install consul-template {{ consul_template_version }}
   unarchive:
-    src: https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/consul-template_{{ consul_template_version }}_linux_arm64.tgz
+    src: https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/consul-template_{{ consul_template_version }}_linux_arm64.zip
     dest: /usr/local/bin
     remote_src: true
   become: true
