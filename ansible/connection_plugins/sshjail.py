@@ -347,15 +347,12 @@ class Connection(ConnectionBase):
         self.jpath = None
         self.connector = None
 
-        display.vvv(f"common args: {self.get_option('ssh_common_args')}")
-        display.vvv(f"play content: {self._play_context}")
         # logging.warning(self._play_context.connection)
 
     def match_jail(self):
         if self.jid is None:
             code, stdout, stderr = self._jailhost_command("jls -q jid name host.hostname path")
             if code != 0:
-                display.vvv("JLS stdout: %s" % stdout)
                 raise AnsibleError("jls returned non-zero!")
 
             lines = stdout.strip().split(b'\n')
