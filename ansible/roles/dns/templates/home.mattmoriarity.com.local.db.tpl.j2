@@ -7,8 +7,11 @@ $TTL  1m
                  1w             ; Expire
                  1h )   ; Negative Cache TTL
 @   IN  NS  localhost.
-;<< range nodes >>
-<< .Node >> IN  A << .Address >><< end >>
+{% for host, hvars in hostvars.items() %}
+{% if host not in groups.jails %}
+{{ host }}  IN  A  {{ hvars.default_ip }}
+{% endif %}
+{% endfor %}
 {% for jail in hostvars.artemis.jails %}
 {{ jail.name }}  IN  A  {{ jail.ips[0].split("|")[1] }}
 {% endfor %}
