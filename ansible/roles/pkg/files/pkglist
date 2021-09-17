@@ -38,6 +38,9 @@ shells/zsh
 shells/zsh-autosuggestions
 shells/zsh-completions
 shells/zsh-syntax-highlighting
+sysutils/ansible
+sysutils/ansible-sshjail
+sysutils/ansible-sysrc
 sysutils/bhyve-firmware
 sysutils/consul
 sysutils/ezjail
