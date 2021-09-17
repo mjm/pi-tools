@@ -7,8 +7,11 @@ $TTL  1m
                  1w             ; Expire
                  1h )   ; Negative Cache TTL
 @   IN  NS  localhost.
-;<< range nodes >>
-<< .Node >> IN  A << .Meta.tailscale_ip >><< end >>
+{% for host, hvars in hostvars.items() %}
+{% if host not in groups.jails %}
+{{ host }}  IN  A  {{ hvars.tailscale_ip }}
+{% endif %}
+{% endfor %}
 ;<< range service "ingress-http" >>
 *.homelab.  0  IN  A << .NodeMeta.tailscale_ip >><< end >>
 {% for jail in hostvars.artemis.jails %}
