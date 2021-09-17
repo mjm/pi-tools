@@ -12,6 +12,8 @@
     - npm-node14
     - openjdk11-jre
     - postgresql13-server
+    - py38-ansible
+    - py38-ansible-sysrc
     - yarn-node14
 
 - name: Create teamcity group

@@ -16,5 +16,5 @@ trap finish EXIT
 ../tools/vssh -no-exec -field=signed_key placeholder > "$keypath"
 echo "Generated temporary certificate key at $keypath" >&2
 
-ansible-playbook --ssh-common-args="-i $HOME/.ssh/id_ed25519 -i $keypath" --inventory=hosts.ini "$@"
+ansible-playbook --vault-password-file vault-password.sh --ssh-common-args="-i $HOME/.ssh/id_ed25519 -i $keypath" --inventory=hosts.ini "$@"
 
