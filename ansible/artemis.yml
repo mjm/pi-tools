@@ -18,7 +18,7 @@
     - role: logging
     - role: dns
 
-- hosts: metrics1, paperless1, dns, code1
+- hosts: metrics1, paperless1, dns, code1, ci1
   become: true
   gather_facts: false
   roles:

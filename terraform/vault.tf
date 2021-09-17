@@ -110,52 +110,6 @@ resource "vault_pki_secret_backend_role" "homelab" {
   allowed_domains    = ["homelab", "home.mattmoriarity.com"]
 }
 
-resource "vault_mount" "consul" {
-  path = "consul"
-  type = "consul"
-}
-
-resource "vault_consul_secret_backend_role" "nomad_client_server" {
-  backend = vault_mount.consul.id
-  name    = "nomad-client-server"
-
-  policies = [
-    consul_acl_policy.nomad_client.name,
-    consul_acl_policy.nomad_server.name,
-  ]
-
-  ttl = 31536000 # one year
-}
-
-resource "vault_consul_secret_backend_role" "prometheus" {
-  backend = vault_mount.consul.id
-  name    = "prometheus"
-
-  policies = [consul_acl_policy.prometheus.name]
-}
-
-resource "vault_consul_secret_backend_role" "backup" {
-  backend = vault_mount.consul.id
-  name    = "backup"
-
-  # Backups take Consul snapshots, and saving a snapshot understandably requires a management token
-  policies = ["global-management"]
-}
-
-resource "vault_consul_secret_backend_role" "homebase_bot" {
-  backend = vault_mount.consul.id
-  name    = "homebase-bot"
-
-  policies = [consul_acl_policy.homebase_bot.name]
-}
-
-resource "vault_consul_secret_backend_role" "deploy" {
-  backend = vault_mount.consul.id
-  name    = "deploy"
-
-  policies = [consul_acl_policy.deploy.name]
-}
-
 resource "vault_mount" "nomad" {
   path = "nomad"
   type = "nomad"
@@ -216,4 +170,9 @@ resource "vault_policy" "phabricator" {
 resource "vault_policy" "prometheus" {
   name   = "prometheus"
   policy = file("${local.vault_policies_path}/prometheus.hcl")
+}
+
+resource "vault_policy" "teamcity" {
+  name   = "teamcity"
+  policy = file("${local.vault_policies_path}/teamcity.hcl")
 }
