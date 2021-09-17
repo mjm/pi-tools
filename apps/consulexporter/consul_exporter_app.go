@@ -30,10 +30,6 @@ func (a *App) Name() string {
 }
 
 func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
-	if err := clients.Vault.Sys().PutPolicy(a.name, vaultPolicy); err != nil {
-		return fmt.Errorf("updating %s vault policy: %w", a.name, err)
-	}
-
 	job := nomadic.NewJob(a.name, 70)
 	tg := nomadic.AddTaskGroup(job, "consul-exporter", 1)
 
@@ -55,38 +51,18 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 				"http",
 			},
 		},
-		Templates: []*nomadapi.Template{
-			{
-				EmbeddedTmpl: nomadic.String(`
-{{ with secret "consul/creds/prometheus" }}
-CONSUL_HTTP_TOKEN={{ .Data.token }}
-{{ end }}
-`),
-				DestPath:   nomadic.String("secrets/consul.env"),
-				Envvars:    nomadic.Bool(true),
-				ChangeMode: nomadic.String("restart"),
-			},
-		},
 	},
 		nomadic.WithCPU(50),
 		nomadic.WithMemoryMB(50),
-		nomadic.WithLoggingTag(a.name),
-		nomadic.WithVaultPolicies(a.name))
+		nomadic.WithLoggingTag(a.name))
 
 	return clients.DeployJobs(ctx, job)
 }
 
 func (a *App) Uninstall(ctx context.Context, clients nomadic.Clients) error {
-	if err := clients.Vault.Sys().DeletePolicy(a.name); err != nil {
-		return fmt.Errorf("deleting %s vault policy: %w", a.name, err)
-	}
-
 	if _, _, err := clients.Nomad.Jobs().Deregister(a.name, false, nil); err != nil {
 		return fmt.Errorf("deregistering %s nomad job: %w", a.name, err)
 	}
 
 	return nil
 }
-
-//go:embed consul-exporter.hcl
-var vaultPolicy string

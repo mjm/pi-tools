@@ -20,15 +20,6 @@
     group: wheel
   notify: Restart Consul service
 
-- name: Install Consul agent token config
-  template:
-    src: tokens.hcl.j2
-    dest: /usr/local/etc/consul.d/tokens.hcl
-    mode: 0600
-    owner: consul
-    group: consul
-  notify: Reload Consul service
-
 - name: Install Consul service configs
   template:
     src: services/{{ item }}.hcl.j2

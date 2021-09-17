@@ -10,13 +10,6 @@ node_meta {
   tailscale_ip = "{{ tailscale_ip }}"
 }
 
-acl {
-  enabled = true
-
-  default_policy           = "deny"
-  enable_token_persistence = true
-}
-
 ports {
   grpc = 8502
 }

@@ -2,6 +2,7 @@ package deploy
 
 import (
 	nomadapi "github.com/hashicorp/nomad/api"
+
 	"github.com/mjm/pi-tools/pkg/nomadic"
 )
 
@@ -37,9 +38,6 @@ var taskTemplates = []*nomadapi.Template{
 	},
 	{
 		EmbeddedTmpl: nomadic.String(`
-{{ with secret "consul/creds/deploy" }}
-CONSUL_HTTP_TOKEN={{ .Data.token }}
-{{ end }}
 {{ with secret "nomad/creds/deploy" }}
 NOMAD_TOKEN={{ .Data.secret_id }}
 {{ end }}

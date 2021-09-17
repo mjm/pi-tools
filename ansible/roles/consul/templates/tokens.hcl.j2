@@ -1,8 +1,0 @@
-acl {
-  tokens {
-{% if consul_default_token != "" %}
-    default = "{{ consul_default_token }}"
-{% endif %}
-    agent = "{{ consul_agent_token }}"
-  }
-}

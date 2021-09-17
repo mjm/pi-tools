@@ -7,7 +7,7 @@ ConditionFileNotEmpty=/etc/consul.hcl
 
 [Service]
 Type=notify
-ExecStart=/usr/local/bin/consul agent -config-file=/etc/consul.hcl -config-file=/etc/consul.tokens.hcl
+ExecStart=/usr/local/bin/consul agent -config-file=/etc/consul.hcl
 ExecReload=/bin/kill --signal HUP $MAINPID
 KillMode=process
 KillSignal=SIGTERM

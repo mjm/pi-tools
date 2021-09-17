@@ -7,8 +7,3 @@ path "database/creds/homebase-bot" {
 path "kv/data/homebase-bot" {
   capabilities = ["read"]
 }
-
-# Allow using Consul for leader-election
-path "consul/creds/homebase-bot" {
-  capabilities = ["read"]
-}

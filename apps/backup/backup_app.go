@@ -42,10 +42,6 @@ func (a *App) Name() string {
 }
 
 func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
-	if err := clients.Vault.Sys().PutPolicy(a.name, backupPolicy); err != nil {
-		return fmt.Errorf("updating %s vault policy: %w", a.name, err)
-	}
-
 	if err := clients.Vault.Sys().PutPolicy(a.borgName(), borgPolicy); err != nil {
 		return fmt.Errorf("updating %s vault policy: %w", a.borgName(), err)
 	}
@@ -199,18 +195,10 @@ func (a *App) addCommonTasks(job *nomadapi.Job, tg *nomadapi.TaskGroup) {
 			},
 			"network_mode": "host",
 		},
-		Templates: []*nomadapi.Template{
-			{
-				EmbeddedTmpl: nomadic.String(`CONSUL_HTTP_TOKEN={{ with secret "consul/creds/backup" }}{{ .Data.token }}{{ end }}`),
-				DestPath:     nomadic.String("secrets/consul.env"),
-				Envvars:      nomadic.Bool(true),
-			},
-		},
 	},
 		nomadic.WithCPU(50),
 		nomadic.WithMemoryMB(50),
-		nomadic.WithLoggingTag(*job.ID),
-		nomadic.WithVaultPolicies(a.name))
+		nomadic.WithLoggingTag(*job.ID))
 
 	for _, db := range pgDatabases {
 		nomadic.AddTask(tg, &nomadapi.Task{
@@ -247,6 +235,3 @@ PGPASSWORD={{ .Data.password | toJSON }}
 			nomadic.WithVaultPolicies(db.VaultPolicy()))
 	}
 }
-
-//go:embed backup.hcl
-var backupPolicy string

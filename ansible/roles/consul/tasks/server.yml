@@ -7,18 +7,18 @@
 # Not properly detecting the current version in this alpha, so it's downloading this binary everytime.
 # It's slow and a waste of bandwidth, so comment this until we intend to upgrade.
 #
-#- name: Install Consul {{ consul_version }}
-#  unarchive:
-#    src: https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_arm64.zip
-#    dest: /usr/local/bin
-#    remote_src: true
-#  become: true
-#  when: (installed_consul_version.stdout | from_json).Version != consul_version
-#  notify: Restart Consul service
+- name: Install Consul {{ consul_version }}
+  unarchive:
+    src: https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_arm64.zip
+    dest: /usr/local/bin
+    remote_src: true
+  become: true
+  when: (installed_consul_version.stdout | from_json).Version != consul_version
+  notify: Restart Consul service
 
 - name: Ensure Consul data directory exists
   file:
-    path: /var/lib/consul
+    path: /var/lib/consul2
     state: directory
     mode: 0755
     owner: root
@@ -35,13 +35,10 @@
   become: true
   notify: Restart Consul service
 
-- name: Install Consul tokens config file
-  template:
-    src: tokens.hcl.j2
-    dest: /etc/consul.tokens.hcl
-    mode: 0600
-    owner: root
-    group: root
+- name: Remove tokens config file
+  file:
+    path: /etc/consul.tokens.hcl
+    state: absent
   notify: Restart Consul service
 
 - name: Install Consul systemd unit

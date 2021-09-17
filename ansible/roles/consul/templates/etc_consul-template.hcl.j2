@@ -52,16 +52,3 @@ template {
 EOF
   destination = "/etc/nomad/cli.key"
 }
-
-template {
-  contents    = <<EOF
-{{ with secret "consul/creds/nomad-client-server" }}
-consul {
-  token = "{{ .Data.token }}"
-}
-{{ end }}
-EOF
-  destination = "/etc/nomad.tokens.hcl"
-  perms       = 0600
-  command     = "systemctl restart nomad"
-}
