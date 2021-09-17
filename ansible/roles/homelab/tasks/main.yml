@@ -8,7 +8,6 @@
   file:
     path: /opt/homelab
     state: directory
-    recurse: true
     mode: 0700
     owner: root
     group: wheel
