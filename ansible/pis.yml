@@ -1,5 +1,4 @@
 - hosts: pis
-  remote_user: ubuntu
   become: true
   roles:
     - role: dns

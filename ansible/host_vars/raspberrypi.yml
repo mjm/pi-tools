@@ -1,5 +1,6 @@
 ---
 ansible_host: raspberrypi.homelab
+default_ip: 10.0.0.2
 tailscale_ip: 100.111.80.85
 
 consul_template_vault_token: !vault |

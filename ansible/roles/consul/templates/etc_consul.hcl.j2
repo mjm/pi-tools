@@ -4,7 +4,7 @@ data_dir = "/var/lib/consul2"
 bootstrap_expect = 3
 retry_join       = ["10.0.0.2", "10.0.0.3", "10.0.0.4"]
 
-advertise_addr = "{{ ansible_default_ipv4.address }}"
+advertise_addr = "{{ default_ip | default(ansible_all_ipv4_addresses[0]) }}"
 client_addr    = "0.0.0.0"
 
 node_meta {

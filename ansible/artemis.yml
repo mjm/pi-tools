@@ -1,5 +1,4 @@
 - hosts: artemis
-  remote_user: matt
   become: true
   roles:
     - role: pkg
