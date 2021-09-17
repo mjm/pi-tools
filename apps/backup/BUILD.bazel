@@ -10,7 +10,6 @@ go_library(
         "templates.go",
     ],
     embedsrcs = [
-        "backup.hcl",
         "borg.hcl",
         "tarsnap.hcl",
         "prune.sh",
