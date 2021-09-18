@@ -18,83 +18,19 @@
   "links": [],
   "panels": [
     {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "decimals": 0,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 13,
-        "x": 0,
-        "y": 0
-      },
-      "id": 10,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "7.2.1",
-      "targets": [
-        {
-          "expr": "sum by (task_group) (nomad_nomad_job_summary_running{exported_job=~\"(presence|homebase|go-links)\"})",
-          "interval": "",
-          "legendFormat": "{{exported_job}}",
-          "refId": "B"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "",
-      "type": "stat"
-    },
-    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
       "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 3
+        "y": 0
       },
       "hiddenSeries": false,
       "id": 2,
@@ -114,7 +50,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.2.1",
+      "pluginVersion": "8.0.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -201,19 +137,13 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 3
+        "y": 0
       },
       "hiddenSeries": false,
       "id": 4,
@@ -233,7 +163,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.2.1",
+      "pluginVersion": "8.0.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -298,19 +228,13 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 10
+        "y": 7
       },
       "hiddenSeries": false,
       "id": 8,
@@ -330,7 +254,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.2.1",
+      "pluginVersion": "8.0.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -405,19 +329,13 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 10
+        "y": 7
       },
       "hiddenSeries": false,
       "id": 14,
@@ -439,7 +357,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.2.1",
+      "pluginVersion": "8.0.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -510,19 +428,13 @@
       "dashes": false,
       "datasource": null,
       "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 17
+        "y": 14
       },
       "hiddenSeries": false,
       "id": 12,
@@ -542,7 +454,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.2.1",
+      "pluginVersion": "8.0.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -607,19 +519,13 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 17
+        "y": 14
       },
       "hiddenSeries": false,
       "id": 6,
@@ -639,7 +545,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.2.1",
+      "pluginVersion": "8.0.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -723,7 +629,7 @@
     }
   ],
   "refresh": "1m",
-  "schemaVersion": 26,
+  "schemaVersion": 30,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -737,5 +643,5 @@
   "timezone": "",
   "title": "Cluster",
   "uid": "3frfw9AMz",
-  "version": 8
+  "version": 12
 }
