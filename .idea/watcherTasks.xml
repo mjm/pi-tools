@@ -5,9 +5,9 @@
       <option name="arguments" value="format $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
-      <option name="exitCodeBehavior" value="ERROR" />
+      <option name="exitCodeBehavior" value="NEVER" />
       <option name="fileExtension" value="ex" />
-      <option name="immediateSync" value="true" />
+      <option name="immediateSync" value="false" />
       <option name="name" value="Format Elixir sources" />
       <option name="output" value="" />
       <option name="outputFilters">
@@ -25,9 +25,9 @@
       <option name="arguments" value="format $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
-      <option name="exitCodeBehavior" value="ERROR" />
+      <option name="exitCodeBehavior" value="NEVER" />
       <option name="fileExtension" value="exs" />
-      <option name="immediateSync" value="true" />
+      <option name="immediateSync" value="false" />
       <option name="name" value="Format Elixir scripts" />
       <option name="output" value="" />
       <option name="outputFilters">
