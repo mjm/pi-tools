@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="WEB_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="Elixir" name="Elixir facet">
+      <configuration sdkName="Elixir 1.12.2" />
+    </facet>
+  </component>
   <component name="Go" enabled="true">
     <buildTags>
       <option name="os" value="linux" />
@@ -8,6 +13,10 @@
     </buildTags>
   </component>
   <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$/../homelab_umbrella">
+      <excludeFolder url="file://$MODULE_DIR$/../homelab_umbrella/.elixir_ls" />
+      <excludeFolder url="file://$MODULE_DIR$/../homelab_umbrella/_build" />
+    </content>
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/bazel-bin" />
       <excludeFolder url="file://$MODULE_DIR$/bazel-out" />
@@ -20,5 +29,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Bundled Protobuf Distribution" level="application" />
     <orderEntry type="library" name="inter" level="application" />
+    <orderEntry type="library" name="Elixir 1.12.2" level="application" />
   </component>
 </module>
