@@ -37,7 +37,7 @@ return new AdminerCustom(array(
         'server' => 'postgresql.service.consul',
         'username' => {{ .Data.username | toJSON }},
         'password' => {{ .Data.password | toJSON }},
-        'db' => 'golinks',
+        'db' => 'go_links',
     ),
 {{ end }}
 {{ with secret "database/creds/grafana" }}
@@ -47,15 +47,6 @@ return new AdminerCustom(array(
         'username' => {{ .Data.username | toJSON }},
         'password' => {{ .Data.password | toJSON }},
         'db' => 'grafana',
-    ),
-{{ end }}
-{{ with secret "database/creds/homebase-bot" }}
-    'homebase-bot' => array(
-        'driver' => 'pgsql',
-        'server' => 'postgresql.service.consul',
-        'username' => {{ .Data.username | toJSON }},
-        'password' => {{ .Data.password | toJSON }},
-        'db' => 'homebase_bot',
     ),
 {{ end }}
 {{ with secret "database/creds/paperless" }}
@@ -73,7 +64,7 @@ return new AdminerCustom(array(
         'server' => 'postgresql.service.consul',
         'username' => {{ .Data.username | toJSON }},
         'password' => {{ .Data.password | toJSON }},
-        'db' => 'presence',
+        'db' => 'trips',
     ),
 {{ end }}
 {{ with secret "database/creds/phabricator" }}
