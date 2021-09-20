@@ -1,10 +1,18 @@
 ---
 ansible_ssh_host: ci1@artemis.homelab
 
-consul_template_vault_token: !vault |
-  $ANSIBLE_VAULT;1.1;AES256
-  36386264346466333233396361623638346632636637633535333037333635313338326462313539
-  3265333731326262336637663632393730306366383330360a396232313532623565333337313131
-  32383733613735643863663134396633373938346635333637333062623664646261303934363961
-  6664336265316532390a363139653538393762313531363736373533636331323831363962313161
-  35323532356237363334346330396665613663636534393832373232356266643437
+vault_agent_enabled: true
+vault_role_id: 5108b274-5fc3-5f3d-96a1-f9fffc4d6256
+vault_agent_user: teamcity
+vault_agent_group: teamcity
+vault_agent_templates: |
+  {% raw %}
+  template {
+    contents = <<EOF
+  {{ with secret "ssh-client-signer/sign/homelab-client" (printf "public_key=%s" (file "/opt/TeamCity/.ssh/id_rsa.pub")) "valid_principals=ubuntu,matt" }}
+  {{ .Data.signed_key }}
+  {{ end }}
+  EOF
+    destination = "/opt/TeamCity/.ssh/signed-cert.pub"
+  }
+  {% endraw %}

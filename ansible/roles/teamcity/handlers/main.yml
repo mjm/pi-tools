@@ -1,3 +1,0 @@
-- name: Reload consul-template config
-  command: pkill -HUP consul-template
-  become: true

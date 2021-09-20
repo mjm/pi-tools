@@ -45,12 +45,3 @@
     creates: /opt/TeamCity
     owner: teamcity
     group: teamcity
-
-- name: Copy TeamCity consul-template config
-  copy:
-    src: teamcity.hcl
-    dest: /usr/local/etc/consul-template.d/teamcity.hcl
-    mode: 0644
-    owner: root
-    group: wheel
-  notify: Reload consul-template config
