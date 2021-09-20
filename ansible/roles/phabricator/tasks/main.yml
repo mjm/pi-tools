@@ -43,16 +43,7 @@
     mode: 0644
     owner: root
     group: wheel
-  notify: Reload consul-template config
-
-- name: Copy phabricator consul-template config
-  copy:
-    src: phabricator.hcl
-    dest: /usr/local/etc/consul-template.d/phabricator.hcl
-    mode: 0644
-    owner: root
-    group: wheel
-  notify: Reload consul-template config
+  notify: Restart vault agent
 
 - name: Copy preamble.php
   copy:

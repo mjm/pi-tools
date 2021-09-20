@@ -1,5 +1,7 @@
-- name: Reload consul-template config
-  command: pkill -HUP consul-template
+- name: Restart vault agent
+  service:
+    name: vault-agent
+    state: restarted
 
 - name: Reload nginx config
   service:

@@ -18,7 +18,7 @@
     - role: dns
     - role: vault
 
-- hosts: metrics1, dns, code1, ci1
+- hosts: metrics1, dns, ci1
   become: true
   gather_facts: false
   roles:

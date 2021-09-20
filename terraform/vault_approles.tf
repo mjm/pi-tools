@@ -13,3 +13,11 @@ resource "vault_approle_auth_backend_role" "paperless" {
   secret_id_bound_cidrs = ["10.0.2.110/32"]
   token_policies        = ["paperless"]
 }
+
+resource "vault_approle_auth_backend_role" "phabricator" {
+  backend = vault_auth_backend.approle.id
+
+  role_name             = "phabricator"
+  secret_id_bound_cidrs = ["10.0.2.111/32"]
+  token_policies        = ["phabricator"]
+}
