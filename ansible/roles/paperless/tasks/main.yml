@@ -37,16 +37,7 @@
     mode: 0644
     owner: root
     group: wheel
-  notify: Reload consul-template config
-
-- name: Copy paperless-ng consul-template config
-  copy:
-    src: paperless.hcl
-    dest: /usr/local/etc/consul-template.d/paperless.hcl
-    mode: 0644
-    owner: root
-    group: wheel
-  notify: Reload consul-template config
+  notify: Restart vault agent
 
 - name: Ensure services are running and start at boot
   service:

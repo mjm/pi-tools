@@ -156,6 +156,12 @@ resource "vault_database_secret_backend_role" "homelab" {
   max_ttl     = 604800
 }
 
+resource "vault_approle_auth_backend_role" "paperless" {
+  role_name             = "paperless"
+  secret_id_bound_cidrs = ["10.0.2.110/32"]
+  token_policies        = ["paperless"]
+}
+
 locals {
   vault_policies_path = "${path.module}/policies/vault"
 }
