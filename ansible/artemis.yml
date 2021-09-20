@@ -16,6 +16,7 @@
     - role: pkg
     - role: logging
     - role: dns
+    - role: vault
 
 - hosts: metrics1, paperless1, dns, code1, ci1
   become: true

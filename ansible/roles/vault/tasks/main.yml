@@ -1,56 +1,7 @@
-- name: Check current Vault version
-  shell:
-    cmd: vault version | grep -oP '(?<=Vault v)([^ ]+)' || echo "none"
-  register: installed_vault_version
-  changed_when: false
+- name: Set up Vault agent
+  include_tasks: agent.yml
+  when: vault_agent_enabled
 
-- name: Install Vault {{ vault_version }}
-  unarchive:
-    src: https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_arm64.zip
-    dest: /usr/local/bin
-    remote_src: true
-  become: true
-  when: installed_vault_version.stdout != vault_version
-  notify: Restart Vault service
-
-- name: Create Vault plugin directory
-  file:
-    state: directory
-    path: /usr/local/libexec/vault
-    owner: root
-    group: root
-    mode: 0755
-  become: true
-
-#- name: Install Vault WebAuthn plugin
-#  copy:
-#    src: vault-plugin-auth-webauthn
-#    dest: /usr/local/libexec/vault/vault-plugin-auth-webauthn
-#    owner: root
-#    group: root
-#    mode: 0755
-#  become: true
-
-- name: Install Vault config file
-  copy:
-    src: etc_vault.hcl
-    dest: /etc/vault.hcl
-  become: true
-  notify: Reload Vault service
-
-- name: Install Vault systemd unit
-  copy:
-    src: vault.service
-    dest: /usr/lib/systemd/system/vault.service
-    mode: 0644
-    owner: root
-    group: root
-  become: true
-  notify: Restart Vault service
-
-- name: Ensure Vault service is started
-  systemd:
-    name: vault
-    enabled: true
-    state: started
-  become: true
+- name: Set up Vault server
+  include_tasks: server.yml
+  when: vault_server_enabled

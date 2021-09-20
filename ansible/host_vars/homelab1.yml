@@ -1,2 +1,27 @@
 ---
 ansible_ssh_host: homelab1@artemis.homelab
+
+vault_agent_enabled: true
+vault_role_id: ef476b7b-6dbf-37f2-5a4d-12bb8f2531ca
+vault_agent_user: root
+vault_agent_group: wheel
+vault_agent_templates: |
+  {% raw %}
+  template {
+    contents = <<EOF
+  {{ with secret "database/creds/homelab" -}}
+  export TRIPS_DATABASE_URL=postgresql://{{ .Data.username }}:{{ .Data.password }}@db1.home.mattmoriarity.com/trips
+  export GO_LINKS_DATABASE_URL=postgresql://{{ .Data.username }}:{{ .Data.password }}@db1.home.mattmoriarity.com/go_links
+  {{ end -}}
+  export PAPERLESS_TOKEN={{ with secret "kv/paperless/client" }}{{ .Data.data.api_token }}{{ end }}
+  export TELEGRAM_TOKEN={{ with secret "kv/homebase-bot" }}{{ .Data.data.telegram_token }}{{ end }}
+  {{ with secret "kv/homelab" -}}
+  export GITHUB_TOKEN={{ .Data.data.github_token }}
+  export SECRET_KEY_BASE={{ .Data.data.secret_key_base }}
+  {{ end }}
+  EOF
+    destination = "/opt/.env.sh"
+    perms = "0600"
+    command = "/opt/start-homelab"
+  }
+  {% endraw %}

@@ -1,0 +1,21 @@
+<component name="libraryTable">
+  <library name="phoenix_pagination" type="mix">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/lib/phoenix_pagination/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/lib/phoenix_pagination/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/phoenix_pagination/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/phoenix_pagination/lib" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/phoenix_pagination/lib" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/phoenix_pagination/lib" />
+    </SOURCES>
+  </library>
+</component>

@@ -19,3 +19,11 @@
     mode: 0755
     owner: root
     group: wheel
+
+- name: Install start-homelab script
+  copy:
+    src: start-homelab.sh
+    dest: /opt/start-homelab
+    mode: 0755
+    owner: root
+    group: wheel

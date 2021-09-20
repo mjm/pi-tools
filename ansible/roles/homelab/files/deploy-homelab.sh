@@ -6,5 +6,5 @@ fi
 
 cd /opt/homelab
 tar xzvf /shared/homelab/homelab.tar.gz
-bin/homelab restart
+../start-homelab
 rm /shared/homelab/homelab.tar.gz

@@ -133,6 +133,29 @@ resource "vault_generic_endpoint" "nomad_lease_config" {
   ignore_absent_fields = true
 }
 
+resource "vault_auth_backend" "approle" {
+  type = "approle"
+}
+
+resource "vault_approle_auth_backend_role" "homelab" {
+  role_name             = "homelab"
+  secret_id_bound_cidrs = ["10.0.2.114/32"]
+  token_policies        = ["homelab"]
+}
+
+resource "vault_database_secret_backend_role" "homelab" {
+  name    = "homelab"
+  backend = "database"
+  db_name = "db1"
+
+  creation_statements = [
+    "create role \"{{name}}\" with login password '{{password}}' valid until '{{expiration}}'; grant homelab to \"{{name}}\";"
+  ]
+
+  default_ttl = 86400
+  max_ttl     = 604800
+}
+
 locals {
   vault_policies_path = "${path.module}/policies/vault"
 }
@@ -150,6 +173,11 @@ resource "vault_policy" "alertmanager" {
 resource "vault_policy" "consul_template" {
   name   = "consul-template"
   policy = file("${local.vault_policies_path}/consul-template.hcl")
+}
+
+resource "vault_policy" "homelab" {
+  name   = "homelab"
+  policy = file("${local.vault_policies_path}/homelab.hcl")
 }
 
 resource "vault_policy" "nomad_server" {

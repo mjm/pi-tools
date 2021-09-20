@@ -2,3 +2,4 @@ ansible_user: ubuntu
 root_group: root
 ansible_python_interpreter: /usr/bin/python3
 consul_mode: server
+vault_server_enabled: true
