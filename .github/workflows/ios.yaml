@@ -9,7 +9,7 @@ jobs:
     name: "Build Presence app"
     runs-on: macos-latest
     env:
-      DEVELOPER_DIR: /Applications/Xcode_12.2.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode_13.0.app/Contents/Developer
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -44,7 +44,7 @@ jobs:
             --config=ci \
             --apple_platform_type=ios \
             --cpu=ios_arm64 \
-            --xcode_version=12.2 \
+            --xcode_version=13.0 \
             --embed_label=Presence_1.0_build_${GITHUB_RUN_NUMBER} \
             //detect-presence/ios:ios_ad_hoc
 
