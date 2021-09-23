@@ -70,7 +70,7 @@ func (s *Server) handleVaultToken(ctx context.Context, r *http.Request, w http.R
 	span.SetAttributes(attribute.Stringer("auth.token_ttl", tokenTTL))
 
 	// TODO maybe parameterize this
-	if sess != nil && tokenTTL < (24*time.Hour) {
+	if sess != nil && tokenTTL < (48*time.Hour) {
 		creationTTL, ok := sess.Values["creation_ttl"]
 		if !ok {
 			creationTTL = 48 * 3600

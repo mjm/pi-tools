@@ -19,7 +19,7 @@ resource "vault_generic_endpoint" "webauthn_config" {
     display_name = "Matt's Homelab"
     id           = "home.mattmoriarity.com"
     origin       = "https://auth.home.mattmoriarity.com"
-    token_ttl    = 259200
+    token_ttl    = 436800
   })
 
   disable_delete       = true
