@@ -3,6 +3,8 @@
 # Load secrets into the environment
 . /opt/.env.sh
 
+export PATH="${PATH}:/usr/local/bin"
+
 cd /opt/homelab
 bin/homelab stop >/dev/null 2>&1 || echo "Homelab app not already running"
 
