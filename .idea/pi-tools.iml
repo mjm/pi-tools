@@ -16,6 +16,7 @@
     <content url="file://$MODULE_DIR$/../homelab_umbrella">
       <excludeFolder url="file://$MODULE_DIR$/../homelab_umbrella/.elixir_ls" />
       <excludeFolder url="file://$MODULE_DIR$/../homelab_umbrella/_build" />
+      <excludeFolder url="file://$MODULE_DIR$/../homelab_umbrella/apps/homelab_web/priv/static/assets" />
     </content>
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/bazel-bin" />
@@ -43,5 +44,6 @@
     <orderEntry type="library" name="plug" level="project" />
     <orderEntry type="library" name="plug_crypto" level="project" />
     <orderEntry type="library" name="telemetry" level="project" />
+    <orderEntry type="library" name="phoenix_html" level="project" />
   </component>
 </module>

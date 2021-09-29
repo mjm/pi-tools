@@ -1,7 +1,21 @@
 <component name="libraryTable">
   <library name="plug_crypto" type="mix">
-    <CLASSES />
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/lib/plug_crypto/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/prod/lib/plug_crypto/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/plug_crypto/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/lib/plug_crypto/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/prod/lib/plug_crypto/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/plug_crypto/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+    </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/plug_crypto/lib" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/plug_crypto/lib" />
+    </SOURCES>
   </library>
 </component>

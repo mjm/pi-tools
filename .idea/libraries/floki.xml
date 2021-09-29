@@ -1,0 +1,19 @@
+<component name="libraryTable">
+  <library name="floki" type="mix">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/floki/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/floki/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/floki/lib" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/floki/src" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/floki/lib" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/floki/src" />
+    </SOURCES>
+  </library>
+</component>

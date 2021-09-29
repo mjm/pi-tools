@@ -1,0 +1,21 @@
+<component name="libraryTable">
+  <library name="ecto_sql" type="mix">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/lib/ecto_sql/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/prod/lib/ecto_sql/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/ecto_sql/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/lib/ecto_sql/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/prod/lib/ecto_sql/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/ecto_sql/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/ecto_sql/lib" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/ecto_sql/lib" />
+    </SOURCES>
+  </library>
+</component>

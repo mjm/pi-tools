@@ -1,17 +1,17 @@
 <component name="libraryTable">
-  <library name="junit_formatter" type="mix">
+  <library name="html_entities" type="mix">
     <CLASSES>
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
-      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/junit_formatter/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/html_entities/ebin" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
-      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/junit_formatter/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/html_entities/ebin" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/junit_formatter/lib" />
-      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/junit_formatter/lib" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/html_entities/lib" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/html_entities/lib" />
     </SOURCES>
   </library>
 </component>

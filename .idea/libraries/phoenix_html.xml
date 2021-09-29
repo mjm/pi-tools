@@ -1,0 +1,23 @@
+<component name="libraryTable">
+  <library name="phoenix_html" type="mix">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/lib/phoenix_html/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/prod/lib/phoenix_html/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/phoenix_html/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/lib/phoenix_html/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/prod/lib/phoenix_html/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/phoenix_html/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/phoenix_html/lib" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/phoenix_html/priv" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/phoenix_html/lib" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/phoenix_html/priv" />
+    </SOURCES>
+  </library>
+</component>
