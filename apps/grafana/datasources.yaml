@@ -8,6 +8,7 @@ datasources:
     isDefault: true
     version: 1
     editable: false
+    uid: prom_homelab
   - name: Loki
     type: loki
     access: proxy
