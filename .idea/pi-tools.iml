@@ -45,5 +45,6 @@
     <orderEntry type="library" name="plug_crypto" level="project" />
     <orderEntry type="library" name="telemetry" level="project" />
     <orderEntry type="library" name="phoenix_html" level="project" />
+    <orderEntry type="library" name="telemetry_poller" level="project" />
   </component>
 </module>

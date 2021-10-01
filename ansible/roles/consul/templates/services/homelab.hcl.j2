@@ -3,6 +3,10 @@ service {
   port    = 4000
   address = "10.0.2.114"
 
+  meta = {
+    metrics_path = "/metrics"
+  }
+
   checks = [
     {
       name     = "homelab is ready"

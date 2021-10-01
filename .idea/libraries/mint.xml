@@ -1,0 +1,18 @@
+<component name="libraryTable">
+  <library name="mint" type="mix">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/lib/mint/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/mint/lib" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/mint/src" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/mint/lib" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/mint/src" />
+    </SOURCES>
+  </library>
+</component>
