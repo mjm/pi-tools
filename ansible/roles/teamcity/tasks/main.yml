@@ -5,9 +5,11 @@
   loop:
     - bash
     - bazel
+    - cmake
     - elixir
     - git
     - gtar
+    - linux_base-c7
     - node14
     - npm-node14
     - openjdk11-jre
