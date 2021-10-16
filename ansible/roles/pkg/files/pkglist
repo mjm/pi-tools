@@ -16,6 +16,7 @@ dns/bind916
 editors/neovim
 emulators/linux_base-c7
 ftp/curl
+graphics/drm-kmod
 graphics/py-pillow
 irc/znc
 java/openjdk11-jre
@@ -65,3 +66,11 @@ www/npm-node14
 www/py-autobahn
 www/yarn-node14
 www/youtube_dl
+x11/kde5
+x11/linux-nvidia-libs
+x11/nvidia-driver
+x11/nvidia-settings
+x11/sddm
+x11/xorg
+x11-fonts/mkfontscale
+x11-fonts/urwfonts
