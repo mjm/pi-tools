@@ -20,6 +20,8 @@ graphics/drm-kmod
 graphics/py-pillow
 irc/znc
 java/openjdk11-jre
+java/linux-oracle-jdk18
+java/linux-oracle-jre18
 lang/elixir
 lang/go
 math/py-numpy
