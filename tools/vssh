@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # In case this is being run from a random directory outside this repo
 export VAULT_ADDR=http://vault.service.consul:8200
