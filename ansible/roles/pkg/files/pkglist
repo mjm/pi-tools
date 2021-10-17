@@ -21,6 +21,7 @@ graphics/py-pillow
 irc/znc
 java/openjdk11-jre
 lang/elixir
+lang/go
 math/py-numpy
 misc/nnn
 net-mgmt/alertmanager
@@ -45,6 +46,7 @@ sysutils/ansible-sshjail
 sysutils/ansible-sysrc
 sysutils/bhyve-firmware
 sysutils/consul
+sysutils/direnv
 sysutils/ezjail
 sysutils/grub2-bhyve
 sysutils/iocage
@@ -58,12 +60,15 @@ sysutils/tmux
 sysutils/vm-bhyve
 sysutils/zfs-periodic
 textproc/consul-template
+textproc/fzf
 textproc/py-pikepdf
+www/firefox
 www/minio
 www/nginx
 www/node14
 www/npm-node14
 www/py-autobahn
+www/py-httpie
 www/yarn-node14
 www/youtube_dl
 x11/kde5
