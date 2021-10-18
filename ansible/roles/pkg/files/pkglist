@@ -80,4 +80,6 @@ x11/nvidia-settings
 x11/sddm
 x11/xorg
 x11-fonts/mkfontscale
+x11-fonts/noto-emoji
+x11-fonts/twemoji-color-font-ttf
 x11-fonts/urwfonts
