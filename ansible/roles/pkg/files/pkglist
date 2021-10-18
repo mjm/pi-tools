@@ -37,6 +37,7 @@ science/py-scikit-learn
 security/ca_root_nss
 security/sudo
 security/tailscale
+security/u2f-devd
 security/vault
 shells/starship
 shells/zsh
