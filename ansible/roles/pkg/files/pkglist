@@ -67,6 +67,7 @@ sysutils/zfs-periodic
 textproc/consul-template
 textproc/fzf
 textproc/py-pikepdf
+www/chromium
 www/firefox
 www/minio
 www/nginx
