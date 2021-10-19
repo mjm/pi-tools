@@ -54,6 +54,7 @@ sysutils/direnv
 sysutils/ezjail
 sysutils/fswatch-mon
 sysutils/grub2-bhyve
+sysutils/inotify-tools
 sysutils/iocage
 sysutils/jail_exporter
 sysutils/node_exporter
