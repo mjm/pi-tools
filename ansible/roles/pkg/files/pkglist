@@ -52,6 +52,7 @@ sysutils/bhyve-firmware
 sysutils/consul
 sysutils/direnv
 sysutils/ezjail
+sysutils/fswatch-mon
 sysutils/grub2-bhyve
 sysutils/iocage
 sysutils/jail_exporter
