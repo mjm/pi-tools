@@ -115,6 +115,7 @@ jails:
       sysvshm = new;
     extra_mounts: |
       /usr/jails/shared/homelab /usr/jails/ci1/shared/homelab nullfs 0 0
+      linprocfs   /usr/jails/ci1/compat/linux/proc   linprocfs   rw   0  0
 
   - name: homelab1
     ips:

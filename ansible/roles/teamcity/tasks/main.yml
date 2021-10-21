@@ -10,6 +10,7 @@
     - git
     - gtar
     - linux_base-c7
+    - linux-oracle-jre18
     - node14
     - npm-node14
     - openjdk11-jre
@@ -47,3 +48,5 @@
     creates: /opt/TeamCity
     owner: teamcity
     group: teamcity
+
+# TODO install dynamodb
