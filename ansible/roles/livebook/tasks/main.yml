@@ -1,0 +1,26 @@
+- name: Install necessary packages
+  package:
+    name: elixir
+    state: present
+
+- name: Install Livebook RC script
+  copy:
+    src: livebook.sh
+    dest: /usr/local/etc/rc.d/livebook
+    mode: 0755
+    owner: root
+    group: wheel
+
+- name: Enable and configure Livebook
+  copy:
+    src: rc.livebook.conf
+    dest: /etc/rc.conf.d/livebook
+    mode: 0644
+    owner: root
+    group: wheel
+
+- name: Ensure Livebook is running and starts at boot
+  service:
+    name: livebook
+    enabled: true
+    state: started

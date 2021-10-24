@@ -62,3 +62,8 @@
   become: true
   roles:
     - role: homelab
+
+- hosts: livebook1
+  become: true
+  roles:
+    - role: livebook
