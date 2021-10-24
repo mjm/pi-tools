@@ -1,0 +1,16 @@
+service {
+  name    = "livebook"
+  port    = 8080
+  address = "10.0.2.115"
+
+  checks = [
+    {
+      name     = "livebook is ready"
+      tcp      = "10.0.2.114:4000"
+      interval = "10s"
+      timeout  = "5s"
+
+      failures_before_critical = 3
+    }
+  ]
+}

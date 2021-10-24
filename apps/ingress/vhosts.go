@@ -236,6 +236,22 @@ var virtualHosts = []virtualHost{
 `,
 	},
 	{
+		Name: "livebook",
+		Upstream: upstream{
+			Name:        "livebook",
+			ServiceName: "livebook",
+		},
+		CustomLocationConfig: `
+    proxy_http_version  1.1;
+    proxy_set_header    Host $server_name:$server_port;
+    proxy_set_header    X-Forwarded-Host $http_host;
+    proxy_set_header    X-Forwarded-Proto $scheme;
+    proxy_set_header    X-Forwarded-For $remote_addr;
+    proxy_set_header    Upgrade $http_upgrade; # WebSocket support
+    proxy_set_header    Connection $connection_upgrade; # WebSocket support
+`,
+	},
+	{
 		Name: "adminer",
 		Upstream: upstream{
 			Name:        "adminer",
