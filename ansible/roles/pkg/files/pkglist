@@ -19,6 +19,7 @@ emulators/linux_base-c7
 ftp/curl
 graphics/drm-kmod
 graphics/py-pillow
+irc/konversation
 irc/znc
 java/openjdk11-jre
 java/linux-oracle-jdk18
