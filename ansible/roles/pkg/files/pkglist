@@ -13,6 +13,7 @@ devel/phabricator
 devel/py-lxml
 devel/py-pip
 devel/rebar3
+devel/zeal
 dns/bind916
 editors/neovim
 emulators/linux_base-c7
