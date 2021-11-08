@@ -42,6 +42,7 @@ security/sudo
 security/tailscale
 security/u2f-devd
 security/vault
+security/yubikey-agent
 shells/starship
 shells/zsh
 shells/zsh-autosuggestions
