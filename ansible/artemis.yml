@@ -8,6 +8,7 @@
     - role: dns
     - role: consul
     - role: mail
+    - role: ssl
 
 - hosts: jails
   become: true
@@ -17,6 +18,7 @@
     - role: logging
     - role: dns
     - role: vault
+    - role: ssl
 
 - hosts: metrics1, dns
   become: true

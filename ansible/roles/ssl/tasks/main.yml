@@ -1,0 +1,4 @@
+- name: Download homelab CA into place
+  get_url:
+    url: http://vault.service.consul:8200/v1/pki-homelab/ca/pem
+    dest: /etc/ssl/homelab.pem
