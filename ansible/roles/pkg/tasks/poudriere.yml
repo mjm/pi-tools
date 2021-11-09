@@ -6,6 +6,11 @@
     owner: root
     group: wheel
 
+- name: Install ccache
+  package:
+    name: ccache
+    state: present
+
 - name: Configure poudriere
   copy:
     src: poudriere.conf
