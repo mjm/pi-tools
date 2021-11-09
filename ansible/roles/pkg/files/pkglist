@@ -8,6 +8,7 @@ deskutils/plasma5-sddm-kcm
 deskutils/py-paperless-ng
 devel/arcanist
 devel/bazel
+devel/ccache
 devel/git
 devel/phabricator
 devel/py-lxml

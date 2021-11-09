@@ -1,0 +1,23 @@
+- name: Copy package list
+  copy:
+    src: pkglist
+    dest: /usr/local/etc/pkglist
+    mode: 0644
+    owner: root
+    group: wheel
+
+- name: Configure poudriere
+  copy:
+    src: poudriere.conf
+    dest: /usr/local/etc/poudriere.conf
+    mode: 0644
+    owner: root
+    group: wheel
+
+- name: Install periodic rebuild job
+  copy:
+    src: poudriere-rebuild.sh
+    dest: /usr/local/etc/periodic/daily/750.poudriere-rebuild
+    mode: 0755
+    owner: root
+    group: wheel
