@@ -4,9 +4,6 @@
   register: installed_consul_version
   changed_when: false
 
-# Not properly detecting the current version in this alpha, so it's downloading this binary everytime.
-# It's slow and a waste of bandwidth, so comment this until we intend to upgrade.
-#
 - name: Install Consul {{ consul_version }}
   unarchive:
     src: https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_arm64.zip
