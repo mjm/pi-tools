@@ -53,7 +53,7 @@ client {
   max_kill_timeout = "10m"
 
   meta {
-    "connect.sidecar_image" = "envoyproxy/envoy:v1.16.2"
+    "connect.sidecar_image" = "envoyproxy/envoy:v1.20.1"
   }
 
   host_volume "pihole_data" {
