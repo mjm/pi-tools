@@ -1,6 +1,6 @@
 - name: Install necessary packages
   package:
-    name: elixir
+    name: elixir-devel
     state: present
 
 - name: Install Livebook RC script
