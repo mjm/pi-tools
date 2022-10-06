@@ -64,7 +64,7 @@ fi
 pidfile=/var/run/livebook.pid
 procname="/opt/livebook/.mix/escripts/livebook"
 command="/usr/sbin/daemon"
-command_args="-f -t ${name} ${livebook_syslog_output_flags} -p ${pidfile} -r /usr/bin/env HOME=/opt/livebook USER=${livebook_user} ${livebook_env} ${procname} server --no-token --ip ${livebook_listen_ip} --port ${livebook_listen_port} --root-path ${livebook_root_data_path}"
+command_args="-f -t ${name} ${livebook_syslog_output_flags} -p ${pidfile} -r /usr/bin/env HOME=/opt/livebook USER=${livebook_user} ${livebook_env} ${procname} server --no-token --ip ${livebook_listen_ip} --port ${livebook_listen_port} --home ${livebook_root_data_path}"
 
 livebook_chdir="/opt/livebook"
 start_precmd=livebook_startprecmd
