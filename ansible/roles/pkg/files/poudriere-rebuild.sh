@@ -14,7 +14,7 @@ fi
 # The build
 POUDRIERE="/usr/local/bin/poudriere"
 PORTLIST="/usr/local/etc/pkglist"
-JAILS="amd64-13-0"
+JAILS="amd64-13-1"
 REPOS="current"
 URL="https://pkg.home.mattmoriarity.com"
 
