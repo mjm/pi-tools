@@ -1,7 +1,7 @@
 ---
 ansible_user: matt
 ansible_host: artemis.homelab
-ansible_python_interpreter: /usr/local/bin/python3.8
+ansible_python_interpreter: /usr/local/bin/python3.9
 
 default_ip: 10.0.2.10
 tailscale_ip: 100.75.195.24
@@ -37,7 +37,6 @@ fastmail_password: !vault |
   62323065383463663431666134303631663061663436393635613338353937663162
 
 jails:
-
   - name: sandbox
     ips:
       - re0|10.0.2.100
@@ -130,4 +129,3 @@ jails:
     ips:
       - re0|10.0.2.115
       - lo1|126.0.16.1
-
