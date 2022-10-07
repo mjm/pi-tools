@@ -1,6 +1,6 @@
 - name: Install necessary packages
   package:
-    name: '{{ item }}'
+    name: "{{ item }}"
     state: present
   loop:
     - bash
@@ -15,8 +15,8 @@
     - npm-node14
     - openjdk11-jre
     - postgresql13-server
-    - py38-ansible
-    - py38-ansible-sysrc
+    - py39-ansible
+    - py39-ansible-sysrc
     - yarn-node14
 
 - name: Create teamcity group
@@ -48,5 +48,4 @@
     creates: /opt/TeamCity
     owner: teamcity
     group: teamcity
-
 # TODO install dynamodb
