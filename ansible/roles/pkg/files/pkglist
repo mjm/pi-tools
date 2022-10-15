@@ -18,6 +18,7 @@ devel/zeal
 dns/bind916
 editors/neovim
 emulators/linux_base-c7
+emulators/virtualbox-ose-additions
 ftp/curl
 graphics/drm-kmod
 graphics/py-pillow
