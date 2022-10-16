@@ -17,6 +17,7 @@ devel/rebar3
 devel/zeal
 dns/bind916
 editors/neovim
+editors/vscode
 emulators/linux_base-c7
 emulators/virtualbox-ose-additions
 ftp/curl
