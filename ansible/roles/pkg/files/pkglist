@@ -79,7 +79,9 @@ www/chromium
 www/firefox
 www/minio
 www/nginx
+www/node
 www/node14
+www/npm
 www/npm-node14
 www/py-autobahn
 www/py-httpie
