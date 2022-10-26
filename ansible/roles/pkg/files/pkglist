@@ -55,6 +55,7 @@ shells/zsh-syntax-highlighting
 sysutils/ansible
 sysutils/ansible-sshjail
 sysutils/ansible-sysrc
+sysutils/bastille
 sysutils/bhyve-firmware
 sysutils/consul
 sysutils/direnv
