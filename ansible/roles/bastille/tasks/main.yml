@@ -1,6 +1,7 @@
 - name: Install Bastille
-  pkg:
+  package:
     name: bastille
+    state: present
 
 - name: Create templates directory
   file:
