@@ -1,7 +1,7 @@
 # Set up package repos and mount them in from the host
 CMD mkdir -p /usr/local/etc/pkg
 CP repos /usr/local/etc/pkg/
-MOUNT /usr/local/poudriere/data/logs /usr/local/poudriere/data/logs nullfs 0 0
+MOUNT /usr/local/poudriere/data/logs /usr/local/poudriere/data/logs nullfs ro 0 0
 
 PKG nginx
 SYSRC nginx_enable=YES
