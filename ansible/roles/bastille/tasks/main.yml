@@ -1,0 +1,40 @@
+- name: Install Bastille
+  pkg:
+    name: bastille
+
+- name: Create templates directory
+  file:
+    path: /usr/local/bastille/templates/mjm
+    state: directory
+    mode: 0755
+    owner: root
+    group: wheel
+
+
+###
+# Install files for remote pkg template
+###
+
+- name: Install remote pkg Bastillefile
+  copy:
+    src: Bastillefile.pkg
+    dest: /usr/local/bastille/templates/mjm/pkg/Bastillefile
+    mode: 0644
+    owner: root
+    group: wheel
+
+- name: Disable default FreeBSD package repo
+  copy:
+    src: FreeBSD.conf
+    dest: /usr/local/bastille/templates/mjm/pkg/usr/local/etc/pkg/repos/FreeBSD.conf
+    mode: 0644
+    owner: root
+    group: wheel
+
+- name: Install remote package repo config
+  copy:
+    src: amd64-current-remote.conf
+    dest: /usr/local/bastille/templates/mjm/pkg/usr/local/etc/pkg/repos/amd64-current-remote.conf
+    mode: 0644
+    owner: root
+    group: wheel

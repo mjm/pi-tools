@@ -3,6 +3,7 @@
   roles:
     - role: pkg
     - role: logging
+    - role: bastille
     - role: nut
     - role: jail
     - role: dns
