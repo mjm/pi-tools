@@ -4,7 +4,7 @@ CP repos /usr/local/etc/pkg/
 MOUNT /usr/local/poudriere/data/logs /usr/local/poudriere/data/logs nullfs ro 0 0
 MOUNT /usr/local/poudriere/data/packages /usr/local/poudriere/data/packages nullfs ro 0 0
 
-PKG nginx
+PKG nginx poudriere
 SYSRC nginx_enable=YES
 CP nginx.conf /usr/local/etc/nginx/nginx.conf
 SERVICE nginx start
