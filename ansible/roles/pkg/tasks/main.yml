@@ -38,3 +38,7 @@
 - include_tasks: poudriere.yml
   # sloppy way of only doing this on artemis and not in each jail
   when: inventory_hostname == 'artemis'
+
+- include_tasks: bastille.yml
+  # sloppy way of only doing this on artemis and not in each jail
+  when: inventory_hostname == 'artemis'

@@ -1,0 +1,6 @@
+- name: Install pkg-server Bastille template
+  copy:
+    src: pkg-server/
+    dest: /usr/local/bastille/templates/mjm/pkg-server
+    owner: root
+    group: wheel

@@ -1,0 +1,9 @@
+# Set up package repos and mount them in from the host
+CMD mkdir -p /usr/local/etc/pkg
+CP repos /usr/local/etc/pkg/
+MOUNT /usr/local/poudriere/data/logs /usr/local/poudriere/data/logs nullfs 0 0
+
+PKG nginx
+SYSRC nginx_enable=YES
+CP nginx.conf /usr/local/etc/nginx/nginx.conf
+SERVICE nginx start
