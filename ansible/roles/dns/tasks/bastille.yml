@@ -15,7 +15,7 @@
 - name: Install zone DB templates
   template:
     src: "{{ item.0 }}.{{ item.1 }}.db.tpl.j2"
-    dest: "/usr/local/bastille/templates/mjm/dns-server-{{ item.1 }}/{{ item.0 }}.db.tpl"
+    dest: "/usr/local/bastille/templates/mjm/dns-server-{{ item.1 }}/{{ item.0 }}.db"
     mode: 0644
     owner: root
     group: wheel
