@@ -3,3 +3,6 @@
 
 - include_tasks: server.yml
   when: logging_mode == 'server'
+
+- include_tasks: bastille.yml
+  when: inventory_hostname == 'artemis'

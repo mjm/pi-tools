@@ -1,0 +1,11 @@
+INCLUDE mjm/pkg
+
+PKG syslog-ng
+SYSRC syslogd_enable=NO
+SYSRC syslog_ng_enable=YES
+
+CP syslog-ng.conf /usr/local/etc/syslog-ng.conf
+CMD mkdir -p /usr/local/etc/syslog-ng.d
+CP promtail.conf /usr/local/etc/syslog-ng.d
+
+SERVICE syslog-ng start
