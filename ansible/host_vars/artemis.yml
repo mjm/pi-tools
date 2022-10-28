@@ -74,13 +74,6 @@ jails:
       - re0|10.0.2.106
       - lo1|127.0.7.1
 
-  - name: pkg1
-    ips:
-      - re0|10.0.2.107
-      - lo1|127.0.8.1
-    extra_mounts: |
-      /usr/local/poudriere/data/logs /usr/jails/pkg1/usr/local/poudriere/data/logs nullfs 0 0
-
   - name: irc1
     ips:
       - re0|10.0.2.108

@@ -1,4 +1,0 @@
----
-ansible_ssh_host: pkg1@artemis.homelab
-
-setup_pkg_server: true
