@@ -1,0 +1,11 @@
+INCLUDE mjm/pkg
+INCLUDE mjm/log
+
+PKG bind916 bind_exporter
+SYSRC named_enable=YES
+SYSRC bind_exporter_enable=YES
+SYSRC bind_exporter_stats_url=http://${_jail_ip}:8053/
+
+CP named.conf /usr/local/etc/namedb
+RENDER /usr/local/etc/namedb/named.conf
+

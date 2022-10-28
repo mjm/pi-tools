@@ -1,0 +1,6 @@
+- name: Install dns-server Bastille template
+  copy:
+    src: dns-server/
+    dest: /usr/local/bastille/templates/mjm/dns-server
+    owner: root
+    group: wheel
