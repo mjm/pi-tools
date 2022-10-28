@@ -4,9 +4,11 @@ PKG consul-template
 SYSRC consul_template_enable=YES
 SYSRC consul_template_syslog_output_enable=YES
 # :hackerman: injects the -r argument to /usr/sbin/daemon so consul-template gets restarted automatically if it dies
-SYSRC consul_template_syslog_output_facility=\"daemon -r\"
+SYSRC consul_template_syslog_output_facility=daemon\ -r
 
 CMD mkdir -p /usr/local/etc/consul-template.d
 CMD chmod 0700 /usr/local/etc/consul-template.d
 CP common.hcl /usr/local/etc/consul-template.d
-RENDER common.hcl
+RENDER /usr/local/etc/consul-template.d/common.hcl
+
+SERVICE consul-template start
