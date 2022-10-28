@@ -1,5 +1,6 @@
 INCLUDE mjm/pkg
 INCLUDE mjm/log
+INCLUDE mjm/consul-template
 
 PKG bind916 bind_exporter
 SYSRC named_enable=YES

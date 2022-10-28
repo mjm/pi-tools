@@ -24,3 +24,10 @@
     dest: /usr/local/bastille/templates/mjm/log
     owner: root
     group: wheel
+
+- name: Install consul-template Bastille template
+  copy:
+    src: consul-template/
+    dest: /usr/local/bastille/templates/mjm/consul-template
+    owner: root
+    group: wheel
