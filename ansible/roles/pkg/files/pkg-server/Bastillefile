@@ -1,3 +1,5 @@
+INCLUDE mjm/log
+
 # Set up package repos and mount them in from the host
 CMD mkdir -p /usr/local/etc/pkg
 CP repos /usr/local/etc/pkg/

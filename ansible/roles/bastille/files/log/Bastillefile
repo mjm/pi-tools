@@ -1,0 +1,3 @@
+CMD mkdir -p /usr/local/etc/syslog.d
+CP remote.conf /usr/local/etc/syslog.d
+SERVICE syslogd start

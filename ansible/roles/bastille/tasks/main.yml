@@ -11,9 +11,16 @@
     owner: root
     group: wheel
 
-- name: Install Bastille template pkg
+- name: Install pkg Bastille template
   copy:
     src: pkg/
     dest: /usr/local/bastille/templates/mjm/pkg
+    owner: root
+    group: wheel
+
+- name: Install log Bastille template
+  copy:
+    src: log/
+    dest: /usr/local/bastille/templates/mjm/log
     owner: root
     group: wheel
