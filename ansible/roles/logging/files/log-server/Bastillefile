@@ -7,5 +7,7 @@ SYSRC syslog_ng_enable=YES
 CP syslog-ng.conf /usr/local/etc/syslog-ng.conf
 CMD mkdir -p /usr/local/etc/syslog-ng.d
 CP promtail.conf /usr/local/etc/syslog-ng.d
+RENDER /usr/local/etc/syslog-ng.d/promtail.conf
 
+SERVICE syslogd stop
 SERVICE syslog-ng start
