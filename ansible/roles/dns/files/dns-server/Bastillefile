@@ -9,9 +9,14 @@ SYSRC bind_exporter_stats_url=http://${_jail_ip}:8053/
 
 CP named.conf /usr/local/etc/namedb
 CP named.forwarders.conf.tpl /usr/local/etc/namedb
+CP named.default-zones.conf /usr/local/etc/namedb
 RENDER /usr/local/etc/namedb/named.conf
+
+CP dns.hcl /usr/local/etc/consul-template.d
+CMD pkill -HUP consul-template
+
 CMD mkdir -p /usr/local/etc/namedb/master
-CMD touch /usr/local/etc/namedb/master/homelab.db.tpl /usr/local/etc/named/master/home.mattmoriarity.com.db.tpl
+CMD touch /usr/local/etc/namedb/master/homelab.db.tpl /usr/local/etc/namedb/master/home.mattmoriarity.com.db.tpl
 
 SERVICE named start
 SERVICE bind_exporter start
