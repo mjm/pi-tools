@@ -4,3 +4,19 @@
     dest: /usr/local/bastille/templates/mjm/dns-server
     owner: root
     group: wheel
+
+- name: Install dns-server-local Bastille template
+  copy: 
+    src: dns-server-local/
+    dest: /usr/local/bastille/templates/mjm/dns-server-local
+    owner: root
+    group: wheel
+
+- name: Install zone DB templates
+  template:
+    src: "{{ item.0 }}.{{ item.1 }}.db.tpl.j2"
+    dest: "/usr/local/bastille/templates/mjm/dns-server-{{ item.1 }}/{{ item.0 }}.db.tpl"
+    mode: 0644
+    owner: root
+    group: wheel
+  loop: "{{ zone_names | product(['local']) | list }}"
