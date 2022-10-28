@@ -7,7 +7,8 @@ SYSRC named_enable=YES
 SYSRC bind_exporter_enable=YES
 SYSRC bind_exporter_stats_url=http://${_jail_ip}:8053/
 
-CP named.conf named.forwarders.conf.tpl /usr/local/etc/namedb
+CP named.conf /usr/local/etc/namedb
+CP named.forwarders.conf.tpl /usr/local/etc/namedb
 RENDER /usr/local/etc/namedb/named.conf
 CMD mkdir -p /usr/local/etc/namedb/master
 CMD touch /usr/local/etc/namedb/master/homelab.db.tpl /usr/local/etc/named/master/home.mattmoriarity.com.db.tpl
