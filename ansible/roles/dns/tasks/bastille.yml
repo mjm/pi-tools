@@ -12,6 +12,13 @@
     owner: root
     group: wheel
 
+- name: Install dns-server-tailscale Bastille template
+  copy: 
+    src: dns-server-tailscale/
+    dest: /usr/local/bastille/templates/mjm/dns-server-tailscale
+    owner: root
+    group: wheel
+
 - name: Install zone DB templates
   template:
     src: "{{ item.0 }}.{{ item.1 }}.db.tpl.j2"
@@ -19,4 +26,4 @@
     mode: 0644
     owner: root
     group: wheel
-  loop: "{{ zone_names | product(['local']) | list }}"
+  loop: "{{ zone_names | product(['local', 'tailscale']) | list }}"
