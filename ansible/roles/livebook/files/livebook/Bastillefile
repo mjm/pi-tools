@@ -1,10 +1,10 @@
 INCLUDE mjm/pkg
 INCLUDE mjm/log
 
-PKG elixir-devel
+PKG elixir-devel erlang
 
 CMD mix do local.rebar --force, local.hex --force
-CMD mix escript.install hex livebook
+CMD mix escript.install hex livebook --force
 
 CP livebook.sh /usr/local/etc/rc.d/livebook
 SYSRC livebook_enable=YES
