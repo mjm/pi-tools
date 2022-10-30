@@ -1,0 +1,14 @@
+INCLUDE mjm/pkg
+INCLUDE mjm/log
+
+PKG elixir-devel
+
+CMD mix do local.rebar --force, local.hex --force
+CMD mix escript.install hex livebook
+
+CP livebook.sh /usr/local/etc/rc.d/livebook
+SYSRC livebook_enable=YES
+SYSRC livebook_listen_ip=${_jail_ip}
+SYSRC livebook_syslog_output_enable=YES
+
+SERVICE livebook start

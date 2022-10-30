@@ -4,6 +4,7 @@
     - role: pkg
     - role: logging
     - role: bastille
+    - role: livebook
     - role: nut
     - role: jail
     - role: dns

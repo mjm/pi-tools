@@ -1,0 +1,6 @@
+- name: Install livebook Bastille template
+  copy:
+    src: livebook/
+    dest: /usr/local/bastille/templates/mjm/livebook
+    owner: root
+    group: wheel
