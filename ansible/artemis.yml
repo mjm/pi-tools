@@ -22,16 +22,11 @@
     - role: vault
     - role: ssl
 
-- hosts: metrics1, dns
-  become: true
-  gather_facts: false
-  roles:
-    - role: consul-template
-
 - hosts: metrics1
   become: true
   gather_facts: false
   roles:
+    - role: consul-template
     - role: prometheus
 
 - hosts: minio1
