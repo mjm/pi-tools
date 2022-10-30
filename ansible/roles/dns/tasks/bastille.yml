@@ -19,11 +19,20 @@
     owner: root
     group: wheel
 
-- name: Install zone DB templates
+- name: Install local zone DB templates
   template:
-    src: "{{ item.0 }}.{{ item.1 }}.db.tpl.j2"
-    dest: "/usr/local/bastille/templates/mjm/dns-server-{{ item.1 }}/{{ item.0 }}.db"
+    src: "{{ item }}.local.db.tpl.j2"
+    dest: "/usr/local/bastille/templates/mjm/dns-server-local/{{ item }}.db"
     mode: 0644
     owner: root
     group: wheel
-  loop: "{{ zone_names | product(['local', 'tailscale']) | list }}"
+  loop: "{{ zone_names }}"
+
+- name: Install tailscale zone DB templates
+  template:
+    src: "{{ item }}.tailscale.db.tpl.j2"
+    dest: "/usr/local/bastille/templates/mjm/dns-server-tailscale/{{ item }}.db.tpl"
+    mode: 0644
+    owner: root
+    group: wheel
+  loop: "{{ zone_names }}"
