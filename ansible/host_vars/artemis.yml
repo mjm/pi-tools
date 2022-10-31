@@ -102,8 +102,3 @@ jails:
 
     extra_mounts: |
       /usr/jails/shared/homelab /usr/jails/homelab1/shared/homelab nullfs 0 0
-
-  - name: livebook1
-    ips:
-      - re0|10.0.2.115
-      - lo1|126.0.16.1
