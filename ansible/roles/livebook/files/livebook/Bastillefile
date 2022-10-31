@@ -3,7 +3,7 @@ INCLUDE mjm/log
 
 PKG elixir-devel erlang
 
-CMD pw user add -n livebook -d /opt/livebook -m
+CMD id livebook || pw user add -n livebook -d /opt/livebook -m
 
 CMD su - livebook -c 'mix do local.rebar --force, local.hex --force'
 CMD su - livebook -c 'mix escript.install hex livebook --force'
