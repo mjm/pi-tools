@@ -5,13 +5,15 @@ PKG elixir-devel erlang
 
 CMD pw user add -n livebook -d /opt/livebook -m
 
-CMD su livebook -c 'mix do local.rebar --force, local.hex --force'
-CMD su livebook -c 'mix escript.install hex livebook --force'
+CMD su - livebook -c 'mix do local.rebar --force, local.hex --force'
+CMD su - livebook -c 'mix escript.install hex livebook --force'
 
 CP livebook.sh /usr/local/etc/rc.d/livebook
 CMD chmod +x /usr/local/etc/rc.d/livebook
 SYSRC livebook_enable=YES
 SYSRC livebook_listen_ip=${_jail_ip}
 SYSRC livebook_syslog_output_enable=YES
+
+MOUNT /var/db/livebook /var/db/livebook nullfs rw 0 0
 
 SERVICE livebook start
