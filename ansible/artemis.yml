@@ -6,6 +6,7 @@
     - role: bastille
     - role: livebook
     - role: minio
+    - role: vault
     - role: nut
     - role: jail
     - role: dns
