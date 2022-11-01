@@ -58,23 +58,29 @@ else
         teamcity_syslog_output_flags=""
 fi
 
-pidfile=/var/run/teamcity.pid
 procname="bin/teamcity-server.sh"
-command="/usr/sbin/daemon"
-command_args="-f -t ${name} ${teamcity_syslog_output_flags} -p ${pidfile} -r /usr/bin/env HOME=/opt/TeamCity USER=${teamcity_user} TEAMCITY_DATA_PATH=${teamcity_data_path} JRE_HOME=${teamcity_jre_home} ${teamcity_env} ${procname} run"
 
-teamcity_chdir="/opt/TeamCity"
 start_precmd=teamcity_startprecmd
+start_cmd=teamcity_start
+stop_cmd=teamcity_stop
 
 teamcity_startprecmd()
 {
-        if [ ! -e ${pidfile} ]; then
-                install -o ${teamcity_user} -g ${teamcity_group} /dev/null ${pidfile};
-        fi
-
         if [ ! -e ${teamcity_data_path} ]; then
                 install -d -o ${teamcity_user} -g ${teamcity_group} ${teamcity_data_path};
         fi
+}
+
+teamcity_start()
+{
+        cd /opt/TeamCity
+        /usr/bin/env HOME=/opt/TeamCity USER=${teamcity_user} TEAMCITY_DATA_PATH=${teamcity_data_path} JRE_HOME=${teamcity_jre_home} ${teamcity_env} ${procname} start
+}
+
+teamcity_stop()
+{
+        cd /opt/TeamCity
+        /usr/bin/env HOME=/opt/TeamCity USER=${teamcity_user} TEAMCITY_DATA_PATH=${teamcity_data_path} JRE_HOME=${teamcity_jre_home} ${teamcity_env} ${procname} stop
 }
 
 run_rc_command "$1"
