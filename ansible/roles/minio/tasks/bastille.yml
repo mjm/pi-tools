@@ -1,0 +1,6 @@
+- name: Install minio Bastille template
+  copy:
+    src: minio/
+    dest: /usr/local/bastille/templates/mjm/minio
+    owner: root
+    group: wheel

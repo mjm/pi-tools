@@ -1,26 +1,31 @@
-- name: Install necessary packages
-  package:
-    name: minio
-    state: present
+- block:
+  - name: Install necessary packages
+    package:
+      name: minio
+      state: present
 
-- name: Install /etc/rc.conf.d/minio
-  copy:
-    src: rc.minio.conf
-    dest: /etc/rc.conf.d/minio
-    mode: 0644
-    owner: root
-    group: wheel
+  - name: Install /etc/rc.conf.d/minio
+    copy:
+      src: rc.minio.conf
+      dest: /etc/rc.conf.d/minio
+      mode: 0644
+      owner: root
+      group: wheel
 
-- name: Set permissions on Minio database
-  file:
-    path: /var/db/minio
-    state: directory
-    mode: 0750
-    owner: minio
-    group: minio
+  - name: Set permissions on Minio database
+    file:
+      path: /var/db/minio
+      state: directory
+      mode: 0750
+      owner: minio
+      group: minio
 
-- name: Ensure services are running and start at boot
-  service:
-    name: minio
-    enabled: true
-    state: started
+  - name: Ensure services are running and start at boot
+    service:
+      name: minio
+      enabled: true
+      state: started
+  when: inventory_hostname != 'artemis'
+
+- include_tasks: bastille.yml
+  when: inventory_hostname == 'artemis'
