@@ -1,0 +1,26 @@
+ARG ROLE_ID=5108b274-5fc3-5f3d-96a1-f9fffc4d6256
+
+INCLUDE mjm/pkg
+INCLUDE mjm/log
+INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg USER=teamcity --arg GROUP=teamcity
+
+CMD id teamcity || pw user add -n teamcity -d /opt/TeamCity
+PKG bash bazel cmake elixir git gtar linux_base-c7 linux-oracle-jre18 node14 npm-node14 openjdk11-jre postgresql13-server py39-ansible py39-ansible-sysrc yarn-node14
+
+# Download and extract TeamCity
+CMD fetch https://download.jetbrains.com/teamcity/TeamCity-2022.10.tar.gz -o /tmp/TeamCity-2022.10.tar.gz
+CMD sha256 -c ad57db81ddd6804016270e195339cb1ed9961f4aa06dbad4631c021b306e4ccb /tmp/TeamCity-2022.10.tar.gz
+CMD tar -C /opt -xf /tmp/TeamCity-2022.10.tar.gz
+
+# Download PostgreSQL JDBC driver
+CMD fetch https://jdbc.postgresql.org/download/postgresql-42.5.0.jar -o /opt/TeamCity/lib/jdbc/postgresql-42.5.0.jar
+
+CP teamcity.sh /usr/local/etc/rc.d/teamcity
+CMD chmod +x /usr/local/etc/rc.d/teamcity
+SYSRC teamcity_enable=YES
+
+CP vault-agent.hcl /usr/local/etc/vault-agent.teamcity.hcl
+CMD cat /usr/local/etc/vault-agent.base.hcl /usr/local/etc/vault-agent.teamcity.hcl > /usr/local/etc/vault-agent.hcl
+
+SERVICE vault-agent start
+SERVICE teamcity start

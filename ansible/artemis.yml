@@ -7,6 +7,7 @@
     - role: livebook
     - role: minio
     - role: vault
+    - role: teamcity
     - role: nut
     - role: jail
     - role: dns

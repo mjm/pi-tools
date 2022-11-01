@@ -1,51 +1,56 @@
-- name: Install necessary packages
-  package:
-    name: "{{ item }}"
-    state: present
-  loop:
-    - bash
-    - bazel
-    - cmake
-    - elixir
-    - git
-    - gtar
-    - linux_base-c7
-    - linux-oracle-jre18
-    - node14
-    - npm-node14
-    - openjdk11-jre
-    - postgresql13-server
-    - py39-ansible
-    - py39-ansible-sysrc
-    - yarn-node14
+- block:
+  - name: Install necessary packages
+    package:
+      name: "{{ item }}"
+      state: present
+    loop:
+      - bash
+      - bazel
+      - cmake
+      - elixir
+      - git
+      - gtar
+      - linux_base-c7
+      - linux-oracle-jre18
+      - node14
+      - npm-node14
+      - openjdk11-jre
+      - postgresql13-server
+      - py39-ansible
+      - py39-ansible-sysrc
+      - yarn-node14
 
-- name: Create teamcity group
-  group:
-    name: teamcity
-    system: true
+  - name: Create teamcity group
+    group:
+      name: teamcity
+      system: true
 
-- name: Create teamcity user
-  user:
-    name: teamcity
-    group: teamcity
-    system: true
-    home: /opt/TeamCity
-    create_home: false
+  - name: Create teamcity user
+    user:
+      name: teamcity
+      group: teamcity
+      system: true
+      home: /opt/TeamCity
+      create_home: false
 
-- name: Create /opt directory
-  file:
-    path: /opt
-    state: directory
-    mode: 0755
-    owner: root
-    group: wheel
+  - name: Create /opt directory
+    file:
+      path: /opt
+      state: directory
+      mode: 0755
+      owner: root
+      group: wheel
 
-- name: Install TeamCity 2021.1.1
-  unarchive:
-    src: https://download.jetbrains.com/teamcity/TeamCity-2021.1.1.tar.gz
-    dest: /opt
-    remote_src: true
-    creates: /opt/TeamCity
-    owner: teamcity
-    group: teamcity
+  - name: Install TeamCity 2021.1.1
+    unarchive:
+      src: https://download.jetbrains.com/teamcity/TeamCity-2021.1.1.tar.gz
+      dest: /opt
+      remote_src: true
+      creates: /opt/TeamCity
+      owner: teamcity
+      group: teamcity
+  when: inventory_hostname != 'artemis'
 # TODO install dynamodb
+
+- include_tasks: bastille.yml
+  when: inventory_hostname == 'artemis'

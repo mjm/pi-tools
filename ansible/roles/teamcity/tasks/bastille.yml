@@ -1,0 +1,6 @@
+- name: Install teamcity Bastille template
+  copy:
+    src: teamcity/
+    dest: /usr/local/bastille/templates/mjm/teamcity
+    owner: root
+    group: wheel
