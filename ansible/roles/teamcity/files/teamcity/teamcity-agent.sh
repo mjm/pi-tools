@@ -65,12 +65,14 @@ stop_cmd=teamcity_agent_stop
 
 teamcity_agent_start()
 {
-        /usr/bin/env HOME=/opt/TeamCity USER=${teamcity_user} JRE_HOME=${teamcity_jre_home} ${teamcity_env} ${procname} start
+        cd /opt/TeamCity/buildAgent
+        /usr/bin/env HOME=/opt/TeamCity USER=${teamcity_agent_user} JRE_HOME=${teamcity_agent_jre_home} ${teamcity_agent_env} /usr/local/bin/bash ${procname} start
 }
 
 teamcity_agent_stop()
 {
-        /usr/bin/env HOME=/opt/TeamCity USER=${teamcity_user} JRE_HOME=${teamcity_jre_home} ${teamcity_env} ${procname} stop
+        cd /opt/TeamCity/buildAgent
+        /usr/bin/env HOME=/opt/TeamCity USER=${teamcity_agent_user} JRE_HOME=${teamcity_agent_jre_home} ${teamcity_agent_env} /usr/local/bin/bash ${procname} stop
 }
 
 run_rc_command "$1"
