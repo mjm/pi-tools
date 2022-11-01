@@ -8,12 +8,15 @@ CMD id teamcity || pw user add -n teamcity -d /opt/TeamCity
 PKG bash bazel cmake elixir git gtar linux_base-c7 linux-oracle-jre18 node14 npm-node14 openjdk11-jre postgresql13-server py39-ansible py39-ansible-sysrc yarn-node14
 
 # Download and extract TeamCity
-CMD fetch https://download.jetbrains.com/teamcity/TeamCity-2022.10.tar.gz -o /tmp/TeamCity-2022.10.tar.gz
+CMD fetch -m https://download.jetbrains.com/teamcity/TeamCity-2022.10.tar.gz -o /tmp/TeamCity-2022.10.tar.gz
 CMD sha256 -c ad57db81ddd6804016270e195339cb1ed9961f4aa06dbad4631c021b306e4ccb /tmp/TeamCity-2022.10.tar.gz
-CMD tar -C /opt -xf /tmp/TeamCity-2022.10.tar.gz
+# Only extract if the directory isn't already there
+CMD if [ ! -d "/opt/TeamCity" ]; then mkdir /opt && tar -C /opt -xf /tmp/TeamCity-2022.10.tar.gz; fi
+CMD chown -R teamcity:teamcity /opt/TeamCity
 
 # Download PostgreSQL JDBC driver
-CMD fetch https://jdbc.postgresql.org/download/postgresql-42.5.0.jar -o /opt/TeamCity/lib/jdbc/postgresql-42.5.0.jar
+CMD mkdir -p /opt/TeamCity/lib/jdbc
+CMD fetch -m https://jdbc.postgresql.org/download/postgresql-42.5.0.jar -o /opt/TeamCity/lib/jdbc/postgresql-42.5.0.jar
 
 CP teamcity.sh /usr/local/etc/rc.d/teamcity
 CMD chmod +x /usr/local/etc/rc.d/teamcity
