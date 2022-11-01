@@ -1,0 +1,18 @@
+ARG ROLE_ID
+ARG USER
+ARG GROUP
+
+PKG vault
+
+CP vault-agent.sh /usr/local/etc/rc.d/vault-agent
+CMD chmod +x /usr/local/etc/rc.d/vault-agent
+
+SYSRC vault_agent_enable=YES
+SYSRC vault_agent_user=${USER}
+SYSRC vault_agent_group=${GROUP}
+SYSRC vault_agent_syslog_output_enable=YES
+
+CP vault-agent.hcl /usr/local/etc/vault-agent.hcl
+CMD echo "${ROLE_ID}" > /usr/local/etc/vault_role_id
+
+# intentionally don't start vault-agent here, it won't have templates or anything yet
