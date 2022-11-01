@@ -49,11 +49,6 @@ jails:
     extra_config: |
       sysvshm = new;
 
-  - name: minio1
-    ips:
-      - re0|10.0.2.103
-      - lo1|127.0.4.1
-
   - name: metrics1
     ips:
       - re0|10.0.2.104

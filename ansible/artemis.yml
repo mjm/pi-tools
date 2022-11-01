@@ -5,6 +5,7 @@
     - role: logging
     - role: bastille
     - role: livebook
+    - role: minio
     - role: nut
     - role: jail
     - role: dns
@@ -28,12 +29,6 @@
   roles:
     - role: consul-template
     - role: prometheus
-
-- hosts: minio1
-  become: true
-  gather_facts: false
-  roles:
-    - role: minio
 
 - hosts: paperless1
   become: true
