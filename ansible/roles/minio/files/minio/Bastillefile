@@ -8,7 +8,7 @@ SYSRC minio_address=${JAIL_IP}:9000
 SYSRC minio_syslog_enable=YES
 SYSRC minio_env=MINIO_PROMETHEUS_AUTH_TYPE=public
 
-MKDIR -p /var/db/minio
+CMD mkdir -p /var/db/minio
 CMD chmod 0750 /var/db/minio
 CMD chown minio:minio /var/db/minio
 MOUNT /var/db/minio /var/db/minio nullfs rw 0 0
