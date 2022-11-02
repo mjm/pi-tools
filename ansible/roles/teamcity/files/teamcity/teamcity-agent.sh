@@ -59,20 +59,19 @@ procname="bin/agent.sh"
 #command="/usr/sbin/daemon"
 #command_args="-f -t ${name} ${teamcity_syslog_output_flags} -p ${pidfile} -r /usr/bin/env HOME=/opt/TeamCity USER=${teamcity_user} TEAMCITY_DATA_PATH=${teamcity_data_path} JRE_HOME=${teamcity_jre_home} ${teamcity_env} ${procname} run"
 
-teamcity_agent_chdir="/opt/TeamCity/buildAgent"
 start_cmd=teamcity_agent_start
 stop_cmd=teamcity_agent_stop
 
 teamcity_agent_start()
 {
         cd /opt/TeamCity/buildAgent
-        /usr/bin/env HOME=/opt/TeamCity USER=${teamcity_agent_user} JRE_HOME=${teamcity_agent_jre_home} ${teamcity_agent_env} /usr/local/bin/bash ${procname} start
+        su -m teamcity -c "/usr/bin/env HOME=/opt/TeamCity USER=${teamcity_agent_user} JRE_HOME=${teamcity_agent_jre_home} ${teamcity_agent_env} /usr/local/bin/bash ${procname} start"
 }
 
 teamcity_agent_stop()
 {
         cd /opt/TeamCity/buildAgent
-        /usr/bin/env HOME=/opt/TeamCity USER=${teamcity_agent_user} JRE_HOME=${teamcity_agent_jre_home} ${teamcity_agent_env} /usr/local/bin/bash ${procname} stop
+        su -m teamcity -c "/usr/bin/env HOME=/opt/TeamCity USER=${teamcity_agent_user} JRE_HOME=${teamcity_agent_jre_home} ${teamcity_agent_env} /usr/local/bin/bash ${procname} stop"
 }
 
 run_rc_command "$1"

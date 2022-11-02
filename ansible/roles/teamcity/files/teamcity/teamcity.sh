@@ -74,13 +74,13 @@ teamcity_startprecmd()
 teamcity_start()
 {
         cd /opt/TeamCity
-        /usr/bin/env HOME=/opt/TeamCity USER=${teamcity_user} TEAMCITY_DATA_PATH=${teamcity_data_path} JRE_HOME=${teamcity_jre_home} ${teamcity_env} ${procname} start
+        su -m teamcity -c "/usr/bin/env HOME=/opt/TeamCity USER=${teamcity_user} TEAMCITY_DATA_PATH=${teamcity_data_path} JRE_HOME=${teamcity_jre_home} ${teamcity_env} ${procname} start"
 }
 
 teamcity_stop()
 {
         cd /opt/TeamCity
-        /usr/bin/env HOME=/opt/TeamCity USER=${teamcity_user} TEAMCITY_DATA_PATH=${teamcity_data_path} JRE_HOME=${teamcity_jre_home} ${teamcity_env} ${procname} stop
+        su -m teamcity -c "/usr/bin/env HOME=/opt/TeamCity USER=${teamcity_user} TEAMCITY_DATA_PATH=${teamcity_data_path} JRE_HOME=${teamcity_jre_home} ${teamcity_env} ${procname} stop"
 }
 
 run_rc_command "$1"
