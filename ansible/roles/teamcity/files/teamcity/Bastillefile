@@ -29,6 +29,8 @@ SYSRC teamcity_agent_enable=YES
 CP vault-agent.hcl /usr/local/etc/vault-agent.teamcity.hcl
 CMD cat /usr/local/etc/vault-agent.base.hcl /usr/local/etc/vault-agent.teamcity.hcl > /usr/local/etc/vault-agent.hcl
 
+CMD if [ ! -f "/opt/TeamCity/.ssh/id_rsa" ]; then su - teamcity -c "ssh-keygen -t rsa -f /opt/TeamCity/.ssh/id_rsa -N ''"; fi
+
 SERVICE vault-agent start
 SERVICE teamcity start
 SERVICE teamcity-agent start
