@@ -38,6 +38,9 @@ CMD cat /usr/local/etc/vault-agent.base.hcl /usr/local/etc/vault-agent.teamcity.
 CMD if [ ! -f "/opt/TeamCity/.ssh/id_rsa" ]; then su - teamcity -c "ssh-keygen -t rsa -f /opt/TeamCity/.ssh/id_rsa -N ''"; fi
 
 MOUNT /var/db/homelab var/db/homelab nullfs rw 0 0
+MOUNT /var/db/teamcity var/db/teamcity nullfs rw 0 0
+CMD chown teamcity:teamcity /var/db/homelab
+CMD chown teamcity:teamcity /var/db/teamcity
 
 SERVICE vault-agent start
 SERVICE teamcity start
