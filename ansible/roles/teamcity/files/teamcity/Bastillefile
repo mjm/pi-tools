@@ -37,11 +37,15 @@ CP vault-agent.hcl /usr/local/etc/vault-agent.teamcity.hcl
 CMD cat /usr/local/etc/vault-agent.base.hcl /usr/local/etc/vault-agent.teamcity.hcl > /usr/local/etc/vault-agent.hcl
 CMD if [ ! -f "/opt/TeamCity/.ssh/id_rsa" ]; then su - teamcity -c "ssh-keygen -t rsa -f /opt/TeamCity/.ssh/id_rsa -N ''"; fi
 
+SYSRC postgresql_enable=YES
+CMD if [ ! -d "/var/db/postgres/data13" ]; then initdb -D /var/db/postgres/data13; fi
+
 MOUNT /var/db/homelab var/db/homelab nullfs rw 0 0
 MOUNT /var/db/teamcity var/db/teamcity nullfs rw 0 0
 CMD chown teamcity:teamcity /var/db/homelab
 CMD chown teamcity:teamcity /var/db/teamcity
 
+SERVICE postgresql start
 SERVICE vault-agent start
 SERVICE teamcity start
 SERVICE teamcity-agent start
