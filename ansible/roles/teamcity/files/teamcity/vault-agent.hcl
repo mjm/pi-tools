@@ -6,3 +6,10 @@ template {
 EOF
   destination = "/opt/TeamCity/.ssh/signed-cert.pub"
 }
+
+template {
+  contents = <<EOF
+{{ with secret "kv/deploy" }}{{ .Data.data.ansible_vault_password }}{{ end }}
+EOF
+  destination = "/opt/TeamCity/.vault-password"
+}

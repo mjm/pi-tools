@@ -38,8 +38,8 @@ resource "vault_generic_endpoint" "webauthn_user_mjm" {
 }
 
 resource "vault_mount" "kv" {
-  path    = "kv"
-  type    = "kv"
+  path = "kv"
+  type = "kv"
   options = {
     version = "2"
   }
@@ -84,7 +84,7 @@ resource "vault_mount" "pki_homelab" {
   path = "pki-homelab"
   type = "pki"
 
-  max_lease_ttl_seconds = 31536000
+  max_lease_ttl_seconds = 315360000
 }
 
 resource "vault_pki_secret_backend_config_urls" "homelab_config_urls" {
@@ -116,7 +116,7 @@ resource "vault_mount" "nomad" {
 }
 
 resource "vault_generic_endpoint" "nomad_role_deploy" {
-  path      = "nomad/role/deploy"
+  path = "nomad/role/deploy"
   data_json = jsonencode({
     policies = ["deploy"]
   })
@@ -125,7 +125,7 @@ resource "vault_generic_endpoint" "nomad_role_deploy" {
 }
 
 resource "vault_generic_endpoint" "nomad_lease_config" {
-  path      = "nomad/config/lease"
+  path = "nomad/config/lease"
   data_json = jsonencode({
     ttl = 86400
   })
