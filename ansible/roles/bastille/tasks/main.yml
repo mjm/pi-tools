@@ -11,23 +11,15 @@
     owner: root
     group: wheel
 
-- name: Install pkg Bastille template
+- name: Install Bastille templates
   copy:
-    src: pkg/
-    dest: /usr/local/bastille/templates/mjm/pkg
+    src: "{{ item }}/"
+    dest: "/usr/local/bastille/templates/mjm/{{ item }}"
     owner: root
     group: wheel
+  loop:
+    - pkg
+    - log
+    - consul-template
+    - redis
 
-- name: Install log Bastille template
-  copy:
-    src: log/
-    dest: /usr/local/bastille/templates/mjm/log
-    owner: root
-    group: wheel
-
-- name: Install consul-template Bastille template
-  copy:
-    src: consul-template/
-    dest: /usr/local/bastille/templates/mjm/consul-template
-    owner: root
-    group: wheel
