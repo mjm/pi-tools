@@ -1,2 +1,0 @@
----
-ansible_ssh_host: redis1@artemis.homelab
