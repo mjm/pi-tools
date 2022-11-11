@@ -1,3 +1,4 @@
 CMD mkdir -p /usr/local/etc/syslog.d
 CP remote.conf /usr/local/etc/syslog.d
-SERVICE syslogd start
+SYSRC syslogd_flags="-s -vv"
+SERVICE syslogd restart
