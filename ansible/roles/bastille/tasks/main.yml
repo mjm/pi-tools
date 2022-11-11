@@ -22,4 +22,5 @@
     - log
     - consul-template
     - redis
+    - paperless
 

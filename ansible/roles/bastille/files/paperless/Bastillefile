@@ -1,0 +1,25 @@
+ARG ROLE_ID=11a736d8-ef30-f7aa-1d1e-72029ce45fb4
+
+INCLUDE mjm/pkg
+INCLUDE mjm/log
+INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg USER=root --arg GROUP=wheel
+
+PKG py39-paperless-ng
+
+SYSRC paperless_ng_webserver_enable=YES
+SYSRC paperless_ng_consumer_enable=YES
+SYSRC paperless_ng_scheduler_enable=YES
+
+CP paperless-restart usr/local/bin/paperless-restart
+CMD chmod 0755 /usr/local/bin/paperless-restart
+
+CP paperless.conf.tpl usr/local/etc/paperless.conf.tpl
+CP vault-agent.paperless.hcl usr/local/etc/vault-agent.paperless.hcl
+CMD cat /usr/local/etc/vault-agent.base.hcl /usr/local/etc/vault-agent.paperless.hcl > /usr/local/etc/vault-agent.hcl
+
+MOUNT /var/db/paperless-ng var/db/paperless-ng nullfs rw 0 0
+
+SERVICE vault-agent reload
+SERVICE paperless-ng-webserver start
+SERVICE paperless-ng-consumer start
+SERVICE paperless-ng-scheduler start
