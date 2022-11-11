@@ -10,7 +10,7 @@ SYSRC paperless_ng_webserver_enable=YES
 SYSRC paperless_ng_consumer_enable=YES
 SYSRC paperless_ng_scheduler_enable=YES
 
-CP paperless-restart usr/local/bin/paperless-restart
+CP paperless-restart.sh usr/local/bin/paperless-restart
 CMD chmod 0755 /usr/local/bin/paperless-restart
 
 CP paperless.conf.tpl usr/local/etc/paperless.conf.tpl
