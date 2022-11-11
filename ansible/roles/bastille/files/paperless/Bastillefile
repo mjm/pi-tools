@@ -17,9 +17,11 @@ CP paperless.conf.tpl usr/local/etc/paperless.conf.tpl
 CP vault-agent.paperless.hcl usr/local/etc/vault-agent.paperless.hcl
 CMD cat /usr/local/etc/vault-agent.base.hcl /usr/local/etc/vault-agent.paperless.hcl > /usr/local/etc/vault-agent.hcl
 
-MOUNT /var/db/paperless-ng var/db/paperless-ng nullfs rw 0 0
+MOUNT /var/db/paperless-ng/consume var/db/paperless-ng/consume nullfs rw 0 0
+MOUNT /var/db/paperless-ng/data var/db/paperless-ng/data nullfs rw 0 0
+MOUNT /var/db/paperless-ng/media var/db/paperless-ng/media nullfs rw 0 0
 
-SERVICE vault-agent reload
+SERVICE vault-agent start
 SERVICE paperless-ng-webserver start
 SERVICE paperless-ng-consumer start
 SERVICE paperless-ng-scheduler start
