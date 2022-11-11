@@ -1,0 +1,26 @@
+ARG ROLE_ID=3364366b-9b6f-9139-ca61-6b82bb1516d3
+
+INCLUDE mjm/pkg
+INCLUDE mjm/log
+INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg USER=root --arg GROUP=wheel
+
+PKG nginx phabricator-php80
+
+SYSRC nginx_enable=YES
+SYSRC phd_enable=YES
+SYSRC php_fpm_enable=YES
+
+CP nginx.conf usr/local/etc/nginx/nginx.conf
+CP php.ini usr/local/etc/php.ini
+CP phabricator.conf.tpl usr/local/etc/phabricator.conf.tpl
+CP preamble.php usr/local/lib/php/phabricator/support/preamble.php
+
+CP phabricator.hcl usr/local/etc/vault-agent.phabricator.hcl
+CMD cat /usr/local/etc/vault-agent.base.hcl /usr/local/etc/vault-agent.phabricator.hcl > /usr/local/etc/vault-agent.hcl
+
+MOUNT /var/db/phabricator/repo var/repo nullfs rw 0 0
+
+SERVICE vault-agent start
+SERVICE nginx start
+SERVICE php-fpm start
+SERVICE phd start
