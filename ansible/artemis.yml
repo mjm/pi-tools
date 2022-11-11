@@ -32,27 +32,11 @@
     - role: consul-template
     - role: prometheus
 
-- hosts: paperless1
-  become: true
-  gather_facts: false
-  roles:
-    - role: paperless
-
 - hosts: code1
   become: true
   gather_facts: false
   roles:
     - role: phabricator
-
-- hosts: redis1
-  become: true
-  roles:
-    - role: redis
-
-- hosts: ci1
-  become: true
-  roles:
-    - role: teamcity
 
 - hosts: homelab1
   become: true
