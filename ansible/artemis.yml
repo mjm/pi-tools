@@ -32,12 +32,6 @@
     - role: consul-template
     - role: prometheus
 
-- hosts: code1
-  become: true
-  gather_facts: false
-  roles:
-    - role: phabricator
-
 - hosts: homelab1
   become: true
   roles:
