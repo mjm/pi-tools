@@ -1,6 +1,8 @@
 template {
   contents = <<EOF
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+export BORG_RSH="ssh -i /usr/local/homelab/id_rsa"
+
 {{ with secret "database/creds/homelab" -}}
 export TRIPS_DATABASE_URL=postgresql://{{ .Data.username }}:{{ .Data.password }}@postgresql.service.consul/trips
 export GO_LINKS_DATABASE_URL=postgresql://{{ .Data.username }}:{{ .Data.password }}@postgresql.service.consul/go_links
@@ -15,4 +17,20 @@ EOF
   destination = "/usr/local/homelab/.env.sh"
   perms = "0600"
   command = "service homelab restart"
+}
+
+template {
+  contents = <<EOF
+{{ with secret "kv/tarsnap" }}{{ .Data.data.key | base64Decode }}{{ end }}
+EOF
+  destination = "/usr/local/homelab/tarsnap.key"
+  perms = "0600"
+}
+
+template {
+  contents = <<EOF
+{{ with secret "kv/borg" }}{{ .Data.data.private_key }}{{ end }}
+EOF
+  destination = "/usr/local/homelab/id_rsa"
+  perms = "0600"
 }
