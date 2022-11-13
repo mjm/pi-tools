@@ -33,6 +33,7 @@ resource "vault_approle_auth_backend_role" "teamcity" {
 resource "vault_approle_auth_backend_role" "prometheus" {
   backend = vault_auth_backend.approle.id
 
-  role_name      = "prometheus"
-  token_policies = ["prometheus", "alertmanager"]
+  role_name             = "prometheus"
+  secret_id_bound_cidrs = ["10.0.2.104/32"]
+  token_policies        = ["prometheus", "alertmanager"]
 }
