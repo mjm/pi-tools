@@ -4,9 +4,7 @@
     - role: pkg
     - role: logging
     - role: bastille
-    - role: minio
     - role: vault
-    - role: teamcity
     - role: nut
     - role: jail
     - role: dns
