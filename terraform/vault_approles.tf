@@ -34,5 +34,5 @@ resource "vault_approle_auth_backend_role" "prometheus" {
   backend = vault_auth_backend.approle.id
 
   role_name      = "prometheus"
-  token_policies = ["prometheus"]
+  token_policies = ["prometheus", "alertmanager"]
 }
