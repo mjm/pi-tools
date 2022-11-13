@@ -22,13 +22,6 @@
     - role: vault
     - role: ssl
 
-- hosts: metrics1
-  become: true
-  gather_facts: false
-  roles:
-    - role: consul-template
-    - role: prometheus
-
 - hosts: homelab1
   become: true
   roles:

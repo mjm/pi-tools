@@ -1,4 +1,0 @@
-consul_template_enable="YES"
-consul_template_syslog_output_enable="YES"
-# :hackerman: injects the -r argument to /usr/sbin/daemon so consul-template gets restarted automatically if it dies
-consul_template_syslog_output_facility="daemon -r"
