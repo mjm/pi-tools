@@ -22,7 +22,3 @@
     - role: vault
     - role: ssl
 
-- hosts: homelab1
-  become: true
-  roles:
-    - role: homelab

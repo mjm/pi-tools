@@ -58,11 +58,3 @@ jails:
     ips:
       - re0|10.0.2.112
       - lo1|127.0.13.1
-
-  - name: homelab1
-    ips:
-      - re0|10.0.2.114
-      - lo1|127.0.15.1
-
-    extra_mounts: |
-      /usr/jails/shared/homelab /usr/jails/homelab1/shared/homelab nullfs 0 0
