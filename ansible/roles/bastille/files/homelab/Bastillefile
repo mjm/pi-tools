@@ -1,0 +1,19 @@
+ARG ROLE_ID=ef476b7b-6dbf-37f2-5a4d-12bb8f2531ca
+
+INCLUDE mjm/pkg
+INCLUDE mjm/log
+INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg USER=root --arg GROUP=wheel
+
+PKG py39-borgbackup tarsnap
+
+CMD mkdir -p /usr/local/homelab/current
+
+CP homelab.sh usr/local/etc/rc.d/homelab
+CMD chmod 0755 /usr/local/etc/rc.d/homelab
+
+# Ensure that we try to deploy a new version every minute if it's been dropped in by CI
+CP crontab etc/crontab
+
+MOUNT /var/db/homelab var/db/homelab nullfs rw 0 0
+
+SERVICE homelab deploy
