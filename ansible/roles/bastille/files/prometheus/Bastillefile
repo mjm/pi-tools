@@ -25,6 +25,8 @@ CP alertmanager.hcl usr/local/etc/consul-template.d/alertmanager.hcl
 CP alertmanager.yml.tpl usr/local/etc/alertmanager/alertmanager.yml.tpl
 CP templates usr/local/etc/alertmanager/
 
+MOUNT /var/db/prometheus var/db/prometheus nullfs rw 0 0
+
 SERVICE vault-agent start
 SERVICE prometheus start
 SERVICE alertmanager start
