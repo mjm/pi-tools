@@ -1,6 +1,0 @@
-- name: Install vault-agent Bastille template
-  copy:
-    src: vault-agent/
-    dest: /usr/local/bastille/templates/mjm/vault-agent
-    owner: root
-    group: wheel

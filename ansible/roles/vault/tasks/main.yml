@@ -5,6 +5,3 @@
 - name: Set up Vault server
   include_tasks: server.yml
   when: vault_server_enabled
-
-- include_tasks: bastille.yml
-  when: inventory_hostname == 'artemis'
