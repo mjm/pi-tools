@@ -9,7 +9,7 @@ PKG py39-borgbackup tarsnap
 CP vault-agent.homelab.hcl usr/local/etc/vault-agent.homelab.hcl
 CMD cat /usr/local/etc/vault-agent.base.hcl /usr/local/etc/vault-agent.homelab.hcl > /usr/local/etc/vault-agent.hcl
 
-CMD mkdir -p root/.ssh
+CMD mkdir -p /root/.ssh
 CP known_hosts root/.ssh/known_hosts
 
 CMD mkdir -p /usr/local/homelab/current

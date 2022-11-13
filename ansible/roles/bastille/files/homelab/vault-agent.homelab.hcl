@@ -2,6 +2,7 @@ template {
   contents = <<EOF
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
 export BORG_RSH="ssh -i /usr/local/homelab/id_rsa"
+export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
 
 {{ with secret "database/creds/homelab" -}}
 export TRIPS_DATABASE_URL=postgresql://{{ .Data.username }}:{{ .Data.password }}@postgresql.service.consul/trips

@@ -13,3 +13,11 @@ path "kv/data/homelab" {
 path "database/creds/homelab" {
   capabilities = ["read"]
 }
+
+path "kv/data/borg" {
+  capabilities = ["read"]
+}
+
+path "kv/data/tarsnap" {
+  capabilities = ["read"]
+}
