@@ -1,4 +1,5 @@
 ARG ROLE_ID
+ARG SECRET_ID=""
 ARG USER
 ARG GROUP
 
@@ -15,5 +16,6 @@ SYSRC vault_agent_syslog_output_enable=YES
 CP vault-agent.hcl /usr/local/etc/vault-agent.hcl
 CP vault-agent.hcl /usr/local/etc/vault-agent.base.hcl
 CMD echo "${ROLE_ID}" > /usr/local/etc/vault_role_id
+CMD if [ ! "${SECRET_ID}" = "" ]; then echo ${SECRET_ID} > /usr/local/etc/vault_secret_id; fi
 
 # intentionally don't start vault-agent here, it won't have templates or anything yet
