@@ -24,4 +24,5 @@
     - redis
     - paperless
     - phabricator
+    - livebook
 

@@ -4,7 +4,6 @@
     - role: pkg
     - role: logging
     - role: bastille
-    - role: livebook
     - role: minio
     - role: vault
     - role: teamcity
