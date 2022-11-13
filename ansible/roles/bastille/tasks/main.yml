@@ -28,4 +28,5 @@
     - livebook
     - teamcity
     - minio
+    - prometheus
 
