@@ -5,11 +5,26 @@ INCLUDE mjm/log
 INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg USER=root --arg GROUP=wheel
 INCLUDE mjm/consul-template
 
+PKG prometheus alertmanager
+
+SYSRC prometheus_enable=YES
+SYSRC prometheus_syslog_output_enable=YES
+SYSRC prometheus_args=--web.listen-address=${JAIL_IP}:9090\ --web.external-url=https://prometheus.home.mattmoriarity.com/\ --web.enable-admin-api
+SYSRC alertmanager_enable=YES
+SYSRC alertmanager_args=--web.listen-address=${JAIL_IP}:9093\ --web.external-url=https://alertmanager.home.mattmoriarity.com/
+
 # Use vault-agent to get a Vault token, then pass it off to consul-template
 CP vault-agent.consul.hcl usr/local/etc/vault-agent.consul.hcl
 CMD cat /usr/local/etc/vault-agent.base.hcl /usr/local/etc/vault-agent.consul.hcl > /usr/local/etc/vault-agent.hcl
 
 CP prometheus.hcl usr/local/etc/consul-template.d/prometheus.hcl
 CP prometheus.yml.tpl usr/local/etc/prometheus.yml.tpl
+CP rules usr/local/etc/
+
+CP alertmanager.hcl usr/local/etc/consul-template.d/alertmanager.hcl
+CP alertmanager.yml.tpl usr/local/etc/alertmanager/alertmanager.yml.tpl
+CP templates usr/local/etc/alertmanager/
 
 SERVICE vault-agent start
+SERVICE prometheus start
+SERVICE alertmanager start
