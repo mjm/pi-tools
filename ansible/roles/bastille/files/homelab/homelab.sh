@@ -34,13 +34,13 @@ extra_commands=deploy
 
 homelab_start()
 {
-  source /usr/local/homelab/.env.sh
+  . /usr/local/homelab/.env.sh
   ${procname} daemon
 }
 
 homelab_stop()
 {
-  source /usr/local/homelab/.env.sh
+  . /usr/local/homelab/.env.sh
   ${procname} stop >/dev/null 2>&1 || echo "Homelab app not already running"
 
   while ${procname} pid >/dev/null 2>&1; do

@@ -10,6 +10,7 @@ CMD mkdir -p /usr/local/homelab/current
 
 CP homelab.sh usr/local/etc/rc.d/homelab
 CMD chmod 0755 /usr/local/etc/rc.d/homelab
+SYSRC homelab_enable=YES
 
 # Ensure that we try to deploy a new version every minute if it's been dropped in by CI
 CP crontab etc/crontab
