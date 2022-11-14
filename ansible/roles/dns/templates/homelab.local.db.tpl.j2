@@ -8,12 +8,7 @@ $TTL  1m
                  1h )   ; Negative Cache TTL
 @   IN  NS  localhost.
 {% for host, hvars in hostvars.items() %}
-{% if host not in groups.jails %}
 {{ host }}  IN  A  {{ hvars.default_ip }}
-{% endif %}
-{% endfor %}
-{% for jail in hostvars.artemis.jails %}
-{{ jail.name }}  IN  A  {{ jail.ips[0].split("|")[1] }}
 {% endfor %}
 *.homelab.  IN  CNAME ingress-http.service.consul.
 unifi       IN  A 10.0.0.1

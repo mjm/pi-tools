@@ -8,15 +8,10 @@ $TTL  1m
                  1h )   ; Negative Cache TTL
 @   IN  NS  localhost.
 {% for host, hvars in hostvars.items() %}
-{% if host not in groups.jails %}
 {{ host }}  IN  A  {{ hvars.tailscale_ip }}
-{% endif %}
 {% endfor %}
 ;<< range service "ingress-http" >>
 *.homelab.  0  IN  A << .NodeMeta.tailscale_ip >><< end >>
-{% for jail in hostvars.artemis.jails %}
-{{ jail.name }}  IN  A  {{ jail.ips[0].split("|")[1] }}
-{% endfor %}
 unifi       IN  A 10.0.0.1
 nas         IN  A 100.80.133.8
 mars        IN  A 100.117.39.47
