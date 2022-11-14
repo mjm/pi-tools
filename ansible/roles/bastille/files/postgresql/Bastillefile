@@ -1,6 +1,10 @@
 INCLUDE mjm/pkg
 INCLUDE mjm/log
 
+# Setting required to run PostgreSQL
+CONFIG set sysvshm new
+RESTART
+
 PKG postgresql15-server
 
 SYSRC postgresql_enable=YES
