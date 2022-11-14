@@ -31,4 +31,5 @@
     - prometheus
     - homelab
     - mysql
+    - postgresql
 

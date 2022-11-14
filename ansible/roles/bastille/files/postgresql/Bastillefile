@@ -1,0 +1,10 @@
+INCLUDE mjm/pkg
+INCLUDE mjm/log
+
+PKG postgresql15-server
+
+SYSRC postgresql_enable=YES
+
+MOUNT /var/db/postgres var/db/postgres nullfs rw 0 0
+
+SERVICE postgresql start
