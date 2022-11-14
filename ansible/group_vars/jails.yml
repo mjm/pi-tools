@@ -1,5 +1,0 @@
-ansible_python_interpreter: /usr/local/bin/python3.9
-ansible_ssh_user: matt
-ansible_remote_tmp: /tmp/ansible-$USER
-ansible_connection: sshjail
-root_group: wheel
