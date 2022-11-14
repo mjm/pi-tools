@@ -14,15 +14,6 @@
     owner: root
     group: wheel
 
-- name: Install local package repo
-  copy:
-    src: amd64-current.conf
-    dest: /usr/local/etc/pkg/repos/amd64-current.conf
-    mode: 0644
-    owner: root
-    group: wheel
-  when: setup_pkg_server
-
 - name: Install remote package repo
   copy:
     src: amd64-current-remote.conf
@@ -30,15 +21,8 @@
     mode: 0644
     owner: root
     group: wheel
-  when: not setup_pkg_server
-
-- include_tasks: server.yml
-  when: setup_pkg_server
 
 - include_tasks: poudriere.yml
   # sloppy way of only doing this on artemis and not in each jail
   when: inventory_hostname == 'artemis'
 
-- include_tasks: bastille.yml
-  # sloppy way of only doing this on artemis and not in each jail
-  when: inventory_hostname == 'artemis'
