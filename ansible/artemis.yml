@@ -6,7 +6,6 @@
     - role: bastille
     - role: vault
     - role: nut
-    - role: jail
     - role: dns
     - role: consul
     - role: mail
