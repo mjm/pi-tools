@@ -3,6 +3,8 @@ archivers/py-borgbackup
 databases/mysql80-server
 databases/postgresql13-client
 databases/postgresql13-server
+databases/postgresql15-client
+databases/postgresql15-server
 databases/redis
 deskutils/plasma5-sddm-kcm
 deskutils/py-paperless-ng
@@ -68,6 +70,7 @@ sysutils/iocage
 sysutils/jail_exporter
 sysutils/node_exporter
 sysutils/nut
+sysutils/rocinante
 sysutils/syslog-ng
 sysutils/tarsnap
 sysutils/tarsnap-periodic
