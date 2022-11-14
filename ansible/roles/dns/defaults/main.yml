@@ -1,6 +1,4 @@
 setup_pf: false
-setup_named: false
-named_db_dir: /usr/local/etc/namedb
 zone_names:
   - homelab
   - home.mattmoriarity.com

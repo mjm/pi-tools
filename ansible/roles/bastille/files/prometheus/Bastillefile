@@ -1,8 +1,9 @@
 ARG ROLE_ID=52bc8fbe-7e78-b585-39a5-7d8ccc69696f
+ARG SECRET_ID
 
 INCLUDE mjm/pkg
 INCLUDE mjm/log
-INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg USER=root --arg GROUP=wheel
+INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg SECRET_ID=${SECRET_ID} --arg USER=root --arg GROUP=wheel
 INCLUDE mjm/consul-template
 
 PKG prometheus alertmanager

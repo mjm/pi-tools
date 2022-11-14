@@ -7,10 +7,6 @@
     group: '{{ root_group }}'
   become: true
 
-- name: Set up BIND server
-  include_tasks: named.yml
-  when: setup_named
-
 - name: Set up packet filter rules
   include_tasks: pf.yml
   when: setup_pf

@@ -11,7 +11,7 @@ SYSRC minio_env=MINIO_PROMETHEUS_AUTH_TYPE=public
 CMD mkdir -p /var/db/minio
 CMD chmod 0750 /var/db/minio
 CMD chown minio:minio /var/db/minio
-MOUNT /var/db/minio /var/db/minio nullfs rw 0 0
+MOUNT /var/db/minio var/db/minio nullfs rw 0 0
 
 SERVICE minio start
 

@@ -1,8 +1,9 @@
 ARG ROLE_ID=11a736d8-ef30-f7aa-1d1e-72029ce45fb4
+ARG SECRET_ID
 
 INCLUDE mjm/pkg
 INCLUDE mjm/log
-INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg USER=root --arg GROUP=wheel
+INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg SECRET_ID=${SECRET_ID} --arg USER=root --arg GROUP=wheel
 
 PKG py39-paperless-ng
 

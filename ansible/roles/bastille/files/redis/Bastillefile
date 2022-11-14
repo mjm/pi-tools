@@ -4,6 +4,6 @@ INCLUDE mjm/log
 PKG redis
 SYSRC redis_enable=YES
 CP redis.conf usr/local/etc/redis.conf
-RENDER /usr/local/etc/redis.conf
+RENDER usr/local/etc/redis.conf
 
 SERVICE redis start

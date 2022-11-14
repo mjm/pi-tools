@@ -1,6 +1,6 @@
 INCLUDE mjm/dns-server
 
-CP homelab.db /usr/local/etc/namedb/master
-CP home.mattmoriarity.com.db /usr/local/etc/namedb/master
+CP homelab.db usr/local/etc/namedb/master
+CP home.mattmoriarity.com.db usr/local/etc/namedb/master
 
 SERVICE named reload

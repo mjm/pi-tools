@@ -5,7 +5,7 @@ ARG GROUP
 
 PKG vault
 
-CP vault-agent.sh /usr/local/etc/rc.d/vault-agent
+CP vault-agent.sh usr/local/etc/rc.d/vault-agent
 CMD chmod +x /usr/local/etc/rc.d/vault-agent
 
 SYSRC vault_agent_enable=YES
@@ -13,8 +13,8 @@ SYSRC vault_agent_user=${USER}
 SYSRC vault_agent_group=${GROUP}
 SYSRC vault_agent_syslog_output_enable=YES
 
-CP vault-agent.hcl /usr/local/etc/vault-agent.hcl
-CP vault-agent.hcl /usr/local/etc/vault-agent.base.hcl
+CP vault-agent.hcl usr/local/etc/vault-agent.hcl
+CP vault-agent.hcl usr/local/etc/vault-agent.base.hcl
 CMD echo "${ROLE_ID}" > /usr/local/etc/vault_role_id
 CMD if [ ! "${SECRET_ID}" = "" ]; then echo ${SECRET_ID} > /usr/local/etc/vault_secret_id; fi
 

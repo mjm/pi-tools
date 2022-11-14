@@ -6,7 +6,7 @@ PKG mysql80-server
 SYSRC mysql_enable=YES
 
 CP my.cnf usr/local/etc/mysql/my.cnf
-RENDER /usr/local/etc/mysql/my.cnf
+RENDER usr/local/etc/mysql/my.cnf
 
 MOUNT /var/db/mysql var/db/mysql nullfs rw 0 0
 

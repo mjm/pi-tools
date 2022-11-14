@@ -1,8 +1,9 @@
 ARG ROLE_ID=5108b274-5fc3-5f3d-96a1-f9fffc4d6256
+ARG SECRET_ID
 
 INCLUDE mjm/pkg
 INCLUDE mjm/log
-INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg USER=teamcity --arg GROUP=teamcity
+INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg SECRET_ID=${SECRET_ID} --arg USER=teamcity --arg GROUP=teamcity
 
 # Setting required to run PostgreSQL
 CONFIG set sysvshm new
@@ -23,12 +24,12 @@ CMD mkdir -p /opt/TeamCity/lib/jdbc
 CMD fetch -m https://jdbc.postgresql.org/download/postgresql-42.5.0.jar -o /opt/TeamCity/lib/jdbc/postgresql-42.5.0.jar
 
 # Create and enable TeamCity service script
-CP teamcity.sh /usr/local/etc/rc.d/teamcity
+CP teamcity.sh usr/local/etc/rc.d/teamcity
 CMD chmod +x /usr/local/etc/rc.d/teamcity
 SYSRC teamcity_enable=YES
 
 # Create and enable TeamCity agent service script
-CP teamcity-agent.sh /usr/local/etc/rc.d/teamcity-agent
+CP teamcity-agent.sh usr/local/etc/rc.d/teamcity-agent
 CMD chmod +x /usr/local/etc/rc.d/teamcity-agent
 SYSRC teamcity_agent_enable=YES
 
@@ -43,9 +44,9 @@ CMD su - teamcity -c "mix local.hex --force"
 CMD su - teamcity -c "mix local.rebar --force"
 
 SYSRC postgresql_enable=YES
-CMD if [ ! -d "/var/db/postgres/data13" ]; then su - postgres -c "initdb -D /var/db/postgres/data13"; fi
+CMD if [ ! -d "/var/db/postgres/data13" ]; then service postgresql initdb; fi
 CP pg_hba.conf var/db/postgres/data13/pg_hba.conf
-RENDER /var/db/postgres/data13/pg_hba.conf
+RENDER var/db/postgres/data13/pg_hba.conf
 
 MOUNT /var/db/homelab var/db/homelab nullfs rw 0 0
 MOUNT /var/db/teamcity var/db/teamcity nullfs rw 0 0

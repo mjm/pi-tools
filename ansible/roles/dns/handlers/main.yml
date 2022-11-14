@@ -1,13 +1,3 @@
-- name: Reload named config
-  service:
-    name: named
-    state: reloaded
-  become: true
-
-- name: Reload consul-template config
-  command: pkill -HUP consul-template
-  become: true
-
 - name: Reload packet filter rules
   service:
     name: pf

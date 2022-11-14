@@ -5,14 +5,14 @@ INCLUDE mjm/consul-template
 PKG bind916 bind_exporter
 SYSRC named_enable=YES
 SYSRC bind_exporter_enable=YES
-SYSRC bind_exporter_stats_url=http://${_jail_ip}:8053/
+SYSRC bind_exporter_stats_url=http://${JAIL_IP}:8053/
 
-CP named.conf /usr/local/etc/namedb
-CP named.forwarders.conf.tpl /usr/local/etc/namedb
-CP named.default-zones.conf /usr/local/etc/namedb
-RENDER /usr/local/etc/namedb/named.conf
+CP named.conf usr/local/etc/namedb
+CP named.forwarders.conf.tpl usr/local/etc/namedb
+CP named.default-zones.conf usr/local/etc/namedb
+RENDER usr/local/etc/namedb/named.conf
 
-CP dns.hcl /usr/local/etc/consul-template.d
+CP dns.hcl usr/local/etc/consul-template.d
 CMD pkill -HUP consul-template
 
 CMD mkdir -p /usr/local/etc/namedb/master

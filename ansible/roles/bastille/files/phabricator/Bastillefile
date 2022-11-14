@@ -1,8 +1,9 @@
 ARG ROLE_ID=3364366b-9b6f-9139-ca61-6b82bb1516d3
+ARG SECRET_ID
 
 INCLUDE mjm/pkg
 INCLUDE mjm/log
-INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg USER=root --arg GROUP=wheel
+INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg SECRET_ID=${SECRET_ID} --arg USER=root --arg GROUP=wheel
 
 PKG nginx phabricator-php80
 
