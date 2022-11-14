@@ -7,7 +7,10 @@ SYSRC postgresql_enable=YES
 
 MOUNT /var/db/postgres var/db/postgres nullfs rw 0 0
 
+CMD chown postgres:postgres /var/db/postgres
+
 CMD if [ ! -d /var/db/postgres/data15 ]; then echo "Initializing database..."; service postgresql initdb; fi
 CP pg_hba.conf var/db/postgres/data15/pg_hba.conf
+CMD chown postgres:postgres /var/db/postgres/data15/pg_hba.conf
 
 SERVICE postgresql start
