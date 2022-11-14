@@ -15,9 +15,7 @@ SYSRC alertmanager_enable=YES
 SYSRC alertmanager_args=--web.listen-address=${JAIL_IP}:9093\ --web.external-url=https://alertmanager.home.mattmoriarity.com/
 
 # Use vault-agent to get a Vault token, then pass it off to consul-template
-CP vault-agent.consul.hcl usr/local/etc/vault-agent.consul.hcl
-CMD cat /usr/local/etc/vault-agent.base.hcl /usr/local/etc/vault-agent.consul.hcl > /usr/local/etc/vault-agent.hcl
-
+CP vault-agent.hcl usr/local/etc/vault-agent.d/consul.hcl
 CP prometheus.hcl usr/local/etc/consul-template.d/prometheus.hcl
 CP prometheus.yml.tpl usr/local/etc/prometheus.yml.tpl
 CP rules usr/local/etc/

@@ -34,8 +34,7 @@ CMD chmod +x /usr/local/etc/rc.d/teamcity-agent
 SYSRC teamcity_agent_enable=YES
 
 # Set up SSH
-CP vault-agent.hcl usr/local/etc/vault-agent.teamcity.hcl
-CMD cat /usr/local/etc/vault-agent.base.hcl /usr/local/etc/vault-agent.teamcity.hcl > /usr/local/etc/vault-agent.hcl
+CP vault-agent.hcl usr/local/etc/vault-agent.d/teamcity.hcl
 CMD if [ ! -f "/opt/TeamCity/.ssh/id_rsa" ]; then su - teamcity -c "ssh-keygen -t rsa -f /opt/TeamCity/.ssh/id_rsa -N ''"; fi
 CP known_hosts opt/TeamCity/.ssh/known_hosts
 CMD chown teamcity:teamcity /opt/TeamCity/.ssh/known_hosts

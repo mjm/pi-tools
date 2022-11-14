@@ -15,9 +15,7 @@ CP nginx.conf usr/local/etc/nginx/nginx.conf
 CP php.ini usr/local/etc/php.ini
 CP phabricator.conf.tpl usr/local/etc/phabricator.conf.tpl
 CP preamble.php usr/local/lib/php/phabricator/support/preamble.php
-
-CP phabricator.hcl usr/local/etc/vault-agent.phabricator.hcl
-CMD cat /usr/local/etc/vault-agent.base.hcl /usr/local/etc/vault-agent.phabricator.hcl > /usr/local/etc/vault-agent.hcl
+CP phabricator.hcl usr/local/etc/vault-agent.d/phabricator.hcl
 
 CMD ln -s /usr/local/libexec/git-core/git-http-backend /usr/local/lib/php/phabricator/support/bin/git-http-backend
 
