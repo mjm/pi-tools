@@ -1,0 +1,12 @@
+INCLUDE mjm/pkg
+INCLUDE mjm/log
+
+PKG znc
+
+SYSRC znc_enable=YES
+SYSRC znc_conf_dir=/var/db/znc
+
+# Treat ZNC conf as data, since it really expects you to use the web interface to edit it
+MOUNT /var/db/znc var/db/znc nullfs rw 0 0
+
+SERVICE znc start
