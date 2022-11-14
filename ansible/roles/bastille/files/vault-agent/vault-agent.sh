@@ -64,7 +64,6 @@ extra_commands="reload monitor"
 monitor_cmd=vault_agent_monitor
 start_precmd=vault_agent_startprecmd
 reload_precmd=vault_agent_reloadprecmd
-required_files="$vault_agent_config"
 
 vault_agent_monitor()
 {
