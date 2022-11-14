@@ -30,4 +30,5 @@
     - minio
     - prometheus
     - homelab
+    - mysql
 
