@@ -16,7 +16,7 @@
 
 - name: Install remote package repo
   copy:
-    src: amd64-current-remote.conf
+    src: amd64-current.conf
     dest: /usr/local/etc/pkg/repos/amd64-current.conf
     mode: 0644
     owner: root
