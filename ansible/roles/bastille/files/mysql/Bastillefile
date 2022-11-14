@@ -3,6 +3,8 @@ INCLUDE mjm/log
 
 PKG mysql80-server
 
+SYSRC mysql_enable=YES
+
 CP my.cnf usr/local/etc/mysql/my.cnf
 RENDER /usr/local/etc/mysql/my.cnf
 
