@@ -63,6 +63,7 @@ command_args="-f -t ${name} ${vault_agent_syslog_output_flags} -p ${pidfile} -r 
 extra_commands="reload monitor"
 monitor_cmd=vault_agent_monitor
 start_precmd=vault_agent_startprecmd
+reload_precmd=vault_agent_reloadprecmd
 required_files="$vault_agent_config"
 
 vault_agent_monitor()
@@ -73,9 +74,21 @@ vault_agent_monitor()
 
 vault_agent_startprecmd()
 {
-        if [ ! -e ${pidfile} ]; then
-                install -o ${vault_agent_user} -g ${vault_agent_group} /dev/null ${pidfile};
-        fi
+  if [ ! -e ${pidfile} ]; then
+          install -o ${vault_agent_user} -g ${vault_agent_group} /dev/null ${pidfile};
+  fi
+
+  vault_agent_combine_configs
+}
+
+vault_agent_reloadprecmd()
+{
+  vault_agent_combine_configs
+}
+
+vault_agent_combine_configs()
+{
+  cat /usr/local/etc/vault-agent.d/*.hcl > ${vault_agent_config}
 }
 
 run_rc_command "$1"

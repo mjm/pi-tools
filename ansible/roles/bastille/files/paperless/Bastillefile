@@ -15,8 +15,7 @@ CP paperless-restart.sh usr/local/bin/paperless-restart
 CMD chmod 0755 /usr/local/bin/paperless-restart
 
 CP paperless.conf.tpl usr/local/etc/paperless.conf.tpl
-CP vault-agent.paperless.hcl usr/local/etc/vault-agent.paperless.hcl
-CMD cat /usr/local/etc/vault-agent.base.hcl /usr/local/etc/vault-agent.paperless.hcl > /usr/local/etc/vault-agent.hcl
+CP vault-agent.hcl usr/local/etc/vault-agent.d/paperless.hcl
 
 MOUNT /var/db/paperless-ng/consume var/db/paperless-ng/consume nullfs rw 0 0
 MOUNT /var/db/paperless-ng/data var/db/paperless-ng/data nullfs rw 0 0
