@@ -17,7 +17,7 @@ CP phabricator.conf.tpl usr/local/etc/phabricator.conf.tpl
 CP preamble.php usr/local/lib/php/phabricator/support/preamble.php
 CP phabricator.hcl usr/local/etc/vault-agent.d/phabricator.hcl
 
-CMD ln -s /usr/local/libexec/git-core/git-http-backend /usr/local/lib/php/phabricator/support/bin/git-http-backend
+CMD ln -sf /usr/local/libexec/git-core/git-http-backend /usr/local/lib/php/phabricator/support/bin/git-http-backend
 
 MOUNT /var/db/phabricator/repo var/repo nullfs rw 0 0
 
