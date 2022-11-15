@@ -2,7 +2,6 @@
   become: true
   roles:
     - role: dns
-    - role: volumes
     - role: nut
     - role: consul
     - role: vault

@@ -56,11 +56,6 @@ client {
     "connect.sidecar_image" = "envoyproxy/envoy:v1.20.1"
   }
 
-  host_volume "pihole_data" {
-    path = "/srv/mnt/pihole-data"
-    read_only = false
-  }
-
   host_volume "promtail_run" {
     path = "/var/lib/promtail"
     read_only = false
