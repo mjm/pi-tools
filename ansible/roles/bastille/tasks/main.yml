@@ -1,15 +1,21 @@
-- name: Install Bastille
+- name: Install Bastille and Rocinante
   package:
-    name: bastille
+    name: "{{ item }}"
     state: present
+  loop:
+    - bastille
+    - rocinante
 
-- name: Create templates directory
+- name: Create templates directories
   file:
-    path: /usr/local/bastille/templates/mjm
+    path: /usr/local/{{ item }}/templates/mjm
     state: directory
     mode: 0755
     owner: root
     group: wheel
+  loop:
+    - bastille
+    - rocinante
 
 - name: Install Bastille templates
   copy:
@@ -34,4 +40,14 @@
     - mysql
     - postgresql
     - znc
+
+- name: Install Rocinante templates
+  copy:
+    src: "{{ item }}/"
+    dest: "/usr/local/rocinante/templates/mjm/{{ item }}"
+    owner: root
+    group: wheel
+  loop:
+    - pkg
+    - log
 
