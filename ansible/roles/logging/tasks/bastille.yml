@@ -1,6 +1,0 @@
-- name: Install log-server Bastille template
-  copy:
-    src: log-server/
-    dest: /usr/local/bastille/templates/mjm/log-server
-    owner: root
-    group: wheel

@@ -29,6 +29,7 @@
     - consul-template
     - vault-agent
     - pkg-server
+    - log-server
     - redis
     - paperless
     - phabricator

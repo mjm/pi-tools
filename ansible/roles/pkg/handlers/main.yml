@@ -1,4 +1,0 @@
-- name: Reload nginx config
-  service:
-    name: nginx
-    state: reloaded

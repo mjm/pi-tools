@@ -1,9 +1,8 @@
 - hosts: artemis
   become: true
   roles:
-    - role: pkg
-    - role: logging
     - role: bastille
+    - role: poudriere
     - role: vault
     - role: nut
     - role: dns
