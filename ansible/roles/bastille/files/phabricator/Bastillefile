@@ -5,7 +5,7 @@ INCLUDE mjm/pkg
 INCLUDE mjm/log
 INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg SECRET_ID=${SECRET_ID} --arg USER=root --arg GROUP=wheel
 
-PKG nginx phabricator-php80
+PKG nginx phabricator-php80 py39-pygments
 
 SYSRC nginx_enable=YES
 SYSRC phd_enable=YES
