@@ -2,7 +2,7 @@ name: Build Nomad jobs
 
 on:
   push:
-    branches: [main, infra-as-software]
+    branches: [main]
 
 jobs:
   build:
