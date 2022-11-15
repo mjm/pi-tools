@@ -17,7 +17,7 @@ const (
 	consulImageVersion = "sha256:7b878010be55876f2dd419e0e95aad54cd87ae078d5de54e232e4135eb1069c6"
 
 	postgresImageRepo    = "postgres"
-	postgresImageVersion = "sha256:b6399aef923e0529a4f2a5874e8860d29cef3726ab7079883f3368aaa2a9f29c"
+	postgresImageVersion = "sha256:3c80144ed7c0d1e4b2fc30c424d724693c720fdaa9846203bb96a04c2833e6f8"
 
 	mysqlImageRepo    = "mysql/mysql-server"
 	mysqlImageVersion = "sha256:b33c6e23c8678e29a43ae7cad47cd6bbead6e39c911c5a7b2b6d943cd42b2944"
