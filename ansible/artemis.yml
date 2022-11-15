@@ -3,7 +3,6 @@
   roles:
     - role: bastille
     - role: poudriere
-    - role: vault
     - role: nut
     - role: dns
     - role: consul

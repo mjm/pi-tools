@@ -1,7 +1,1 @@
-vault_server_enabled: false
 vault_version: 1.9.1
-
-vault_agent_enabled: false
-vault_agent_user: vault
-vault_agent_group: vault
-vault_agent_templates: ""
