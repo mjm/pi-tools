@@ -1,0 +1,23 @@
+
+- name: Install nut.conf
+  copy:
+    src: nut.conf
+    dest: /etc/nut/nut.conf
+    mode: 0640
+    owner: root
+    group: nut
+
+- name: Install upsmon.conf
+  copy:
+    src: upsmon.conf
+    dest: /etc/nut/upsmon.conf
+    mode: 0640
+    owner: root
+    group: nut
+
+- name: Ensure nut-client service is running
+  systemd:
+    name: nut-client
+    state: started
+    enabled: true
+

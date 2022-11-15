@@ -1,0 +1,20 @@
+- name: Install upsmon.conf
+  copy:
+    src: upsmon.conf
+    dest: /usr/local/etc/nut/upsmon.conf
+    mode: 0644
+    owner: root
+    group: wheel
+
+- name: Install rc config for nut_upsmon
+  copy:
+    src: rc.nut_upsmon.conf
+    dest: /usr/local/etc/rc.conf.d/nut_upsmon
+    mode: 0644
+    owner: root
+    group: wheel
+
+- name: Ensure nut_upsmon service is running
+  service:
+    name: nut_upsmon
+    state: started
