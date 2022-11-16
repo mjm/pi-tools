@@ -53,7 +53,7 @@ client {
   max_kill_timeout = "10m"
 
   meta {
-    "connect.sidecar_image" = "envoyproxy/envoy:v1.24.0"
+    "connect.sidecar_image" = "envoyproxy/envoy:v1.23.2"
   }
 
   host_volume "promtail_run" {
