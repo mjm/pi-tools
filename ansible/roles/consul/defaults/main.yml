@@ -1,4 +1,4 @@
-consul_version: "1.14.1"
+consul_version: "1.14.4"
 consul_template_version: "0.27.2"
 consul_mode: "agent"
 consul_services: []
