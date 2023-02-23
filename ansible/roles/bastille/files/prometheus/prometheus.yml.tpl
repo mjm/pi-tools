@@ -200,11 +200,11 @@ scrape_configs:
         - alertmanager.home.mattmoriarity.com
         - grafana.home.mattmoriarity.com
         - go.home.mattmoriarity.com
-        - minio.home.mattmoriarity.com
+        # - minio.home.mattmoriarity.com
         - pkg.home.mattmoriarity.com
         - paperless.home.mattmoriarity.com
         - code.home.mattmoriarity.com
-        - ci.home.mattmoriarity.com
+        - ci.home.mattmoriarity.com/login.html
         - homelab.home.mattmoriarity.com
         - livebook.home.mattmoriarity.com
         - adminer.home.mattmoriarity.com
