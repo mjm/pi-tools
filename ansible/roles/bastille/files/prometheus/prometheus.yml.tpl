@@ -185,3 +185,34 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: {{ with service "blackbox-exporter" }}{{ with index . 0 }}{{ .Address }}:{{ .Port }}{{ end }}{{ end }}
+
+  - job_name: 'homelab-https'
+    metrics_path: /probe
+    params:
+      module: [https_homelab]
+    static_configs:
+      - targets:
+        - auth.home.mattmoriarity.com/webauthn/login
+        - consul.home.mattmoriarity.com
+        - nomad.home.mattmoriarity.com
+        - vault.home.mattmoriarity.com
+        - prometheus.home.mattmoriarity.com
+        - alertmanager.home.mattmoriarity.com
+        - grafana.home.mattmoriarity.com
+        - go.home.mattmoriarity.com
+        - minio.home.mattmoriarity.com
+        - pkg.home.mattmoriarity.com
+        - paperless.home.mattmoriarity.com
+        - code.home.mattmoriarity.com
+        - ci.home.mattmoriarity.com
+        - homelab.home.mattmoriarity.com
+        - livebook.home.mattmoriarity.com
+        - adminer.home.mattmoriarity.com
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: {{ with service "blackbox-exporter" }}{{ with index . 0 }}{{ .Address }}:{{ .Port }}{{ end }}{{ end }}
+
