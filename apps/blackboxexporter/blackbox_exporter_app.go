@@ -58,11 +58,11 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 				DestPath:     nomadic.String("local/blackbox.yml"),
 			},
 			{
-				EmbeddedTmpl: `
+				EmbeddedTmpl: nomadic.String(`
 {{ with secret "pki-homelab/issuer/default/json" -}}
 {{ .Data.certificate }}
 {{ end }}
-				`,
+				`),
 				DestPath: nomadic.String("local/ca.pem"),
 			},
 		},
