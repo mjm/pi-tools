@@ -1,5 +1,12 @@
 modules:
 
+  https_homelab:
+    prober: http
+    http:
+      method: GET
+      tls_config:
+        ca_file: "{{ env "NOMAD_TASK_DIR" }}/ca.pem"
+
   dns_public:
     prober: dns
     timeout: 5s
