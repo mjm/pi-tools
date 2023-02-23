@@ -64,7 +64,7 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 {{ end }}
 				`,
 				DestPath: nomadic.String("local/ca.pem"),
-			}
+			},
 		},
 	},
 		nomadic.WithCPU(100),
