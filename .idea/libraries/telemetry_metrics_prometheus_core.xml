@@ -8,9 +8,13 @@
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/lib/telemetry_metrics_prometheus_core/ebin" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/lib/telemetry_metrics_prometheus_core/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/telemetry_metrics_prometheus_core/lib" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/telemetry_metrics_prometheus_core/lib" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/telemetry_metrics_prometheus_core/lib" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/telemetry_metrics_prometheus_core/lib" />

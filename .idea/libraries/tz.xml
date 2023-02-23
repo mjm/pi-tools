@@ -11,9 +11,16 @@
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/prod/lib/tz/ebin" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/tz/ebin" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/lib/tz/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/prod/lib/tz/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/tz/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/tz/lib" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/tz/priv" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/tz/lib" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/tz/priv" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/tz/lib" />

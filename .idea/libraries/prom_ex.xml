@@ -6,9 +6,14 @@
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/lib/prom_ex/ebin" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/lib/prom_ex/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/prom_ex/lib" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/prom_ex/priv" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/prom_ex/lib" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/prom_ex/priv" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/prom_ex/lib" />

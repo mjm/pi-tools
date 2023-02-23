@@ -4,7 +4,6 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
-	"time"
 
 	consulapi "github.com/hashicorp/consul/api"
 	nomadapi "github.com/hashicorp/nomad/api"
@@ -13,7 +12,6 @@ import (
 )
 
 const (
-	imageRepo       = "mmoriarity/detect-presence-srv"
 	beaconImageRepo = "mmoriarity/beacon-srv"
 )
 
@@ -42,71 +40,8 @@ func (a *App) Install(ctx context.Context, clients nomadic.Clients) error {
 		return err
 	}
 
-	job := nomadic.NewJob(a.name, 50)
-	tg := nomadic.AddTaskGroup(job, "detect-presence", 2)
-
-	nomadic.AddConnectService(tg, &nomadapi.Service{
-		// TODO work out the names so this can use a.name
-		Name:      "detect-presence",
-		PortLabel: "2120",
-		Checks: []nomadapi.ServiceCheck{
-			{
-				Type:                 "http",
-				Path:                 "/healthz",
-				Interval:             15 * time.Second,
-				Timeout:              3 * time.Second,
-				SuccessBeforePassing: 3,
-			},
-		},
-	},
-		nomadic.WithMetricsScraping("/metrics"),
-		nomadic.WithUpstreams(
-			nomadic.ConsulUpstream("homebase-bot-grpc", 6361)))
-
-	nomadic.AddConnectService(tg, &nomadapi.Service{
-		Name:      "detect-presence-grpc",
-		PortLabel: "2121",
-	})
-
-	nomadic.AddTask(tg, &nomadapi.Task{
-		Name: "detect-presence-srv",
-		Config: map[string]interface{}{
-			"image":   nomadic.Image(imageRepo, "latest"),
-			"command": "/detect-presence-srv",
-			"args": []string{
-				"-db",
-				"dbname=presence host=10.0.2.102 sslmode=disable",
-				"-mode",
-				"client",
-			},
-		},
-		Templates: []*nomadapi.Template{
-			{
-				EmbeddedTmpl: nomadic.String(`{{ with secret "kv/deploy" }}{{ .Data.data.github_token }}{{ end }}`),
-				DestPath:     nomadic.String("secrets/github-token"),
-				ChangeMode:   nomadic.String("restart"),
-			},
-			{
-				EmbeddedTmpl: nomadic.String(`
-{{ with secret "database/creds/presence" }}
-PGUSER="{{ .Data.username }}"
-PGPASSWORD={{ .Data.password | toJSON }}
-{{ end }}
-`),
-				DestPath:   nomadic.String("secrets/db.env"),
-				Envvars:    nomadic.Bool(true),
-				ChangeMode: nomadic.String("restart"),
-			},
-		},
-	},
-		nomadic.WithCPU(50),
-		nomadic.WithMemoryMB(50),
-		nomadic.WithLoggingTag(a.name),
-		nomadic.WithVaultPolicies(a.name),
-		nomadic.WithTracingEnv())
-
 	beaconJob := nomadic.NewSystemJob(a.beaconName, 50)
-	tg = nomadic.AddTaskGroup(beaconJob, "beacon", 1)
+	tg := nomadic.AddTaskGroup(beaconJob, "beacon", 1)
 
 	nomadic.AddTask(tg, &nomadapi.Task{
 		Name: "beacon-srv",

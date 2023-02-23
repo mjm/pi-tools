@@ -11,9 +11,16 @@
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/prod/lib/certifi/ebin" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/certifi/ebin" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/lib/certifi/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/prod/lib/certifi/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/certifi/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/certifi/src" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/certifi/priv" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/certifi/src" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/certifi/priv" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/certifi/src" />

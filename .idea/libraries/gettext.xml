@@ -11,9 +11,16 @@
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/prod/lib/gettext/ebin" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/gettext/ebin" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/lib/gettext/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/prod/lib/gettext/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/gettext/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/gettext/lib" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/gettext/src" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/gettext/lib" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/gettext/src" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/gettext/lib" />

@@ -11,9 +11,15 @@
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/prod/lib/plug_cowboy/ebin" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/plug_cowboy/ebin" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/lib/plug_cowboy/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/dev/consolidated" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/prod/lib/plug_cowboy/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/lib/plug_cowboy/ebin" />
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/_build/test/consolidated" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
+      <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/plug_cowboy/lib" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/plug_cowboy/lib" />
       <root url="file://$PROJECT_DIR$/../homelab_umbrella/deps/plug_cowboy/lib" />
     </SOURCES>
