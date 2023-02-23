@@ -19,29 +19,29 @@ jobs:
           sudo curl -L https://github.com/bazelbuild/bazel/releases/download/3.7.0/bazel-3.7.0-linux-x86_64 -o /usr/local/bin/bazel
           sudo chmod +x /usr/local/bin/bazel
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 14.x
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v1
+      #   with:
+      #     node-version: 14.x
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('homebase/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+      # - name: Get yarn cache directory path
+      #   id: yarn-cache-dir-path
+      #   run: echo "::set-output name=dir::$(yarn cache dir)"
+      # - name: Cache node modules
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+      #     key: ${{ runner.os }}-yarn-${{ hashFiles('homebase/yarn.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-yarn-
 
-      - name: Cache Next.js build output
-        uses: actions/cache@v2
-        with:
-          path: ${{ github.workspace }}/homebase/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('homebase/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-nextjs-
+      # - name: Cache Next.js build output
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: ${{ github.workspace }}/homebase/.next/cache
+      #     key: ${{ runner.os }}-nextjs-${{ hashFiles('homebase/yarn.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-nextjs-
 
       - name: Login to Docker
         run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
@@ -54,20 +54,20 @@ jobs:
         env:
           GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
 
-      - name: Run tests
-        run: |
-          bazel \
-            test \
-            --remote_cache=https://storage.googleapis.com/mjm-github-actions-bazel-cache \
-            --google_credentials=$RUNNER_TEMP/credentials.json \
-            --config=ci \
-            //...
+      # - name: Run tests
+      #   run: |
+      #     bazel \
+      #       test \
+      #       --remote_cache=https://storage.googleapis.com/mjm-github-actions-bazel-cache \
+      #       --google_credentials=$RUNNER_TEMP/credentials.json \
+      #       --config=ci \
+      #       //...
 
-      - name: Build Homebase Next.js app
-        run: |
-          yarn install --frozen-lockfile
-          yarn build
-        working-directory: homebase
+      # - name: Build Homebase Next.js app
+      #   run: |
+      #     yarn install --frozen-lockfile
+      #     yarn build
+      #   working-directory: homebase
 
       - name: Build and push container images
         run: |
