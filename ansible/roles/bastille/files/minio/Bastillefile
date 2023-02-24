@@ -7,7 +7,7 @@ SYSRC minio_enable=YES
 SYSRC minio_address=${JAIL_IP}:9000
 SYSRC minio_console_address=${JAIL_IP}:9001
 SYSRC minio_syslog_enable=YES
-SYSRC minio_env=MINIO_PROMETHEUS_AUTH_TYPE=public\ MINIO_SERVER_URL=https://minio-console.home.mattmoriarity.com
+SYSRC minio_env=MINIO_PROMETHEUS_AUTH_TYPE=public\  MINIO_BROWSER_REDIRECT_URL=https://minio-console.home.mattmoriarity.com
 
 CMD mkdir -p /var/db/minio
 CMD chmod 0750 /var/db/minio
