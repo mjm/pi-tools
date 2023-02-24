@@ -1,5 +1,4 @@
 groups:
-
   - name: dns_alerts
     rules:
       - alert: ExternalDNSFailing
@@ -127,19 +126,6 @@ groups:
             One or more Raspberry Pis is using a lot of memory. Some process on the machine probably needs to
             be restarted.
 
-  - name: presence_alerts
-    rules:
-      - alert: PresenceServiceDown
-        expr: sum(up{app="detect-presence"}) < 1
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: No detect-presence-srv instances are running
-          description: >
-            There don't seem to be any running pods of detect-presence-srv. Trips won't be able to recorded until this
-            is addressed.
-
   - name: consul_alerts
     rules:
       - alert: ServiceUnhealthy
@@ -169,14 +155,13 @@ groups:
 
   - name: backup_alerts
     rules:
-
       - alert: BackupFailed
         expr: backup_last_success_time - backup_last_completion_time < 0
         for: 1m
         labels:
           severity: notice
         annotations:
-          summary: '{{ $labels.kind }} backup failed'
+          summary: "{{ $labels.kind }} backup failed"
           description: >
             The last {{ $labels.kind }} backup did not succeed.
 
@@ -230,3 +215,15 @@ groups:
           summary: UPS battery is discharging
           description: >
             The UPS battery is currently discharging. If power does not return, it will likely run out of battery in 30-40 minutes.
+
+  - name: ingress_alerts
+    rules:
+      - alert: VhostFailing
+        expr: max_over_time(probe_success{job="homelab-https"}[5m]) < 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Virtual host {{ $labels.instance }} is failing requests
+          description: >
+            Requests to this URL have been returning non-200 responses for at least five minutes.
