@@ -14,6 +14,8 @@ export TELEGRAM_TOKEN={{ with secret "kv/homebase-bot" }}{{ .Data.data.telegram_
 export GITHUB_TOKEN={{ .Data.data.github_token }}
 export SECRET_KEY_BASE={{ .Data.data.secret_key_base }}
 {{ end }}
+
+export PHX_SERVER=true
 EOF
   destination = "/usr/local/homelab/.env.sh"
   perms = "0600"

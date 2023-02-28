@@ -10,7 +10,7 @@ CONFIG set sysvshm new
 RESTART
 
 CMD id teamcity || pw user add -n teamcity -d /opt/TeamCity
-PKG bash bazel cmake-core elixir-devel git gtar linux_base-c7 linux-oracle-jre18 node14 npm-node14 openjdk11-jre postgresql13-server py39-ansible py39-ansible-sysrc yarn-node14
+PKG bash bazel cmake-core elixir-devel gcc12 git gtar linux_base-c7 linux-oracle-jre18 node14 npm-node14 openjdk11-jre postgresql13-server py39-ansible py39-ansible-sysrc yarn-node14
 
 # Download and extract TeamCity
 CMD fetch -m https://download.jetbrains.com/teamcity/TeamCity-2022.10.tar.gz -o /tmp/TeamCity-2022.10.tar.gz
