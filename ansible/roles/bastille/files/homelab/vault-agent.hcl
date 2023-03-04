@@ -13,6 +13,8 @@ export TELEGRAM_TOKEN={{ with secret "kv/homebase-bot" }}{{ .Data.data.telegram_
 {{ with secret "kv/homelab" -}}
 export GITHUB_TOKEN={{ .Data.data.github_token }}
 export SECRET_KEY_BASE={{ .Data.data.secret_key_base }}
+export AWS_ACCESS_KEY_ID=deploy
+export AWS_SECRET_ACCESS_KEY={{ .Data.data.minio_secret_key }}
 {{ end }}
 
 export PHX_SERVER=true
