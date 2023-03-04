@@ -56,9 +56,16 @@ homelab_deploy()
     exit 0
   fi
 
-  cd /usr/local/homelab/current
+  deploy_dir="/usr/local/homelab/deploy-$(date +%Y%m%d%H%M%S)"
+  mkdir "$deploy_dir"
+  cd "$deploy_dir"
   tar xzvf /var/db/homelab/homelab.tar.gz
-  run_rc_command restart
+  run_rc_command stop
+
+  rm /usr/local/homelab/current
+  ln -s "$deploy_dir" /usr/local/homelab/current
+  run_rc_command start
+
   rm /var/db/homelab/homelab.tar.gz
 }
 
