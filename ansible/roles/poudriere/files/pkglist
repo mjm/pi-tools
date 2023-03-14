@@ -35,6 +35,7 @@ lang/elixir-devel
 lang/go
 math/py-numpy
 misc/nnn
+net/guacamole-server
 net-mgmt/alertmanager
 net-mgmt/bind_exporter
 net-mgmt/prometheus2
@@ -82,6 +83,7 @@ textproc/fzf
 textproc/py-pikepdf
 www/chromium
 www/firefox
+www/guacamole-client
 www/minio
 www/nginx
 www/node
