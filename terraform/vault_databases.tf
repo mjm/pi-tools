@@ -37,6 +37,19 @@ resource "vault_database_secret_backend_role" "homelab" {
   max_ttl     = 604800
 }
 
+resource "vault_database_secret_backend_role" "guacamole" {
+  name    = "guacamole"
+  backend = "database"
+  db_name = "db1"
+
+  creation_statements = [
+    "create role \"{{name}}\" with login password '{{password}}' valid until '{{expiration}}'; grant guacamole to \"{{name}}\";"
+  ]
+
+  default_ttl = 86400
+  max_ttl     = 604800
+}
+
 resource "vault_database_secret_backend_role" "phabricator" {
   name    = "phabricator"
   backend = "database"

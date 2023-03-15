@@ -1,15 +1,14 @@
 template {
   contents = <<EOF
-{{ with secret "ssh-client-signer/sign/homelab-client" (printf "public_key=%s" (file "/opt/TeamCity/.ssh/id_rsa.pub")) "valid_principals=ubuntu,matt" }}
-{{ .Data.signed_key }}
+http-auth-header: X-Auth-Request-User
+
+{{ with secret "database/creds/guacamole" }}
+postgresql-hostname: postgresql.service.consul
+postgresql-database: guacamoleb
+postgresql-username: {{ .Data.username }}
+postgresql-password: {{ .Data.password }}
 {{ end }}
 EOF
-  destination = "/opt/TeamCity/.ssh/signed-cert.pub"
-}
-
-template {
-  contents = <<EOF
-{{ with secret "kv/deploy" }}{{ .Data.data.ansible_vault_password }}{{ end }}
-EOF
-  destination = "/opt/TeamCity/.vault-password"
+  destination = "/usr/local/etc/guacamole-client/guacamole.properties"
+  command = "service tomcat9 restart"
 }

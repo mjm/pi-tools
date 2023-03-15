@@ -1,11 +1,13 @@
-# ARG ROLE_ID=956483f1-be56-8585-755c-695f0c8c3fc9
-# ARG SECRET_ID
+ARG ROLE_ID=956483f1-be56-8585-755c-695f0c8c3fc9
+ARG SECRET_ID
 
 INCLUDE mjm/pkg
 INCLUDE mjm/log
-# INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg SECRET_ID=${SECRET_ID} --arg USER=www --arg GROUP=www
+INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg SECRET_ID=${SECRET_ID} --arg USER=root --arg GROUP=wheel
 
 PKG guacamole-server guacamole-client postgresql-jdbc
+
+CP vault-agent.hcl usr/local/etc/vault-agent.d/homelab.hcl
 
 SYSRC guacd_enable=YES
 SYSRC tomcat9_enable=YES
@@ -18,3 +20,4 @@ CP user-mapping.xml usr/local/etc/guacamole-client/user-mapping.xml
 
 SERVICE guacd start
 SERVICE tomcat9 start
+SERVICE vault-agent start
