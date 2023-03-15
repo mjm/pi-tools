@@ -5,6 +5,7 @@ databases/postgresql13-client
 databases/postgresql13-server
 databases/postgresql15-client
 databases/postgresql15-server
+databases/postgresql-jdbc
 databases/redis
 deskutils/plasma5-sddm-kcm
 deskutils/py-paperless-ng
