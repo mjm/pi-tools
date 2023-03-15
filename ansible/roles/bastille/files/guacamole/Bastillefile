@@ -10,11 +10,9 @@ PKG guacamole-server guacamole-client
 SYSRC guacd_enable=YES
 SYSRC tomcat9_enable=YES
 
-CMD mkdir -p /usr/local/etc/guacamole-client/extensions
-CMD fetch 'https://apache.org/dyn/closer.lua/guacamole/1.5.0/binary/guacamole-auth-quickconnect-1.5.0.tar.gz?action=download' -o - | tar -C /tmp -x
-CMD cp /tmp/guacamole-auth-quickconnect-1.5.0/guacamole-auth-quickconnect-1.5.0.jar /usr/local/etc/guacamole-client/extensions/
-CMD fetch 'https://apache.org/dyn/closer.lua/guacamole/1.5.0/binary/guacamole-auth-header-1.5.0.tar.gz?action=download' -o - | tar -C /tmp -x
-CMD cp /tmp/guacamole-auth-header-1.5.0/guacamole-auth-header-1.5.0.jar /usr/local/etc/guacamole-client/extensions/
+CP install-guacamole-extensions.sh usr/local/bin/install-guacamole-extensions
+CMD chmod +x /usr/local/bin/install-guacamole-extensions
+CMD /usr/local/bin/install-guacamole-extensions
 
 CP user-mapping.xml usr/local/etc/guacamole-client/user-mapping.xml
 
