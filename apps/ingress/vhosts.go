@@ -288,6 +288,30 @@ var virtualHosts = []virtualHost{
 			ConnectPort: 10000,
 		},
 	},
+	{
+		Name: "guacamole",
+		Upstream: upstream{
+			Name:        "guacamole",
+			Path:        "/guacamole/",
+			ServiceName: "guacamole",
+		},
+		CustomServerConfig: `
+  # Allow any size file to be uploaded.
+  # Set to a value such as 1000m; to restrict file size to a specific value
+  client_max_body_size 0;
+  # To disable buffering
+  proxy_buffering off;
+`,
+		CustomLocationConfig: `
+    proxy_http_version  1.1;
+    proxy_set_header    Host $server_name:$server_port;
+    proxy_set_header    X-Forwarded-Host $http_host;
+    proxy_set_header    X-Forwarded-Proto $scheme;
+    proxy_set_header    X-Forwarded-For $remote_addr;
+    proxy_set_header    Upgrade $http_upgrade; # WebSocket support
+    proxy_set_header    Connection $connection_upgrade; # WebSocket support
+`,
+	},
 }
 
 type virtualHost struct {

@@ -28,6 +28,7 @@ var extraUpstreams = []upstream{
 
 type upstream struct {
 	Name        string
+	Path        string
 	ServiceName string
 	ServicePort int
 	ConnectPort int
