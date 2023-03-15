@@ -4,7 +4,7 @@ http-auth-header: X-Auth-Request-User
 
 {{ with secret "database/creds/guacamole" }}
 postgresql-hostname: postgresql.service.consul
-postgresql-database: guacamoleb
+postgresql-database: guacamole
 postgresql-username: {{ .Data.username }}
 postgresql-password: {{ .Data.password }}
 {{ end }}
