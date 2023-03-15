@@ -41,6 +41,7 @@
     - mysql
     - postgresql
     - znc
+    - guacamole
 
 - name: Install Rocinante templates
   copy:
@@ -51,4 +52,3 @@
   loop:
     - pkg
     - log
-
