@@ -28,6 +28,7 @@ consul_services:
   - teamcity
   - homelab
   - livebook
+  - guacamole
 
 fastmail_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256

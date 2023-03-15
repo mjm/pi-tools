@@ -1,0 +1,22 @@
+# ARG ROLE_ID=956483f1-be56-8585-755c-695f0c8c3fc9
+# ARG SECRET_ID
+
+INCLUDE mjm/pkg
+INCLUDE mjm/log
+# INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg SECRET_ID=${SECRET_ID} --arg USER=www --arg GROUP=www
+
+PKG guacamole-server guacamole-client
+
+SYSRC guacd_enable=YES
+SYSRC tomcat9_enable=YES
+
+CMD mkdir -p /usr/local/etc/guacamole-client/extensions
+CMD fetch 'https://apache.org/dyn/closer.lua/guacamole/1.5.0/binary/guacamole-auth-quickconnect-1.5.0.tar.gz?action=download' -o - | tar -C /tmp -x
+CMD cp /tmp/guacamole-auth-quickconnect-1.5.0/guacamole-auth-quickconnect-1.5.0.jar /usr/local/etc/guacamole-client/extensions/
+CMD fetch 'https://apache.org/dyn/closer.lua/guacamole/1.5.0/binary/guacamole-auth-header-1.5.0.tar.gz?action=download' -o - | tar -C /tmp -x
+CMD cp /tmp/guacamole-auth-header-1.5.0/guacamole-auth-header-1.5.0.jar /usr/local/etc/guacamole-client/extensions/
+
+CP user-mapping.xml usr/local/etc/guacamole-client/user-mapping.xml
+
+SERVICE guacd start
+SERVICE tomcat9 start

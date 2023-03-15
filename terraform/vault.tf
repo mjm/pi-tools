@@ -156,6 +156,11 @@ resource "vault_policy" "consul_template" {
   policy = file("${local.vault_policies_path}/consul-template.hcl")
 }
 
+resource "vault_policy" "guacamole" {
+  name   = "guacamole"
+  policy = file("${local.vault_policies_path}/guacamole.hcl")
+}
+
 resource "vault_policy" "homelab" {
   name   = "homelab"
   policy = file("${local.vault_policies_path}/homelab.hcl")

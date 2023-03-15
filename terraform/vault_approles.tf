@@ -1,3 +1,10 @@
+resource "vault_approle_auth_backend_role" "guacamole" {
+  backend = vault_auth_backend.approle.id
+
+  role_name      = "guacamole"
+  token_policies = ["guacamole"]
+}
+
 resource "vault_approle_auth_backend_role" "homelab" {
   backend = vault_auth_backend.approle.id
 

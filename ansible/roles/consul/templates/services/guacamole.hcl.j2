@@ -1,0 +1,16 @@
+service {
+  name    = "guacamole"
+  port    = 8080
+  address = "10.0.2.116"
+
+  checks = [
+    {
+      name     = "guacamole is ready"
+      http     = "http://10.0.2.116:8080/guacamole/"
+      interval = "30s"
+      timeout  = "10s"
+
+      failures_before_critical = 3
+    }
+  ]
+}
