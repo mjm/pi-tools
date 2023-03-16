@@ -16,8 +16,6 @@ CP install-guacamole-extensions.sh usr/local/bin/install-guacamole-extensions
 CMD chmod +x /usr/local/bin/install-guacamole-extensions
 CMD /usr/local/bin/install-guacamole-extensions
 
-CP user-mapping.xml usr/local/etc/guacamole-client/user-mapping.xml
-
 SERVICE guacd start
 SERVICE tomcat9 start
 SERVICE vault-agent start

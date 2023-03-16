@@ -24,7 +24,8 @@ copy_extension() {
   cp /tmp/guacamole-auth-$extension-$version/guacamole-auth-$extension-$version.jar /usr/local/etc/guacamole-client/extensions/
 }
 
-mkdir -p /usr/local/etc/guacamole-client/extensions
+mkdir -p /usr/local/etc/guacamole-client/extensions /usr/local/etc/guacamole-client/lib
+ln -sf /usr/local/share/java/classes/postgresql.jar /usr/local/etc/guacamole-client/lib/postgresql.jar
 
 for extension in $extensions; do
   if needs_install $extension; then
