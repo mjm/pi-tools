@@ -3,6 +3,7 @@
     url: http://127.0.0.1:8200/v1/ssh-client-signer/public_key
     dest: /etc/ssh/trusted-user-ca-keys.pem
   become: true
+  when: ansible_system == "Linux"
 
 - name: Install custom sshd config
   copy:
@@ -13,4 +14,9 @@
     group: root
   become: true
   notify: Restart sshd
+  when: ansible_system == "Linux"
 
+- name: Install Guacamole public key
+  ansible.posix.authorized_key:
+    user: "{{ ansible_user }}"
+    key: "{{ lookup('file', 'guacamole.pub') }}"
