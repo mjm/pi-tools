@@ -1,0 +1,8 @@
+---
+ansible_host: 10.0.2.31
+
+default_ip: 10.0.2.31
+tailscale_ip: ""
+
+consul_services:
+  - poudriere-web

@@ -6,6 +6,14 @@
     - bastille
     - rocinante
 
+- name: Copy bastille.conf
+  copy:
+    src: bastille.conf
+    dest: /usr/local/etc/bastille/bastille.conf
+    owner: root
+    group: wheel
+    mode: 0644
+
 - name: Create templates directories
   file:
     path: /usr/local/{{ item }}/templates/mjm

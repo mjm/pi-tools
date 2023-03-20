@@ -1,0 +1,15 @@
+- hosts: freebsd
+  become: true
+  roles:
+    - role: bastille
+    - role: consul
+    - role: nut
+    #- role: dns
+    #- role: mail
+    - role: ssh
+    #- role: ssl
+
+- hosts: daedalus
+  become: true
+  roles:
+    - role: poudriere

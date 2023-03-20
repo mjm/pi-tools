@@ -6,6 +6,14 @@
     owner: root
     group: wheel
 
+- name: Create rc.conf.d directory
+  file:
+    path: /usr/local/etc/rc.conf.d
+    state: directory
+    mode: 0755
+    owner: root
+    group: wheel
+
 - name: Install rc config for nut_upsmon
   copy:
     src: rc.nut_upsmon.conf

@@ -1,0 +1,17 @@
+deskutils/plasma5-sddm-kcm
+editors/vscode
+emulators/virtualbox-ose-additions
+graphics/drm-kmod
+irc/konversation
+www/chromium
+www/firefox
+x11/kde5
+x11/linux-nvidia-libs
+x11/nvidia-driver
+x11/nvidia-settings
+x11/sddm
+x11/xorg
+x11-fonts/mkfontscale
+x11-fonts/noto-emoji
+x11-fonts/twemoji-color-font-ttf
+x11-fonts/urwfonts

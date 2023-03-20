@@ -4,7 +4,7 @@
     dest: /etc/resolv.conf
     mode: 0644
     owner: root
-    group: '{{ root_group }}'
+    group: "{{ root_group }}"
   become: true
 
 - name: Set up packet filter rules
@@ -12,4 +12,4 @@
   when: setup_pf
 
 - include_tasks: bastille.yml
-  when: inventory_hostname == 'artemis'
+  when: inventory_hostname == 'hermes'

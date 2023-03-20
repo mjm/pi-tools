@@ -13,7 +13,12 @@ function finish {
 }
 trap finish EXIT
 
-../tools/vssh -no-exec -field=signed_key placeholder > "$keypath"
+vault write \
+  -field=signed_key \
+  ssh-client-signer/sign/homelab-client \
+  "public_key=$(cat ~/.ssh/yubikey.pub)" \
+  valid_principals=ubuntu,matt \
+  >"$keypath"
 echo "Generated temporary certificate key at $keypath" >&2
 
 ansible-playbook --vault-password-file vault-password.sh --ssh-common-args="-i $HOME/.ssh/id_ed25519 -i $keypath" --inventory=hosts.ini "$@"

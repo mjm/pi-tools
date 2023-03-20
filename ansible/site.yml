@@ -1,2 +1,2 @@
 - import_playbook: pis.yml
-- import_playbook: artemis.yml
+- import_playbook: freebsd.yml
