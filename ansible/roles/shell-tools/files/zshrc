@@ -1,0 +1,7 @@
+source <(/usr/local/bin/starship init zsh --print-full-init)
+source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+autoload -U compinit; compinit
+
+
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

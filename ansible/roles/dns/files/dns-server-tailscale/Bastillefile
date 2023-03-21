@@ -1,8 +1,9 @@
-INCLUDE mjm/dns-server
+ARG CONSUL_ADDRESS
+
+INCLUDE mjm/dns-server --arg CONSUL_ADDRESS=${CONSUL_ADDRESS}
 
 CP homelab.db.tpl usr/local/etc/namedb/master
 CP home.mattmoriarity.com.db.tpl usr/local/etc/namedb/master
 
 CP tailscale.hcl usr/local/etc/consul-template.d
 CMD pkill -HUP consul-template
-

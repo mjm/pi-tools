@@ -12,7 +12,7 @@ $TTL  1m
 {% endfor %}
 ;<< range service "ingress-http" >>
 *.homelab.  0  IN  A << .NodeMeta.tailscale_ip >><< end >>
-unifi       IN  A 10.0.0.1
+unifi       IN  A 10.0.0.5
 nas         IN  A 100.80.133.8
 mars        IN  A 100.117.39.47
 dionysus    IN  A 100.77.19.2

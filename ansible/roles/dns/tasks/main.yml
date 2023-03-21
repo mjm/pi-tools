@@ -1,11 +1,11 @@
-- name: Install DNS config
-  copy:
-    src: etc_resolv.conf
-    dest: /etc/resolv.conf
-    mode: 0644
-    owner: root
-    group: "{{ root_group }}"
-  become: true
+# - name: Install DNS config
+#   copy:
+#     src: etc_resolv.conf
+#     dest: /etc/resolv.conf
+#     mode: 0644
+#     owner: root
+#     group: "{{ root_group }}"
+#   become: true
 
 - name: Set up packet filter rules
   include_tasks: pf.yml

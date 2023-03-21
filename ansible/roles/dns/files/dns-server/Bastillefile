@@ -1,6 +1,8 @@
+ARG CONSUL_ADDRESS
+
 INCLUDE mjm/pkg
 INCLUDE mjm/log
-INCLUDE mjm/consul-template
+INCLUDE mjm/consul-template --arg CONSUL_ADDRESS=${CONSUL_ADDRESS}
 
 PKG bind916 bind_exporter
 SYSRC named_enable=YES

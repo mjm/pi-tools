@@ -14,20 +14,37 @@
     group: wheel
     mode: 0644
 
+# TODO make this check if it's changed or not
+- name: Bootstrap Bastille release
+  shell:
+    cmd: bastille bootstrap 13.1-RELEASE
+
 - name: Create templates directories
   file:
     path: /usr/local/{{ item }}/templates/mjm
     state: directory
-    mode: 0755
+    mode: 0750
     owner: root
     group: wheel
   loop:
     - bastille
     - rocinante
 
+# - name: Install rsync
+#   package:
+#     name: rsync
+#     state: present
+
+# - name: Install Bastille templates
+#   ansible.posix.synchronize:
+#     src: templates/
+#     dest: /usr/local/bastille/templates/mjm/
+#     recursive: true
+#     delete: true
+
 - name: Install Bastille templates
   copy:
-    src: "{{ item }}/"
+    src: "templates/{{ item }}/"
     dest: "/usr/local/bastille/templates/mjm/{{ item }}"
     owner: root
     group: wheel
@@ -53,10 +70,16 @@
 
 - name: Install Rocinante templates
   copy:
-    src: "{{ item }}/"
+    src: "templates/{{ item }}/"
     dest: "/usr/local/rocinante/templates/mjm/{{ item }}"
     owner: root
     group: wheel
   loop:
     - pkg
     - log
+
+- name: Ensure jails start automatically
+  service:
+    name: bastille
+    state: started
+    enabled: true

@@ -1,11 +1,11 @@
 - hosts: freebsd
   become: true
   roles:
+    - role: shell-tools
     - role: bastille
     - role: consul
-    - role: nut
-    #- role: dns
-    #- role: mail
+    - role: dns
+    - role: mail
     - role: ssh
     #- role: ssl
 

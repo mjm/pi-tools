@@ -1,10 +1,11 @@
 ARG ROLE_ID=52bc8fbe-7e78-b585-39a5-7d8ccc69696f
 ARG SECRET_ID
+ARG CONSUL_ADDRESS
 
 INCLUDE mjm/pkg
 INCLUDE mjm/log
 INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg SECRET_ID=${SECRET_ID} --arg USER=root --arg GROUP=wheel
-INCLUDE mjm/consul-template
+INCLUDE mjm/consul-template --arg CONSUL_ADDRESS=http://${CONSUL_ADDRESS}
 
 PKG prometheus alertmanager
 
@@ -18,6 +19,7 @@ SYSRC alertmanager_args=--web.listen-address=${JAIL_IP}:9093\ --web.external-url
 CP vault-agent.hcl usr/local/etc/vault-agent.d/consul.hcl
 CP prometheus.hcl usr/local/etc/consul-template.d/prometheus.hcl
 CP prometheus.yml.tpl usr/local/etc/prometheus.yml.tpl
+RENDER usr/local/etc/prometheus.yml.tpl
 CP rules usr/local/etc/
 
 CP alertmanager.hcl usr/local/etc/consul-template.d/alertmanager.hcl

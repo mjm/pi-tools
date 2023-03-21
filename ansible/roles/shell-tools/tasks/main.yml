@@ -1,0 +1,69 @@
+- name: Install packages
+  package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - git
+    - neovim
+    - starship
+    - tmux
+    - zsh
+    - zsh-autosuggestions
+    - zsh-completions
+    - zsh-syntax-highlighting
+
+- name: Create .config directory for root
+  file:
+    path: /root/.config
+    state: directory
+    mode: 0755
+    owner: root
+    group: wheel
+
+- name: Create .config directory for matt
+  file:
+    path: /home/matt/.config
+    state: directory
+    mode: 0755
+    owner: matt
+    group: matt
+
+- name: Copy Starship config for matt
+  copy:
+    src: starship.toml
+    dest: /home/matt/.config/starship.toml
+    mode: 0644
+    owner: matt
+    group: matt
+
+- name: Copy Starship config for root
+  copy:
+    src: starship.toml
+    dest: /root/.config/starship.toml
+    mode: 0644
+    owner: root
+    group: wheel
+
+- name: Copy zshrc for matt
+  copy:
+    src: zshrc
+    dest: /home/matt/.zshrc
+    mode: 0644
+    owner: matt
+    group: matt
+
+- name: Copy zshrc for root
+  copy:
+    src: zshrc
+    dest: /root/.zshrc
+    mode: 0644
+    owner: root
+    group: wheel
+
+- name: Set default shell
+  user:
+    name: "{{ item }}"
+    shell: /usr/local/bin/zsh
+  loop:
+    - matt
+    - root

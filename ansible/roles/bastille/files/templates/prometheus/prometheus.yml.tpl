@@ -6,7 +6,7 @@ alerting:
   alertmanagers:
     - consul_sd_configs:
         - services: [alertmanager]
-          server: 10.0.2.10:8500
+          server: ${CONSUL_ADDRESS}
 
 rule_files:
   - /usr/local/etc/rules/*.yml
@@ -15,7 +15,7 @@ scrape_configs:
   - job_name: consul-agent
     consul_sd_configs:
       - services: [consul]
-        server: 10.0.2.10:8500
+        server: ${CONSUL_ADDRESS}
     metrics_path: /v1/agent/metrics
     params:
       format: [prometheus]
@@ -29,7 +29,7 @@ scrape_configs:
   - job_name: nomad-agent
     consul_sd_configs:
       - services: [nomad-client]
-        server: 10.0.2.10:8500
+        server: ${CONSUL_ADDRESS}
     metrics_path: /v1/metrics
     params:
       format: [prometheus]
@@ -46,7 +46,7 @@ scrape_configs:
     consul_sd_configs:
       - services: [vault]
         tags: [active]  # metrics are only available from the active node
-        server: 10.0.2.10:8500
+        server: ${CONSUL_ADDRESS}
     metrics_path: /v1/sys/metrics
     params:
       format: [prometheus]
@@ -57,7 +57,7 @@ scrape_configs:
 
   - job_name: consul-services
     consul_sd_configs:
-      - server: 10.0.2.10:8500
+      - server: ${CONSUL_ADDRESS}
     relabel_configs:
       - source_labels: [__meta_consul_service]
         action: drop
@@ -85,7 +85,7 @@ scrape_configs:
   - job_name: consul-connect-envoy
     scrape_interval: 300s
     consul_sd_configs:
-      - server: 10.0.2.10:8500
+      - server: ${CONSUL_ADDRESS}
     relabel_configs:
       - source_labels: [__meta_consul_service]
         action: drop
@@ -107,7 +107,7 @@ scrape_configs:
   - job_name: pushgateway
     consul_sd_configs:
       - services: [pushgateway]
-        server: 10.0.2.10:8500
+        server: ${CONSUL_ADDRESS}
     honor_labels: true
 
   - job_name: 'blackbox-dns-public'

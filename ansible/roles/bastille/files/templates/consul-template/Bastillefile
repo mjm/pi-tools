@@ -1,4 +1,4 @@
-ARG CONSUL_ADDRESS=http://10.0.2.10:8500
+ARG CONSUL_ADDRESS
 
 PKG consul-template
 SYSRC consul_template_enable=YES

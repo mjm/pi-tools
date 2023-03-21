@@ -1,0 +1,27 @@
+---
+ansible_host: 10.0.2.30
+
+default_ip: 10.0.2.30
+tailscale_ip: ""
+
+# setup_pf: true
+
+consul_services:
+  # - node_exporter
+  - named-local
+  - bind_exporter-local
+  - postgresql
+  # - minio
+  # - minio-console
+  - prometheus
+  - alertmanager
+  # - named-tailscale
+  # - bind_exporter-tailscale
+  # - redis
+  # - paperless
+  - phabricator
+  - mysql
+  # - teamcity
+  # - homelab
+  # - livebook
+  - guacamole
