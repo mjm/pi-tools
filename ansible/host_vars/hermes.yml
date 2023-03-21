@@ -17,7 +17,7 @@ consul_services:
   - alertmanager
   # - named-tailscale
   # - bind_exporter-tailscale
-  # - redis
+  - redis
   # - paperless
   - phabricator
   - mysql
