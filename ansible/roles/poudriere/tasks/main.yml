@@ -26,3 +26,11 @@
     mode: 0755
     owner: root
     group: wheel
+
+- name: Install script to reapply paperless patch
+  copy:
+    src: reapply-paperless-patch.sh
+    dest: /usr/local/bin/reapply-paperless-patch
+    mode: 0755
+    owner: root
+    group: wheel
