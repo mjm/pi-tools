@@ -13,7 +13,7 @@ import (
 var vaultPolicy string
 
 var extraCertNames = []string{
-	"homebase",
+	"gitlab",
 }
 
 const certTemplateData = `
