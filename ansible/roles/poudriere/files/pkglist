@@ -12,6 +12,7 @@ devel/arcanist
 devel/bazel
 devel/ccache
 devel/git
+devel/gitlab-runner
 devel/phabricator
 devel/py-lxml
 devel/py-pip
