@@ -11,8 +11,8 @@ consul_services:
   - named-local
   - bind_exporter-local
   - postgresql
-  # - minio
-  # - minio-console
+  - minio
+  - minio-console
   - prometheus
   - alertmanager
   # - named-tailscale
