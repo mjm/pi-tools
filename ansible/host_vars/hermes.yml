@@ -22,6 +22,6 @@ consul_services:
   - phabricator
   - mysql
   - teamcity
-  # - homelab
+  - homelab
   # - livebook
   - guacamole
