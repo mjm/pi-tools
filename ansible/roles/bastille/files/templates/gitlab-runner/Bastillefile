@@ -16,6 +16,7 @@ CMD git config --system http.sslCAInfo /etc/ssl/homelab.pem
 CMD mkdir -p /usr/local/etc/gitlab-runner
 CMD if [ ! -f "/usr/local/etc/gitlab-runner/id_rsa" ]; then ssh-keygen -t rsa -f /usr/local/etc/gitlab-runner/id_rsa -N ''; chown gitlab-runner:gitlab-runner /usr/local/etc/gitlab-runner/id_rsa*; fi
 CP known_hosts etc/ssh/known_hosts
+CP vault-agent.hcl usr/local/etc/vault-agent.d/gitlab-runner.hcl
 
 MOUNT /var/db/homelab var/db/homelab nullfs rw 0 0
 CMD chown gitlab-runner:gitlab-runner /var/db/homelab
