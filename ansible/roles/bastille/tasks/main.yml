@@ -67,6 +67,7 @@
     - postgresql
     - znc
     - guacamole
+    - gitlab-runner
 
 - name: Install Rocinante templates
   copy:

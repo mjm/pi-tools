@@ -1,0 +1,24 @@
+# reusing the teamcity role for now
+ARG ROLE_ID=5108b274-5fc3-5f3d-96a1-f9fffc4d6256
+ARG SECRET_ID
+
+INCLUDE mjm/pkg
+INCLUDE mjm/log
+INCLUDE mjm/vault-agent --arg ROLE_ID=${ROLE_ID} --arg SECRET_ID=${SECRET_ID} --arg USER=gitlab-runner --arg GROUP=gitlab-runner
+
+PKG bash cmake-core elixir-devel erlang gcc12 git gtar gitlab-runner node14 npm-node14 py39-ansible py39-ansible-sysrc
+
+SYSRC gitlab_runner_enable=YES
+
+CMD fetch http://vault.service.consul:8200/v1/pki-homelab/ca/pem -o /etc/ssl/homelab.pem
+CMD git config --system http.sslCAInfo /etc/ssl/homelab.pem
+
+CMD mkdir -p /usr/local/etc/gitlab-runner
+CMD if [ ! -f "/usr/local/etc/gitlab-runner/id_rsa" ]; then ssh-keygen -t rsa -f /usr/local/etc/gitlab-runner/id_rsa -N ''; chown gitlab-runner:gitlab-runner /usr/local/etc/gitlab-runner/id_rsa*; fi
+CP known_hosts etc/ssh/known_hosts
+
+MOUNT /var/db/homelab var/db/homelab nullfs rw 0 0
+CMD chown gitlab-runner:gitlab-runner /var/db/homelab
+
+SERVICE vault-agent start
+SERVICE gitlab_runner start
