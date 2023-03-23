@@ -18,7 +18,7 @@ consul_services:
   # - named-tailscale
   # - bind_exporter-tailscale
   - redis
-  # - paperless
+  - paperless
   - phabricator
   - mysql
   - teamcity
